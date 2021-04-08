@@ -71,6 +71,8 @@ public class RoleParser {
     private static final String TAG_PREFERRED_ACTIVITIES = "preferred-activities";
     private static final String TAG_PREFERRED_ACTIVITY = "preferred-activity";
     private static final String ATTRIBUTE_NAME = "name";
+    private static final String ATTRIBUTE_ALLOW_BYPASSING_QUALIFICATION =
+            "allowBypassingQualification";
     private static final String ATTRIBUTE_BEHAVIOR = "behavior";
     private static final String ATTRIBUTE_DEFAULT_HOLDERS = "defaultHolders";
     private static final String ATTRIBUTE_DESCRIPTION = "description";
@@ -79,6 +81,7 @@ public class RoleParser {
     private static final String ATTRIBUTE_LABEL = "label";
     private static final String ATTRIBUTE_MIN_SDK_VERSION = "minSdkVersion";
     private static final String ATTRIBUTE_OVERRIDE_USER_WHEN_GRANTING = "overrideUserWhenGranting";
+    private static final String ATTRIBUTE_QUERY_FLAGS = "queryFlags";
     private static final String ATTRIBUTE_REQUEST_TITLE = "requestTitle";
     private static final String ATTRIBUTE_REQUEST_DESCRIPTION = "requestDescription";
     private static final String ATTRIBUTE_REQUESTABLE = "requestable";
@@ -269,6 +272,9 @@ public class RoleParser {
             return null;
         }
 
+        boolean allowBypassingQualification = getAttributeBooleanValue(parser,
+                ATTRIBUTE_ALLOW_BYPASSING_QUALIFICATION, false);
+
         String behaviorClassSimpleName = getAttributeValue(parser, ATTRIBUTE_BEHAVIOR);
         RoleBehavior behavior;
         if (behaviorClassSimpleName != null) {
@@ -443,12 +449,12 @@ public class RoleParser {
         if (preferredActivities == null) {
             preferredActivities = Collections.emptyList();
         }
-        return new Role(name, behavior, defaultHoldersResourceName, descriptionResource, exclusive,
-                fallBackToDefaultHolder, labelResource, minSdkVersion, overrideUserWhenGranting,
-                requestDescriptionResource, requestTitleResource, requestable,
-                searchKeywordsResource, shortLabelResource, showNone, systemOnly, visible,
-                requiredComponents, permissions, appOpPermissions, appOps,
-                preferredActivities);
+        return new Role(name, allowBypassingQualification, behavior, defaultHoldersResourceName,
+                descriptionResource, exclusive, fallBackToDefaultHolder, labelResource,
+                minSdkVersion, overrideUserWhenGranting, requestDescriptionResource,
+                requestTitleResource, requestable, searchKeywordsResource, shortLabelResource,
+                showNone, systemOnly, visible, requiredComponents, permissions, appOpPermissions,
+                appOps, preferredActivities);
     }
 
     @NonNull
@@ -494,6 +500,7 @@ public class RoleParser {
     private RequiredComponent parseRequiredComponent(@NonNull XmlResourceParser parser,
             @NonNull String name) throws IOException, XmlPullParserException {
         String permission = getAttributeValue(parser, ATTRIBUTE_PERMISSION);
+        int queryFlags = getAttributeIntValue(parser, ATTRIBUTE_QUERY_FLAGS, 0);
         IntentFilterData intentFilterData = null;
 
         int type;
@@ -527,13 +534,13 @@ public class RoleParser {
         }
         switch (name) {
             case TAG_ACTIVITY:
-                return new RequiredActivity(intentFilterData, permission);
+                return new RequiredActivity(intentFilterData, permission, queryFlags);
             case TAG_PROVIDER:
-                return new RequiredContentProvider(intentFilterData, permission);
+                return new RequiredContentProvider(intentFilterData, permission, queryFlags);
             case TAG_RECEIVER:
-                return new RequiredBroadcastReceiver(intentFilterData, permission);
+                return new RequiredBroadcastReceiver(intentFilterData, permission, queryFlags);
             case TAG_SERVICE:
-                return new RequiredService(intentFilterData, permission);
+                return new RequiredService(intentFilterData, permission, queryFlags);
             default:
                 throwOrLogMessage("Unknown tag <" + name + ">");
                 return null;

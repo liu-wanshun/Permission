@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.role.model;
+package com.android.permissioncontroller.role.utils;
 
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.UserHandle;
+import android.app.role.RoleManager;
 
 import androidx.annotation.NonNull;
 
-/**
- * Class for behavior of the Television Notification Handler role.
- */
-public class SystemTelevisionNotificationHandler implements RoleBehavior {
+import com.android.modules.utils.build.SdkLevel;
 
-    @Override
-    public boolean isAvailableAsUser(@NonNull Role role, @NonNull UserHandle user,
-            @NonNull Context context) {
-        // Role is only available on Leanback devices
-        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK);
+/**
+ * Helper for accessing features in {@link RoleManager}.
+ */
+public class RoleManagerCompat {
+
+    private RoleManagerCompat() {}
+
+    /**
+     * @see RoleManager#isBypassingRoleQualification()
+     */
+    public static boolean isBypassingRoleQualification(@NonNull RoleManager roleManager) {
+        if (SdkLevel.isAtLeastS()) {
+            return roleManager.isBypassingRoleQualification();
+        } else {
+            return false;
+        }
     }
 }
