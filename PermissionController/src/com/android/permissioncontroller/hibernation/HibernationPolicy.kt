@@ -117,7 +117,9 @@ private fun getCheckFrequencyMs() = DeviceConfig.getLong(
 private val PREF_KEY_FIRST_BOOT_TIME = "first_boot_time"
 
 fun isHibernationEnabled(): Boolean {
-    return HibernationEnabledLiveData.value!!
+    return DeviceConfig.getBoolean(
+        NAMESPACE_APP_HIBERNATION, Utils.PROPERTY_APP_HIBERNATION_ENABLED,
+        false /* defaultValue */)
 }
 
 fun isHibernationJobEnabled(): Boolean {
@@ -303,7 +305,7 @@ fun UsageStats.lastTimePackageUsed(): Long {
     var lastTimePkgUsed = this.lastTimeVisible
     // TODO(b/180748832): Change this to SDK check once SDK moves up and feature flag is removed.
     if (isHibernationEnabled()) {
-        lastTimePkgUsed = maxOf(lastTimePkgUsed, this.lastTimeComponentUsed)
+        lastTimePkgUsed = maxOf(lastTimePkgUsed, this.lastTimeAnyComponentUsed)
     }
     return lastTimePkgUsed
 }

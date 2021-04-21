@@ -74,6 +74,7 @@
     </permission-set>
 
     <permission-set name="nearby_devices">
+        <permission name="android.permission.BLUETOOTH_ADVERTISE" />
         <permission name="android.permission.BLUETOOTH_CONNECT" />
         <permission name="android.permission.BLUETOOTH_SCAN" />
     </permission-set>
@@ -462,6 +463,7 @@
         behavior="SystemAutomotiveClusterRoleBehavior"
         defaultHolders="config_systemAutomotiveCluster"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -487,6 +489,7 @@
             <permission-set name="phone" />
             <permission-set name="sms" />
             <permission-set name="contacts" />
+            <permission-set name="nearby_devices" />
         </permissions>
         <app-op-permissions>
             <app-op-permission name="android.permission.MANAGE_ONGOING_CALLS" />
@@ -498,6 +501,7 @@
         name="android.app.role.SYSTEM_AUTOMOTIVE_PROJECTION"
         defaultHolders="config_systemAutomotiveProjection"
         exclusive="false"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -520,6 +524,7 @@
         behavior="SystemShellRoleBehavior"
         defaultHolders="config_systemShell"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -537,6 +542,7 @@
         name="android.app.role.SYSTEM_CONTACTS"
         defaultHolders="config_systemContacts"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -549,6 +555,7 @@
         name="android.app.role.SYSTEM_SPEECH_RECOGNIZER"
         defaultHolders="config_systemSpeechRecognizer"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -568,6 +575,7 @@
         name="android.app.role.SYSTEM_WIFI_COEX_MANAGER"
         defaultHolders="config_systemWifiCoexManager"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -581,6 +589,7 @@
         name="android.app.role.SYSTEM_WELLBEING"
         defaultHolders="config_systemWellbeing"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false" >
@@ -596,6 +605,7 @@
         behavior="SystemTelevisionNotificationHandlerRoleBehavior"
         defaultHolders="config_systemTelevisionNotificationHandler"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -610,8 +620,9 @@
     -->
     <role
         name="android.app.role.SYSTEM_COMPANION_DEVICE_PROVIDER"
-        defaultHolders="config_companionProviderPackage"
+        defaultHolders="config_systemCompanionDeviceProvider"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false" >
@@ -632,6 +643,7 @@
         name="android.app.role.SYSTEM_UI_INTELLIGENCE"
         defaultHolders="config_systemUiIntelligence"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -657,6 +669,7 @@
         name="android.app.role.SYSTEM_AMBIENT_AUDIO_INTELLIGENCE"
         defaultHolders="config_systemAmbientAudioIntelligence"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -686,6 +699,7 @@
         name="android.app.role.SYSTEM_AUDIO_INTELLIGENCE"
         defaultHolders="config_systemAudioIntelligence"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -713,6 +727,7 @@
         name="android.app.role.SYSTEM_NOTIFICATION_INTELLIGENCE"
         defaultHolders="config_systemNotificationIntelligence"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -733,6 +748,7 @@
         name="android.app.role.SYSTEM_TEXT_INTELLIGENCE"
         defaultHolders="config_systemTextIntelligence"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -754,6 +770,7 @@
         name="android.app.role.SYSTEM_VISUAL_INTELLIGENCE"
         defaultHolders="config_systemVisualIntelligence"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         minSdkVersion="31"
         systemOnly="true"
         visible="false">
@@ -774,6 +791,32 @@
         allowBypassingQualification="true"
         defaultHolders="config_systemActivityRecognizer"
         exclusive="true"
+        fallBackToDefaultHolder="true"
         systemOnly="true"
-        visible="false" />
+        visible="false">
+        <required-components>
+            <service>
+                <intent-filter>
+                    <action name="android.intent.action.ACTIVITY_RECOGNIZER" />
+                </intent-filter>
+            </service>
+        </required-components>
+    </role>
+
+    <!---
+      ~ A role for the system UI package.
+      -->
+    <role
+        name="android.app.role.SYSTEM_UI"
+        defaultHolders="config_systemUi"
+        exclusive="true"
+        fallBackToDefaultHolder="true"
+        minSdkVersion="31"
+        systemOnly="true"
+        visible="false">
+        <permissions>
+            <permission name="android.permission.MANAGE_SENSOR_PRIVACY" />
+            <permission name="android.permission.OBSERVE_SENSOR_PRIVACY" />
+        </permissions>
+    </role>
 </roles>
