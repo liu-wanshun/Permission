@@ -297,7 +297,7 @@
     <string name="help_app_permissions" translatable="false"></string>
 
     <!-- Title for permission usage [CHAR LIMIT=30] -->
-    <string name="permission_usage_title">Dashboard</string>
+    <string name="permission_usage_title">Privacy dashboard</string>
 
     <!-- Title for permission group usage [CHAR LIMIT=30] -->
     <string name="permission_group_usage_title"><xliff:g id="permgroup" example="Location">%1$s</xliff:g> usage</string>
@@ -834,6 +834,42 @@
     <!-- Subtitle for a storage preference that is currently granted for all files. [CHAR LIMIT=60] -->
     <string name="permission_subtitle_all_files">All Files</string>
 
+    <!-- Summary for showing the last access text for sensor data permissions for today [CHAR LIMIT=70] -->
+    <string name="app_perms_24h_access">Last accessed <xliff:g id="time_date" example="12:42 PM">%1$s</xliff:g></string>
+
+    <!-- Summary for showing the last access text for sensor data permissions for yesterday [CHAR LIMIT=70] -->
+    <string name="app_perms_24h_access_yest">Last accessed yesterday at <xliff:g id="time_date" example="12:42 PM">%1$s</xliff:g></string>
+
+    <!-- Summary for showing the last access text for content provider permissions [CHAR LIMIT=70] -->
+    <string name="app_perms_content_provider">Accessed in past 24 hours</string>
+
+    <!-- Subtitle for the preference that is currently granted only when the app is in the foreground. [CHAR LIMIT=70] -->
+    <string name="app_perms_24h_access_only_in_foreground">Last accessed <xliff:g id="time_date" example="12:42 PM">%1$s</xliff:g> \u2022 Only while app is in use</string>
+
+    <!-- Subtitle for the preference that is currently granted only when the app is in the foreground. [CHAR LIMIT=70] -->
+    <string name="app_perms_24h_access_yest_only_in_foreground">Last accessed yesterday at <xliff:g id="time_date" example="12:42 PM">%1$s</xliff:g> \u2022 Only while app is in use</string>
+
+    <!-- Subtitle for the preference that is currently granted only when the app is in the foreground. [CHAR LIMIT=70] -->
+    <string name="app_perms_content_provider_only_in_foreground">Accessed in past 24 hours \u2022 Only while app is in use</string>
+
+    <!-- Subtitle for a storage preference that is currently granted for Media files only. [CHAR LIMIT=70] -->
+    <string name="app_perms_24h_access_media_only">Last accessed <xliff:g id="time_date" example="12:42 PM">%1$s</xliff:g> \u2022 Media</string>
+
+    <!-- Subtitle for a storage preference that is currently granted for Media files only. [CHAR LIMIT=70] -->
+    <string name="app_perms_24h_access_yest_media_only">Last accessed yesterday at <xliff:g id="time_date" example="12:42 PM">%1$s</xliff:g> \u2022 Media</string>
+
+    <!-- Subtitle for a storage preference that is currently granted for Media files only. [CHAR LIMIT=70] -->
+    <string name="app_perms_content_provider_media_only">Accessed in past 24 hours \u2022 Media</string>
+
+    <!-- Subtitle for a storage preference that is currently granted for all files. [CHAR LIMIT=70] -->
+    <string name="app_perms_24h_access_all_files">Last accessed <xliff:g id="time_date" example="12:42 PM">%1$s</xliff:g> \u2022 All Files</string>
+
+    <!-- Subtitle for a storage preference that is currently granted for all files. [CHAR LIMIT=70] -->
+    <string name="app_perms_24h_access_yest_all_files">Last accessed yesterday at <xliff:g id="time_date" example="12:42 PM">%1$s</xliff:g> \u2022 All Files</string>
+
+    <!-- Subtitle for a storage preference that is currently granted for all files. [CHAR LIMIT=70] -->
+    <string name="app_perms_content_provider_all_files">Accessed in past 24 hours \u2022 All Files</string>
+
     <!-- Label when app has been granted no permissions [CHAR LIMIT=none] -->
     <string name="no_permissions_allowed">No permissions allowed</string>
 
@@ -1256,4 +1292,17 @@ Allow <xliff:g id="app_name" example="Gmail">%4$s</xliff:g> to upload a bug repo
     <string name="additional_permissions_label">Additional permissions</string>
     <!-- Subtitle for a list of "custom" permissions (defined by applications, not the platform). [CHAR LIMIT=none] -->
     <string name="additional_permissions_description">Permissions defined by applications.</string>
+
+    <!-- Permission label for camera. [CHAR LIMIT=20] -->
+    <string name="privdash_label_camera">Camera</string>
+    <!-- Permission label for microphone. [CHAR LIMIT=20] -->
+    <string name="privdash_label_microphone">Microphone</string>
+    <!-- Permission label for location. [CHAR LIMIT=20] -->
+    <string name="privdash_label_location">Location</string>
+    <!-- Permission label for "other" (not camera, microphone, or location). [CHAR LIMIT=20] -->
+    <string name="privdash_label_other">Other</string>
+    <!-- Permission label for "none" (not anything). [CHAR LIMIT=20] -->
+    <string name="privdash_label_none">None</string>
+    <!-- Label that describes a "last 24 hours" time window, prefer two lines. [CHAR LIMIT=20] -->
+    <string name="privdash_label_24h">Past\n24 hours</string>
 </resources>

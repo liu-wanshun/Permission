@@ -17,7 +17,10 @@
 package com.android.permissioncontroller.permission.ui.handheld;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -49,7 +52,7 @@ public class PartialCircleView extends View {
     }
 
     public PartialCircleView(Context context, AttributeSet attrs,
-                             int defStyleAttr, int defStyleRes) {
+            int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
@@ -84,5 +87,31 @@ public class PartialCircleView extends View {
             invalidate();
         }
     }
-}
 
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        final float width = (float) getWidth();
+        final float height = (float) getHeight();
+
+        // We subtract half stroke width as to fit the outside edge of the circle just inside
+        // our bounds.
+        final float radius = ((width > height) ? height / 2 : width / 2) - (mStrokeWidth / 2);
+
+        Paint paint = new Paint();
+        paint.setColor(mColor);
+        paint.setStrokeWidth(mStrokeWidth);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setAntiAlias(true);
+
+        final RectF oval = new RectF();
+        final float x = width / 2;
+        final float y = height / 2;
+        oval.set(x - radius,
+                y - radius,
+                x + radius,
+                y + radius);
+        paint.setStyle(Paint.Style.STROKE);
+        canvas.drawArc(oval, mStartAngle, mSweepAngle, false, paint);
+    }
+}
