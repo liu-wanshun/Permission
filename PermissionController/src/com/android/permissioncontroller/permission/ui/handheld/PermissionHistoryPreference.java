@@ -16,6 +16,7 @@
 
 package com.android.permissioncontroller.permission.ui.handheld;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -23,7 +24,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.location.LocationManager;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -45,9 +45,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.permissioncontroller.R;
+import com.android.permissioncontroller.permission.debug.UtilsKt;
 import com.android.permissioncontroller.permission.model.AppPermissionUsage;
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
-import com.android.permissioncontroller.role.utils.UiUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +70,7 @@ public class PermissionHistoryPreference extends Preference {
     private final float mDialogHeightScalar;
     private final List<Long> mAccessTimeList;
     private final ArrayList<String> mAttributionTags;
+    private final boolean mIsLastUsage;
     private final Intent mIntent;
 
     private Drawable mWidgetIcon;
@@ -77,7 +78,7 @@ public class PermissionHistoryPreference extends Preference {
     public PermissionHistoryPreference(@NonNull Context context, @NonNull AppPermissionUsage usage,
             @NonNull String permissionGroup, @NonNull String accessTime,
             @Nullable CharSequence accessDuration, @NonNull List<Long> accessTimeList,
-            @NonNull ArrayList<String> attributionTags) {
+            @NonNull ArrayList<String> attributionTags, boolean isLastUsage) {
         super(context);
         mContext = context;
         mPackageName = usage.getPackageName();
@@ -88,6 +89,7 @@ public class PermissionHistoryPreference extends Preference {
         mWidgetIcon = null;
         mAccessTimeList = accessTimeList;
         mAttributionTags = attributionTags;
+        mIsLastUsage = isLastUsage;
         TypedValue outValue = new TypedValue();
         mContext.getResources().getValue(R.dimen.permission_access_time_dialog_width_scalar,
                 outValue, true);
@@ -96,17 +98,23 @@ public class PermissionHistoryPreference extends Preference {
                 outValue, true);
         mDialogHeightScalar = outValue.getFloat();
 
-        setIcon(mAppIcon);
         setTitle(mTitle);
         if (accessDuration != null) {
             setSummary(accessDuration);
         }
 
+        // Since Location accesses are atomic, we manually calculate the access duration
+        // by comparing the first and last access within the cluster
+        if (mPermissionGroup.equals(Manifest.permission_group.LOCATION)
+                && mAccessTimeList.size() > 1) {
+            int accessTimeListSize = mAccessTimeList.size();
+            long locationAccessDuration = mAccessTimeList.get(0)
+                    - mAccessTimeList.get(accessTimeListSize - 1);
+            setSummary(UtilsKt.getDurationUsedStr(context, locationAccessDuration));
+        }
+
         mIntent = getViewPermissionUsageForPeriodIntent();
-        if (mAccessTimeList.size() > 1) {
-            mWidgetIcon = mContext.getDrawable(R.drawable.ic_history);
-            setWidgetLayoutResource(R.layout.image_view_with_divider);
-        } else if (mIntent != null) {
+        if (mIntent != null) {
             mWidgetIcon = mContext.getDrawable(R.drawable.ic_info_outline);
             setWidgetLayoutResource(R.layout.image_view_with_divider);
         }
@@ -119,16 +127,8 @@ public class PermissionHistoryPreference extends Preference {
         ViewGroup widgetFrame = (ViewGroup) holder.findViewById(android.R.id.widget_frame);
         LinearLayout widgetFrameParent = (LinearLayout) widgetFrame.getParent();
 
-        ImageView icon = (ImageView) holder.findViewById(android.R.id.icon);
-        int size = getContext().getResources().getDimensionPixelSize(
-                R.dimen.permission_icon_size);
-        icon.getLayoutParams().width = size;
-        icon.getLayoutParams().height = size;
-        ViewGroup.MarginLayoutParams marginLayoutParams =
-                (ViewGroup.MarginLayoutParams) icon.getLayoutParams();
-        int margin = UiUtils.dpToPxSize(12, icon.getContext());
-        marginLayoutParams.topMargin = margin;
-        marginLayoutParams.bottomMargin = margin;
+        View iconFrame = holder.findViewById(R.id.icon_frame);
+        widgetFrameParent.removeView(iconFrame);
 
         ViewGroup widget = (ViewGroup) holder.findViewById(R.id.permission_history_layout);
         if (widget == null) {
@@ -144,12 +144,14 @@ public class PermissionHistoryPreference extends Preference {
         TextView permissionHistoryTime = widget.findViewById(R.id.permission_history_time);
         permissionHistoryTime.setText(mAccessTime);
 
+        ImageView permissionIcon = widget.findViewById(R.id.permission_history_icon);
+        permissionIcon.setImageDrawable(mAppIcon);
+
         ImageView widgetView = widgetFrame.findViewById(R.id.icon);
-        if (mAccessTimeList.size() > 1) {
-            setHistoryIcon(widgetView);
-        } else {
-            setInfoIcon(widgetView);
-        }
+        setInfoIcon(widgetView);
+
+        View dashLine = widget.findViewById(R.id.permission_history_dash_line);
+        dashLine.setVisibility(mIsLastUsage ? View.GONE : View.VISIBLE);
 
         setOnPreferenceClickListener((preference) -> {
             Intent intent = new Intent(Intent.ACTION_MANAGE_APP_PERMISSIONS);
@@ -230,23 +232,20 @@ public class PermissionHistoryPreference extends Preference {
      * can't be handled.
      */
     private Intent getViewPermissionUsageForPeriodIntent() {
-        LocationManager locationManager = mContext.getSystemService(LocationManager.class);
-        if (locationManager != null && locationManager.isProviderPackage(mPackageName)) {
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_VIEW_PERMISSION_USAGE_FOR_PERIOD);
-            sendIntent.setPackage(mPackageName);
-            sendIntent.putExtra(Intent.EXTRA_PERMISSION_GROUP_NAME, mPermissionGroup);
-            sendIntent.putExtra(Intent.EXTRA_ATTRIBUTION_TAGS, mAttributionTags.toArray());
-            sendIntent.putExtra(Intent.EXTRA_START_TIME,
-                    mAccessTimeList.get(mAccessTimeList.size() - 1));
-            sendIntent.putExtra(Intent.EXTRA_END_TIME, mAccessTimeList.get(0));
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_VIEW_PERMISSION_USAGE_FOR_PERIOD);
+        sendIntent.setPackage(mPackageName);
+        sendIntent.putExtra(Intent.EXTRA_PERMISSION_GROUP_NAME, mPermissionGroup);
+        sendIntent.putExtra(Intent.EXTRA_ATTRIBUTION_TAGS, mAttributionTags.toArray());
+        sendIntent.putExtra(Intent.EXTRA_START_TIME,
+                mAccessTimeList.get(mAccessTimeList.size() - 1));
+        sendIntent.putExtra(Intent.EXTRA_END_TIME, mAccessTimeList.get(0));
 
-            PackageManager pm = mContext.getPackageManager();
-            ActivityInfo activityInfo = sendIntent.resolveActivityInfo(pm, 0);
-            if (activityInfo != null && Objects.equals(activityInfo.permission,
-                    android.Manifest.permission.START_VIEW_PERMISSION_USAGE)) {
-                return sendIntent;
-            }
+        PackageManager pm = mContext.getPackageManager();
+        ActivityInfo activityInfo = sendIntent.resolveActivityInfo(pm, 0);
+        if (activityInfo != null && Objects.equals(activityInfo.permission,
+                android.Manifest.permission.START_VIEW_PERMISSION_USAGE)) {
+            return sendIntent;
         }
         return null;
     }

@@ -23,19 +23,19 @@
     <string name="back" msgid="6249950659061523680">"ថយក្រោយ"</string>
     <string name="uninstall_or_disable" msgid="4496612999740858933">"លុប ឬ​បិទ"</string>
     <string name="app_not_found_dlg_title" msgid="6029482906093859756">"រក​មិន​ឃើញ​កម្មវិធីទេ"</string>
-    <string name="grant_dialog_button_deny" msgid="5694497572414531524">"បដិសេធ"</string>
-    <string name="grant_dialog_button_deny_and_dont_ask_again" msgid="1851917275643744594">"បដិសេធ ហើយកុំ​សួរម្តងទៀត"</string>
+    <string name="grant_dialog_button_deny" msgid="88262611492697192">"មិនអនុញ្ញាត"</string>
+    <string name="grant_dialog_button_deny_and_dont_ask_again" msgid="1748925431574312595">"មិនអនុញ្ញាត និងកុំសួរម្ដងទៀត"</string>
     <string name="grant_dialog_button_no_upgrade" msgid="8344732743633736625">"រក្សាទុក “ខណៈពេល​កំពុងប្រើ​កម្មវិធី”"</string>
     <string name="grant_dialog_button_no_upgrade_one_time" msgid="5125892775684968694">"រក្សាទុក “តែពេលនេះ​ប៉ុណ្ណោះ”"</string>
     <string name="grant_dialog_button_more_info" msgid="213350268561945193">"ព័ត៌មាន​បន្ថែម"</string>
-    <string name="grant_dialog_button_deny_anyway" msgid="3221644923954258179">"បដិសេធចុះមិនអីទេ"</string>
+    <string name="grant_dialog_button_deny_anyway" msgid="7225905870668915151">"មិនអីទេ មិនអនុញ្ញាត"</string>
     <string name="grant_dialog_button_dismiss" msgid="1930399742250226393">"ច្រានចោល"</string>
     <string name="current_permission_template" msgid="7452035392573329375">"<xliff:g id="CURRENT_PERMISSION_INDEX">%1$s</xliff:g> ក្នុងចំណោម <xliff:g id="PERMISSION_COUNT">%2$s</xliff:g>"</string>
     <string name="permission_warning_template" msgid="2247087781222679458">"អនុញ្ញាតឱ្យ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; <xliff:g id="ACTION">%2$s</xliff:g> មែនទេ?"</string>
     <string name="permission_add_background_warning_template" msgid="1812914855915092273">"អនុញ្ញាតឱ្យ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; <xliff:g id="ACTION">%2$s</xliff:g> ជានិច្ចមែនទេ?"</string>
     <string name="allow_permission_foreground_only" msgid="116465816039675404">"ខណៈពេលប្រើ​កម្មវិធីតែប៉ុណ្ណោះ"</string>
     <string name="allow_permission_always" msgid="5194342531206054051">"ជានិច្ច"</string>
-    <string name="deny_permission_deny_and_dont_ask_again" msgid="766882021426214510">"បដិសេធ ហើយកុំ​សួរម្តងទៀត"</string>
+    <string name="deny_permission_deny_and_dont_ask_again" msgid="6106035221490102341">"មិនអនុញ្ញាត និងកុំសួរម្ដងទៀត"</string>
     <string name="permission_revoked_count" msgid="4785082705441547086">"បានបិទ <xliff:g id="COUNT">%1$d</xliff:g>"</string>
     <string name="permission_revoked_all" msgid="3397649017727222283">"បានបិទទាំងអស់"</string>
     <string name="permission_revoked_none" msgid="9213345075484381180">"មិនបានបិទអ្វីទាំងអស់"</string>
@@ -87,7 +87,7 @@
     <!-- no translation found for background_access_chooser_dialog_choices:2 (4305536986042401191) -->
     <string name="permission_access_always" msgid="1474641821883823446">"អនុញ្ញាតគ្រប់ពេល"</string>
     <string name="permission_access_only_foreground" msgid="7801170728159326195">"អនុញ្ញាត​ពេល​កំពុង​ប្រើប្រាស់​កម្មវិធីតែ​ប៉ុណ្ណោះ"</string>
-    <string name="permission_access_never" msgid="1029877154284995424">"បដិសេធ"</string>
+    <string name="permission_access_never" msgid="4647014230217936900">"មិនអនុញ្ញាត"</string>
     <string name="loading" msgid="4789365003890741082">"កំពុងផ្ទុក…"</string>
     <string name="all_permissions" msgid="6911125611996872522">"ការអនុញ្ញាត​ទាំងអស់"</string>
     <string name="other_permissions" msgid="2901186127193849594">"សមត្ថភាពកម្មវិធីផ្សេងទៀត"</string>
@@ -105,9 +105,12 @@
     <string name="current_permissions_category" msgid="4292990083585728880">"ការអនុញ្ញាត​បច្ចុប្បន្ន"</string>
     <string name="message_staging" msgid="9110563899955511866">"កំពុងសាកល្បងកម្មវិធី…"</string>
     <string name="app_name_unknown" msgid="1319665005754048952">"មិនស្គាល់"</string>
-    <string name="permission_usage_title" msgid="5095876355858467390">"ផ្ទាំង​គ្រប់គ្រង"</string>
+    <string name="permission_usage_title" msgid="1568233336351734538">"ផ្ទាំងគ្រប់គ្រង​ឯកជនភាព"</string>
     <string name="permission_group_usage_title" msgid="2595013198075285173">"ការប្រើប្រាស់ <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
-    <string name="permission_group_usage_subtitle" msgid="2060508926529591334">"បន្ទាត់ពេលវេលា​នៃពេល​ដែលប្រើ <xliff:g id="PERMGROUP">%1$s</xliff:g> របស់អ្នកក្នុងរ​យៈពេល 24 ម៉ោងចុងក្រោយ"</string>
+    <string name="perm_usage_adv_info_title" msgid="3357831829538873708">"មើលការអនុញ្ញាត​ផ្សេងទៀត"</string>
+    <string name="perm_usage_adv_info_summary_2_items" msgid="3702175198750127822">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g>"</string>
+    <string name="perm_usage_adv_info_summary_more_items" msgid="949055326299562218">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g> និង <xliff:g id="NUM">%3$s</xliff:g> ទៀត"</string>
+    <string name="permission_group_usage_subtitle" msgid="712843174810251274">"បន្ទាត់ពេលវេលានៃ​ពេលដែលកម្មវិធី​បានប្រើ <xliff:g id="PERMGROUP">%1$s</xliff:g> របស់អ្នក​ក្នុងរយៈពេល 24 ម៉ោងចុងក្រោយ"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="5567142130422605829">"នៅពេលកម្មវិធីនេះ​បានប្រើ <xliff:g id="PERMGROUP">%1$s</xliff:g> របស់អ្នក៖"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"ស្វែងយល់បន្ថែម"</string>
     <plurals name="duration_used_days" formatted="false" msgid="6029658139201482951">
@@ -167,9 +170,9 @@
       <item quantity="other">កម្មវិធី <xliff:g id="NUMBER">%s</xliff:g></item>
       <item quantity="one">កម្មវិធី 1</item>
     </plurals>
-    <plurals name="permission_usage_preference_label" formatted="false" msgid="7599037764529821028">
-      <item quantity="other">កម្មវិធី <xliff:g id="NUMBER">%1$d</xliff:g> បានប្រើ <xliff:g id="PERMGROUP_1">%2$s</xliff:g></item>
-      <item quantity="one">កម្មវិធី 1 បានប្រើ <xliff:g id="PERMGROUP_0">%2$s</xliff:g></item>
+    <plurals name="permission_usage_preference_label" formatted="false" msgid="9033113721294293706">
+      <item quantity="other">បាន​ប្រើដោយ​កម្មវិធី <xliff:g id="NUMBER">%1$d</xliff:g></item>
+      <item quantity="one">បាន​ប្រើដោយ​កម្មវិធី 1</item>
     </plurals>
     <string name="permission_usage_view_details" msgid="6675335735468752787">"មើល​ទាំងអស់នៅក្នុងផ្ទាំង​គ្រប់គ្រង"</string>
     <string name="app_permission_usage_filter_label" msgid="7182861154638631550">"ត្រង​តាម៖ <xliff:g id="PERM">%1$s</xliff:g>"</string>
@@ -200,11 +203,11 @@
     <string name="app_permission_button_allow_always" msgid="4573292371734011171">"អនុញ្ញាតគ្រប់ពេល"</string>
     <string name="app_permission_button_allow_foreground" msgid="1991570451498943207">"អនុញ្ញាត​ពេល​កំពុង​ប្រើប្រាស់​កម្មវិធីតែ​ប៉ុណ្ណោះ"</string>
     <string name="app_permission_button_ask" msgid="3342950658789427">"សួរគ្រប់ពេល"</string>
-    <string name="app_permission_button_deny" msgid="2399316993899108824">"បដិសេធ"</string>
+    <string name="app_permission_button_deny" msgid="6016454069832050300">"មិនអនុញ្ញាត"</string>
     <string name="precise_image_description" msgid="6349638632303619872">"ទីតាំងជាក់លាក់"</string>
     <string name="approximate_image_description" msgid="938803699637069884">"ទីតាំង​ប្រហាក់ប្រហែល"</string>
     <string name="app_permission_location_accuracy" msgid="7166912915040018669">"ប្រើទីតាំងជាក់លាក់"</string>
-    <string name="app_permission_location_accuracy_subtitle" msgid="6926477966417403604">"ប្រសិនបើបិទទីតាំងជាក់លាក់ កម្មវិធីអាចកំណត់ទីតាំង​ប្រហាក់ប្រហែលរបស់អ្នកនៅម្ដុំដែលអ្នកនៅតែប៉ុណ្ណោះ"</string>
+    <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"នៅពេលបិទ​ទីតាំងជាក់លាក់ កម្មវិធីអាច​ចូលប្រើទីតាំង​ប្រហាក់ប្រហែលរបស់អ្នក"</string>
     <string name="app_permission_title" msgid="2090897901051370711">"ការអនុញ្ញាត​<xliff:g id="PERM">%1$s</xliff:g>"</string>
     <string name="app_permission_header" msgid="2951363137032603806">"ការចូលប្រើ​<xliff:g id="PERM">%1$s</xliff:g>​សម្រាប់​កម្មវិធី​នេះ​"</string>
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"មើល​ការអនុញ្ញាតទាំងអស់ឱ្យទៅ <xliff:g id="APP">%1$s</xliff:g>"</string>
@@ -239,7 +242,7 @@
     <string name="permission_description_summary_camera" msgid="108004375101882069">"កម្មវិធី​ដែលមាន​ការអនុញ្ញាត​នេះ​អាចថតរូប និងថតវីដេអូ"</string>
     <string name="permission_description_summary_contacts" msgid="2337798886460408996">"កម្មវិធី​ដែលមាន​ការអនុញ្ញាត​នេះ​អាចចូលប្រើ​ទំនាក់ទំនង​របស់អ្នក​"</string>
     <string name="permission_description_summary_location" msgid="2817531799933480694">"កម្មវិធី​ដែលមាន​ការអនុញ្ញាត​នេះ​អាចចូលប្រើ​ទីតាំង​របស់​ឧបករណ៍នេះ"</string>
-    <string name="permission_description_summary_nearby_devices" msgid="4993093121706938071">"កម្មវិធី​ដែលមាន​ការអនុញ្ញាតនេះ​អាចស្វែងរក ភ្ជាប់ទៅ និងកំណត់​ចម្ងាយពាក់ព័ន្ធ​រវាងឧបករណ៍​ដែលនៅជិត"</string>
+    <string name="permission_description_summary_nearby_devices" msgid="8269183818275073741">"កម្មវិធី​ដែលមាន​ការអនុញ្ញាតនេះ​អាចស្វែងរក ភ្ជាប់ទៅ និងកំណត់​ទីតាំងដែលពាក់ព័ន្ធ​នៃឧបករណ៍​ដែលនៅជិត"</string>
     <string name="permission_description_summary_microphone" msgid="630834800308329907">"កម្មវិធី​ដែលមាន​ការអនុញ្ញាត​នេះ​អាច​ថតសំឡេង"</string>
     <string name="permission_description_summary_phone" msgid="4515277217435233619">"កម្មវិធី​ដែលមាន​ការអនុញ្ញាត​នេះ​អាចគ្រប់គ្រង និងធ្វើការហៅទូរសព្ទ"</string>
     <string name="permission_description_summary_sensors" msgid="1836045815643119949">"កម្មវិធី​ដែលមាន​ការអនុញ្ញាត​នេះ​អាច​ចូលប្រើ​ទិន្នន័យឧបករណ៍ចាប់សញ្ញាអំពីសញ្ញា​មុខងារសំខាន់ៗ​របស់រាងកាយ​អ្នក"</string>
@@ -255,7 +258,7 @@
     <string name="allowed_storage_scoped" msgid="5383645873719086975">"បានអនុញ្ញាតឱ្យចូលប្រើមេឌៀតែប៉ុណ្ណោះ"</string>
     <string name="allowed_storage_full" msgid="5356699280625693530">"បានអនុញ្ញាតឱ្យគ្រប់គ្រងឯកសារទាំងអស់"</string>
     <string name="ask_header" msgid="2633816846459944376">"សួរគ្រប់ពេល"</string>
-    <string name="denied_header" msgid="2253955654228120835">"បានបដិសេធ"</string>
+    <string name="denied_header" msgid="903209608358177654">"មិន​អនុញ្ញាត​"</string>
     <plurals name="days" formatted="false" msgid="7882807103511175827">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> ថ្ងៃ</item>
       <item quantity="one">1 ថ្ងៃ</item>
@@ -318,6 +321,18 @@
     <string name="permission_subtitle_only_in_foreground" msgid="9068389431267377564">"ពេល​កំពុង​ប្រើប្រាស់​កម្មវិធីតែ​ប៉ុណ្ណោះ"</string>
     <string name="permission_subtitle_media_only" msgid="8917869683764720717">"មេឌៀ"</string>
     <string name="permission_subtitle_all_files" msgid="4982613338298067862">"ឯកសារ​ទាំងអស់"</string>
+    <string name="app_perms_24h_access" msgid="99069906850627181">"បានចូលប្រើចុងក្រោយនៅម៉ោង <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
+    <string name="app_perms_24h_access_yest" msgid="5411926024794555022">"បានចូលប្រើចុងក្រោយកាលពីម្សិលមិញនៅម៉ោង <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
+    <string name="app_perms_content_provider" msgid="6996750793881252778">"បានចូលប្រើក្នុងរយៈពេល 24 ម៉ោងចុងក្រោយ"</string>
+    <string name="app_perms_24h_access_only_in_foreground" msgid="8590228656172893995">"បានចូលប្រើចុងក្រោយនៅម៉ោង <xliff:g id="TIME_DATE">%1$s</xliff:g> • នៅពេលប្រើកម្មវិធីតែប៉ុណ្ណោះ"</string>
+    <string name="app_perms_24h_access_yest_only_in_foreground" msgid="8491319626462867381">"បានចូលប្រើចុងក្រោយកាលពីម្សិលមិញនៅម៉ោង <xliff:g id="TIME_DATE">%1$s</xliff:g> • នៅពេលប្រើកម្មវិធីតែប៉ុណ្ណោះ"</string>
+    <string name="app_perms_content_provider_only_in_foreground" msgid="7111427348979322476">"បានចូលប្រើក្នុងរយៈពេល 24 ម៉ោងចុងក្រោយ • នៅពេលប្រើកម្មវិធីតែប៉ុណ្ណោះ"</string>
+    <string name="app_perms_24h_access_media_only" msgid="6651699644199132054">"បានចូលប្រើចុងក្រោយនៅម៉ោង <xliff:g id="TIME_DATE">%1$s</xliff:g> • មេឌៀ"</string>
+    <string name="app_perms_24h_access_yest_media_only" msgid="7213187706424998792">"បានចូលប្រើចុងក្រោយកាលពីម្សិលមិញនៅម៉ោង <xliff:g id="TIME_DATE">%1$s</xliff:g> • មេឌៀ"</string>
+    <string name="app_perms_content_provider_media_only" msgid="6206759230589923421">"បានចូលប្រើក្នុងរយៈពេល 24 ម៉ោងចុងក្រោយ • មេឌៀ"</string>
+    <string name="app_perms_24h_access_all_files" msgid="8902360456978159091">"បានចូលប្រើចុងក្រោយនៅម៉ោង <xliff:g id="TIME_DATE">%1$s</xliff:g> • ឯកសារទាំងអស់"</string>
+    <string name="app_perms_24h_access_yest_all_files" msgid="5708424073126844909">"បានចូលប្រើចុងក្រោយកាលពីម្សិលមិញនៅម៉ោង <xliff:g id="TIME_DATE">%1$s</xliff:g> • ឯកសារទាំងអស់"</string>
+    <string name="app_perms_content_provider_all_files" msgid="3315281519230304799">"បានចូលប្រើក្នុងរយៈពេល 24 ម៉ោងចុងក្រោយ • ឯកសារទាំងអស់"</string>
     <string name="no_permissions_allowed" msgid="6081976856354669209">"មិន​បាន​ផ្ដល់ការអនុញ្ញាតទេ"</string>
     <string name="no_permissions_denied" msgid="8159923922804043282">"មិន​បានបដិសេធការ​អនុញ្ញាតទេ"</string>
     <string name="no_apps_allowed" msgid="7718822655254468631">"គ្មាន​កម្មវិធី​ដែល​បាន​ទទួល​ការអនុញ្ញាត​​ទេ"</string>
@@ -436,8 +451,8 @@
     <string name="permgroupbackgroundrequestdetail_location" msgid="8021219324989662957">"កម្មវិធីនេះ​ប្រហែលជា​ចង់ចូលប្រើ​ទីតាំង​របស់អ្នក​គ្រប់ពេល ទោះបីជា​អ្នកមិនកំពុងប្រើ​កម្មវិធីនេះ​ក៏ដោយ។ "<annotation id="link">"អនុញ្ញាត​នៅក្នុងការកំណត់។"</annotation></string>
     <string name="permgroupupgraderequest_location" msgid="8328408946822691636">"ប្ដូរសិទ្ធិ​ចូលប្រើ​ទីតាំង​សម្រាប់ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ដែរទេ?"</string>
     <string name="permgroupupgraderequestdetail_location" msgid="1550899076845189165">"កម្មវិធីនេះ​ចង់ចូលប្រើ​ទីតាំង​របស់អ្នក​គ្រប់ពេល ទោះបីជា​អ្នកមិនកំពុងប្រើ​កម្មវិធីនេះ​ក៏ដោយ។ "<annotation id="link">"អនុញ្ញាត​នៅក្នុងការកំណត់។"</annotation></string>
-    <string name="permgrouprequest_nearby_devices" msgid="620046480867488546">"អនុញ្ញាតឱ្យ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ស្វែងរក និងភ្ជាប់ទៅឧបករណ៍​ដែលនៅជិតឬ?"</string>
-    <string name="permgroupupgraderequestdetail_nearby_devices" msgid="2560445503628306938">"អនុញ្ញាតឱ្យ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ស្វែងរក និងភ្ជាប់ទៅឧបករណ៍​ដែលនៅជិតឬ? "<annotation id="link">"អនុញ្ញាតនៅក្នុងការកំណត់។"</annotation></string>
+    <string name="permgrouprequest_nearby_devices" msgid="2272829282660436700">"អនុញ្ញាតឱ្យ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ស្វែងរក ភ្ជាប់ទៅ និងកំណត់ទីតាំង​ដែលពាក់ព័ន្ធនៃ​ឧបករណ៍ដែលនៅជិតឬ?"</string>
+    <string name="permgroupupgraderequestdetail_nearby_devices" msgid="6877531270654738614">"អនុញ្ញាតឱ្យ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ស្វែងរក ភ្ជាប់ទៅ និងកំណត់ទីតាំង​ដែលពាក់ព័ន្ធនៃ​ឧបករណ៍ដែលនៅជិតឬ? "<annotation id="link">"អនុញ្ញាតនៅក្នុងការកំណត់។"</annotation></string>
     <string name="permgrouprequest_fineupgrade" msgid="2334242928821697672">"ផ្លាស់ប្ដូរ​ការចូលប្រើ​ទីតាំងរបស់ <xliff:g id="APP_NAME">&lt;b&gt;%1$s&lt;/b&gt;</xliff:g> ពីទីតាំងប្រហាក់ប្រហែល​ទៅជាក់លាក់ឬ?"</string>
     <string name="permgrouprequest_coarselocation" msgid="7244605063736425232">"អនុញ្ញាតឱ្យ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ចូលប្រើ​ទីតាំងប្រហាក់ប្រហែលរបស់​ឧបករណ៍នេះ​ឬ?"</string>
     <string name="permgrouprequest_finelocation_imagetext" msgid="1313062433398914334">"ជាក់លាក់"</string>
@@ -469,4 +484,10 @@
     <string name="not_used_permissions_description" msgid="7595514824169388718">"ការអនុញ្ញាត​ដែលត្រូវបានប្រើ​ដោយកម្មវិធីប្រព័ន្ធ​តែប៉ុណ្ណោះ។"</string>
     <string name="additional_permissions_label" msgid="7693557637462569046">"ការអនុញ្ញាតបន្ថែម"</string>
     <string name="additional_permissions_description" msgid="2186611950890732112">"ការអនុញ្ញាត​ដែលត្រូវបានកំណត់​ដោយកម្មវិធី។"</string>
+    <string name="privdash_label_camera" msgid="1426440033626198096">"កាមេរ៉ា"</string>
+    <string name="privdash_label_microphone" msgid="8415035835803511693">"មីក្រូហ្វូន"</string>
+    <string name="privdash_label_location" msgid="6882400763866489291">"ទីតាំង"</string>
+    <string name="privdash_label_other" msgid="3710394147423236033">"ផ្សេងៗ"</string>
+    <string name="privdash_label_none" msgid="5991866260360484858">"គ្មាន"</string>
+    <string name="privdash_label_24h" msgid="1512532123865375319">"24 ម៉ោង\nចុងក្រោយ"</string>
 </resources>

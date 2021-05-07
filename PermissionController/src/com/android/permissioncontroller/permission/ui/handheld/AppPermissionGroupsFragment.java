@@ -31,13 +31,13 @@ import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.icu.text.ListFormatter;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.UserHandle;
@@ -94,13 +94,13 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
         PermissionUsages.PermissionsUsagesChangeCallback {
 
     @Retention(SOURCE)
-    @IntDef(value = {LAST_24_SENSOR_TODAY, LAST_24_SENSOR_YESTERDAY,
-            LAST_24_CONTENT_PROVIDER, NOT_IN_LAST_24})
+    @IntDef(value = {LAST_24H_SENSOR_TODAY, LAST_24H_SENSOR_YESTERDAY,
+            LAST_24H_CONTENT_PROVIDER, NOT_IN_LAST_24H})
     @interface AppPermsLastAccessType {}
-    static final int LAST_24_SENSOR_TODAY = 1;
-    static final int LAST_24_SENSOR_YESTERDAY = 2;
-    static final int LAST_24_CONTENT_PROVIDER = 3;
-    static final int NOT_IN_LAST_24 = 4;
+    static final int LAST_24H_SENSOR_TODAY = 1;
+    static final int LAST_24H_SENSOR_YESTERDAY = 2;
+    static final int LAST_24H_CONTENT_PROVIDER = 3;
+    static final int NOT_IN_LAST_24H = 4;
 
     private static final String LOG_TAG = AppPermissionGroupsFragment.class.getSimpleName();
     private static final String IS_SYSTEM_PERMS_SCREEN = "_is_system_screen";
@@ -356,16 +356,16 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
                 boolean isLastAccessToday = lastAccessTime != null
                         && midnightToday <= lastAccessTime;
                 String lastAccessTimeFormatted = "";
-                @AppPermsLastAccessType int lastAccessType = NOT_IN_LAST_24;
+                @AppPermsLastAccessType int lastAccessType = NOT_IN_LAST_24H;
 
                 if (lastAccessTime != null) {
                     lastAccessTimeFormatted = DateFormat.getTimeFormat(context)
                             .format(lastAccessTime);
 
                     lastAccessType = !SENSOR_DATA_PERMISSIONS.contains(groupName)
-                            ? LAST_24_CONTENT_PROVIDER : isLastAccessToday
-                            ? LAST_24_SENSOR_TODAY :
-                            LAST_24_SENSOR_YESTERDAY;
+                            ? LAST_24H_CONTENT_PROVIDER : isLastAccessToday
+                            ? LAST_24H_SENSOR_TODAY :
+                            LAST_24H_SENSOR_YESTERDAY;
                 }
 
                 PermissionControlPreference preference = new PermissionControlPreference(context,
@@ -377,22 +377,22 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
                 switch (groupInfo.getSubtitle()) {
                     case FOREGROUND_ONLY:
                         switch (lastAccessType) {
-                            case LAST_24_CONTENT_PROVIDER:
+                            case LAST_24H_CONTENT_PROVIDER:
                                 preference.setSummary(
                                         R.string.app_perms_content_provider_only_in_foreground);
                                 break;
-                            case LAST_24_SENSOR_TODAY:
+                            case LAST_24H_SENSOR_TODAY:
                                 preference.setSummary(
                                         getString(
                                                 R.string.app_perms_24h_access_only_in_foreground,
                                                 lastAccessTimeFormatted));
                                 break;
-                            case LAST_24_SENSOR_YESTERDAY:
+                            case LAST_24H_SENSOR_YESTERDAY:
                                 preference.setSummary(getString(
                                         R.string.app_perms_24h_access_yest_only_in_foreground,
                                         lastAccessTimeFormatted));
                                 break;
-                            case NOT_IN_LAST_24:
+                            case NOT_IN_LAST_24H:
                             default:
                                 preference.setSummary(
                                         R.string.permission_subtitle_only_in_foreground);
@@ -401,23 +401,23 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
                         break;
                     case MEDIA_ONLY:
                         switch (lastAccessType) {
-                            case LAST_24_CONTENT_PROVIDER:
+                            case LAST_24H_CONTENT_PROVIDER:
                                 preference.setSummary(
                                         R.string.app_perms_content_provider_media_only);
                                 break;
-                            case LAST_24_SENSOR_TODAY:
+                            case LAST_24H_SENSOR_TODAY:
                                 preference.setSummary(
                                         getString(
                                                 R.string.app_perms_24h_access_media_only,
                                                 lastAccessTimeFormatted));
                                 break;
-                            case LAST_24_SENSOR_YESTERDAY:
+                            case LAST_24H_SENSOR_YESTERDAY:
                                 preference.setSummary(
                                         getString(
                                                 R.string.app_perms_24h_access_yest_media_only,
                                                 lastAccessTimeFormatted));
                                 break;
-                            case NOT_IN_LAST_24:
+                            case NOT_IN_LAST_24H:
                             default:
                                 preference.setSummary(R.string.permission_subtitle_media_only);
                         }
@@ -425,23 +425,23 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
                         break;
                     case ALL_FILES:
                         switch (lastAccessType) {
-                            case LAST_24_CONTENT_PROVIDER:
+                            case LAST_24H_CONTENT_PROVIDER:
                                 preference.setSummary(
                                         R.string.app_perms_content_provider_all_files);
                                 break;
-                            case LAST_24_SENSOR_TODAY:
+                            case LAST_24H_SENSOR_TODAY:
                                 preference.setSummary(
                                         getString(
                                                 R.string.app_perms_24h_access_all_files,
                                                 lastAccessTimeFormatted));
                                 break;
-                            case LAST_24_SENSOR_YESTERDAY:
+                            case LAST_24H_SENSOR_YESTERDAY:
                                 preference.setSummary(
                                         getString(
                                                 R.string.app_perms_24h_access_yest_all_files,
                                                 lastAccessTimeFormatted));
                                 break;
-                            case NOT_IN_LAST_24:
+                            case NOT_IN_LAST_24H:
                             default:
                                 preference.setSummary(R.string.permission_subtitle_all_files);
                         }
@@ -449,47 +449,47 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
                         break;
                     default:
                         switch (lastAccessType) {
-                            case LAST_24_CONTENT_PROVIDER:
+                            case LAST_24H_CONTENT_PROVIDER:
                                 preference.setSummary(
                                         R.string.app_perms_content_provider);
                                 break;
-                            case LAST_24_SENSOR_TODAY:
+                            case LAST_24H_SENSOR_TODAY:
                                 preference.setSummary(
                                         getString(R.string.app_perms_24h_access,
                                                 lastAccessTimeFormatted));
                                 break;
-                            case LAST_24_SENSOR_YESTERDAY:
+                            case LAST_24H_SENSOR_YESTERDAY:
                                 preference.setSummary(
                                         getString(R.string.app_perms_24h_access_yest,
                                                 lastAccessTimeFormatted));
                                 break;
-                            case NOT_IN_LAST_24:
+                            case NOT_IN_LAST_24H:
                             default:
                         }
                 }
-                // Add an info icon if the package is a location provider
-                LocationManager locationManager = context.getSystemService(LocationManager.class);
-                if (locationManager != null && locationManager.isProviderPackage(mPackageName)) {
-                    Intent sendIntent = new Intent();
-                    sendIntent.setAction(Intent.ACTION_VIEW_PERMISSION_USAGE);
-                    sendIntent.setPackage(mPackageName);
-                    sendIntent.putExtra(Intent.EXTRA_PERMISSION_GROUP_NAME, groupName);
-
-                    PackageManager pm = getActivity().getPackageManager();
-                    ActivityInfo activityInfo = sendIntent.resolveActivityInfo(pm, 0);
-                    if (activityInfo != null && Objects.equals(activityInfo.permission,
-                            android.Manifest.permission.START_VIEW_PERMISSION_USAGE)) {
-                        preference.setRightIcon(
-                                context.getDrawable(R.drawable.ic_info_outline),
-                                v -> {
-                                    try {
-                                        startActivity(sendIntent);
-                                    } catch (ActivityNotFoundException e) {
-                                        Log.e(LOG_TAG, "No activity found for viewing permission "
-                                                + "usage.");
-                                    }
-                                });
-                    }
+                // Add an info icon if the package handles ACTION_VIEW_PERMISSION_USAGE.
+                PackageManager packageManager = requireActivity().getPackageManager();
+                Intent viewUsageIntent = new Intent()
+                        .setPackage(mPackageName)
+                        .setAction(Intent.ACTION_VIEW_PERMISSION_USAGE)
+                        .putExtra(Intent.EXTRA_PERMISSION_GROUP_NAME, groupName);
+                ResolveInfo resolveInfo = packageManager.resolveActivity(viewUsageIntent, 0);
+                if (resolveInfo != null && resolveInfo.activityInfo != null && Objects.equals(
+                        resolveInfo.activityInfo.permission,
+                        android.Manifest.permission.START_VIEW_PERMISSION_USAGE)) {
+                    // Make the intent explicit to not require CATEGORY_DEFAULT.
+                    viewUsageIntent.setComponent(new ComponentName(
+                            resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name));
+                    preference.setRightIcon(
+                            context.getDrawable(R.drawable.ic_info_outline),
+                            v -> {
+                                try {
+                                    startActivity(viewUsageIntent);
+                                } catch (ActivityNotFoundException e) {
+                                    Log.e(LOG_TAG, "No activity found for viewing permission "
+                                            + "usage.");
+                                }
+                            });
                 }
                 if (groupInfo.isSystem() == mIsSystemPermsScreen) {
                     category.addPreference(preference);
@@ -547,7 +547,7 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
 
     private void setAutoRevokeToggleState(HibernationSettingState state) {
         if (state == null || !mViewModel.getPackagePermGroupsLiveData().isInitialized()
-                || getListView() == null || getView() == null) {
+                || getPreferenceScreen() == null || getListView() == null || getView() == null) {
             return;
         }
 

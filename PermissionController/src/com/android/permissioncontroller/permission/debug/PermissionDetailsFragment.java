@@ -29,9 +29,12 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.ArraySet;
 import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,12 +45,13 @@ import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.model.AppPermissionGroup;
 import com.android.permissioncontroller.permission.model.AppPermissionUsage;
 import com.android.permissioncontroller.permission.model.legacy.PermissionApps;
+import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity;
 import com.android.permissioncontroller.permission.ui.handheld.PermissionGroupPreference;
 import com.android.permissioncontroller.permission.ui.handheld.PermissionHistoryPreference;
 import com.android.permissioncontroller.permission.ui.handheld.SettingsWithLargeHeader;
 import com.android.permissioncontroller.permission.utils.Utils;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,7 +80,7 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
     private static final int CLUSTER_MINUTES_APART = 1;
 
     private static final String KEY_SHOW_SYSTEM_PREFS = "_show_system";
-    private static final String SHOW_SYSTEM_KEY = PermissionUsageFragment.class.getName()
+    private static final String SHOW_SYSTEM_KEY = PermissionDetailsFragment.class.getName()
             + KEY_SHOW_SYSTEM_PREFS;
 
     private @Nullable String mFilterGroup;
@@ -97,13 +101,14 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
      * Construct a new instance of PermissionDetailsFragment
      */
     public static @NonNull PermissionDetailsFragment newInstance(@Nullable String groupName,
-            long numMillis) {
+            long numMillis, boolean showSystem) {
         PermissionDetailsFragment fragment = new PermissionDetailsFragment();
         Bundle arguments = new Bundle();
         if (groupName != null) {
             arguments.putString(Intent.EXTRA_PERMISSION_GROUP_NAME, groupName);
         }
         arguments.putLong(Intent.EXTRA_DURATION_MILLIS, numMillis);
+        arguments.putBoolean(ManagePermissionsActivity.EXTRA_SHOW_SYSTEM, showSystem);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -116,9 +121,11 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
         initializeTimeFilter();
         mFilterTimeIndex = FILTER_24_HOURS;
 
-        mShowSystem = false;
         if (savedInstanceState != null) {
             mShowSystem = savedInstanceState.getBoolean(SHOW_SYSTEM_KEY);
+        } else {
+            mShowSystem = getArguments().getBoolean(
+                    ManagePermissionsActivity.EXTRA_SHOW_SYSTEM, false);
         }
 
         if (mFilterGroup == null) {
@@ -137,6 +144,23 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
         mRoleManager = Utils.getSystemServiceSafe(context, RoleManager.class);
 
         reloadData();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        ViewGroup root = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
+
+        mExtendedFab.setText(R.string.manage_permission);
+        mExtendedFab.setIcon(getActivity().getDrawable(R.drawable.ic_settings_outline));
+        mExtendedFab.setVisibility(View.VISIBLE);
+        mExtendedFab.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_MANAGE_PERMISSION_APPS)
+                    .putExtra(Intent.EXTRA_PERMISSION_NAME, mFilterGroup);
+            startActivity(intent);
+        });
+
+        return root;
     }
 
     @Override
@@ -168,12 +192,10 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (mHasSystemApps) {
-            mShowSystemMenu = menu.add(Menu.NONE, MENU_SHOW_SYSTEM, Menu.NONE,
-                    R.string.menu_show_system);
-            mHideSystemMenu = menu.add(Menu.NONE, MENU_HIDE_SYSTEM, Menu.NONE,
-                    R.string.menu_hide_system);
-        }
+        mShowSystemMenu = menu.add(Menu.NONE, MENU_SHOW_SYSTEM, Menu.NONE,
+                R.string.menu_show_system);
+        mHideSystemMenu = menu.add(Menu.NONE, MENU_HIDE_SYSTEM, Menu.NONE,
+                R.string.menu_hide_system);
 
         updateMenu();
     }
@@ -181,7 +203,16 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
     private void updateMenu() {
         if (mHasSystemApps) {
             mShowSystemMenu.setVisible(!mShowSystem);
+            mShowSystemMenu.setEnabled(true);
+
             mHideSystemMenu.setVisible(mShowSystem);
+            mHideSystemMenu.setEnabled(true);
+        } else {
+            mShowSystemMenu.setVisible(true);
+            mShowSystemMenu.setEnabled(false);
+
+            mHideSystemMenu.setVisible(false);
+            mHideSystemMenu.setEnabled(false);
         }
     }
 
@@ -305,7 +336,6 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
                             Stream.of(time).collect(Collectors.toCollection(ArrayList::new)));
                     } else {
                         ongoingAccessTimeList.add(time);
-                        ongoingEntry.mStartTime = time.first;
                     }
                 }
             }
@@ -314,7 +344,7 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
             return usageEntries;
         }).flatMap(Collection::stream).sorted((x, y) -> {
             // Sort all usage entries by startTime desc, and then by app name.
-            int timeCompare = Long.compare(y.mStartTime, x.mStartTime);
+            int timeCompare = Long.compare(y.mEndTime, x.mEndTime);
             if (timeCompare != 0) {
                 return timeCompare;
             }
@@ -327,7 +357,9 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
             getActivity().invalidateOptionsMenu();
         }
 
-        long midnightToday = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
+        // Truncate to midnight in current timezone.
+        final long midnightToday = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).toEpochSecond()
+                * 1000L;
         AppPermissionUsageEntry midnightTodayEntry = new AppPermissionUsageEntry(
                 null, midnightToday, null);
 
@@ -335,7 +367,7 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
         // the index of the first usage entry from yesterday
         int todayCategoryIndex = 0;
         int yesterdayCategoryIndex = Collections.binarySearch(usages,
-                midnightTodayEntry, (e1, e2) -> Long.compare(e2.getStartTime(), e1.getStartTime()));
+                midnightTodayEntry, (e1, e2) -> Long.compare(e2.getEndTime(), e1.getEndTime()));
         if (yesterdayCategoryIndex < 0) {
             yesterdayCategoryIndex = -1 * (yesterdayCategoryIndex + 1);
         }
@@ -343,7 +375,7 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
         // Make these variables effectively final so that
         // we can use these captured variables in the below lambda expression
         AtomicReference<PreferenceCategory> category = new AtomicReference<>(
-                new PreferenceCategory(context));
+                createDayCategoryPreference(context));
         screen.addPreference(category.get());
         PreferenceScreen finalScreen = screen;
         int finalYesterdayCategoryIndex = yesterdayCategoryIndex;
@@ -357,7 +389,7 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
                         // We create a new category only when we need it.
                         // We will not create a new category if we only need one category for
                         // either today's or yesterday's usage
-                        category.set(new PreferenceCategory(context));
+                        category.set(createDayCategoryPreference(context));
                         finalScreen.addPreference(category.get());
                     }
                     category.get().setTitle(R.string.permission_history_category_yesterday);
@@ -365,15 +397,17 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
                     category.get().setTitle(R.string.permission_history_category_today);
                 }
 
-                String accessTime = DateFormat.getTimeFormat(context).format(usage.mStartTime);
+                String accessTime = DateFormat.getTimeFormat(context).format(usage.mEndTime);
                 Long accessDurationLong = usage.mClusteredAccessTimeList
                         .stream()
                         .map(p -> p.second)
                         .filter(dur -> dur > 0)
                         .reduce(0L, (dur1, dur2) -> dur1 + dur2);
 
+                // Only show the duration if it is at least (cluster + 1) minutes. Displaying times
+                // that are the same as the cluster granularity does not convey useful information.
                 String accessDuration = null;
-                if (accessDurationLong > 0) {
+                if (accessDurationLong >= MINUTES.toMillis(CLUSTER_MINUTES_APART + 1)) {
                     accessDuration = UtilsKt.getDurationUsedStr(context, accessDurationLong);
                 }
 
@@ -387,7 +421,8 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
                                 Collectors.toCollection(ArrayList::new));
                 PermissionHistoryPreference permissionUsagePreference = new
                         PermissionHistoryPreference(context, usage.mAppPermissionUsage,
-                        mFilterGroup, accessTime, accessDuration, accessTimeList, attributionTags);
+                        mFilterGroup, accessTime, accessDuration, accessTimeList, attributionTags,
+                        usageNum == (numUsages - 1));
 
                 category.get().addPreference(permissionUsagePreference);
             }
@@ -398,6 +433,13 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
             mPermissionUsages.stopLoader(getActivity().getLoaderManager());
 
         }).execute(permApps.toArray(new PermissionApps.PermissionApp[permApps.size()]));
+    }
+
+    private PreferenceCategory createDayCategoryPreference(Context context) {
+        PreferenceCategory category = new PreferenceCategory(context);
+        // Do not reserve icon space, so that the text moves all the way left.
+        category.setIconSpaceReserved(false);
+        return category;
     }
 
     /**
@@ -515,12 +557,12 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
     private static class AppPermissionUsageEntry {
         private final AppPermissionUsage mAppPermissionUsage;
         private final List<Pair<Long, Long>> mClusteredAccessTimeList;
-        private long mStartTime;
+        private long mEndTime;
 
-        AppPermissionUsageEntry(AppPermissionUsage appPermissionUsage, long startTime,
+        AppPermissionUsageEntry(AppPermissionUsage appPermissionUsage, long endTime,
                 List<Pair<Long, Long>> clusteredAccessTimeList) {
             mAppPermissionUsage = appPermissionUsage;
-            mStartTime = startTime;
+            mEndTime = endTime;
             mClusteredAccessTimeList = clusteredAccessTimeList;
         }
 
@@ -528,8 +570,8 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
             return mAppPermissionUsage;
         }
 
-        public long getStartTime() {
-            return mStartTime;
+        public long getEndTime() {
+            return mEndTime;
         }
 
         public List<Pair<Long, Long>> getAccessTime() {
