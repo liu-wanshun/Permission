@@ -173,7 +173,7 @@
     <string name="app_permission_button_deny" msgid="2399316993899108824">"ನಿರಾಕರಿಸಿ"</string>
     <string name="app_permission_title" msgid="2090897901051370711">"<xliff:g id="PERM">%1$s</xliff:g> ಅನುಮತಿ"</string>
     <string name="app_permission_header" msgid="2951363137032603806">"ಈ <xliff:g id="PERM">%1$s</xliff:g> ಆ್ಯಪ್‌ಗಾಗಿ ಪ್ರವೇಶದ ಅನುಮತಿ"</string>
-    <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"ಎಲ್ಲಾ <xliff:g id="APP">%1$s</xliff:g> ಅನುಮತಿಗಳನ್ನು ವೀಕ್ಷಿಸಿ"</string>
+    <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"ಎಲ್ಲಾ <xliff:g id="APP">%1$s</xliff:g> ಕುರಿತ ಅನುಮತಿಗಳನ್ನು ವೀಕ್ಷಿಸಿ"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"ಈ ಅನುಮತಿಯನ್ನು ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"ಅಸಿಸ್ಟೆಂಟ್‌ನ ಮೈಕ್ರೋಫೋನ್ ಬಳಕೆಯನ್ನು ತೋರಿಸಿ"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"ಆ್ಯಪ್‌ ಬಳಸದಿದ್ದರೆ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿ"</string>
@@ -196,7 +196,7 @@
     <string name="last_opened_summary_short" msgid="1646067226191176825">"ಕೊನೆಯದಾಗಿ ತೆರೆದಿರುವುದು: <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"ನೀವು ಎಲ್ಲಾ ಫೈಲ್‌ಗಳ ನಿರ್ವಹಣೆಯನ್ನು ಅನುಮತಿಸಿದರೆ, ಈ ಸಾಧನ ಅಥವಾ ಸಂಪರ್ಕಿಸಲಾಗಿರುವ ಸಂಗ್ರಹಣಾ ಸಾಧನಗಳ ಸಾಮಾನ್ಯ ಸಂಗ್ರಣೆಯಲ್ಲಿರುವ ಯಾವುದೇ ಫೈಲ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು, ಮಾರ್ಪಡಿಸಲು ಮತ್ತು ಅಳಿಸಲು ಈ ಆ್ಯಪ್‌ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ. ಈ ಆ್ಯಪ್ ನಿಮ್ಮನ್ನು ಅನುಮತಿ ಕೇಳದೇ ಫೈಲ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಬಹುದು."</string>
     <string name="special_file_access_dialog" msgid="583804114020740610">"ಈ ಸಾಧನ ಅಥವಾ ಕನೆಕ್ಟ್ ಅಗಿರುವ ಯಾವುದೇ ಸಂಗ್ರಹಣಾ ಸಾಧನಗಳಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು, ಮಾರ್ಪಡಿಸಲು ಮತ್ತು ಅಳಿಸಲು ಈ ಆ್ಯಪ್‌ಗೆ ಅನುಮತಿಸುವುದೇ? ಈ ಆ್ಯಪ್ ನಿಮ್ಮ ಅನುಮತಿ ಕೇಳದೇ ಫೈಲ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಬಹುದು."</string>
-    <string name="permission_description_summary_generic" msgid="5401399408814903391">"ಈ ಅನುಮತಿಯನ್ನು ಹೊಂದಿರುವ ಆ್ಯಪ್‌ಗಳು <xliff:g id="DESCRIPTION">%1$s</xliff:g> ಮಾಡಬಹುದು"</string>
+    <string name="permission_description_summary_generic" msgid="5401399408814903391">"ಈ ಅನುಮತಿಯನ್ನು ಹೊಂದಿರುವ ಆ್ಯಪ್‌ಗಳು <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
     <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"ಈ ಅನುಮತಿಯ ಜೊತೆಗೆ ಆ್ಯಪ್‌ಗಳು ನಿಮ್ಮ ನಡಿಗೆ, ಬೈಕಿಂಗ್, ಡ್ರೈವಿಂಗ್, ಹೆಜ್ಜೆಗಳ ಎಣಿಕೆ ಮತ್ತು ಇನ್ನಷ್ಟು ರೀತಿಯ ದೈಹಿಕ ಚಟುವಟಿಕೆಯನ್ನು ಪ್ರವೇಶಿಸಬಹುದು"</string>
     <string name="permission_description_summary_calendar" msgid="103329982944411010">"ಈ ಅನುಮತಿ ಹೊಂದಿರುವ ಆ್ಯಪ್‌ಗಳು ನಿಮ್ಮ ಕ್ಯಾಲೆಂಡರ್ ಅನ್ನು ಪ್ರವೇಶಿಸಬಹುದು"</string>
     <string name="permission_description_summary_call_log" msgid="7321437186317577624">"ಈ ಅನುಮತಿಯನ್ನು ಹೊಂದಿರುವ ಆ್ಯಪ್‌ಗಳು ಫೋನ್ ಕರೆ ಲಾಗ್ ಅನ್ನು ಓದಬಹುದು ಮತ್ತು ಬರೆಯಬಹುದು"</string>
@@ -213,7 +213,7 @@
     <string name="app_permission_never_accessed_summary" msgid="401346181461975090">"ಎಂದಿಗೂ ಪ್ರವೇಶಿಸಿಲ್ಲ"</string>
     <string name="app_permission_never_accessed_denied_summary" msgid="6596000497490905146">"ನಿರಾಕರಿಸಲಾಗಿದೆ / ಎಂದಿಗೂ ಪ್ರವೇಶಿಸಲಾಗಿಲ್ಲ"</string>
     <string name="allowed_header" msgid="7769277978004790414">"ಅನುಮತಿಸಲಾಗಿದೆ"</string>
-    <string name="allowed_always_header" msgid="6455903312589013545">"ಎಲ್ಲಾ ಸಮಯದಲ್ಲೂ ಅನುಮತಿಸಲಾಗಿದೆ"</string>
+    <string name="allowed_always_header" msgid="6455903312589013545">"ಎಲ್ಲಾ ಸಮಯದಲ್ಲೂ ಅನುಮತಿಸಿರುವುದು"</string>
     <string name="allowed_foreground_header" msgid="6845655788447833353">"ಬಳಕೆಯಲ್ಲಿದ್ದಾಗ ಮಾತ್ರ ಅನುಮತಿಸಲಾಗಿದೆ"</string>
     <string name="allowed_storage_scoped" msgid="5383645873719086975">"ಮೀಡಿಯಾಕ್ಕೆ ಮಾತ್ರ ಪ್ರವೇಶಿಸಲು ಅನುಮತಿಸಲಾಗಿದೆ"</string>
     <string name="allowed_storage_full" msgid="5356699280625693530">"ಎಲ್ಲಾ ಫೈಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಅನುಮತಿಸಲಾಗಿದೆ"</string>
@@ -355,7 +355,7 @@
     <string name="default_apps" msgid="5119201969348748639">"ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್‌ಗಳು"</string>
     <string name="no_default_apps" msgid="2593466527182950231">"ಯಾವುದೇ ಡೀಫಾಲ್ಟ್‌ ಆ್ಯಪ್‌ಗಳಿಲ್ಲ"</string>
     <string name="default_apps_more" msgid="4078194675848858093">"ಇನ್ನಷ್ಟು ಡೀಫಾಲ್ಟ್‌ಗಳು"</string>
-    <string name="default_apps_manage_domain_urls" msgid="6775566451561036069">"ತೆರೆಯುವ ಲಿಂಕ್‍ಗಳು"</string>
+    <string name="default_apps_manage_domain_urls" msgid="6775566451561036069">"ಲಿಂಕ್‍‍ಗಳನ್ನು ತೆರೆಯುವುದು"</string>
     <string name="default_apps_for_work" msgid="4970308943596201811">"ಕೆಲಸದ ಕುರಿತಾದ ಡೀಫಾಲ್ಟ್ ಆ್ಯಪ್"</string>
     <string name="default_app_none" msgid="9084592086808194457">"ಯಾವುದೂ ಬೇಡ"</string>
     <string name="default_app_system_default" msgid="6218386768175513760">"(ಸಿಸ್ಟಂ ಡಿಫಾಲ್ಟ್)"</string>

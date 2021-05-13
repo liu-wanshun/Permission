@@ -48,7 +48,7 @@
     <string name="grant_dialog_button_allow_media_only" msgid="4832877658422573832">"メディア ファイルへのアクセスを許可"</string>
     <string name="app_permissions_breadcrumb" msgid="5136969550489411650">"アプリ"</string>
     <string name="app_permissions" msgid="3369917736607944781">"アプリの権限"</string>
-    <string name="unused_apps" msgid="2058057455175955094">"使用していないアプリ"</string>
+    <string name="unused_apps" msgid="2058057455175955094">"使用されていないアプリ"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"アプリを無効にする"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"このアプリを無効にすると、Android などの他のアプリが正しく動作しなくなるおそれがあります。このアプリはデバイスにプリインストールされているため、削除できません。無効にするには、このアプリをオフにし、デバイスにアプリが表示されないようにします。"</string>
     <string name="app_permission_manager" msgid="3903811137630909550">"権限マネージャ"</string>
@@ -172,8 +172,8 @@
     <string name="app_permission_button_ask" msgid="3342950658789427">"毎回確認"</string>
     <string name="app_permission_button_deny" msgid="2399316993899108824">"許可しない"</string>
     <string name="app_permission_title" msgid="2090897901051370711">"<xliff:g id="PERM">%1$s</xliff:g>の権限"</string>
-    <string name="app_permission_header" msgid="2951363137032603806">"このアプリの<xliff:g id="PERM">%1$s</xliff:g>へのアクセス権限"</string>
-    <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"<xliff:g id="APP">%1$s</xliff:g>の権限をすべて表示"</string>
+    <string name="app_permission_header" msgid="2951363137032603806">"このアプリによる<xliff:g id="PERM">%1$s</xliff:g>へのアクセス"</string>
+    <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"「<xliff:g id="APP">%1$s</xliff:g>」アプリの権限をすべて表示"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"この権限があるアプリをすべて表示"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"アシスタントのマイクの使用を表示"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"アプリが使用されていない場合に権限を削除"</string>
@@ -237,7 +237,7 @@
     </plurals>
     <string name="permission_reminders" msgid="6528257957664832636">"権限のリマインダー"</string>
     <string name="auto_revoke_permission_reminder_notification_title_one" msgid="6690347469376854137">"使用していないアプリ: 1 個"</string>
-    <string name="auto_revoke_permission_reminder_notification_title_many" msgid="6062217713645069960">"使用していないアプリ: <xliff:g id="NUMBER_OF_APPS">%s</xliff:g> 個"</string>
+    <string name="auto_revoke_permission_reminder_notification_title_many" msgid="6062217713645069960">"使用されていないアプリ: <xliff:g id="NUMBER_OF_APPS">%s</xliff:g> 個"</string>
     <string name="auto_revoke_permission_reminder_notification_content" msgid="4492228990462107487">"プライバシー保護のため権限を削除しました。タップしてご確認ください"</string>
     <string name="auto_revoke_permission_notification_title" msgid="2629844160853454657">"使用していないアプリの権限を削除しました"</string>
     <string name="auto_revoke_permission_notification_content" msgid="5125990886047799375">"数か月使用していないアプリがあります。タップしてご確認ください。"</string>
@@ -264,7 +264,7 @@
     <string name="auto_revoke_before_notification_title_one" msgid="6758024954464359876">"使用されていないアプリ: 1 件"</string>
     <string name="auto_revoke_before_notification_title_many" msgid="4415543943846385685">"使用されていないアプリ: <xliff:g id="NUMBER_OF_APPS">%s</xliff:g> 件"</string>
     <string name="auto_revoke_before_notification_content_one" msgid="1156635373417068822">"プライバシー保護のため権限を削除します。タップしてご確認ください。"</string>
-    <string name="unused_apps_title" msgid="8589298917717872239">"使用していないアプリ"</string>
+    <string name="unused_apps_title" msgid="8589298917717872239">"使用されていないアプリ"</string>
     <string name="unused_apps_subtitle_after" msgid="2034267519506357898">"権限を削除しました"</string>
     <string name="unused_apps_subtitle_before" msgid="5233302577076132427">"権限を削除します"</string>
     <string name="unused_permissions_subtitle_two" msgid="2207266295008423015">"<xliff:g id="PERM_NAME_0">%1$s</xliff:g>、<xliff:g id="PERM_NAME_1">%2$s</xliff:g>"</string>
@@ -281,7 +281,7 @@
     <string name="no_apps_allowed" msgid="7718822655254468631">"許可されているアプリはありません"</string>
     <string name="no_apps_allowed_full" msgid="8011716991498934104">"すべてのファイルで許可されたアプリはありません"</string>
     <string name="no_apps_allowed_scoped" msgid="4908850477787659501">"メディアの場合のみ許可されたアプリはありません"</string>
-    <string name="no_apps_denied" msgid="7663435886986784743">"拒否されているアプリはありません"</string>
+    <string name="no_apps_denied" msgid="7663435886986784743">"許可されていないアプリはありません"</string>
     <string name="car_permission_selected" msgid="180837028920791596">"選択済み"</string>
     <string name="settings" msgid="5409109923158713323">"設定"</string>
     <string name="accessibility_service_dialog_title_single" msgid="7956432823014102366">"<xliff:g id="SERVICE_NAME">%s</xliff:g> にデバイスへのフルアクセスを許可"</string>
@@ -295,12 +295,12 @@
     <string name="role_assistant_request_description" msgid="6836644847620178483">"SMS、通話履歴へのアクセス権が必要です"</string>
     <string name="role_browser_label" msgid="2877796144554070207">"デフォルトのブラウザアプリ"</string>
     <string name="role_browser_short_label" msgid="6745009127123292296">"ブラウザアプリ"</string>
-    <string name="role_browser_description" msgid="3465253637499842671">"インターネットにアクセスするためのアプリで、ユーザーはこのアプリに表示されるリンクをタップします"</string>
+    <string name="role_browser_description" msgid="3465253637499842671">"インターネットにアクセスするためのアプリです。ユーザーがタップしたリンクは、このアプリで開きます。"</string>
     <string name="role_browser_request_title" msgid="2895200507835937192">"<xliff:g id="APP_NAME">%1$s</xliff:g> をデフォルトのブラウザアプリとして設定しますか？"</string>
     <string name="role_browser_request_description" msgid="5888803407905985941">"必要な権限がありません"</string>
     <string name="role_dialer_label" msgid="1100224146343237968">"デフォルトの電話アプリ"</string>
     <string name="role_dialer_short_label" msgid="7186888549465352489">"電話アプリ"</string>
-    <string name="role_dialer_description" msgid="8768708633696539612">"デバイスで電話をかけたり受けたりする場合に使うアプリです"</string>
+    <string name="role_dialer_description" msgid="8768708633696539612">"電話の発着信に使うアプリです"</string>
     <string name="role_dialer_request_title" msgid="5959618560705912058">"<xliff:g id="APP_NAME">%1$s</xliff:g> をデフォルトの電話アプリとして設定しますか？"</string>
     <string name="role_dialer_request_description" msgid="2264219375528345270">"通話履歴へのアクセス権、SMS の送信権限が必要です"</string>
     <string name="role_dialer_search_keywords" msgid="3324448983559188087">"電話"</string>

@@ -187,7 +187,7 @@
     <string name="auto_revocable_permissions_two" msgid="4874067408752041716">"Quitaranse os permisos de <xliff:g id="PERM_0">%1$s</xliff:g> e <xliff:g id="PERM_1">%2$s</xliff:g>."</string>
     <string name="auto_revocable_permissions_many" msgid="1521807896206032992">"Quitaranse os seguintes permisos: <xliff:g id="PERMS">%1$s</xliff:g>."</string>
     <string name="auto_manage_title" msgid="7693181026874842935">"Xestionar os permisos automaticamente"</string>
-    <string name="off" msgid="1438489226422866263">"Desactivar"</string>
+    <string name="off" msgid="1438489226422866263">"Desactivado"</string>
     <string name="auto_revoked_app_summary_one" msgid="7093213590301252970">"Quitouse o permiso (<xliff:g id="PERMISSION_NAME">%s</xliff:g>)"</string>
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Quitáronse os permisos (<xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> e <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g>)"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Quitáronse os permisos (<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> e <xliff:g id="NUMBER">%2$s</xliff:g> máis)"</string>
@@ -238,7 +238,7 @@
     <string name="permission_reminders" msgid="6528257957664832636">"Recordatorios de permisos"</string>
     <string name="auto_revoke_permission_reminder_notification_title_one" msgid="6690347469376854137">"1 aplicación que non se usa"</string>
     <string name="auto_revoke_permission_reminder_notification_title_many" msgid="6062217713645069960">"<xliff:g id="NUMBER_OF_APPS">%s</xliff:g> aplicacións que non se usan"</string>
-    <string name="auto_revoke_permission_reminder_notification_content" msgid="4492228990462107487">"Elimináronse os permisos para protexer a túa privacidade. Toca para revisar a utilización"</string>
+    <string name="auto_revoke_permission_reminder_notification_content" msgid="4492228990462107487">"Quitáronse os permisos para protexer a túa privacidade. Toca para revisar a utilización"</string>
     <string name="auto_revoke_permission_notification_title" msgid="2629844160853454657">"Quitáronse os permisos das aplicacións que non se usan"</string>
     <string name="auto_revoke_permission_notification_content" msgid="5125990886047799375">"Algunhas aplicacións levan varios meses sen usarse. Toca para revisar a utilización."</string>
     <plurals name="auto_revoke_permission_notification_content_count" formatted="false" msgid="9159794096518540350">
@@ -254,7 +254,7 @@
     <string name="permission_removed_page_title" msgid="2627436155091001209">"Permisos quitados"</string>
     <string name="all_unused_apps_category_title" msgid="755663524704745414">"Todas as aplicacións que non se usan"</string>
     <string name="months_ago" msgid="1766026492610646354">"Hai <xliff:g id="COUNT">%1$d</xliff:g> meses"</string>
-    <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Elimináronse os permisos para protexer a túa privacidade"</string>
+    <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Quitáronse os permisos para protexer a túa privacidade"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"A aplicación <xliff:g id="APP_NAME">%s</xliff:g> accedeu á túa localización en segundo plano"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Esta aplicación pode acceder sempre á túa localización. Toca para cambiar esta opción."</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Permisos de aplicacións quitados para protexer a privacidade"</string>
@@ -295,41 +295,41 @@
     <string name="role_assistant_request_description" msgid="6836644847620178483">"Recibe acceso ás SMS e ao rexistro de chamadas"</string>
     <string name="role_browser_label" msgid="2877796144554070207">"Aplicación de navegador predeterminada"</string>
     <string name="role_browser_short_label" msgid="6745009127123292296">"Aplicación de navegador"</string>
-    <string name="role_browser_description" msgid="3465253637499842671">"Aplicacións que che permiten acceder a Internet e abrir as ligazóns que tocas"</string>
+    <string name="role_browser_description" msgid="3465253637499842671">"Aplicacións que che permiten acceder a Internet e abrir as ligazóns que tocas."</string>
     <string name="role_browser_request_title" msgid="2895200507835937192">"Queres definir <xliff:g id="APP_NAME">%1$s</xliff:g> como a túa aplicación de navegador predeterminada?"</string>
     <string name="role_browser_request_description" msgid="5888803407905985941">"Non se necesita ningún permiso"</string>
     <string name="role_dialer_label" msgid="1100224146343237968">"App de teléfono predeterminada"</string>
     <string name="role_dialer_short_label" msgid="7186888549465352489">"Aplicación de teléfono"</string>
-    <string name="role_dialer_description" msgid="8768708633696539612">"Aplicacións que che permiten realizar e recibir chamadas telefónicas utilizando o teu dispositivo"</string>
+    <string name="role_dialer_description" msgid="8768708633696539612">"Aplicacións que che permiten realizar e recibir chamadas telefónicas utilizando o teu dispositivo."</string>
     <string name="role_dialer_request_title" msgid="5959618560705912058">"Queres definir <xliff:g id="APP_NAME">%1$s</xliff:g> como a túa aplicación predeterminada de teléfono?"</string>
     <string name="role_dialer_request_description" msgid="2264219375528345270">"Recibe acceso ao rexistro de chamadas e ao envío de SMS"</string>
     <string name="role_dialer_search_keywords" msgid="3324448983559188087">"marcador"</string>
     <string name="role_sms_label" msgid="8456999857547686640">"App de SMS predeterminada"</string>
     <string name="role_sms_short_label" msgid="4371444488034692243">"Aplicación de SMS"</string>
-    <string name="role_sms_description" msgid="3424020199148153513">"Aplicacións que che permiten utilizar o teu número de teléfono para enviar e recibir mensaxes de texto curtas, fotos, vídeos e máis contido"</string>
+    <string name="role_sms_description" msgid="3424020199148153513">"Aplicacións que che permiten utilizar o teu número de teléfono para enviar e recibir mensaxes de texto curtas, fotos, vídeos e máis contido."</string>
     <string name="role_sms_request_title" msgid="7953552109601185602">"Queres definir <xliff:g id="APP_NAME">%1$s</xliff:g> como a túa aplicación predeterminada de SMS?"</string>
     <string name="role_sms_request_description" msgid="983371022668134198">"Recibe acceso aos contactos, ás SMS e ao teléfono"</string>
     <string name="role_sms_search_keywords" msgid="8022048144395047352">"mensaxe de texto, envío de mensaxes de texto, mensaxes, mensaxaría"</string>
     <string name="role_emergency_label" msgid="7028825857206842366">"App emerxencias predeterminada"</string>
     <string name="role_emergency_short_label" msgid="2388431453335350348">"Aplicación para emerxencias"</string>
-    <string name="role_emergency_description" msgid="5051840234887686630">"Aplicacións que che permiten gardar a túa información médica e poñela á disposición dos equipos de asistencia sanitaria, recibir alertas sobre eventos climáticos graves e desastres naturais, así como enviarlles notificacións a outras persoas cando necesitas axuda"</string>
+    <string name="role_emergency_description" msgid="5051840234887686630">"Aplicacións que che permiten gardar a túa información médica e poñela á disposición dos equipos de asistencia sanitaria, recibir alertas sobre eventos climáticos graves e desastres naturais, así como enviarlles notificacións a outras persoas cando necesitas axuda."</string>
     <string name="role_emergency_request_title" msgid="8469579020654348567">"Queres definir <xliff:g id="APP_NAME">%1$s</xliff:g> como a túa aplicación predeterminada de emerxencias?"</string>
     <string name="role_emergency_request_description" msgid="131645948770262850">"Non se necesita ningún permiso"</string>
     <string name="role_emergency_search_keywords" msgid="1920007722599213358">"en caso de emerxencia"</string>
     <string name="role_home_label" msgid="3871847846649769412">"App de inicio predeterminada"</string>
     <string name="role_home_short_label" msgid="8544733747952272337">"Aplicación de inicio"</string>
-    <string name="role_home_description" msgid="7997371519626556675">"Aplicacións que adoitan chamarse \"launchers\" e que substitúen as pantallas de inicio do teu dispositivo Android para permitirche acceder aos contidos e ás funcións do dispositivo"</string>
+    <string name="role_home_description" msgid="7997371519626556675">"Aplicacións que adoitan chamarse \"launchers\" e que substitúen as pantallas de inicio do teu dispositivo Android para permitirche acceder aos contidos e ás funcións do dispositivo."</string>
     <string name="role_home_request_title" msgid="738136983453341081">"Queres definir <xliff:g id="APP_NAME">%1$s</xliff:g> como a túa aplicación predeterminada da casa?"</string>
     <string name="role_home_request_description" msgid="2658833966716057673">"Non se necesita ningún permiso"</string>
     <string name="role_home_search_keywords" msgid="3830755001192666285">"launcher"</string>
     <string name="role_call_redirection_label" msgid="5785304207206147590">"App desvío de chamadas predet."</string>
     <string name="role_call_redirection_short_label" msgid="7568143419571217757">"App de redirección de chamadas"</string>
-    <string name="role_call_redirection_description" msgid="6091669882014664420">"Aplicacións que che permiten reenviar chamadas saíntes a outro número de teléfono"</string>
+    <string name="role_call_redirection_description" msgid="6091669882014664420">"Aplicacións que che permiten reenviar chamadas saíntes a outro número de teléfono."</string>
     <string name="role_call_redirection_request_title" msgid="2816244455003562925">"Queres definir <xliff:g id="APP_NAME">%1$s</xliff:g> como a túa aplicación predeterminada de desvío de chamadas?"</string>
     <string name="role_call_redirection_request_description" msgid="3118895714178527164">"Non se necesita ningún permiso"</string>
     <string name="role_call_screening_label" msgid="883935222060878724">"App de filtro de chamadas e spam predefinida"</string>
     <string name="role_call_screening_short_label" msgid="2048465565063130834">"App ident. de chamadas e spam"</string>
-    <string name="role_call_screening_description" msgid="2349431420497468981">"Aplicacións que che permiten identificar as chamadas e bloquear o spam, as chamadas automatizadas ou os números non desexados"</string>
+    <string name="role_call_screening_description" msgid="2349431420497468981">"Aplicacións que che permiten identificar as chamadas e bloquear o spam, as chamadas automatizadas ou os números non desexados."</string>
     <string name="role_call_screening_request_title" msgid="7358309224566977290">"Queres definir <xliff:g id="APP_NAME">%1$s</xliff:g> como a túa aplicación predeterminada de identificación de chamadas e spam?"</string>
     <string name="role_call_screening_request_description" msgid="7338511921032446006">"Non se necesita ningún permiso"</string>
     <string name="request_role_current_default" msgid="738722892438247184">"App predeterminada actual"</string>
@@ -342,7 +342,7 @@
     <string name="system_uses_microphone_and_camera" msgid="5124478304275138804">"Estase accedendo á cámara e ao micrófono mediante un servizo do sistema"</string>
     <string name="system_uses_camera" msgid="1911223105234441470">"Estase accedendo á cámara mediante un servizo do sistema"</string>
     <string name="other_use" msgid="6564855051022776692">"Outro uso:"</string>
-    <string name="ongoing_usage_dialog_ok" msgid="103556809118460072">"De acordo"</string>
+    <string name="ongoing_usage_dialog_ok" msgid="103556809118460072">"Entendido"</string>
     <string name="ongoing_usage_dialog_title" msgid="683836493556628569">"Uso recente de: <xliff:g id="TYPES_LIST">%s</xliff:g>"</string>
     <string name="ongoing_usage_dialog_title_mic" msgid="5966714811125593992">"Uso recente do micrófono"</string>
     <string name="ongoing_usage_dialog_title_camera" msgid="7819329688650711470">"Uso recente da cámara"</string>

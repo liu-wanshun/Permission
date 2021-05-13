@@ -146,7 +146,7 @@
     </plurals>
     <string name="permission_usage_view_details" msgid="6675335735468752787">"Tout afficher dans le tableau de bord"</string>
     <string name="app_permission_usage_filter_label" msgid="7182861154638631550">"Filtré par : <xliff:g id="PERM">%1$s</xliff:g>"</string>
-    <string name="app_permission_usage_remove_filter" msgid="2926157607436428207">"Supprimer le filtre"</string>
+    <string name="app_permission_usage_remove_filter" msgid="2926157607436428207">"Retirer le filtre"</string>
     <string name="filter_by_title" msgid="7300368602759958031">"Filtrer par"</string>
     <string name="filter_by_permissions" msgid="7613462963111282568">"Filtrer par autorisation"</string>
     <string name="filter_by_time" msgid="6667864816999691642">"Filtrer par heure"</string>
@@ -176,7 +176,7 @@
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"Afficher toutes les autorisations pour <xliff:g id="APP">%1$s</xliff:g>"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Afficher toutes les applications qui possèdent cette autorisation"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Afficher l\'usage du microphone de l\'assistant"</string>
-    <string name="auto_revoke_label" msgid="5068393642936571656">"Supprimer les autorisations si l\'application est inutilisée"</string>
+    <string name="auto_revoke_label" msgid="5068393642936571656">"Retirer les autorisations si l\'application est inutilisée"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Afin de protéger vos données, les autorisations pour cette application seront supprimées si elle n\'est pas utilisée pendant quelques mois."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Afin de protéger vos données, si l\'application n\'est pas utilisée pendant quelques mois, les autorisations suivantes seront supprimées : <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Afin de protéger vos données, les autorisations ont été supprimées pour les applications que vous n\'avez pas utilisées depuis quelques mois."</string>
@@ -363,7 +363,7 @@
     <string name="car_default_app_selected" msgid="5416420830430644174">"Sélectionnée"</string>
     <string name="car_default_app_selected_with_info" msgid="1932204186080593500">"Sélectionnée – <xliff:g id="ADDITIONAL_INFO">%1$s</xliff:g>"</string>
     <string name="special_app_access_search_keyword" msgid="8032347212290774210">"accès spécial pour applications"</string>
-    <string name="special_app_access" msgid="5019319067120213797">"Accès spéciaux applis"</string>
+    <string name="special_app_access" msgid="5019319067120213797">"Accès spéciaux aux applis"</string>
     <string name="no_special_app_access" msgid="6950277571805106247">"Aucun accès spécial pour applis"</string>
     <string name="special_app_access_no_apps" msgid="4102911722787886970">"Aucune application"</string>
     <string name="home_missing_work_profile_support" msgid="1756855847669387977">"Non compatible avec les profils professionnels"</string>

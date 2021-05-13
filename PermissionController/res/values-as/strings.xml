@@ -47,7 +47,7 @@
     <string name="grant_dialog_button_allow_all_files" msgid="4955436994954829894">"সকলো ফাইল পৰিচালনাৰ অনুমতি দিয়ক"</string>
     <string name="grant_dialog_button_allow_media_only" msgid="4832877658422573832">"মিডিয়া ফাইলসমূহলৈ এক্সেছ দিয়ক"</string>
     <string name="app_permissions_breadcrumb" msgid="5136969550489411650">"এপ্"</string>
-    <string name="app_permissions" msgid="3369917736607944781">"এপ্‌ৰ অনুমতি"</string>
+    <string name="app_permissions" msgid="3369917736607944781">"এপৰ অনুমতি"</string>
     <string name="unused_apps" msgid="2058057455175955094">"অব্যৱহৃত এপ্‌সমূহ"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"এপ্ অক্ষম কৰক"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"আপুনি যদি এই এপ্‌টো অক্ষম কৰে, Android আৰু অন্য এপ্‌সমূহে বিচৰাৰ দৰে আৰু কাম নকৰিব পাৰে। মনত ৰাখিব, এই এপ্‌টো আপোনাৰ ডিভাইচটোত আগৰেপৰা ইনষ্টল কৰি থোৱা আছে বাবে আপুনি ইয়াক মচিব নোৱাৰে। অক্ষম কৰি আপুনি এই এপ্‌টো অফ কৰে আৰু ইয়াক আপোনাৰ ডিভাইচৰ পৰা লুকুৱায়।"</string>
@@ -218,7 +218,7 @@
     <string name="allowed_storage_scoped" msgid="5383645873719086975">"কেৱল মিডিয়ালৈ এক্সেছৰ অনুমতি আছে"</string>
     <string name="allowed_storage_full" msgid="5356699280625693530">"সকলো ফাইল পৰিচালনা কৰিবলৈ অনুমতি আছে"</string>
     <string name="ask_header" msgid="2633816846459944376">"প্ৰতিবাৰতে সোধক"</string>
-    <string name="denied_header" msgid="2253955654228120835">"অস্বীকাৰ কৰা হৈছে"</string>
+    <string name="denied_header" msgid="2253955654228120835">"প্রত্যাখ্যান কৰা হৈছে"</string>
     <plurals name="days" formatted="false" msgid="7882807103511175827">
       <item quantity="one"><xliff:g id="NUMBER">%s</xliff:g> দিন</item>
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> দিন</item>

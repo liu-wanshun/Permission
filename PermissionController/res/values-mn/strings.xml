@@ -172,7 +172,7 @@
     <string name="app_permission_button_ask" msgid="3342950658789427">"Тухай бүрд асуух"</string>
     <string name="app_permission_button_deny" msgid="2399316993899108824">"Татгалзах"</string>
     <string name="app_permission_title" msgid="2090897901051370711">"<xliff:g id="PERM">%1$s</xliff:g>-н зөвшөөрөл"</string>
-    <string name="app_permission_header" msgid="2951363137032603806">"Энэ аппад <xliff:g id="PERM">%1$s</xliff:g>-р хандах"</string>
+    <string name="app_permission_header" msgid="2951363137032603806">"Энэ аппын <xliff:g id="PERM">%1$s</xliff:g>-д хандах эрх"</string>
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"<xliff:g id="APP">%1$s</xliff:g>-н бүх зөвшөөрлийг харах"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Энэ зөвшөөрөлтэй бүх аппыг харах"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Туслах микрофон ашиглалтыг харуулах"</string>
@@ -196,7 +196,7 @@
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Хамгийн сүүлд <xliff:g id="DATE">%s</xliff:g>-нд нээсэн"</string>
     <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Хэрэв та бүх файлыг удирдахыг зөвшөөрвөл энэ апп нь уг төхөөрөмжийн нийтлэг хадгалах сан дахь эсвэл холбогдсон хадгалах төхөөрөмж дэх дурын файлд хандах, түүнийг өөрчлөх болон устгах боломжтой. Апп танаас асуухгүйгээр файлуудад хандаж болзошгүй."</string>
     <string name="special_file_access_dialog" msgid="583804114020740610">"Энэ төхөөрөмж дээрх эсвэл холбогдсон дурын хадгалалтын төхөөрөмжийн файлуудад хандах, тэднийг өөрчлөх болон устгахыг энэ апп-д зөвшөөрөх үү? Энэ апп танаас асуухгүйгээр файлуудад хандаж болзошгүй."</string>
-    <string name="permission_description_summary_generic" msgid="5401399408814903391">"Энэ зөвшөөрөлтэй аппууд <xliff:g id="DESCRIPTION">%1$s</xliff:g> боломжтой"</string>
+    <string name="permission_description_summary_generic" msgid="5401399408814903391">"Энэ зөвшөөрөлтэй аппууд <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
     <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Энэ зөвшөөрөлтэй аппууд таны алхалт, дугуй унах, жолоодлого, алхмын тоо болон бусад биеийн дасгал хөдөлгөөнд хандах боломжтой"</string>
     <string name="permission_description_summary_calendar" msgid="103329982944411010">"Энэ зөвшөөрөлтэй аппууд таны календарьт хандах боломжтой"</string>
     <string name="permission_description_summary_call_log" msgid="7321437186317577624">"Энэ зөвшөөрөлтэй аппууд утасны дуудлагын жагсаалтыг унших болон бичих боломжтой"</string>
@@ -400,7 +400,7 @@
     <string name="permgrouprequest_activityRecognition" msgid="5415121592794230330">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-д таны биеийн дасгал хөдөлгөөнд хандахыг зөвшөөрөх үү?"</string>
     <string name="permgrouprequest_camera" msgid="5123097035410002594">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-д зураг авах, видео хийхийг зөвшөөрөх үү?"</string>
     <string name="permgrouprequest_calllog" msgid="2065327180175371397">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-д таны утасны дуудлагын жагсаалтад хандахыг зөвшөөрөх үү?"</string>
-    <string name="permgrouprequest_phone" msgid="1829234136997316752">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-д утасны дуудлага хийх, дуудлагад хариулахыг зөвшөөрөх үү?"</string>
+    <string name="permgrouprequest_phone" msgid="1829234136997316752">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-д утасны дуудлага хийх, дуудлага удирдахыг зөвшөөрөх үү?"</string>
     <string name="permgrouprequest_sensors" msgid="4397358316850652235">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-д таны биеийн ерөнхий байдлын үзүүлэлтүүдийн мэдрэгчийн өгөгдөлд хандахыг зөвшөөрөх үү?"</string>
     <string name="auto_granted_permissions" msgid="6009452264824455892">"Хяналттай зөвшөөрөл"</string>
     <string name="auto_granted_location_permission_notification_title" msgid="1438871159268985993">"Байршилд хандах боломжтой"</string>

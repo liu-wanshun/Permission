@@ -78,7 +78,7 @@
     <string name="permission_summary_disabled_by_admin_background_only" msgid="3127091456731845646">"Qasja në sfond është e çaktivizuar nga administratori"</string>
     <string name="permission_summary_enabled_by_admin_background_only" msgid="9132423838440275757">"Qasja në sfond është e aktivizuar nga administratori"</string>
     <string name="permission_summary_enabled_by_admin_foreground_only" msgid="1298432715610745358">"Qasja në planin e parë është e aktivizuar nga administratori"</string>
-    <string name="permission_summary_enabled_system_fixed" msgid="2438344700184127274">"Pajisja kërkon këtë autorizim për të funksionuar"</string>
+    <string name="permission_summary_enabled_system_fixed" msgid="2438344700184127274">"Pajisja kërkon këtë leje për të funksionuar"</string>
     <!-- no translation found for background_access_chooser_dialog_choices:0 (1351721623256561996) -->
     <!-- no translation found for background_access_chooser_dialog_choices:1 (9127301153688725448) -->
     <!-- no translation found for background_access_chooser_dialog_choices:2 (4305536986042401191) -->
@@ -213,7 +213,7 @@
     <string name="app_permission_never_accessed_summary" msgid="401346181461975090">"Nuk ka pasur asnjëherë qasje"</string>
     <string name="app_permission_never_accessed_denied_summary" msgid="6596000497490905146">"Refuzuar / Nuk ka pasur asnjëherë qasje"</string>
     <string name="allowed_header" msgid="7769277978004790414">"Të lejuara"</string>
-    <string name="allowed_always_header" msgid="6455903312589013545">"Lejohet gjatë të gjithë kohës"</string>
+    <string name="allowed_always_header" msgid="6455903312589013545">"Lejohet gjithmonë"</string>
     <string name="allowed_foreground_header" msgid="6845655788447833353">"Lejohet vetëm kur është në përdorim"</string>
     <string name="allowed_storage_scoped" msgid="5383645873719086975">"Lejohet qasja vetëm në media"</string>
     <string name="allowed_storage_full" msgid="5356699280625693530">"Lejohet të menaxhojë të gjithë skedarët"</string>
@@ -318,7 +318,7 @@
     <string name="role_emergency_search_keywords" msgid="1920007722599213358">"në rast urgjence"</string>
     <string name="role_home_label" msgid="3871847846649769412">"Aplikacioni bazë i parazgjedhur"</string>
     <string name="role_home_short_label" msgid="8544733747952272337">"Aplikacioni bazë"</string>
-    <string name="role_home_description" msgid="7997371519626556675">"Aplikacione, të quajtura shpesh \"nisësit\", që zëvendësojnë ekranet bazë në pajisjen tënde Android dhe që të japin qasje te përmbajtjet dhe funksionet e pajisjes sate"</string>
+    <string name="role_home_description" msgid="7997371519626556675">"Aplikacione, të quajtura shpesh \"nisësit\", që zëvendësojnë ekranet bazë në pajisjen tënde Android dhe që të japin qasje te përmbajtjet dhe veçoritë e pajisjes sate"</string>
     <string name="role_home_request_title" msgid="738136983453341081">"Dëshiron ta caktosh <xliff:g id="APP_NAME">%1$s</xliff:g> si aplikacionin e parazgjedhur për ekranin bazë?"</string>
     <string name="role_home_request_description" msgid="2658833966716057673">"Nuk ka nevojë për asnjë autorizim"</string>
     <string name="role_home_search_keywords" msgid="3830755001192666285">"Nisësi"</string>
@@ -355,7 +355,7 @@
     <string name="default_apps" msgid="5119201969348748639">"Aplikacionet e parazgjedhura"</string>
     <string name="no_default_apps" msgid="2593466527182950231">"Asnjë aplikacion i parazgjedhur"</string>
     <string name="default_apps_more" msgid="4078194675848858093">"Parazgjedhje të tjera"</string>
-    <string name="default_apps_manage_domain_urls" msgid="6775566451561036069">"Lidhjet po hapen"</string>
+    <string name="default_apps_manage_domain_urls" msgid="6775566451561036069">"Hapja e lidhjeve"</string>
     <string name="default_apps_for_work" msgid="4970308943596201811">"Të parazgjedhura për punën"</string>
     <string name="default_app_none" msgid="9084592086808194457">"Asnjë"</string>
     <string name="default_app_system_default" msgid="6218386768175513760">"(Parazgjedhja e sistemit)"</string>
