@@ -219,9 +219,9 @@
     <string name="permission_description_summary_location" msgid="2817531799933480694">"Приложения с этим разрешением могут получать доступ к местоположению устройства."</string>
     <string name="permission_description_summary_microphone" msgid="630834800308329907">"Приложения с этим разрешением могут записывать аудио."</string>
     <string name="permission_description_summary_phone" msgid="4515277217435233619">"Приложения с этим разрешением могут совершать звонки и управлять ими."</string>
-    <string name="permission_description_summary_sensors" msgid="1836045815643119949">"Приложения с этим разрешением могут получать доступ к данным датчиков о состоянии организма."</string>
+    <string name="permission_description_summary_sensors" msgid="1836045815643119949">"Приложения с этим разрешением могут получать доступ к данным датчиков основных показателей жизнедеятельности."</string>
     <string name="permission_description_summary_sms" msgid="725999468547768517">"Приложения с этим разрешением могут отправлять и просматривать SMS-сообщения."</string>
-    <string name="permission_description_summary_storage" msgid="6575759089065303346">"Приложения с этим разрешением могут получить доступ к фотографиям, медиа и другим файлам на вашем устройстве."</string>
+    <string name="permission_description_summary_storage" msgid="6575759089065303346">"Приложения с этим разрешением могут получать доступ к фотографиям, медиа и другим файлам на вашем устройстве."</string>
     <string name="app_permission_most_recent_summary" msgid="4292074449384040590">"Последний раз использовано: <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_permission_most_recent_denied_summary" msgid="7659497197737708112">"Временно запрещено / Последний доступ: <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_permission_never_accessed_summary" msgid="401346181461975090">"Не использовалось"</string>
@@ -304,10 +304,10 @@
     <string name="permission_subtitle_all_files" msgid="4982613338298067862">"Все файлы"</string>
     <string name="no_permissions_allowed" msgid="6081976856354669209">"Разрешения не предоставлены"</string>
     <string name="no_permissions_denied" msgid="8159923922804043282">"Предоставлены все разрешения"</string>
-    <string name="no_apps_allowed" msgid="7718822655254468631">"Не разрешено ни одному приложению"</string>
+    <string name="no_apps_allowed" msgid="7718822655254468631">"Не разрешено ни одному приложению."</string>
     <string name="no_apps_allowed_full" msgid="8011716991498934104">"Нет приложений с доступом ко всем файлам."</string>
     <string name="no_apps_allowed_scoped" msgid="4908850477787659501">"Нет приложений с доступом только к медиаконтенту."</string>
-    <string name="no_apps_denied" msgid="7663435886986784743">"Не запрещено ни одному приложению"</string>
+    <string name="no_apps_denied" msgid="7663435886986784743">"Не запрещено ни одному приложению."</string>
     <string name="car_permission_selected" msgid="180837028920791596">"Выбрано"</string>
     <string name="settings" msgid="5409109923158713323">"Настройки"</string>
     <string name="accessibility_service_dialog_title_single" msgid="7956432823014102366">"У сервиса \"<xliff:g id="SERVICE_NAME">%s</xliff:g>\" есть полный доступ к вашему устройству"</string>
