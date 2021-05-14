@@ -47,7 +47,7 @@
     <string name="grant_dialog_button_allow_all_files" msgid="4955436994954829894">"Omogući upravljanja svim datotekama"</string>
     <string name="grant_dialog_button_allow_media_only" msgid="4832877658422573832">"Omogući pristup medijskim datotekama"</string>
     <string name="app_permissions_breadcrumb" msgid="5136969550489411650">"Aplikacije"</string>
-    <string name="app_permissions" msgid="3369917736607944781">"Dopuštenja aplikacije"</string>
+    <string name="app_permissions" msgid="3369917736607944781">"Dopuštenja za aplikacije"</string>
     <string name="unused_apps" msgid="2058057455175955094">"Nekorištene aplikacije"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"Onemogući aplikaciju"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"Ako onemogućite tu aplikaciju, Android i druge aplikacije možda više neće funkcionirati pravilno. Napominjemo da ne možete izbrisati tu aplikaciju jer je unaprijed instalirana na vašem uređaju. Ako je onemogućite, isključit ćete je i više se neće prikazivati na vašem uređaju."</string>
@@ -201,10 +201,10 @@
     <string name="last_opened_category_title" msgid="7871347400611202595">"Posljednji put otvoreno prije više od <xliff:g id="NUMBER">%s</xliff:g> mj."</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Aplikacija je posljednji put otvorena <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Posljednje otvaranje <xliff:g id="DATE">%s</xliff:g>"</string>
-    <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Ako dopustite upravljanje svim datotekama, ova će aplikacija moći pristupiti datotekama u zajedničkoj pohrani na ovom uređaju ili povezanim uređajima za pohranu te mijenjati i brisati ih. Aplikacija može pristupiti datotekama bez vašeg dopuštenja."</string>
+    <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Ako dopustite upravljanje svim datotekama, ova će aplikacija moći pristupati datotekama u zajedničkoj pohrani na ovom uređaju ili povezanim uređajima za pohranu te ih mijenjati i brisati. Aplikacija može pristupati datotekama bez vašeg dopuštenja."</string>
     <string name="special_file_access_dialog" msgid="583804114020740610">"Želite li ovoj aplikaciji dopustiti da pristupi datotekama na uređaju ili bilo kojim povezanim uređajima za pohranu te da ih mijenja i briše? Ova aplikacija može pristupiti datotekama bez vašeg dopuštenja."</string>
     <string name="permission_description_summary_generic" msgid="5401399408814903391">"Aplikacije s tim dopuštenjem mogu <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
-    <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Aplikacije s tim dopuštenjem mogu pristupati podacima o vašim fizičkim aktivnostima kao što su hodanje, vožnja biciklom, vožnja automobila, broj koraka i ostalo"</string>
+    <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Aplikacije s tim dopuštenjem mogu pristupati podacima o vašoj tjelesnoj aktivnosti kao što su hodanje, vožnja biciklom, vožnja automobila, broj koraka i ostalo"</string>
     <string name="permission_description_summary_calendar" msgid="103329982944411010">"Aplikacije s tim dopuštenjem mogu pristupiti vašem kalendaru"</string>
     <string name="permission_description_summary_call_log" msgid="7321437186317577624">"Aplikacije s tim dopuštenjem mogu čitati zapisnik poziva na telefonu i pisati u njega"</string>
     <string name="permission_description_summary_camera" msgid="108004375101882069">"Aplikacije s tim dopuštenjem mogu snimati fotografije i videozapise"</string>
@@ -270,7 +270,7 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Uklonjena su dopuštenja radi zaštite vaše privatnosti"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"Aplikacija <xliff:g id="APP_NAME">%s</xliff:g> pristupa vašoj lokaciji u pozadini"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Ova aplikacija može uvijek pristupiti vašoj lokaciji. Dodirnite za promjenu."</string>
-    <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Dopuštenja aplikacije uklonjena su radi zaštite privatnosti"</string>
+    <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Dopuštenja za aplikacije uklonjena su radi zaštite privatnosti"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"Aplikaciju <xliff:g id="APP_NAME">%s</xliff:g> niste upotrebljavali nekoliko mjeseci. Dodirnite za pregled."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"Aplikaciju <xliff:g id="APP_NAME">%s</xliff:g> i još jednu aplikaciju niste upotrebljavali nekoliko mjeseci. Dodirnite za pregled."</string>
     <string name="auto_revoke_after_notification_content_many" msgid="4774106206289751220">"Aplikaciju <xliff:g id="APP_NAME">%1$s</xliff:g> i još njih <xliff:g id="NUMBER_OF_APPS">%2$s</xliff:g> niste upotrebljavali nekoliko mjeseci. Dodirnite za pregled."</string>
