@@ -23,15 +23,17 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.android.permissioncontroller.DeviceUtils;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.ui.ConfirmActionDialogFragment.OnActionConfirmedListener;
-import com.android.permissioncontroller.permission.ui.handheld.ReviewPermissionsFragment;
+import com.android.permissioncontroller.permission.ui.handheld.ReviewPermissionsWrapperFragment;
 import com.android.permissioncontroller.permission.ui.wear.ReviewPermissionsWearFragment;
 
-public final class ReviewPermissionsActivity extends FragmentActivity
+/**
+ * A dialog listing which permissions are grant to an app
+ */
+public final class ReviewPermissionsActivity extends SettingsActivity
         implements OnActionConfirmedListener {
 
     @Override
@@ -40,7 +42,7 @@ public final class ReviewPermissionsActivity extends FragmentActivity
 
         PackageInfo packageInfo = getTargetPackageInfo();
         if (packageInfo == null) {
-            finish();
+            finishAfterTransition();
             return;
         }
 
@@ -52,7 +54,7 @@ public final class ReviewPermissionsActivity extends FragmentActivity
             setContentView(R.layout.review_permissions);
             if (getSupportFragmentManager().findFragmentById(R.id.preferences_frame) == null) {
                 getSupportFragmentManager().beginTransaction().add(R.id.preferences_frame,
-                        ReviewPermissionsFragment.newInstance(packageInfo)).commit();
+                        ReviewPermissionsWrapperFragment.newInstance(packageInfo)).commit();
             }
         }
     }

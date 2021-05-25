@@ -66,7 +66,7 @@ public final class ReviewPermissionsFragment extends PreferenceFragmentCompat
         implements View.OnClickListener, PermissionPreference.PermissionPreferenceChangeListener,
         PermissionPreference.PermissionPreferenceOwnerFragment {
 
-    private static final String EXTRA_PACKAGE_INFO =
+    public static final String EXTRA_PACKAGE_INFO =
             "com.android.permissioncontroller.permission.ui.extra.PACKAGE_INFO";
     private static final String LOG_TAG = ReviewPermissionsFragment.class.getSimpleName();
 
@@ -81,15 +81,6 @@ public final class ReviewPermissionsFragment extends PreferenceFragmentCompat
 
     private boolean mHasConfirmedRevoke;
 
-    public static ReviewPermissionsFragment newInstance(PackageInfo packageInfo) {
-        Bundle arguments = new Bundle();
-        arguments.putParcelable(ReviewPermissionsFragment.EXTRA_PACKAGE_INFO, packageInfo);
-        ReviewPermissionsFragment instance = new ReviewPermissionsFragment();
-        instance.setArguments(arguments);
-        instance.setRetainInstance(true);
-        return instance;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,12 +92,12 @@ public final class ReviewPermissionsFragment extends PreferenceFragmentCompat
 
         PackageInfo packageInfo = getArguments().getParcelable(EXTRA_PACKAGE_INFO);
         if (packageInfo == null) {
-            activity.finish();
+            activity.finishAfterTransition();
             return;
         }
 
         mAppPermissions = new AppPermissions(activity, packageInfo, false, true,
-                () -> getActivity().finish());
+                () -> getActivity().finishAfterTransition());
 
         boolean reviewRequired = false;
         for (AppPermissionGroup group : mAppPermissions.getPermissionGroups()) {
@@ -122,7 +113,7 @@ public final class ReviewPermissionsFragment extends PreferenceFragmentCompat
             // are restricted. Hence there is nothing to review and instantly continue.
             confirmPermissionsReview();
             executeCallback(true);
-            activity.finish();
+            activity.finishAfterTransition();
         }
     }
 
@@ -165,7 +156,7 @@ public final class ReviewPermissionsFragment extends PreferenceFragmentCompat
             intent.putExtra(ManagePermissionsActivity.EXTRA_ALL_PERMISSIONS, true);
             getActivity().startActivity(intent);
         }
-        activity.finish();
+        activity.finishAfterTransition();
     }
 
     private void grantReviewedPermission(AppPermissionGroup group) {

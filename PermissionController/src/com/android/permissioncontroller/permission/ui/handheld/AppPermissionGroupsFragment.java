@@ -61,6 +61,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 
+import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.PermissionControllerStatsLog;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.debug.PermissionUsages;
@@ -73,6 +74,7 @@ import com.android.permissioncontroller.permission.ui.model.AppPermissionGroupsV
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
 import com.android.permissioncontroller.permission.utils.Utils;
 import com.android.settingslib.HelpUtils;
+import com.android.settingslib.widget.FooterPreference;
 
 import java.text.Collator;
 import java.time.Instant;
@@ -230,8 +232,10 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
         super.onCreateOptionsMenu(menu, inflater);
         if (mIsSystemPermsScreen) {
             menu.add(Menu.NONE, MENU_ALL_PERMS, Menu.NONE, R.string.all_permissions);
-            HelpUtils.prepareHelpMenuItem(getActivity(), menu, R.string.help_app_permissions,
-                    getClass().getName());
+            if (!SdkLevel.isAtLeastS()) {
+                HelpUtils.prepareHelpMenuItem(getActivity(), menu, R.string.help_app_permissions,
+                        getClass().getName());
+            }
         }
     }
 
@@ -520,7 +524,7 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
         autoRevokeSwitch.setKey(AUTO_REVOKE_SWITCH_KEY);
         autoRevokeCategory.addPreference(autoRevokeSwitch);
 
-        Preference autoRevokeSummary = new Preference(context);
+        FooterPreference autoRevokeSummary = new FooterPreference(context);
         autoRevokeSummary.setIcon(Utils.applyTint(getActivity(), R.drawable.ic_info_outline,
                 android.R.attr.colorControlNormal));
         autoRevokeSummary.setKey(AUTO_REVOKE_SUMMARY_KEY);
@@ -537,7 +541,8 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
                 .findPreference(AUTO_REVOKE_CATEGORY_KEY);
         SwitchPreference autoRevokeSwitch = autoRevokeCategory.findPreference(
                 AUTO_REVOKE_SWITCH_KEY);
-        Preference autoRevokeSummary = autoRevokeCategory.findPreference(AUTO_REVOKE_SUMMARY_KEY);
+        FooterPreference autoRevokeSummary = autoRevokeCategory.findPreference(
+                AUTO_REVOKE_SUMMARY_KEY);
 
         if (!state.isEnabledGlobal()) {
             autoRevokeCategory.setVisible(false);

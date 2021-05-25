@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.ui.handheld
+package com.android.permissioncontroller.permission.ui.handheld;
 
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceFragmentCompat;
 
 /**
- * Press back and close the activity if this is the last fragment.
+ * Wrapper over AppPermissionFragment
  */
-fun Fragment.pressBack() {
-    val wasBackExecuted = findNavController().popBackStack()
-    if (!wasBackExecuted) {
-        activity?.let { it.finishAfterTransition() }
+public class AppPermissionWrapperFragment extends PermissionsCollapsingToolbarBaseFragment {
+
+    @NonNull
+    @Override
+    public PreferenceFragmentCompat createPreferenceFragment() {
+        return new AppPermissionFragment();
     }
 }
