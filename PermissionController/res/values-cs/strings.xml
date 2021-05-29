@@ -294,7 +294,7 @@
     <string name="unused_apps_subtitle_after" msgid="2034267519506357898">"Oprávnění byla odebrána od aplikací"</string>
     <string name="unused_apps_subtitle_before" msgid="5233302577076132427">"Oprávnění budou odebrána od aplikací"</string>
     <string name="unused_permissions_subtitle_two" msgid="2207266295008423015">"<xliff:g id="PERM_NAME_0">%1$s</xliff:g> a <xliff:g id="PERM_NAME_1">%2$s</xliff:g>"</string>
-    <string name="unused_permissions_subtitle_many" msgid="4387289202207450238">"<xliff:g id="PERM_NAME_0">%1$s</xliff:g>, <xliff:g id="PERM_NAME_1">%2$s</xliff:g>, a ještě <xliff:g id="NUMBER_OF_PERMISSIONS">%3$s</xliff:g>"</string>
+    <string name="unused_permissions_subtitle_many" msgid="4387289202207450238">"<xliff:g id="PERM_NAME_0">%1$s</xliff:g>, <xliff:g id="PERM_NAME_1">%2$s</xliff:g> a ještě <xliff:g id="NUMBER_OF_PERMISSIONS">%3$s</xliff:g>"</string>
     <string name="unused_app_permissions_removed_summary" msgid="6779039455326071033">"Za účelem ochrany vašich dat byla odebrána oprávnění od aplikací, které jste několik měsíců nepoužili"</string>
     <string name="unused_app_permissions_removed_summary_some" msgid="5080490037831563441">"Za účelem ochrany vašich dat byla odebrána oprávnění některých aplikací, které jste několik měsíců nepoužili"</string>
     <string name="one_unused_app_summary" msgid="7831913934488881991">"Jednu aplikaci jste několik měsíců nepoužili"</string>
@@ -424,7 +424,7 @@
     <string name="permgrouprequest_storage" msgid="8717773092518621602">"Povolit aplikaci &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; přístup k fotkám, mediálnímu obsahu a souborům v zařízení?"</string>
     <string name="permgrouprequest_microphone" msgid="2825208549114811299">"Povolit aplikaci &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; nahrávat zvuk?"</string>
     <string name="permgrouprequest_activityRecognition" msgid="5415121592794230330">"Povolit aplikaci &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; přístup k vaší fyzické aktivitě?"</string>
-    <string name="permgrouprequest_camera" msgid="5123097035410002594">"Povolit aplikaci &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; fotit a nahrávat video?"</string>
+    <string name="permgrouprequest_camera" msgid="5123097035410002594">"Povolit aplikaci &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; fotit a nahrávat videa?"</string>
     <string name="permgrouprequest_calllog" msgid="2065327180175371397">"Povolit aplikaci &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; přístup k seznamu telefonních hovorů?"</string>
     <string name="permgrouprequest_phone" msgid="1829234136997316752">"Povolit aplikaci &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uskutečňovat a spravovat telefonní hovory?"</string>
     <string name="permgrouprequest_sensors" msgid="4397358316850652235">"Povolit aplikaci &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; přístup k údajům ze snímačů vašich životních funkcí?"</string>
