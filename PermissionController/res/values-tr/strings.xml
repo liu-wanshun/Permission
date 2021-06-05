@@ -215,8 +215,8 @@
     <string name="allowed_header" msgid="7769277978004790414">"İzin verilenler"</string>
     <string name="allowed_always_header" msgid="6455903312589013545">"Her zaman izin verilenler"</string>
     <string name="allowed_foreground_header" msgid="6845655788447833353">"Yalnızca kullanımdayken izin verilenler"</string>
-    <string name="allowed_storage_scoped" msgid="5383645873719086975">"Yalnızca medyaya erişim izni verildi"</string>
-    <string name="allowed_storage_full" msgid="5356699280625693530">"Tüm dosyaları yönetme izni verildi"</string>
+    <string name="allowed_storage_scoped" msgid="5383645873719086975">"Yalnızca medyaya erişim izni verilenler"</string>
+    <string name="allowed_storage_full" msgid="5356699280625693530">"Tüm dosyaları yönetme izni verilenler"</string>
     <string name="ask_header" msgid="2633816846459944376">"Her zaman sor"</string>
     <string name="denied_header" msgid="2253955654228120835">"Reddedilenler"</string>
     <plurals name="days" formatted="false" msgid="7882807103511175827">
@@ -385,7 +385,7 @@
     <string name="adjust_user_sensitive_per_app_header" msgid="4543506440989005648">"Şu öğelere ilişkin kullanımı göster"</string>
     <string name="assistant_record_audio_user_sensitive_title" msgid="5532123360322362378">"Yardımcı uygulama tetikleyici algılamasını göster"</string>
     <string name="assistant_record_audio_user_sensitive_summary" msgid="6482937591816401619">"Sesli yardımı etkinleştirmek için mikrofon kullanıldığında simgeyi durum çubuğunda göster"</string>
-    <string name="permgrouprequest_storage_isolated" msgid="4892154224026852295">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uygulamasının cihazınızdaki fotoğraf ve dosyalara erişmesine izin verilsin mi?"</string>
+    <string name="permgrouprequest_storage_isolated" msgid="4892154224026852295">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uygulamasının cihazınızdaki fotoğraf ve medya içeriğine erişmesine izin verilsin mi?"</string>
     <string name="permgrouprequest_contacts" msgid="8391550064551053695">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uygulamasının kişilerinize erişmesine izin verilsin mi?"</string>
     <string name="permgrouprequest_location" msgid="6990232580121067883">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uygulamasının bu cihazın konumuna erişmesine izin verilsin mi?"</string>
     <string name="permgrouprequestdetail_location" msgid="2635935335778429894">"Bu uygulama konum bilgisine yalnızca kullanıldığı sırada erişebilecektir"</string>
@@ -400,7 +400,7 @@
     <string name="permgrouprequest_activityRecognition" msgid="5415121592794230330">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uygulamasına fiziksel aktivitenize erişme izni verilsin mi?"</string>
     <string name="permgrouprequest_camera" msgid="5123097035410002594">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uygulamasının fotoğraf çekmesine ve video kaydı yapmasına izin verilsin mi?"</string>
     <string name="permgrouprequest_calllog" msgid="2065327180175371397">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uygulamasının telefon arama kayıtlarınıza erişmesine izin verilsin mi?"</string>
-    <string name="permgrouprequest_phone" msgid="1829234136997316752">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uygulamasının telefon etmesine ve çağrıları yönetmesine izin verilsin mi?"</string>
+    <string name="permgrouprequest_phone" msgid="1829234136997316752">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uygulamasının telefon etmesine ve aramaları yönetmesine izin verilsin mi?"</string>
     <string name="permgrouprequest_sensors" msgid="4397358316850652235">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uygulamasının hayati belirtilerinizle ilgili sensör verilerine erişmesine izin verilsin mi?"</string>
     <string name="auto_granted_permissions" msgid="6009452264824455892">"Kontrol edilen izinler"</string>
     <string name="auto_granted_location_permission_notification_title" msgid="1438871159268985993">"Konuma erişilebilir"</string>

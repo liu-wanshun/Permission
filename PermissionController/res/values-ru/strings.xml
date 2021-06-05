@@ -66,7 +66,7 @@
     <string name="default_permission_description" msgid="4624464917726285203">"выполнять неизвестное действие"</string>
     <string name="app_permissions_group_summary" msgid="8788419008958284002">"Приложений с разрешением: <xliff:g id="COUNT_0">%1$d</xliff:g> из <xliff:g id="COUNT_1">%2$d</xliff:g>"</string>
     <string name="app_permissions_group_summary2" msgid="4329922444840521150">"Приложений с разрешением: <xliff:g id="COUNT_0">%1$d</xliff:g> из <xliff:g id="COUNT_1">%2$d</xliff:g>"</string>
-    <string name="menu_show_system" msgid="4254021607027872504">"Показать системные"</string>
+    <string name="menu_show_system" msgid="4254021607027872504">"Показать системные процессы"</string>
     <string name="menu_hide_system" msgid="3855390843744028465">"Скрыть системные процессы"</string>
     <string name="no_apps" msgid="2412612731628386816">"Нет приложений"</string>
     <string name="location_settings" msgid="3624412509133422562">"Настройки геолокации"</string>
@@ -208,7 +208,7 @@
     <string name="last_opened_category_title" msgid="7871347400611202595">"Использовались более <xliff:g id="NUMBER">%s</xliff:g> мес. назад"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Вы открывали это приложение <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Использовалось <xliff:g id="DATE">%s</xliff:g>"</string>
-    <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Приложение сможет просматривать, изменять и удалять любые файлы в общем хранилище на этом устройстве, а также на подключенных запоминающих устройствах. При этом оно сможет получать доступ к файлам без вашего ведома."</string>
+    <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Если вы разрешите приложению управлять всеми файлами, оно сможет просматривать, изменять и удалять любые файлы в общем хранилище на этом устройстве, а также на подключенных запоминающих устройствах. При этом оно сможет получать доступ к файлам без вашего ведома."</string>
     <string name="special_file_access_dialog" msgid="583804114020740610">"Разрешить этому приложению просматривать, изменять и удалять любые файлы на этом устройстве, а также на подключенных запоминающих устройствах? Приложение сможет получать доступ к файлам без вашего ведома."</string>
     <string name="permission_description_summary_generic" msgid="5401399408814903391">"Приложения с этим разрешением могут <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
     <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Приложения с этим разрешением могут получать доступ к данным о вашей физической активности, например прогулках, поездках на велосипеде, количестве пройденных шагов и пр."</string>
