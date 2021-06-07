@@ -111,7 +111,7 @@
     <string name="perm_usage_adv_info_title" msgid="3357831829538873708">"Angalia ruhusa zingine"</string>
     <string name="perm_usage_adv_info_summary_2_items" msgid="3702175198750127822">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g>"</string>
     <string name="perm_usage_adv_info_summary_more_items" msgid="949055326299562218">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g> na <xliff:g id="NUM">%3$s</xliff:g> zaidi"</string>
-    <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Muda ambao programu zilitumia <xliff:g id="PERMGROUP">%1$s</xliff:g> yako katika saa 24 zilizopita"</string>
+    <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Muda ambao programu zilitumia <xliff:g id="PERMGROUP">%1$s</xliff:g> katika saa 24 zilizopita"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Wakati programu hii ilipotumia ruhusa yako ya <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Pata maelezo zaidi"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
@@ -240,7 +240,7 @@
     <string name="permission_description_summary_generic" msgid="5401399408814903391">"Programu zenye ruhusa hii zinaweza <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
     <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Programu zenye ruhusa hii zinaweza kufikia data kuhusu mazoezi yako ya mwili, kama vile kutembea, kuendesha baiskeli, kuendesha gari, kuhesabu hatua na mengineyo"</string>
     <string name="permission_description_summary_calendar" msgid="103329982944411010">"Programu zenye ruhusa hii zinaweza kufikia kalenda yako"</string>
-    <string name="permission_description_summary_call_log" msgid="7321437186317577624">"Programu zenye ruhusa hii zinaweza kusoma na kuandika rekodi ya nambari za simu"</string>
+    <string name="permission_description_summary_call_log" msgid="7321437186317577624">"Programu zenye ruhusa hii zinaweza kusoma na kuandika kumbukumbu za simu"</string>
     <string name="permission_description_summary_camera" msgid="108004375101882069">"Programu zenye ruhusa hii zinaweza kupiga picha na kurekodi video"</string>
     <string name="permission_description_summary_contacts" msgid="2337798886460408996">"Programu zenye ruhusa hii zinaweza kufikia anwani zako"</string>
     <string name="permission_description_summary_location" msgid="2817531799933480694">"Programu zenye ruhusa hii zinaweza kutambua mahali kilipo kifaa hiki"</string>
@@ -326,16 +326,16 @@
     <string name="permission_subtitle_background" msgid="8916750995309083180">"Inaruhusiwa kila wakati"</string>
     <string name="app_perms_24h_access" msgid="99069906850627181">"Ilitumiwa mwisho <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_perms_24h_access_yest" msgid="5411926024794555022">"Ilitumiwa mwisho jana <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
-    <string name="app_perms_content_provider" msgid="6996750793881252778">"Ilitumiwa katika saa 24 zilizopita"</string>
+    <string name="app_perms_content_provider" msgid="6996750793881252778">"Ilifikia katika saa 24 zilizopita"</string>
     <string name="app_perms_24h_access_background" msgid="3413674718969576843">"Ilitumiwa mara ya mwisho tarehe <xliff:g id="TIME_DATE">%1$s</xliff:g> • Inaruhusiwa kila wakati"</string>
     <string name="app_perms_24h_access_yest_background" msgid="9174750810998076725">"Ilitumiwa mara ya mwisho jana saa <xliff:g id="TIME_DATE">%1$s</xliff:g> • Inaruhusiwa kila wakati"</string>
-    <string name="app_perms_content_provider_background" msgid="7793984056711923997">"Ilitumiwa katika saa 24 zilizopita • Inaruhusiwa kila wakati"</string>
+    <string name="app_perms_content_provider_background" msgid="7793984056711923997">"Ilifikia katika saa 24 zilizopita • Inaruhusiwa kila wakati"</string>
     <string name="app_perms_24h_access_media_only" msgid="6651699644199132054">"Ilitumiwa mwisho <xliff:g id="TIME_DATE">%1$s</xliff:g> • Maudhui"</string>
     <string name="app_perms_24h_access_yest_media_only" msgid="7213187706424998792">"Ilitumiwa mwisho jana <xliff:g id="TIME_DATE">%1$s</xliff:g> • Maudhui"</string>
-    <string name="app_perms_content_provider_media_only" msgid="6206759230589923421">"Ilitumiwa katika saa 24 zilizopita • Maudhui"</string>
+    <string name="app_perms_content_provider_media_only" msgid="6206759230589923421">"Ilifikia katika saa 24 zilizopita • Maudhui"</string>
     <string name="app_perms_24h_access_all_files" msgid="8902360456978159091">"Ilitumiwa mwisho <xliff:g id="TIME_DATE">%1$s</xliff:g> • Faili Zote"</string>
     <string name="app_perms_24h_access_yest_all_files" msgid="5708424073126844909">"Ilitumiwa mwisho jana <xliff:g id="TIME_DATE">%1$s</xliff:g> • Faili Zote"</string>
-    <string name="app_perms_content_provider_all_files" msgid="3315281519230304799">"Ilitumiwa katika saa 24 zilizopita • Faili Zote"</string>
+    <string name="app_perms_content_provider_all_files" msgid="3315281519230304799">"Ilifikia katika saa 24 zilizopita • Faili Zote"</string>
     <string name="no_permissions_allowed" msgid="6081976856354669209">"Hakuna ruhusa zilizotolewa"</string>
     <string name="no_permissions_denied" msgid="8159923922804043282">"Hakuna ruhusa ambazo hazijatolewa"</string>
     <string name="no_apps_allowed" msgid="7718822655254468631">"Hakuna programu zinazoruhusiwa"</string>
@@ -352,7 +352,7 @@
     <string name="role_assistant_short_label" msgid="3369003713187703399">"Programu dijitali ya usaidizi"</string>
     <string name="role_assistant_description" msgid="6622458130459922952">"Programu za usaidizi zinaweza kukusaidia kulingana na maelezo kutoka skrini unayotazama. Baadhi ya programu zinaweza kutumia huduma za kifungua programu na kuweka data kwa kutamka ili kukupa usaidizi wa pamoja."</string>
     <string name="role_assistant_request_title" msgid="5964976301922776060">"Je, ungependa kuweka <xliff:g id="APP_NAME">%1$s</xliff:g> iwe programu yako chaguomsingi ya usaidizi?"</string>
-    <string name="role_assistant_request_description" msgid="6836644847620178483">"Hupata uwezo wa kufikia SMS, rekodi ya nambari za simu"</string>
+    <string name="role_assistant_request_description" msgid="6836644847620178483">"Hupata uwezo wa kufikia SMS, kumbukumbu za simu"</string>
     <string name="role_browser_label" msgid="2877796144554070207">"Programu kuu ya kivinjari"</string>
     <string name="role_browser_short_label" msgid="6745009127123292296">"Programu ya kivinjari"</string>
     <string name="role_browser_description" msgid="3465253637499842671">"Programu zinazokupa uwezo wa kufikia intaneti na kuonyesha viungo unavyogusa"</string>
@@ -362,7 +362,7 @@
     <string name="role_dialer_short_label" msgid="7186888549465352489">"Programu ya simu"</string>
     <string name="role_dialer_description" msgid="8768708633696539612">"Programu zinazokuruhusu kupiga na kupokea simu kwenye kifaa chako"</string>
     <string name="role_dialer_request_title" msgid="5959618560705912058">"Je, ungependa kuweka <xliff:g id="APP_NAME">%1$s</xliff:g> iwe programu yako chaguomsingi ya simu?"</string>
-    <string name="role_dialer_request_description" msgid="2264219375528345270">"Hupata uwezo wa kufikia rekodi ya nambari za simu, kutuma SMS"</string>
+    <string name="role_dialer_request_description" msgid="2264219375528345270">"Hupata uwezo wa kufikia kumbukumbu za simu, kutuma SMS"</string>
     <string name="role_dialer_search_keywords" msgid="3324448983559188087">"kipiga simu"</string>
     <string name="role_sms_label" msgid="8456999857547686640">"Programu chaguomsingi ya SMS"</string>
     <string name="role_sms_short_label" msgid="4371444488034692243">"Programu ya SMS"</string>
@@ -490,7 +490,7 @@
     <string name="privdash_label_camera" msgid="1426440033626198096">"Kamera"</string>
     <string name="privdash_label_microphone" msgid="8415035835803511693">"Maikrofoni"</string>
     <string name="privdash_label_location" msgid="6882400763866489291">"Mahali"</string>
-    <string name="privdash_label_other" msgid="3710394147423236033">"Mengine"</string>
+    <string name="privdash_label_other" msgid="3710394147423236033">"Nyingine"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Hamna"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Saa 24\nzilizopita"</string>
 </resources>

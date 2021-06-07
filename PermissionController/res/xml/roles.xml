@@ -23,6 +23,8 @@
         <permission name="android.permission.READ_CALL_LOG" />
         <permission name="android.permission.WRITE_CALL_LOG" />
         <permission name="com.android.voicemail.permission.ADD_VOICEMAIL" />
+        <permission name="com.android.voicemail.permission.READ_VOICEMAIL" minSdkVersion="31" />
+        <permission name="com.android.voicemail.permission.WRITE_VOICEMAIL" minSdkVersion="31" />
         <permission name="android.permission.USE_SIP" />
         <permission name="android.permission.PROCESS_OUTGOING_CALLS" />
         <permission name="android.permission.ANSWER_PHONE_CALLS" />
@@ -605,9 +607,15 @@
         </permissions>
     </role>
 
+    <!---
+      ~ A role for the notification handler on TV devices.
+      ~ Note: on TV devices that have the Dashboard screen, the holder for this role is responsible
+      ~ for it, which is why it needs OBSERVE_SENSOR_PRIVACY permission (the Dashboard displays
+      ~ the state of the privacy sensors).
+      -->
     <role
         name="android.app.role.SYSTEM_TELEVISION_NOTIFICATION_HANDLER"
-        behavior="SystemTelevisionNotificationHandlerRoleBehavior"
+        behavior="TelevisionRoleBehavior"
         defaultHolders="config_systemTelevisionNotificationHandler"
         exclusive="true"
         minSdkVersion="31"
@@ -825,4 +833,22 @@
             <permission name="android.permission.OBSERVE_SENSOR_PRIVACY" />
         </permissions>
     </role>
+
+    <!---
+      ~ A role for the package responsible for interacting with a TV remote.
+      -->
+    <role
+        name="android.app.role.SYSTEM_TELEVISION_REMOTE_SERVICE"
+        behavior="TelevisionRoleBehavior"
+        defaultHolders="config_systemTelevisionRemoteService"
+        exclusive="true"
+        minSdkVersion="31"
+        static="true"
+        systemOnly="true"
+        visible="false">
+        <permissions>
+            <permission name="android.permission.OBSERVE_SENSOR_PRIVACY" />
+        </permissions>
+    </role>
+
 </roles>

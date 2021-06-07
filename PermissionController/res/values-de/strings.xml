@@ -42,7 +42,7 @@
     <string name="grant_dialog_button_allow" msgid="5314677880021102550">"Zulassen"</string>
     <string name="grant_dialog_button_allow_always" msgid="4485552579273565981">"Immer zulassen"</string>
     <string name="grant_dialog_button_allow_foreground" msgid="501896824973636533">"Bei Nutzung der App"</string>
-    <string name="grant_dialog_button_change_to_precise_location" msgid="3273115879467236033">"Auf genauen Standort ändern"</string>
+    <string name="grant_dialog_button_change_to_precise_location" msgid="3273115879467236033">"Zu genauem Standort ändern"</string>
     <string name="grant_dialog_button_keey_approximate_location" msgid="438025182769080011">"Ungefähren Standort beibehalten"</string>
     <string name="grant_dialog_button_allow_one_time" msgid="2618088516449706391">"Nur dieses Mal"</string>
     <string name="grant_dialog_button_allow_background" msgid="8236044729434367833">"Immer zulassen"</string>
@@ -53,7 +53,7 @@
     <string name="unused_apps" msgid="2058057455175955094">"Nicht verwendete Apps"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"App deaktivieren"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"Bei Deaktivierung dieser App funktionieren Android und andere Apps möglicherweise nicht mehr ordnungsgemäß. Beachte hierbei, dass du diese App nicht löschen kannst, weil sie auf deinem Gerät vorinstalliert war. Durch die Deaktivierung schaltest du diese App ab und blendest sie auf deinem Gerät aus."</string>
-    <string name="app_permission_manager" msgid="3903811137630909550">"Berechtigungsmanager"</string>
+    <string name="app_permission_manager" msgid="3903811137630909550">"Berechtigungs­manager"</string>
     <string name="never_ask_again" msgid="4728762438198560329">"Nicht mehr fragen"</string>
     <string name="no_permissions" msgid="3881676756371148563">"Keine Berechtigungen"</string>
     <string name="additional_permissions" msgid="5801285469338873430">"Zusätzliche Berechtigungen"</string>
@@ -106,7 +106,7 @@
     <string name="current_permissions_category" msgid="4292990083585728880">"Aktuelle Berechtigungen"</string>
     <string name="message_staging" msgid="9110563899955511866">"App wird vorbereitet…"</string>
     <string name="app_name_unknown" msgid="1319665005754048952">"Unbekannt"</string>
-    <string name="permission_usage_title" msgid="1568233336351734538">"Privatsphäredashboard"</string>
+    <string name="permission_usage_title" msgid="1568233336351734538">"Privatsphäre­dashboard"</string>
     <string name="permission_group_usage_title" msgid="2595013198075285173">"„<xliff:g id="PERMGROUP">%1$s</xliff:g>“-Nutzung"</string>
     <string name="perm_usage_adv_info_title" msgid="3357831829538873708">"Andere Berechtigungen ansehen"</string>
     <string name="perm_usage_adv_info_summary_2_items" msgid="3702175198750127822">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g>"</string>
@@ -260,7 +260,7 @@
     <string name="allowed_storage_scoped" msgid="5383645873719086975">"Zugriff nur auf Mediendateien zugelassen"</string>
     <string name="allowed_storage_full" msgid="5356699280625693530">"Verwalten aller Dateien zugelassen"</string>
     <string name="ask_header" msgid="2633816846459944376">"Jedes Mal fragen"</string>
-    <string name="denied_header" msgid="903209608358177654">"Nicht zulässig"</string>
+    <string name="denied_header" msgid="903209608358177654">"Nicht zugelassen"</string>
     <plurals name="days" formatted="false" msgid="7882807103511175827">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> Tage</item>
       <item quantity="one">1 Tag</item>

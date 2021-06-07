@@ -209,7 +209,7 @@
     <string name="precise_image_description" msgid="6349638632303619872">"ზუსტი მდებარეობა"</string>
     <string name="approximate_image_description" msgid="938803699637069884">"მიახლოებითი მდებარეობა"</string>
     <string name="app_permission_location_accuracy" msgid="7166912915040018669">"ზუსტი მდებარეობის გამოყენება"</string>
-    <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"როდესაც ზუსტი მდებარეობა გამორთულია, აპებს თქვენს მიახლოებით მდებარეობაზე წვდომა შეუძლიათ"</string>
+    <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"როდესაც ზუსტი მდებარეობა გამორთულია, აპებს თქვენს მიახლოებით მდებარეობაზე წვდომა შეუძლია"</string>
     <string name="app_permission_title" msgid="2090897901051370711">"ნებართვა: <xliff:g id="PERM">%1$s</xliff:g>"</string>
     <string name="app_permission_header" msgid="2951363137032603806">"<xliff:g id="PERM">%1$s</xliff:g>-ზე წვდომა ამ აპისთვის"</string>
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"ყველა ნებართვის ნახვა: <xliff:g id="APP">%1$s</xliff:g>"</string>
@@ -446,7 +446,7 @@
     <string name="adjust_user_sensitive_per_app_header" msgid="4543506440989005648">"მოხმარების გამოყოფა შემდეგისთვის:"</string>
     <string name="assistant_record_audio_user_sensitive_title" msgid="5532123360322362378">"ასისტენტის გაშვების ხატულის ჩვენება"</string>
     <string name="assistant_record_audio_user_sensitive_summary" msgid="6482937591816401619">"მიკროფონის მეშვეობით ხმოვანი ასისტენტის გააქტიურებისას სტატუსის ზოლში ხატულის ჩვენება"</string>
-    <string name="permgrouprequest_storage_isolated" msgid="4892154224026852295">"გსურთ, მიანიჭოთ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-ს თქვენს მოწყობილობაზე არსებულ ფოტოებზე და მედია-კონტენტზე წვდომის ნებართვა?"</string>
+    <string name="permgrouprequest_storage_isolated" msgid="4892154224026852295">"გსურთ, მიანიჭოთ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-ს თქვენს მოწყობილობაზე არსებულ ფოტოებსა და მედია-კონტენტზე წვდომის ნებართვა?"</string>
     <string name="permgrouprequest_contacts" msgid="8391550064551053695">"გსურთ, მიანიჭოთ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>-ს&lt;/b&gt; თქვენს კონტაქტებზე წვდომის ნებართვა?"</string>
     <string name="permgrouprequest_location" msgid="6990232580121067883">"გსურთ, მიანიჭოთ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>-ს&lt;/b&gt; ამ მოწყობილობის მდებარეობაზე წვდომის ნებართვა?"</string>
     <string name="permgrouprequestdetail_location" msgid="2635935335778429894">"ამ აპს მდებარეობაზე წვდომა მხოლოდ მაშინ ექნება, როცა თქვენ მას გამოიყენებთ"</string>

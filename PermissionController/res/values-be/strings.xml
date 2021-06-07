@@ -191,7 +191,7 @@
       <item quantity="many"><xliff:g id="NUMBER">%s</xliff:g> праграм</item>
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> праграмы</item>
     </plurals>
-    <string name="permission_usage_preference_summary_not_used" msgid="8806755646449754282">"За апошнія 24 гадзіны не выкарыстоўваўся"</string>
+    <string name="permission_usage_preference_summary_not_used" msgid="8806755646449754282">"За апошнія 24 гадзіны доступ не выкарыстоўваўся"</string>
     <plurals name="permission_usage_preference_label" formatted="false" msgid="9033113721294293706">
       <item quantity="one">Выкарыстоўваецца <xliff:g id="NUMBER">%1$d</xliff:g> праграмай</item>
       <item quantity="few">Выкарыстоўваецца <xliff:g id="NUMBER">%1$d</xliff:g> праграмамі</item>
@@ -379,7 +379,7 @@
     <string name="no_apps_allowed" msgid="7718822655254468631">"Няма дазволеных праграм"</string>
     <string name="no_apps_allowed_full" msgid="8011716991498934104">"Праграмы не дазволены для ўсіх файлаў"</string>
     <string name="no_apps_allowed_scoped" msgid="4908850477787659501">"Праграмы не дазволены толькі для файлаў мультымедыя"</string>
-    <string name="no_apps_denied" msgid="7663435886986784743">"Няма адмоўленых праграм"</string>
+    <string name="no_apps_denied" msgid="7663435886986784743">"Няма забароненых праграм"</string>
     <string name="car_permission_selected" msgid="180837028920791596">"Выбрана"</string>
     <string name="settings" msgid="5409109923158713323">"Налады"</string>
     <string name="accessibility_service_dialog_title_single" msgid="7956432823014102366">"<xliff:g id="SERVICE_NAME">%s</xliff:g> мае поўны доступ да даных вашай прылады"</string>

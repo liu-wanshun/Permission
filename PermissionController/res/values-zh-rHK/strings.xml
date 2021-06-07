@@ -111,7 +111,7 @@
     <string name="perm_usage_adv_info_title" msgid="3357831829538873708">"查看其他權限"</string>
     <string name="perm_usage_adv_info_summary_2_items" msgid="3702175198750127822">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>，<xliff:g id="PERMGROUP_1">%2$s</xliff:g>"</string>
     <string name="perm_usage_adv_info_summary_more_items" msgid="949055326299562218">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>、<xliff:g id="PERMGROUP_1">%2$s</xliff:g> 和另外 <xliff:g id="NUM">%3$s</xliff:g> 個"</string>
-    <string name="permission_group_usage_subtitle" msgid="712843174810251274">"過去 24 小時內應用程式使用「<xliff:g id="PERMGROUP">%1$s</xliff:g>」權限的時間軸"</string>
+    <string name="permission_group_usage_subtitle" msgid="712843174810251274">"應用程式在過去 24 小時內使用<xliff:g id="PERMGROUP">%1$s</xliff:g>的時間軸"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"當此應用程式使用您的<xliff:g id="PERMGROUP">%1$s</xliff:g>權限時"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"瞭解詳情"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
@@ -173,8 +173,8 @@
     </plurals>
     <string name="permission_usage_preference_summary_not_used" msgid="8806755646449754282">"過去 24 小時內未使用"</string>
     <plurals name="permission_usage_preference_label" formatted="false" msgid="9033113721294293706">
-      <item quantity="other">使用權限的應用程式數量：<xliff:g id="NUMBER">%1$d</xliff:g> 個</item>
-      <item quantity="one">使用權限的應用程式數量：1 個</item>
+      <item quantity="other">有 <xliff:g id="NUMBER">%1$d</xliff:g> 個應用程式使用</item>
+      <item quantity="one">有 1 個應用程式使用</item>
     </plurals>
     <string name="permission_usage_view_details" msgid="6675335735468752787">"在「資訊主頁」查看全部"</string>
     <string name="app_permission_usage_filter_label" msgid="7182861154638631550">"篩選條件：<xliff:g id="PERM">%1$s</xliff:g>"</string>
@@ -456,7 +456,7 @@
     <string name="permgroupupgraderequestdetail_location" msgid="1550899076845189165">"此應用程式想一直存取您的位置 (包括您沒有使用此應用程式時)。"<annotation id="link">"在設定中允許存取。"</annotation></string>
     <string name="permgrouprequest_nearby_devices" msgid="2272829282660436700">"要允許 &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; 尋找、連接及判斷附近裝置的相對位置嗎？"</string>
     <string name="permgroupupgraderequestdetail_nearby_devices" msgid="6877531270654738614">"要允許 &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; 尋找、連接及判斷附近裝置的相對位置嗎？"<annotation id="link">"請在設定中授予權限。"</annotation></string>
-    <string name="permgrouprequest_fineupgrade" msgid="2334242928821697672">"要將 <xliff:g id="APP_NAME">&lt;b&gt;%1$s&lt;/b&gt;</xliff:g> 存取的位置資訊從概略位置改為精確位置嗎？"</string>
+    <string name="permgrouprequest_fineupgrade" msgid="2334242928821697672">"要將<xliff:g id="APP_NAME">&lt;b&gt;%1$s&lt;/b&gt;</xliff:g>存取的位置資訊從概略位置改為精確位置嗎？"</string>
     <string name="permgrouprequest_coarselocation" msgid="7244605063736425232">"允許「<xliff:g id="APP_NAME">%1$s</xliff:g>」&lt;b&gt;&lt;/b&gt;存取此裝置的概略位置資訊嗎？"</string>
     <string name="permgrouprequest_finelocation_imagetext" msgid="1313062433398914334">"精確位置"</string>
     <string name="permgrouprequest_coarselocation_imagetext" msgid="8650605041483025297">"概略位置"</string>

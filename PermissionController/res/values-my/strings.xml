@@ -44,7 +44,7 @@
     <string name="grant_dialog_button_allow_foreground" msgid="501896824973636533">"အက်ပ်ကို သုံးနေစဉ်"</string>
     <string name="grant_dialog_button_change_to_precise_location" msgid="3273115879467236033">"နေရာအတိအကျသို့ ပြောင်းခြင်း"</string>
     <string name="grant_dialog_button_keey_approximate_location" msgid="438025182769080011">"တည်နေရာခန့်မှန်းခြေကို ဆက်ထားပါ"</string>
-    <string name="grant_dialog_button_allow_one_time" msgid="2618088516449706391">"ဤအကြိမ်သာ"</string>
+    <string name="grant_dialog_button_allow_one_time" msgid="2618088516449706391">"ဤတစ်ကြိမ်သာ"</string>
     <string name="grant_dialog_button_allow_background" msgid="8236044729434367833">"အမြဲ ခွင့်ပြုရန်"</string>
     <string name="grant_dialog_button_allow_all_files" msgid="4955436994954829894">"ဖိုင်အားလုံးကို စီမံခွင့်ပြုရန်"</string>
     <string name="grant_dialog_button_allow_media_only" msgid="4832877658422573832">"မီဒီယာဖိုင်များကို သုံးခွင့်ပြုရန်"</string>
@@ -204,7 +204,7 @@
     <string name="app_permission_button_allow_media_only" msgid="2834282724426046154">"မီဒီယာကိုသာ သုံးခွင့်ပြုရန်"</string>
     <string name="app_permission_button_allow_always" msgid="4573292371734011171">"အမြဲ ခွင့်ပြုရန်"</string>
     <string name="app_permission_button_allow_foreground" msgid="1991570451498943207">"အက်ပ်ကိုသုံးစဉ်သာ ခွင့်ပြုရန်"</string>
-    <string name="app_permission_button_ask" msgid="3342950658789427">"အမြဲမေးပါ"</string>
+    <string name="app_permission_button_ask" msgid="3342950658789427">"အမြဲမေးရန်"</string>
     <string name="app_permission_button_deny" msgid="6016454069832050300">"ခွင့်မပြုပါ"</string>
     <string name="precise_image_description" msgid="6349638632303619872">"နေရာအတိအကျ"</string>
     <string name="approximate_image_description" msgid="938803699637069884">"တည်နေရာခန့်မှန်းခြေ"</string>
@@ -238,7 +238,7 @@
     <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"ဖိုင်အားလုံးကို စီမံခွင့်ပြုလိုက်ပါက ဤစက် (သို့) ချိတ်ဆက်ထားသော သိုလှောင်သည့်စက်များ၏ ပုံမှန်သိုလှောင်ခန်းရှိ ဖိုင်မှန်သမျှကို ကြည့်ခြင်း၊ ပြုပြင်ခြင်းနှင့် ဖျက်ခြင်းတို့ ဤအက်ပ်က ပြုလုပ်နိုင်သည်။ သင့်ထံခွင့်မတောင်းဘဲ အက်ပ်က ဖိုင်များကို အသုံးပြုနိုင်သည်။"</string>
     <string name="special_file_access_dialog" msgid="583804114020740610">"ဤစက် (သို့) ချိတ်ဆက်ထားသော သိုလှောင်သည့်စက်များတွင် ဖိုင်များကို ကြည့်ခြင်း၊ ပြုပြင်ခြင်းနှင့် ဖျက်ခြင်းတို့လုပ်ရန် ဤအက်ပ်ကို ခွင့်ပြုမလား။ သင့်ထံခွင့်မတောင်းဘဲ ဤအက်ပ်က ဖိုင်များကို အသုံးပြုနိုင်သည်။"</string>
     <string name="permission_description_summary_generic" msgid="5401399408814903391">"ဤခွင့်ပြုချက်ရှိသော အက်ပ်များက <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
-    <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"ဤခွင့်ပြုချက်ရှိသော အက်ပ်များက လမ်းလျှောက်ခြင်း၊ စက်ဘီးစီးခြင်း၊ ကားမောင်းခြင်း၊ ခြေလှမ်းအရေအတွက်နှင့် အခြားအရာများကဲ့သို့ သင့်ကိုယ်လက်လှုပ်ရှားမှုကို ဝင်ကြည့်နိုင်သည်"</string>
+    <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"ဤခွင့်ပြုချက်ရှိသော အက်ပ်များက လမ်းလျှောက်ခြင်း၊ စက်ဘီးစီးခြင်း၊ ကားမောင်းခြင်း၊ ခြေလှမ်းအရေအတွက်နှင့် အခြားအရာများကဲ့သို့ သင့်ကိုယ်ခန္ဓာလှုပ်ရှားမှုကို ဝင်ကြည့်နိုင်သည်"</string>
     <string name="permission_description_summary_calendar" msgid="103329982944411010">"ဤခွင့်ပြုချက်ရှိသော အက်ပ်များက သင့်ပြက္ခဒိန်ကို ဝင်သုံးနိုင်သည်"</string>
     <string name="permission_description_summary_call_log" msgid="7321437186317577624">"ဤခွင့်ပြုချက်ရှိသော အက်ပ်များသည် ဖုန်းခေါ်ဆိုထားသော မှတ်တမ်းကို ဖတ်နိုင်၊ ရေးနိုင်သည်"</string>
     <string name="permission_description_summary_camera" msgid="108004375101882069">"ဤခွင့်ပြုချက်ရှိသော အက်ပ်များက ဓာတ်ပုံနှင့် ဗီဒီယိုများ ရိုက်ယူနိုင်သည်"</string>
@@ -259,7 +259,7 @@
     <string name="allowed_foreground_header" msgid="6845655788447833353">"အသုံးပြုစဉ်တွင်သာ ခွင့်ပြုထားသည်"</string>
     <string name="allowed_storage_scoped" msgid="5383645873719086975">"မီဒီယာကိုသာ သုံးခွင့်ပြုထားသည်"</string>
     <string name="allowed_storage_full" msgid="5356699280625693530">"ဖိုင်အားလုံးကို စီမံခွင့်ပြုထားသည်"</string>
-    <string name="ask_header" msgid="2633816846459944376">"အမြဲမေးပါ"</string>
+    <string name="ask_header" msgid="2633816846459944376">"အမြဲမေးရန်"</string>
     <string name="denied_header" msgid="903209608358177654">"ခွင့်ပြုမထားပါ"</string>
     <plurals name="days" formatted="false" msgid="7882807103511175827">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> ရက်</item>
@@ -469,7 +469,7 @@
     <string name="permgroupbackgroundrequestdetail_microphone" msgid="553702902263681838">"ဤအက်ပ်ကို သင်အသုံးမပြုနေလျှင်ပင် ၎င်းက တစ်ချိန်လုံး အသံဖမ်းယူလိုသည်။ "<annotation id="link">"ဆက်တင်များတွင် ခွင့်ပြုပါ။"</annotation></string>
     <string name="permgroupupgraderequest_microphone" msgid="1362781696161233341">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&amp;gt အတွက် မိုက်ခရိုဖုန်း အသုံးပြုခွင့် ပြောင်းမလား။"</string>
     <string name="permgroupupgraderequestdetail_microphone" msgid="2870497719571464239">"ဤအက်ပ်ကို သင်အသုံးမပြုနေလျှင်ပင် ၎င်းက တစ်ချိန်လုံး အသံဖမ်းလိုသည်။ "<annotation id="link">"ဆက်တင်များတွင် ခွင့်ပြုပါ။"</annotation></string>
-    <string name="permgrouprequest_activityRecognition" msgid="5415121592794230330">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; အား သင့်ကိုယ်လက်လှုပ်ရှားမှုကို ဝင်ကြည့်ခွင့် ပေးလိုပါသလား။"</string>
+    <string name="permgrouprequest_activityRecognition" msgid="5415121592794230330">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; အား သင့်ကိုယ်ခန္ဓာလှုပ်ရှားမှုကို  ဝင်ကြည့်ခွင့် ပေးလိုပါသလား။"</string>
     <string name="permgrouprequest_camera" msgid="5123097035410002594">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; အား ဓာတ်ပုံနှင့် ဗီဒီယိုရိုက်ကူးခွင့် ပေးလိုပါသလား။"</string>
     <string name="permgrouprequestdetail_camera" msgid="9085323239764667883">"ဤအက်ပ်ကို အသုံးပြုနေသည့် အချိန်တွင်သာ ၎င်းက ဓာတ်ပုံနှင့် ဗီဒီယိုများကို ရိုက်ကူးနိုင်သည်။"</string>
     <string name="permgroupbackgroundrequest_camera" msgid="1274286575704213875">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ကို ဓာတ်ပုံနှင့် ဗီဒီယိုရိုက်ကူးခွင့် ပေးလိုပါသလား။"</string>

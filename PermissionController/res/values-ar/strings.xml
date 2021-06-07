@@ -43,7 +43,7 @@
     <string name="grant_dialog_button_allow_always" msgid="4485552579273565981">"السماح طوال الوقت"</string>
     <string name="grant_dialog_button_allow_foreground" msgid="501896824973636533">"أثناء استخدام التطبيق"</string>
     <string name="grant_dialog_button_change_to_precise_location" msgid="3273115879467236033">"تغيير إلى الموقع الجغرافي الدقيق"</string>
-    <string name="grant_dialog_button_keey_approximate_location" msgid="438025182769080011">"الاحتفاظ بالموقع الجغرافي التقريبي."</string>
+    <string name="grant_dialog_button_keey_approximate_location" msgid="438025182769080011">"البقاء على الموقع الجغرافي التقريبي"</string>
     <string name="grant_dialog_button_allow_one_time" msgid="2618088516449706391">"هذه المرَّة فقط"</string>
     <string name="grant_dialog_button_allow_background" msgid="8236044729434367833">"السماح طوال الوقت"</string>
     <string name="grant_dialog_button_allow_all_files" msgid="4955436994954829894">"السماح بإدارة كل الملفات"</string>
@@ -68,7 +68,7 @@
     </plurals>
     <string name="old_sdk_deny_warning" msgid="2382236998845153919">"‏تمّ تصميم هذا التطبيق لإصدار قديم من Android. وقد يؤدي رفض الإذن إلى عدم العمل على النحو المطلوب مرة أخرى."</string>
     <string name="default_permission_description" msgid="4624464917726285203">"تنفيذ إجراء غير معروف"</string>
-    <string name="app_permissions_group_summary" msgid="8788419008958284002">"تمّ السماح لـ <xliff:g id="COUNT_0">%1$d</xliff:g> من أصل <xliff:g id="COUNT_1">%2$d</xliff:g> تطبيق"</string>
+    <string name="app_permissions_group_summary" msgid="8788419008958284002">"تمّ السماح لـ <xliff:g id="COUNT_0">%1$d</xliff:g> من أصل <xliff:g id="COUNT_1">%2$d</xliff:g> تطبيق."</string>
     <string name="app_permissions_group_summary2" msgid="4329922444840521150">"التطبيقات التي تم منحها الإذن: <xliff:g id="COUNT_0">%1$d</xliff:g>/<xliff:g id="COUNT_1">%2$d</xliff:g>"</string>
     <string name="menu_show_system" msgid="4254021607027872504">"إظهار تطبيقات النظام"</string>
     <string name="menu_hide_system" msgid="3855390843744028465">"إخفاء تطبيقات النظام"</string>
@@ -213,12 +213,12 @@
     </plurals>
     <string name="permission_usage_preference_summary_not_used" msgid="8806755646449754282">"لم يتم استخدام الإذن في آخر 24 ساعة."</string>
     <plurals name="permission_usage_preference_label" formatted="false" msgid="9033113721294293706">
-      <item quantity="zero">يستخدِمه <xliff:g id="NUMBER">%1$d</xliff:g> تطبيق.</item>
-      <item quantity="two">يستخدِمه تطبيقان (<xliff:g id="NUMBER">%1$d</xliff:g>).</item>
-      <item quantity="few">تستخدِمه <xliff:g id="NUMBER">%1$d</xliff:g> تطبيقات.</item>
-      <item quantity="many">يستخدِمه <xliff:g id="NUMBER">%1$d</xliff:g> تطبيقًا.</item>
-      <item quantity="other">يستخدِمه <xliff:g id="NUMBER">%1$d</xliff:g> تطبيق.</item>
-      <item quantity="one">يستخدِمه تطبيق واحد.</item>
+      <item quantity="zero">يستخدمه <xliff:g id="NUMBER">%1$d</xliff:g> تطبيق.</item>
+      <item quantity="two">يستخدمه تطبيقان (<xliff:g id="NUMBER">%1$d</xliff:g>).</item>
+      <item quantity="few">يستخدمه <xliff:g id="NUMBER">%1$d</xliff:g> تطبيقات.</item>
+      <item quantity="many">يستخدمه <xliff:g id="NUMBER">%1$d</xliff:g> تطبيقًا.</item>
+      <item quantity="other">يستخدمه <xliff:g id="NUMBER">%1$d</xliff:g> تطبيق.</item>
+      <item quantity="one">يستخدمه تطبيق واحد.</item>
     </plurals>
     <string name="permission_usage_view_details" msgid="6675335735468752787">"الاطّلاع على الكل في \"لوحة البيانات\""</string>
     <string name="app_permission_usage_filter_label" msgid="7182861154638631550">"تمّت الفلترة حسب: <xliff:g id="PERM">%1$s</xliff:g>"</string>
@@ -257,7 +257,7 @@
     <string name="precise_image_description" msgid="6349638632303619872">"الموقع الجغرافي الدقيق"</string>
     <string name="approximate_image_description" msgid="938803699637069884">"الموقع الجغرافي التقريبي"</string>
     <string name="app_permission_location_accuracy" msgid="7166912915040018669">"استخدام الموقع الجغرافي الدقيق"</string>
-    <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"عندما يكون الموقع الجغرافي الدقيق غير مفعّل، يمكن للتطبيقات الوصول إلى الموقع الجغرافي التقريبي"</string>
+    <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"عندما يكون الموقع الجغرافي الدقيق غير مفعّل، يمكن للتطبيقات الوصول إلى الموقع الجغرافي التقريبي."</string>
     <string name="app_permission_title" msgid="2090897901051370711">"إذن <xliff:g id="PERM">%1$s</xliff:g>"</string>
     <string name="app_permission_header" msgid="2951363137032603806">"منح هذا التطبيق الإذن بالوصول إلى <xliff:g id="PERM">%1$s</xliff:g>"</string>
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"الاطّلاع على جميع أذونات <xliff:g id="APP">%1$s</xliff:g>"</string>
