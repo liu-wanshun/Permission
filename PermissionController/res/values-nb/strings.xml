@@ -44,7 +44,7 @@
     <string name="grant_dialog_button_allow_foreground" msgid="501896824973636533">"Når appen brukes"</string>
     <string name="grant_dialog_button_allow_one_time" msgid="2618088516449706391">"Bare denne gangen"</string>
     <string name="grant_dialog_button_allow_background" msgid="8236044729434367833">"Tillat hele tiden"</string>
-    <string name="grant_dialog_button_allow_all_files" msgid="4955436994954829894">"Gi tillatelse til administrering av alle filer"</string>
+    <string name="grant_dialog_button_allow_all_files" msgid="4955436994954829894">"Tillat administrering av alle filer"</string>
     <string name="grant_dialog_button_allow_media_only" msgid="4832877658422573832">"Gi tilgang til mediefiler"</string>
     <string name="app_permissions_breadcrumb" msgid="5136969550489411650">"Apper"</string>
     <string name="app_permissions" msgid="3369917736607944781">"Apptillatelser"</string>
@@ -165,7 +165,7 @@
     <string name="app_permission_usage_summary" msgid="390383661936709672">"Tilgang: <xliff:g id="NUM">%1$s</xliff:g> ganger. Total varighet: <xliff:g id="DURATION">%2$s</xliff:g>. Sist brukt for <xliff:g id="TIME">%3$s</xliff:g> siden."</string>
     <string name="app_permission_usage_summary_no_duration" msgid="3698475875179457400">"Tilgang: <xliff:g id="NUM">%1$s</xliff:g> ganger. Sist brukt for <xliff:g id="TIME">%2$s</xliff:g> siden."</string>
     <string name="app_permission_button_allow" msgid="5808039516494774647">"Tillat"</string>
-    <string name="app_permission_button_allow_all_files" msgid="1792232272599018825">"Gi tillatelse til administrering av alle filer"</string>
+    <string name="app_permission_button_allow_all_files" msgid="1792232272599018825">"Tillat administrering av alle filer"</string>
     <string name="app_permission_button_allow_media_only" msgid="2834282724426046154">"Har bare tilgang til medier"</string>
     <string name="app_permission_button_allow_always" msgid="4573292371734011171">"Tillat hele tiden"</string>
     <string name="app_permission_button_allow_foreground" msgid="1991570451498943207">"Bare tillat når appen brukes"</string>
@@ -196,7 +196,7 @@
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Sist åpnet <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Hvis du tillater administrering av alle filer, kan denne appen åpne, endre og slette alle filer i felles lagringsplass på denne enheten eller tilkoblede lagringsenheter. Appen kan åpne filer uten å spørre deg."</string>
     <string name="special_file_access_dialog" msgid="583804114020740610">"Vil du gi denne appen tillatelse til å åpne, endre og slette filer på enheten eller tilkoblede lagringsenheter? Appen kan åpne filer uten å spørre deg."</string>
-    <string name="permission_description_summary_generic" msgid="5401399408814903391">"Apper med denne tillatelsen kan: <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
+    <string name="permission_description_summary_generic" msgid="5401399408814903391">"Apper med denne tillatelsen kan <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
     <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Apper med denne tillatelsen har tilgang til den fysiske aktiviteten din, for eksempel gåturer, sykkelturer, kjøring, skritt med mer"</string>
     <string name="permission_description_summary_calendar" msgid="103329982944411010">"Apper med denne tillatelsen har tilgang til kalenderen din"</string>
     <string name="permission_description_summary_call_log" msgid="7321437186317577624">"Apper med denne tillatelsen kan lese og skrive samtaleloggen"</string>
@@ -300,7 +300,7 @@
     <string name="role_browser_request_description" msgid="5888803407905985941">"Ingen tillatelser er nødvendige"</string>
     <string name="role_dialer_label" msgid="1100224146343237968">"Standard telefonapp"</string>
     <string name="role_dialer_short_label" msgid="7186888549465352489">"Telefonapp"</string>
-    <string name="role_dialer_description" msgid="8768708633696539612">"Apper som lar deg ringe og motta anrop på enheten din"</string>
+    <string name="role_dialer_description" msgid="8768708633696539612">"Apper som lar deg ringe fra og motta anrop på enheten"</string>
     <string name="role_dialer_request_title" msgid="5959618560705912058">"Vil du angi <xliff:g id="APP_NAME">%1$s</xliff:g> som standard telefonapp?"</string>
     <string name="role_dialer_request_description" msgid="2264219375528345270">"Får tilgang til samtalelogg, sending av SMS"</string>
     <string name="role_dialer_search_keywords" msgid="3324448983559188087">"ringeapp"</string>

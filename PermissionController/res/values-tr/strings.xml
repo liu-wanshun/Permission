@@ -197,7 +197,7 @@
     <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Tüm dosyaların yönetilmesine izin verirseniz bu uygulama, bu cihazdaki ortak depolama alanında veya bu cihaza bağlı depolama cihazlarında bulunan tüm dosyalara erişebilir, bunları değiştirebilir ve silebilir. Uygulama, size sormadan dosyalara erişebilir."</string>
     <string name="special_file_access_dialog" msgid="583804114020740610">"Bu uygulamaya, bu cihazdaki veya bu cihaza bağlı herhangi bir depolama cihazındaki dosyalara erişim izni ve bu dosyaları değiştirme, silme izni verilsin mi? Bu uygulama, size sormadan dosyalara erişebilir."</string>
     <string name="permission_description_summary_generic" msgid="5401399408814903391">"Bu izne sahip uygulamalar şunu yapabilir: <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
-    <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Bu izne sahip uygulamalar, yürüyüş, bisiklete binme, araba kullanma, adım sayısı gibi fiziksel aktivitelerinize erişebilir."</string>
+    <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Bu izne sahip uygulamalar, yürüyüş, bisiklete binme, araba kullanma, adım sayısı gibi fiziksel aktivitelerinize erişebilir"</string>
     <string name="permission_description_summary_calendar" msgid="103329982944411010">"Bu izne sahip uygulamalar takviminize erişebilir"</string>
     <string name="permission_description_summary_call_log" msgid="7321437186317577624">"Bu izne sahip uygulamalar telefon arama kaydını okuyabilir ve yazabilir"</string>
     <string name="permission_description_summary_camera" msgid="108004375101882069">"Bu izne sahip uygulamalar fotoğraf çekebilir ve video kaydedebilir"</string>
@@ -215,8 +215,8 @@
     <string name="allowed_header" msgid="7769277978004790414">"İzin verilenler"</string>
     <string name="allowed_always_header" msgid="6455903312589013545">"Her zaman izin verilenler"</string>
     <string name="allowed_foreground_header" msgid="6845655788447833353">"Yalnızca kullanımdayken izin verilenler"</string>
-    <string name="allowed_storage_scoped" msgid="5383645873719086975">"Yalnızca medyaya erişim izni verildi"</string>
-    <string name="allowed_storage_full" msgid="5356699280625693530">"Tüm dosyaları yönetme izni verildi"</string>
+    <string name="allowed_storage_scoped" msgid="5383645873719086975">"Yalnızca medyaya erişim izni verilenler"</string>
+    <string name="allowed_storage_full" msgid="5356699280625693530">"Tüm dosyaları yönetme izni verilenler"</string>
     <string name="ask_header" msgid="2633816846459944376">"Her zaman sor"</string>
     <string name="denied_header" msgid="2253955654228120835">"Reddedilenler"</string>
     <plurals name="days" formatted="false" msgid="7882807103511175827">
