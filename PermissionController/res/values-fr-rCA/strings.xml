@@ -40,10 +40,10 @@
     <string name="permission_revoked_all" msgid="3397649017727222283">"toutes autorisations désactivées"</string>
     <string name="permission_revoked_none" msgid="9213345075484381180">"aucune autorisation désactivée"</string>
     <string name="grant_dialog_button_allow" msgid="5314677880021102550">"Autoriser"</string>
-    <string name="grant_dialog_button_allow_always" msgid="4485552579273565981">"Autoriser tout le temps"</string>
+    <string name="grant_dialog_button_allow_always" msgid="4485552579273565981">"Toujours autoriser"</string>
     <string name="grant_dialog_button_allow_foreground" msgid="501896824973636533">"Lorsque vous utilisez l\'application"</string>
     <string name="grant_dialog_button_allow_one_time" msgid="2618088516449706391">"Uniquement cette fois-ci"</string>
-    <string name="grant_dialog_button_allow_background" msgid="8236044729434367833">"Autoriser tout le temps"</string>
+    <string name="grant_dialog_button_allow_background" msgid="8236044729434367833">"Toujours autoriser"</string>
     <string name="grant_dialog_button_allow_all_files" msgid="4955436994954829894">"Autoriser à gérer tous les fichiers"</string>
     <string name="grant_dialog_button_allow_media_only" msgid="4832877658422573832">"Autoriser l\'accès aux fichiers multimédias"</string>
     <string name="app_permissions_breadcrumb" msgid="5136969550489411650">"Applications"</string>
@@ -82,7 +82,7 @@
     <!-- no translation found for background_access_chooser_dialog_choices:0 (1351721623256561996) -->
     <!-- no translation found for background_access_chooser_dialog_choices:1 (9127301153688725448) -->
     <!-- no translation found for background_access_chooser_dialog_choices:2 (4305536986042401191) -->
-    <string name="permission_access_always" msgid="1474641821883823446">"Autoriser tout le temps"</string>
+    <string name="permission_access_always" msgid="1474641821883823446">"Toujours autoriser"</string>
     <string name="permission_access_only_foreground" msgid="7801170728159326195">"Autoriser si l\'application est utilisée"</string>
     <string name="permission_access_never" msgid="1029877154284995424">"Refuser"</string>
     <string name="loading" msgid="4789365003890741082">"Chargement en cours…"</string>
@@ -167,7 +167,7 @@
     <string name="app_permission_button_allow" msgid="5808039516494774647">"Autoriser"</string>
     <string name="app_permission_button_allow_all_files" msgid="1792232272599018825">"Autoriser à gérer tous les fichiers"</string>
     <string name="app_permission_button_allow_media_only" msgid="2834282724426046154">"Autoriser à accéder aux éléments multimédias seulement"</string>
-    <string name="app_permission_button_allow_always" msgid="4573292371734011171">"Autoriser tout le temps"</string>
+    <string name="app_permission_button_allow_always" msgid="4573292371734011171">"Toujours autoriser"</string>
     <string name="app_permission_button_allow_foreground" msgid="1991570451498943207">"Autoriser uniquement lorsque l\'appli est en cours d\'utilisation"</string>
     <string name="app_permission_button_ask" msgid="3342950658789427">"Toujours demander"</string>
     <string name="app_permission_button_deny" msgid="2399316993899108824">"Refuser"</string>
@@ -197,7 +197,7 @@
     <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Si vous autorisez la gestion de tous les fichiers, cette application pourra accéder à tous les fichiers enregistrés dans l\'espace de stockage partagé sur cet appareil ou sur des appareils de stockage connectés, les modifier et les supprimer. L\'application pourra accéder à des fichiers sans vous demander la permission."</string>
     <string name="special_file_access_dialog" msgid="583804114020740610">"Autoriser cette application à accéder aux fichiers qui se trouvent sur cet appareil ou sur des appareils de stockage connectés et à les modifier et les supprimer. Cette application pourra accéder à des fichiers sans vous demander la permission."</string>
     <string name="permission_description_summary_generic" msgid="5401399408814903391">"Les applications qui possèdent l\'autorisation peuvent <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
-    <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Les applications qui possèdent cette autorisation peuvent accéder aux données relatives à vos activités physique, comme la marche, le vélo, la conduite, le nombre de pas effectués et plus encore"</string>
+    <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Les applications qui possèdent cette autorisation peuvent accéder aux données relatives à vos activités physiques, comme la marche, le vélo, la conduite, le nombre de pas effectués et plus encore"</string>
     <string name="permission_description_summary_calendar" msgid="103329982944411010">"Les applications qui possèdent cette autorisation peuvent accéder à votre agenda"</string>
     <string name="permission_description_summary_call_log" msgid="7321437186317577624">"Les applications qui possèdent cette autorisation peuvent lire et écrire des journaux d\'appels téléphoniques"</string>
     <string name="permission_description_summary_camera" msgid="108004375101882069">"Les applications qui possèdent cette autorisation peuvent prendre des photos et filmer des vidéos"</string>
@@ -398,7 +398,7 @@
     <string name="permgrouprequest_storage" msgid="8717773092518621602">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à accéder aux photos, au contenu multimédia et aux fichiers de votre appareil?"</string>
     <string name="permgrouprequest_microphone" msgid="2825208549114811299">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à enregistrer l\'audio?"</string>
     <string name="permgrouprequest_activityRecognition" msgid="5415121592794230330">"Autoriser « <xliff:g id="APP_NAME">%1$s</xliff:g> » à accéder à vos activités physiques?"</string>
-    <string name="permgrouprequest_camera" msgid="5123097035410002594">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à prendre des photos et à filmer des vidéos?"</string>
+    <string name="permgrouprequest_camera" msgid="5123097035410002594">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à prendre des photos et à enregistrer des vidéos?"</string>
     <string name="permgrouprequest_calllog" msgid="2065327180175371397">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à accéder à vos journaux d\'appels?"</string>
     <string name="permgrouprequest_phone" msgid="1829234136997316752">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à faire et à gérer des appels téléphoniques?"</string>
     <string name="permgrouprequest_sensors" msgid="4397358316850652235">"Autoriser « <xliff:g id="APP_NAME">%1$s</xliff:g> » à accéder aux données des capteurs pour vos signes vitaux?"</string>
