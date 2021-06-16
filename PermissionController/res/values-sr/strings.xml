@@ -329,7 +329,7 @@
     <string name="role_emergency_request_title" msgid="8469579020654348567">"Желите ли да подесите <xliff:g id="APP_NAME">%1$s</xliff:g> као подразумевану апликацију за хитне случајеве?"</string>
     <string name="role_emergency_request_description" msgid="131645948770262850">"Није потребна ниједна дозвола"</string>
     <string name="role_emergency_search_keywords" msgid="1920007722599213358">"у хитном случају"</string>
-    <string name="role_home_label" msgid="3871847846649769412">"Подраз. апл. почетне стран."</string>
+    <string name="role_home_label" msgid="3871847846649769412">"Подраз. апл. почетне странице"</string>
     <string name="role_home_short_label" msgid="8544733747952272337">"Апликација почетне странице"</string>
     <string name="role_home_description" msgid="7997371519626556675">"Апликације које се често зову покретачи и замењују почетне екране на Android уређају и пружају приступ садржају и функцијама на уређају"</string>
     <string name="role_home_request_title" msgid="738136983453341081">"Желите ли да подесите <xliff:g id="APP_NAME">%1$s</xliff:g> као подразумевану апликацију почетне странице?"</string>
@@ -340,7 +340,7 @@
     <string name="role_call_redirection_description" msgid="6091669882014664420">"Апликације које вам омогућавају да прослеђујете одлазне позиве на други број телефона"</string>
     <string name="role_call_redirection_request_title" msgid="2816244455003562925">"Желите ли да подесите <xliff:g id="APP_NAME">%1$s</xliff:g> као подразумевану апликацију за преусмеравање позива?"</string>
     <string name="role_call_redirection_request_description" msgid="3118895714178527164">"Није потребна ниједна дозвола"</string>
-    <string name="role_call_screening_label" msgid="883935222060878724">"Подраз. апл. за ИД позив. и непож. поруке"</string>
+    <string name="role_call_screening_label" msgid="883935222060878724">"Подраз. апл. за ИД позив. и непожељне поруке"</string>
     <string name="role_call_screening_short_label" msgid="2048465565063130834">"Апл. за ИД поз. и непож. поз."</string>
     <string name="role_call_screening_description" msgid="2349431420497468981">"Апликације које вам омогућавају да идентификујете позиве и блокирате непожељне и аутоматизоване позиве или нежељене бројеве"</string>
     <string name="role_call_screening_request_title" msgid="7358309224566977290">"Желите ли да подесите <xliff:g id="APP_NAME">%1$s</xliff:g> као подразумевану апликацију за ИД позиваоца и непожељне поруке?"</string>
@@ -398,23 +398,23 @@
     <string name="adjust_user_sensitive_per_app_header" msgid="4543506440989005648">"Истакни коришћење за следеће"</string>
     <string name="assistant_record_audio_user_sensitive_title" msgid="5532123360322362378">"Приказуј откривање активирања помоћника"</string>
     <string name="assistant_record_audio_user_sensitive_summary" msgid="6482937591816401619">"Приказује икону на статусној траци када се микрофон користи за активирање гласовног помоћника"</string>
-    <string name="permgrouprequest_storage_isolated" msgid="4892154224026852295">"Желите ли да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;приступа сликама и медијима на уређају?"</string>
-    <string name="permgrouprequest_contacts" msgid="8391550064551053695">"Желите да омогућите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа контактима?"</string>
-    <string name="permgrouprequest_location" msgid="6990232580121067883">"Желите да омогућите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа локацији овог уређаја?"</string>
+    <string name="permgrouprequest_storage_isolated" msgid="4892154224026852295">"Желите ли да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа сликама и медијима на уређају?"</string>
+    <string name="permgrouprequest_contacts" msgid="8391550064551053695">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа контактима?"</string>
+    <string name="permgrouprequest_location" msgid="6990232580121067883">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа локацији овог уређаја?"</string>
     <string name="permgrouprequestdetail_location" msgid="2635935335778429894">"Апликација ће имати приступ локацији само док користите апликацију"</string>
-    <string name="permgroupbackgroundrequest_location" msgid="1085680897265734809">"Желите да омогућите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа локацији овог уређаја?"</string>
+    <string name="permgroupbackgroundrequest_location" msgid="1085680897265734809">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа локацији овог уређаја?"</string>
     <string name="permgroupbackgroundrequestdetail_location" msgid="8021219324989662957">"Ова апликација можда жели да приступа локацији све време, чак и када не користите апликацију. "<annotation id="link">"Дозволите у подешавањима."</annotation></string>
     <string name="permgroupupgraderequest_location" msgid="8328408946822691636">"Желите ли да промените приступ локацији за апликацију &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;?"</string>
     <string name="permgroupupgraderequestdetail_location" msgid="1550899076845189165">"Ова апликација жели да приступа локацији све време, чак и када не користите апликацију. "<annotation id="link">"Дозволите у подешавањима."</annotation></string>
-    <string name="permgrouprequest_calendar" msgid="1493150855673603806">"Желите да омогућите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа календару?"</string>
-    <string name="permgrouprequest_sms" msgid="5672063688745420991">"Желите да омогућите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; шаље и прегледа SMS-ове?"</string>
-    <string name="permgrouprequest_storage" msgid="8717773092518621602">"Желите да омогућите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа сликама, медијским и другим фајловима на уређају?"</string>
-    <string name="permgrouprequest_microphone" msgid="2825208549114811299">"Желите да омогућите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; снима звук?"</string>
+    <string name="permgrouprequest_calendar" msgid="1493150855673603806">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа календару?"</string>
+    <string name="permgrouprequest_sms" msgid="5672063688745420991">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; шаље и прегледа SMS-ове?"</string>
+    <string name="permgrouprequest_storage" msgid="8717773092518621602">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа сликама, медијским и другим фајловима на уређају?"</string>
+    <string name="permgrouprequest_microphone" msgid="2825208549114811299">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; снима звук?"</string>
     <string name="permgrouprequest_activityRecognition" msgid="5415121592794230330">"Желите ли да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа физичким активностима?"</string>
-    <string name="permgrouprequest_camera" msgid="5123097035410002594">"Желите да омогућите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; снима слике и видео снимке?"</string>
-    <string name="permgrouprequest_calllog" msgid="2065327180175371397">"Желите да омогућите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа евиденцијама позива на телефону?"</string>
-    <string name="permgrouprequest_phone" msgid="1829234136997316752">"Желите да омогућите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; упућује позиве и управља њима?"</string>
-    <string name="permgrouprequest_sensors" msgid="4397358316850652235">"Желите да омогућите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;приступа подацима сензора о виталним функцијама?"</string>
+    <string name="permgrouprequest_camera" msgid="5123097035410002594">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; снима слике и видео снимке?"</string>
+    <string name="permgrouprequest_calllog" msgid="2065327180175371397">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа евиденцијама позива на телефону?"</string>
+    <string name="permgrouprequest_phone" msgid="1829234136997316752">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; упућује позиве и управља њима?"</string>
+    <string name="permgrouprequest_sensors" msgid="4397358316850652235">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;приступа подацима сензора о виталним функцијама?"</string>
     <string name="auto_granted_permissions" msgid="6009452264824455892">"Контролисане дозволе"</string>
     <string name="auto_granted_location_permission_notification_title" msgid="1438871159268985993">"Може да се приступи локацији"</string>
     <string name="auto_granted_permission_notification_body" msgid="6919835973190443695">"ИТ администратор дозвољава апликацији <xliff:g id="APP_NAME">%s</xliff:g> да приступа локацији"</string>
