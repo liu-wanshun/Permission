@@ -84,7 +84,7 @@ class RuntimePermissionsUpgradeControllerTest {
     }
 
     /** Latest permission database version known in this test */
-    private val LATEST_VERSION = 8;
+    private val LATEST_VERSION = 9
 
     /** Use a unique test package name for each test */
     private val TEST_PKG_NAME: String

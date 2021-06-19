@@ -36,7 +36,6 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavGraph;
 import androidx.navigation.NavInflater;
 import androidx.navigation.Navigation;
@@ -46,15 +45,17 @@ import com.android.permissioncontroller.Constants;
 import com.android.permissioncontroller.DeviceUtils;
 import com.android.permissioncontroller.PermissionControllerStatsLog;
 import com.android.permissioncontroller.R;
-import com.android.permissioncontroller.permission.debug.PermissionUsageFragment;
+import com.android.permissioncontroller.permission.debug.PermissionDetailsWrapperFragment;
+import com.android.permissioncontroller.permission.debug.PermissionUsageV2WrapperFragment;
 import com.android.permissioncontroller.permission.debug.UtilsKt;
 import com.android.permissioncontroller.permission.ui.auto.AutoAllAppPermissionsFragment;
 import com.android.permissioncontroller.permission.ui.auto.AutoAppPermissionsFragment;
 import com.android.permissioncontroller.permission.ui.auto.AutoManageStandardPermissionsFragment;
 import com.android.permissioncontroller.permission.ui.auto.AutoPermissionAppsFragment;
+import com.android.permissioncontroller.permission.ui.auto.AutoUnusedAppsFragment;
 import com.android.permissioncontroller.permission.ui.handheld.AppPermissionFragment;
 import com.android.permissioncontroller.permission.ui.handheld.AppPermissionGroupsFragment;
-import com.android.permissioncontroller.permission.ui.handheld.AutoRevokeFragment;
+import com.android.permissioncontroller.permission.ui.handheld.HandheldUnusedAppsWrapperFragment;
 import com.android.permissioncontroller.permission.ui.handheld.PermissionAppsFragment;
 import com.android.permissioncontroller.permission.ui.legacy.AppPermissionActivity;
 import com.android.permissioncontroller.permission.ui.wear.AppPermissionsFragmentWear;
@@ -63,9 +64,15 @@ import com.android.permissioncontroller.permission.utils.Utils;
 
 import java.util.Random;
 
-public final class ManagePermissionsActivity extends FragmentActivity {
+/**
+ * Activity to review and manage permissions
+ */
+public final class ManagePermissionsActivity extends SettingsActivity {
     private static final String LOG_TAG = ManagePermissionsActivity.class.getSimpleName();
 
+    /**
+     * Name of the extra parameter that indicates whether or not to show all app permissions
+     */
     public static final String EXTRA_ALL_PERMISSIONS =
             "com.android.permissioncontroller.extra.ALL_PERMISSIONS";
 
@@ -83,6 +90,12 @@ public final class ManagePermissionsActivity extends FragmentActivity {
      */
     public static final String EXTRA_RESULT_PERMISSION_RESULT = "com.android"
             + ".permissioncontroller.extra.PERMISSION_RESULT";
+
+    /**
+     * Whether to show system apps in UI receiving an intent containing this extra.
+     */
+    public static final String EXTRA_SHOW_SYSTEM = "com.android"
+            + ".permissioncontroller.extra.SHOW_SYSTEM";
 
     /**
      * The requestCode used when we decide not to use this activity, but instead launch
@@ -126,15 +139,16 @@ public final class ManagePermissionsActivity extends FragmentActivity {
         String permissionName;
         switch (action) {
             case Intent.ACTION_MANAGE_PERMISSIONS:
+                Bundle arguments = new Bundle();
+                arguments.putLong(EXTRA_SESSION_ID, sessionId);
                 if (DeviceUtils.isAuto(this)) {
                     androidXFragment = AutoManageStandardPermissionsFragment.newInstance();
+                    androidXFragment.setArguments(arguments);
                 } else if (DeviceUtils.isTelevision(this)) {
                     androidXFragment =
                             com.android.permissioncontroller.permission.ui.television
                                     .ManagePermissionsFragment.newInstance();
                 } else {
-                    Bundle arguments = new Bundle();
-                    arguments.putLong(EXTRA_SESSION_ID, sessionId);
                     setContentView(R.layout.nav_host_fragment);
                     Navigation.findNavController(this, R.id.nav_host_fragment).setGraph(
                             R.navigation.nav_graph, arguments);
@@ -144,14 +158,28 @@ public final class ManagePermissionsActivity extends FragmentActivity {
                 break;
 
             case Intent.ACTION_REVIEW_PERMISSION_USAGE: {
-                if (!UtilsKt.shouldShowPermissionsDashboard()) {
-                    finish();
+                if (!UtilsKt.isPrivacyHubEnabled()) {
+                    finishAfterTransition();
                     return;
                 }
 
                 String groupName = getIntent().getStringExtra(Intent.EXTRA_PERMISSION_GROUP_NAME);
-                androidXFragment = PermissionUsageFragment.newInstance(groupName, Long.MAX_VALUE);
+                androidXFragment = PermissionUsageV2WrapperFragment.newInstance(groupName,
+                        Long.MAX_VALUE);
             } break;
+
+            case Intent.ACTION_REVIEW_PERMISSION_HISTORY: {
+                if (UtilsKt.isPrivacyHubEnabled()) {
+                    String groupName = getIntent()
+                            .getStringExtra(Intent.EXTRA_PERMISSION_GROUP_NAME);
+                    boolean showSystem = getIntent()
+                            .getBooleanExtra(EXTRA_SHOW_SYSTEM, false);
+                    androidXFragment = PermissionDetailsWrapperFragment
+                            .newInstance(groupName, Long.MAX_VALUE, showSystem);
+                }
+
+                break;
+            }
 
             case Intent.ACTION_MANAGE_APP_PERMISSION: {
                 if (DeviceUtils.isAuto(this) || DeviceUtils.isTelevision(this)
@@ -177,7 +205,7 @@ public final class ManagePermissionsActivity extends FragmentActivity {
                 String packageName = getIntent().getStringExtra(Intent.EXTRA_PACKAGE_NAME);
                 if (packageName == null) {
                     Log.i(LOG_TAG, "Missing mandatory argument EXTRA_PACKAGE_NAME");
-                    finish();
+                    finishAfterTransition();
                     return;
                 }
 
@@ -257,7 +285,7 @@ public final class ManagePermissionsActivity extends FragmentActivity {
                 if (permissionName == null && permissionGroupName == null) {
                     Log.i(LOG_TAG, "Missing mandatory argument EXTRA_PERMISSION_NAME or"
                             + "EXTRA_PERMISSION_GROUP_NAME");
-                    finish();
+                    finishAfterTransition();
                     return;
                 }
                 if (DeviceUtils.isAuto(this)) {
@@ -274,25 +302,28 @@ public final class ManagePermissionsActivity extends FragmentActivity {
                 }
             } break;
 
+            case Intent.ACTION_MANAGE_UNUSED_APPS :
+                // fall through
             case ACTION_MANAGE_AUTO_REVOKE: {
                 Log.i(LOG_TAG, "sessionId " + sessionId + " starting auto revoke fragment"
                         + " from notification");
                 PermissionControllerStatsLog.write(AUTO_REVOKE_NOTIFICATION_CLICKED, sessionId);
 
-                if (DeviceUtils.isWear(this) || DeviceUtils.isAuto(this)
-                        || DeviceUtils.isTelevision(this)) {
-                    androidXFragment = com.android.permissioncontroller.permission.ui.handheld
-                            .AutoRevokeFragment.newInstance();
-                    androidXFragment.setArguments(AutoRevokeFragment.createArgs(sessionId));
+                if (DeviceUtils.isAuto(this)) {
+                    androidXFragment = AutoUnusedAppsFragment.newInstance();
+                    androidXFragment.setArguments(UnusedAppsFragment.createArgs(sessionId));
+                } else if (DeviceUtils.isWear(this) || DeviceUtils.isTelevision(this)) {
+                    androidXFragment = HandheldUnusedAppsWrapperFragment.newInstance();
+                    androidXFragment.setArguments(UnusedAppsFragment.createArgs(sessionId));
                 } else {
-                    setNavGraph(AutoRevokeFragment.createArgs(sessionId), R.id.auto_revoke);
+                    setNavGraph(UnusedAppsFragment.createArgs(sessionId), R.id.auto_revoke);
                     return;
                 }
             } break;
 
             default: {
                 Log.w(LOG_TAG, "Unrecognized action " + action);
-                finish();
+                finishAfterTransition();
                 return;
             }
         }
@@ -332,6 +363,7 @@ public final class ManagePermissionsActivity extends FragmentActivity {
             switch (item.getItemId()) {
                 case android.R.id.home:
                     onBackPressed();
+                    finishAfterTransition();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
@@ -345,7 +377,8 @@ public final class ManagePermissionsActivity extends FragmentActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PROXY_ACTIVITY_REQUEST_CODE) {
             setResult(resultCode, data);
-            finish();
+            finishAfterTransition();
         }
     }
+
 }
