@@ -18,12 +18,14 @@ package com.android.permissioncontroller.permission.model;
 
 import static android.Manifest.permission_group.MICROPHONE;
 
+import android.Manifest;
 import android.app.AppOpsManager;
 import android.app.AppOpsManager.HistoricalOp;
 import android.app.AppOpsManager.HistoricalPackageOps;
 import android.app.AppOpsManager.OpEntry;
 import android.app.AppOpsManager.PackageOps;
 import android.media.AudioRecordingConfiguration;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,7 +33,9 @@ import androidx.annotation.Nullable;
 import com.android.permissioncontroller.permission.model.legacy.PermissionApps.PermissionApp;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -41,6 +45,12 @@ import java.util.function.Function;
 public final class AppPermissionUsage {
     private final @NonNull List<GroupUsage> mGroupUsages = new ArrayList<>();
     private final @NonNull PermissionApp mPermissionApp;
+
+    // TODO: theianchen move them to SystemApi
+    private static final String OPSTR_PHONE_CALL_MICROPHONE = "android:phone_call_microphone";
+    private static final String OPSTR_PHONE_CALL_CAMERA = "android:phone_call_camera";
+    private static final int PRIVACY_HUB_FLAGS = AppOpsManager.OP_FLAG_SELF
+            | AppOpsManager.OP_FLAG_TRUSTED_PROXIED;
 
     private AppPermissionUsage(@NonNull PermissionApp permissionApp,
             @NonNull List<AppPermissionGroup> groups, @Nullable PackageOps lastUsage,
@@ -133,52 +143,58 @@ public final class AppPermissionUsage {
             if (mLastUsage == null) {
                 return 0;
             }
-            return lastAccessAggregate(
-                    (op) -> op.getLastAccessTime(AppOpsManager.OP_FLAGS_ALL_TRUSTED));
+
+            return lastAccessAggregate((op) -> op.getLastAccessTime(PRIVACY_HUB_FLAGS));
         }
 
         public long getLastAccessForegroundTime() {
             if (mLastUsage == null) {
                 return 0;
             }
-            return lastAccessAggregate(
-                    (op) -> op.getLastAccessForegroundTime(AppOpsManager.OP_FLAGS_ALL_TRUSTED));
+
+            return lastAccessAggregate((op) -> op.getLastAccessForegroundTime(PRIVACY_HUB_FLAGS));
         }
 
         public long getLastAccessBackgroundTime() {
             if (mLastUsage == null) {
                 return 0;
             }
-            return lastAccessAggregate(
-                    (op) -> op.getLastAccessBackgroundTime(AppOpsManager.OP_FLAGS_ALL_TRUSTED));
+
+            return lastAccessAggregate((op) -> op.getLastAccessBackgroundTime(PRIVACY_HUB_FLAGS));
         }
 
         public long getForegroundAccessCount() {
             if (mHistoricalUsage == null) {
                 return 0;
             }
+
             return extractAggregate((HistoricalOp op)
-                    -> op.getForegroundAccessCount(AppOpsManager.OP_FLAGS_ALL_TRUSTED));
+                    -> op.getForegroundAccessCount(PRIVACY_HUB_FLAGS));
         }
 
         public long getBackgroundAccessCount() {
             if (mHistoricalUsage == null) {
                 return 0;
             }
+
             return extractAggregate((HistoricalOp op)
-                    -> op.getBackgroundAccessCount(AppOpsManager.OP_FLAGS_ALL_TRUSTED));
+                    -> op.getBackgroundAccessCount(PRIVACY_HUB_FLAGS));
         }
 
         public long getAccessCount() {
             if (mHistoricalUsage == null) {
                 return 0;
             }
+
             return extractAggregate((HistoricalOp op) ->
-                    op.getForegroundAccessCount(AppOpsManager.OP_FLAGS_ALL_TRUSTED)
-                            + op.getBackgroundAccessCount(AppOpsManager.OP_FLAGS_ALL_TRUSTED)
+                    op.getForegroundAccessCount(PRIVACY_HUB_FLAGS)
+                            + op.getBackgroundAccessCount(PRIVACY_HUB_FLAGS)
             );
         }
 
+        /**
+         * Get the last access duration.
+         */
         public long getLastAccessDuration() {
             if (mLastUsage == null) {
                 return 0;
@@ -187,7 +203,9 @@ public final class AppPermissionUsage {
                     (op) -> op.getLastDuration(AppOpsManager.OP_FLAGS_ALL_TRUSTED));
         }
 
-
+        /**
+         * Get the access duration.
+         */
         public long getAccessDuration() {
             if (mHistoricalUsage == null) {
                 return 0;
@@ -198,63 +216,144 @@ public final class AppPermissionUsage {
             );
         }
 
+
+        /**
+         * returns whether the usage has discrete data
+         */
+        public boolean hasDiscreteData() {
+            if (mHistoricalUsage == null) {
+                return false;
+            }
+
+            Set<String> allOps = getAllOps(mGroup);
+            for (String opName : allOps) {
+                final HistoricalOp historicalOp = mHistoricalUsage.getOp(opName);
+                if (historicalOp != null && historicalOp.getDiscreteAccessCount() > 0) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /**
+         * get all discrete access time in millis
+         * Returns a list of pairs of (access time, access duration)
+         */
+        public List<Pair<Long, Long>> getAllDiscreteAccessTime() {
+            List<Pair<Long, Long>> allDiscreteAccessTime = new ArrayList<>();
+            if (!hasDiscreteData()) {
+                return allDiscreteAccessTime;
+            }
+
+            Set<String> allOps = getAllOps(mGroup);
+            for (String opName : allOps) {
+                final HistoricalOp historicalOp = mHistoricalUsage.getOp(opName);
+                if (historicalOp == null) {
+                    continue;
+                }
+
+                int discreteAccessCount = historicalOp.getDiscreteAccessCount();
+                for (int j = 0; j < discreteAccessCount; j++) {
+                    AppOpsManager.AttributedOpEntry opEntry = historicalOp.getDiscreteAccessAt(j);
+                    allDiscreteAccessTime.add(Pair.create(
+                            opEntry.getLastAccessTime(PRIVACY_HUB_FLAGS),
+                            opEntry.getLastDuration(PRIVACY_HUB_FLAGS)));
+                }
+            }
+
+            return allDiscreteAccessTime;
+        }
+
         public boolean isRunning() {
             if (mLastUsage == null) {
                 return false;
             }
-            final ArrayList<Permission> permissions = mGroup.getPermissions();
-            final int permissionCount = permissions.size();
-            for (int i = 0; i < permissionCount; i++) {
-                final Permission permission = permissions.get(i);
-                final String opName = permission.getAppOp();
-                final List<OpEntry> ops = mLastUsage.getOps();
-                final int opCount = ops.size();
-                for (int j = 0; j < opCount; j++) {
-                    final OpEntry op = ops.get(j);
-                    if (op.getOpStr().equals(opName) && op.isRunning()) {
-                        return true;
-                    }
+
+            Set<String> allOps = getAllOps(mGroup);
+            final List<OpEntry> ops = mLastUsage.getOps();
+            final int opCount = ops.size();
+            for (int j = 0; j < opCount; j++) {
+                final OpEntry op = ops.get(j);
+                if (allOps.contains(op.getOpStr()) && op.isRunning()) {
+                    return true;
                 }
             }
+
             return false;
         }
 
         private long extractAggregate(@NonNull Function<HistoricalOp, Long> extractor) {
             long aggregate = 0;
-            final ArrayList<Permission> permissions = mGroup.getPermissions();
-            final int permissionCount = permissions.size();
-            for (int i = 0; i < permissionCount; i++) {
-                final Permission permission = permissions.get(i);
-                final String opName = permission.getAppOp();
+
+            Set<String> allOps = getAllOps(mGroup);
+            for (String opName : allOps) {
                 final HistoricalOp historicalOp = mHistoricalUsage.getOp(opName);
                 if (historicalOp != null) {
                     aggregate += extractor.apply(historicalOp);
                 }
             }
+
             return aggregate;
         }
 
         private long lastAccessAggregate(@NonNull Function<OpEntry, Long> extractor) {
             long aggregate = 0;
-            final ArrayList<Permission> permissions = mGroup.getPermissions();
+
+            Set<String> allOps = getAllOps(mGroup);
+            final List<OpEntry> ops = mLastUsage.getOps();
+            final int opCount = ops.size();
+
+            for (int opNum = 0; opNum < opCount; opNum++) {
+                final OpEntry op = ops.get(opNum);
+                if (allOps.contains(op.getOpStr())) {
+                    aggregate = Math.max(aggregate, extractor.apply(op));
+                }
+            }
+
+            return aggregate;
+        }
+
+        private static Set<String> getAllOps(AppPermissionGroup appPermissionGroup) {
+            Set<String> allOps = new HashSet<>();
+            List<Permission> permissions = appPermissionGroup.getPermissions();
             final int permissionCount = permissions.size();
             for (int permissionNum = 0; permissionNum < permissionCount; permissionNum++) {
                 final Permission permission = permissions.get(permissionNum);
                 final String opName = permission.getAppOp();
-                final List<OpEntry> ops = mLastUsage.getOps();
-                final int opCount = ops.size();
-                for (int opNum = 0; opNum < opCount; opNum++) {
-                    final OpEntry op = ops.get(opNum);
-                    if (op.getOpStr().equals(opName)) {
-                        aggregate = Math.max(aggregate, extractor.apply(op));
-                    }
+                if (opName != null) {
+                    allOps.add(opName);
                 }
             }
-            return aggregate;
+
+            if (appPermissionGroup.getName().equals(Manifest.permission_group.MICROPHONE)) {
+                allOps.add(OPSTR_PHONE_CALL_MICROPHONE);
+            }
+
+            if (appPermissionGroup.getName().equals(Manifest.permission_group.CAMERA)) {
+                allOps.add(OPSTR_PHONE_CALL_CAMERA);
+            }
+
+            return allOps;
         }
 
         public @NonNull AppPermissionGroup getGroup() {
             return mGroup;
+        }
+
+        /**
+         * Returns attribution tags for the historical usage.
+         */
+        public @Nullable ArrayList<String> getAttributionTags() {
+            if (mHistoricalUsage == null || mHistoricalUsage.getAttributedOpsCount() == 0) {
+                return null;
+            }
+            ArrayList<String> attributionTags = new ArrayList<>();
+            int count = mHistoricalUsage.getAttributedOpsCount();
+            for (int i = 0; i < count; i++) {
+                attributionTags.add(mHistoricalUsage.getAttributedOpsAt(i).getTag());
+            }
+            return attributionTags;
         }
     }
 
