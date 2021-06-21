@@ -24,7 +24,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class OpUsageLiveDataTest {
+class OpAccessTest {
     @Test
     fun serializeDeserializeWithAttribution() {
         val opAccess = OpAccess("testPkg", "testAttr", UserHandle.of(23), 42)
