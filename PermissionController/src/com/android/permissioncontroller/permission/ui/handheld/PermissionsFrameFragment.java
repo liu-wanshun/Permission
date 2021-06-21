@@ -28,12 +28,16 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.utils.Utils;
 import com.android.settingslib.widget.ActionBarShadowController;
+
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 public abstract class PermissionsFrameFragment extends PreferenceFragmentCompat {
     private static final String LOG_TAG = PermissionsFrameFragment.class.getSimpleName();
@@ -50,6 +54,7 @@ public abstract class PermissionsFrameFragment extends PreferenceFragmentCompat 
     private View mProgressView;
     private ViewGroup mPrefsView;
     private boolean mIsLoading;
+    @Nullable protected ExtendedFloatingActionButton mExtendedFab;
 
     protected boolean mUseShadowController = true;
 
@@ -65,7 +70,9 @@ public abstract class PermissionsFrameFragment extends PreferenceFragmentCompat 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        Utils.prepareSearchMenuItem(menu, requireContext());
+        if (!SdkLevel.isAtLeastS()) {
+            Utils.prepareSearchMenuItem(menu, requireContext());
+        }
     }
 
     @Override
@@ -86,6 +93,7 @@ public abstract class PermissionsFrameFragment extends PreferenceFragmentCompat 
         mPrefsView.addView(mPreferencesContainer, 0);
         mProgressHeader = rootView.requireViewById(R.id.progress_bar_animation);
         mProgressView = rootView.requireViewById(R.id.progress_bar_background);
+        mExtendedFab = rootView.findViewById(R.id.extended_fab);
         setProgressBarVisible(false);
         getListView().setFocusable(false);
         return rootView;
