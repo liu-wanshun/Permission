@@ -133,6 +133,9 @@
     <!-- Title for the page of manage unused apps [CHAR LIMIT=30] -->
     <string name="unused_apps">Unused apps</string>
 
+    <!-- Label when there are no unused apps [CHAR LIMIT=30] -->
+    <string name="no_unused_apps">No unused apps</string>
+
     <!-- [CHAR LIMIT=30] Manage applications, label for option to disable app -->
     <string name="app_disable_dlg_positive">Disable app</string>
 
@@ -179,7 +182,7 @@
    <string name="menu_hide_system">Hide system</string>
 
     <!-- FAB text of permission usage fragment [CHAR LIMIT=30] -->
-    <string name="manage_permission">Manage Permission</string>
+    <string name="manage_permission">Manage permission</string>
 
    <!-- [CHAR LIMIT=NONE] Label when no apps requesting this permission -->
    <string name="no_apps">No apps</string>
@@ -616,7 +619,7 @@
     <string name="unused_apps_page_title">Unused apps</string>
 
     <!-- Summary for the screen that shows all unused apps that have been hibernated [CHAR LIMIT=none] -->
-    <string name="unused_apps_page_summary">If an app is unused for a few months:\n\n\u2022 Permissions are removed to protect your data\n\u2022 Notifications are stopped to save battery\n\u2022 Temporary files are removed to free up space</string>
+    <string name="unused_apps_page_summary">If an app is unused for a few months:\n\n\u2022 Permissions are removed to protect your data\n\u2022 Notifications are stopped to save battery\n\u2022 Temporary files are removed to free up space\n\nTo allow permissions and notifications again, open the app.</string>
 
     <!-- Title for a category of apps that were last used several months ago [CHAR LIMIT=none] -->
     <string name="last_opened_category_title">Last opened more than <xliff:g id="number" example="3">%s</xliff:g> months ago</string>
