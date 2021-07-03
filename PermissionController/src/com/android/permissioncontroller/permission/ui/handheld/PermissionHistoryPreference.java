@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.os.UserHandle;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -44,7 +45,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.permissioncontroller.R;
-import com.android.permissioncontroller.permission.model.AppPermissionUsage;
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
 
 import java.util.ArrayList;
@@ -59,6 +59,7 @@ public class PermissionHistoryPreference extends Preference {
     private static final String LOG_TAG = "PermissionHistoryPreference";
 
     private final Context mContext;
+    private final UserHandle mUserHandle;
     private final String mPackageName;
     private final String mPermissionGroup;
     private final String mAccessTime;
@@ -73,17 +74,21 @@ public class PermissionHistoryPreference extends Preference {
 
     private Drawable mWidgetIcon;
 
-    public PermissionHistoryPreference(@NonNull Context context, @NonNull AppPermissionUsage usage,
+    public PermissionHistoryPreference(@NonNull Context context,
+            @NonNull UserHandle userHandle, @NonNull String pkgName,
+            @NonNull Drawable appIcon,
+            @NonNull String preferenceTitle,
             @NonNull String permissionGroup, @NonNull String accessTime,
-            @Nullable CharSequence accessDuration, @NonNull List<Long> accessTimeList,
+            @Nullable CharSequence summaryText, @NonNull List<Long> accessTimeList,
             @NonNull ArrayList<String> attributionTags, boolean isLastUsage) {
         super(context);
         mContext = context;
-        mPackageName = usage.getPackageName();
+        mUserHandle = userHandle;
+        mPackageName = pkgName;
         mPermissionGroup = permissionGroup;
         mAccessTime = accessTime;
-        mAppIcon = usage.getApp().getIcon();
-        mTitle = usage.getApp().getLabel();
+        mAppIcon = appIcon;
+        mTitle = preferenceTitle;
         mWidgetIcon = null;
         mAccessTimeList = accessTimeList;
         mAttributionTags = attributionTags;
@@ -97,8 +102,8 @@ public class PermissionHistoryPreference extends Preference {
         mDialogHeightScalar = outValue.getFloat();
 
         setTitle(mTitle);
-        if (accessDuration != null) {
-            setSummary(accessDuration);
+        if (summaryText != null) {
+            setSummary(summaryText);
         }
 
         mIntent = getViewPermissionUsageForPeriodIntent();
@@ -143,6 +148,7 @@ public class PermissionHistoryPreference extends Preference {
 
         setOnPreferenceClickListener((preference) -> {
             Intent intent = new Intent(Intent.ACTION_MANAGE_APP_PERMISSIONS);
+            intent.putExtra(Intent.EXTRA_USER, mUserHandle);
             intent.putExtra(Intent.EXTRA_PACKAGE_NAME, mPackageName);
 
             mContext.startActivity(intent);
