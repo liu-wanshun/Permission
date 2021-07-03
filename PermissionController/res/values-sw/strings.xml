@@ -51,6 +51,7 @@
     <string name="app_permissions_breadcrumb" msgid="5136969550489411650">"Programu"</string>
     <string name="app_permissions" msgid="3369917736607944781">"Ruhusa za programu"</string>
     <string name="unused_apps" msgid="2058057455175955094">"Programu zisizotumika"</string>
+    <string name="no_unused_apps" msgid="12809387670415295">"Hakuna programu zisizotumika"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"Zima programu"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"Ukizima programu hii, huenda Android na programu zingine zikakosa kufanya kazi tena kama zilivyokusudiwa. Kumbuka, huwezi kufuta programu hii kwa kuwa ilisakinishwa mapema kwenye kifaa chako. Kwa kuizima, unazima programu hii na kuificha kwenye kifaa chako."</string>
     <string name="app_permission_manager" msgid="3903811137630909550">"Kidhibiti cha ruhusa"</string>
@@ -68,8 +69,7 @@
     <string name="app_permissions_group_summary2" msgid="4329922444840521150">"Umeruhusu programu <xliff:g id="COUNT_0">%1$d</xliff:g> kati ya <xliff:g id="COUNT_1">%2$d</xliff:g>"</string>
     <string name="menu_show_system" msgid="4254021607027872504">"Onyesha mfumo"</string>
     <string name="menu_hide_system" msgid="3855390843744028465">"Ficha mfumo"</string>
-    <!-- no translation found for manage_permission (2895385393037061964) -->
-    <skip />
+    <string name="manage_permission" msgid="2895385393037061964">"Dhibiti ruhusa"</string>
     <string name="no_apps" msgid="2412612731628386816">"Hakuna programu"</string>
     <string name="location_settings" msgid="3624412509133422562">"Mipangilio ya Mahali"</string>
     <string name="location_warning" msgid="2381649060929040962">"<xliff:g id="APP_NAME">%1$s</xliff:g> hutoa huduma za mahali kwenye kifaa hiki. Idhini ya kufikia mahali inaweza kurekebishwa katika mipangilio ya mahali."</string>
@@ -115,6 +115,7 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Muda ambao programu zilitumia <xliff:g id="PERMGROUP">%1$s</xliff:g> katika saa 24 zilizopita"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Wakati programu hii ilipotumia ruhusa yako ya <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Pata maelezo zaidi"</string>
+    <string name="permission_usage_duration_and_proxy" msgid="573959201368716399">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other">Siku <xliff:g id="NUMBER">%s</xliff:g></item>
       <item quantity="one">Siku moja</item>
@@ -217,6 +218,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Angalia programu zote zenye ruhusa hii"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Onyesha matumizi ya maikrofoni ya mratibu"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Ondoa ruhusa ikiwa programu haitumiki"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Ondoa ruhusa na upate nafasi"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Ili kulinda data yako, ruhusa za programu hii zitaondolewa programu isipotumika kwa miezi michache."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Ili kulinda data yako, programu isipotumika kwa miezi michache, ruhusa zifuatazo zitaondolewa: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Ili kulinda data yako, ruhusa zimeondolewa kwenye programu ambazo hujatumia kwa miezi michache."</string>
@@ -232,7 +234,7 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Ruhusa ya <xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> na <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g> zimeondolewa"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Ruhusa ya <xliff:g id="PERMISSION_NAME">%1$s</xliff:g> na ruhusa zingine <xliff:g id="NUMBER">%2$s</xliff:g> zimeondolewa"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Programu zisizotumika"</string>
-    <string name="unused_apps_page_summary" msgid="4644643299214625298">"Programu isipotumika kwa miezi kadhaa:\n\n• Ruhusa zinaondolewa ili kulinda data yako \n• Arifa zinasimamishwa ili kuokoa betri\n• Faili za muda zinaondolewa ili upate nafasi"</string>
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Programu isipotumika kwa miezi kadhaa:\n\n• Ruhusa huondolewa ili kulinda data yako \n• Arifa husimamishwa ili kuokoa betri\n• Faili za muda huondolewa ili upate nafasi\n\nIli uidhinishe ruhusa na arifa tena, fungua programu."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Zilizofunguliwa mwisho zaidi ya miezi <xliff:g id="NUMBER">%s</xliff:g> iliyopita"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Ilifunguliwa mara ya mwisho tarehe <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Ilifunguliwa mara ya mwisho <xliff:g id="DATE">%s</xliff:g>"</string>
