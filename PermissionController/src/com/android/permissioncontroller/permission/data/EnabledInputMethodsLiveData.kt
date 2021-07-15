@@ -30,7 +30,6 @@ import kotlinx.coroutines.Job
  * @param app The current application
  * @param user The user the services should be determined for
  */
-// TODO(eugenesusla): think of ways to observe the data
 class EnabledInputMethodsLiveData(
     private val app: Application,
     private val user: UserHandle
@@ -49,11 +48,6 @@ class EnabledInputMethodsLiveData(
                 }
 
         postValue(packageNames)
-    }
-
-    override fun onActive() {
-        super.onActive()
-        updateAsync()
     }
 
     /**
