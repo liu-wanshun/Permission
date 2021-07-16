@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.debug
+package com.android.permissioncontroller.permission.ui.handheld.dashboard
 
 import android.content.Context
 import android.icu.util.Calendar
@@ -40,9 +40,6 @@ const val PROPERTY_LOCATION_ACCURACY_ENABLED = "location_accuracy_enabled"
 
 /* Default location precision */
 const val PROPERTY_LOCATION_PRECISION = "location_precision"
-
-/* Whether privacy hub feature is enabled */
-const val PROPERTY_PRIVACY_HUB_ENABLED = "privacy_hub_enabled"
 
 const val SECONDS = 1
 const val MINUTES = 2
@@ -121,14 +118,6 @@ fun isLocationAccuracyEnabled(): Boolean {
 fun getDefaultPrecision(): Boolean {
     return DeviceConfig.getBoolean(DeviceConfig.NAMESPACE_PRIVACY,
             PROPERTY_LOCATION_PRECISION, true)
-}
-
-/**
- * Whether the privacy hub feature is enabled
- */
-fun isPrivacyHubEnabled(): Boolean {
-    return DeviceConfig.getBoolean(DeviceConfig.NAMESPACE_PRIVACY,
-            PROPERTY_PRIVACY_HUB_ENABLED, true)
 }
 
 /**

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.ui.handheld;
+package com.android.permissioncontroller.permission.ui.handheld.dashboard;
+
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_DETAILS_INTERACTION;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_DETAILS_INTERACTION__ACTION__INFO_ICON_CLICKED;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.write;
 
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -23,6 +27,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.os.UserHandle;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -58,6 +63,7 @@ public class PermissionHistoryPreference extends Preference {
     private static final String LOG_TAG = "PermissionHistoryPreference";
 
     private final Context mContext;
+    private final UserHandle mUserHandle;
     private final String mPackageName;
     private final String mPermissionGroup;
     private final String mAccessTime;
@@ -70,16 +76,20 @@ public class PermissionHistoryPreference extends Preference {
     private final boolean mIsLastUsage;
     private final Intent mIntent;
 
+    private final long mSessionId;
+
     private Drawable mWidgetIcon;
 
-    public PermissionHistoryPreference(@NonNull Context context, @NonNull String pkgName,
+    public PermissionHistoryPreference(@NonNull Context context,
+            @NonNull UserHandle userHandle, @NonNull String pkgName,
             @NonNull Drawable appIcon,
             @NonNull String preferenceTitle,
             @NonNull String permissionGroup, @NonNull String accessTime,
-            @Nullable CharSequence accessDuration, @NonNull List<Long> accessTimeList,
-            @NonNull ArrayList<String> attributionTags, boolean isLastUsage) {
+            @Nullable CharSequence summaryText, @NonNull List<Long> accessTimeList,
+            @NonNull ArrayList<String> attributionTags, boolean isLastUsage, long sessionId) {
         super(context);
         mContext = context;
+        mUserHandle = userHandle;
         mPackageName = pkgName;
         mPermissionGroup = permissionGroup;
         mAccessTime = accessTime;
@@ -96,10 +106,11 @@ public class PermissionHistoryPreference extends Preference {
         mContext.getResources().getValue(R.dimen.permission_access_time_dialog_height_scalar,
                 outValue, true);
         mDialogHeightScalar = outValue.getFloat();
+        mSessionId = sessionId;
 
         setTitle(mTitle);
-        if (accessDuration != null) {
-            setSummary(accessDuration);
+        if (summaryText != null) {
+            setSummary(summaryText);
         }
 
         mIntent = getViewPermissionUsageForPeriodIntent();
@@ -144,6 +155,7 @@ public class PermissionHistoryPreference extends Preference {
 
         setOnPreferenceClickListener((preference) -> {
             Intent intent = new Intent(Intent.ACTION_MANAGE_APP_PERMISSIONS);
+            intent.putExtra(Intent.EXTRA_USER, mUserHandle);
             intent.putExtra(Intent.EXTRA_PACKAGE_NAME, mPackageName);
 
             mContext.startActivity(intent);
@@ -207,6 +219,11 @@ public class PermissionHistoryPreference extends Preference {
         if (mIntent != null) {
             widgetView.setImageDrawable(mWidgetIcon);
             widgetView.setOnClickListener(v -> {
+                write(PERMISSION_DETAILS_INTERACTION,
+                        mSessionId,
+                        mPermissionGroup,
+                        mPackageName,
+                        PERMISSION_DETAILS_INTERACTION__ACTION__INFO_ICON_CLICKED);
                 try {
                     mContext.startActivity(mIntent);
                 } catch (ActivityNotFoundException e) {

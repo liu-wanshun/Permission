@@ -116,6 +116,7 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Kad su aplikacije koristile dopuštenje <xliff:g id="PERMGROUP">%1$s</xliff:g> u posljednja 24 sata"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Kad je ova aplikacija koristili vaše dopuštenje <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Saznajte više"</string>
+    <string name="permission_usage_duration_and_proxy" msgid="573959201368716399">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="one"><xliff:g id="NUMBER">%s</xliff:g> dan</item>
       <item quantity="few"><xliff:g id="NUMBER">%s</xliff:g> dana</item>
@@ -229,6 +230,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Pogledajte sve aplikacije s tim dopuštenjem"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Prikaz korištenja mikrofona Asistenta"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Ukloni dopuštenja ako se aplikacija ne upotrebljava"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Ukloni dopuštenja i oslobodi prostor"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Kako bi se vaši podaci zaštitili, dopuštenja za ovu aplikaciju uklonit će se ako se aplikacija ne upotrebljava nekoliko mjeseci."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Kako bi se vaši podaci zaštitili, ako se aplikacija ne upotrebljava nekoliko mjeseci, uklonit će se sljedeća dopuštenja: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Radi zaštite vaših podataka uklonjena su dopuštenja aplikacijama koje nekoliko mjeseci niste upotrebljavali."</string>
@@ -244,12 +246,11 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Uklonjena su dopuštenja <xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> i <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g>"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Uklonjeno je dopuštenje <xliff:g id="PERMISSION_NAME">%1$s</xliff:g> i njih još <xliff:g id="NUMBER">%2$s</xliff:g>"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Nekorištene aplikacije"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Ako se aplikacija ne koristi nekoliko mjeseci:\n\n• Dopuštenja se uklanjaju radi zaštite vaših podataka.\n• Obavijesti se zaustavljaju radi štednje baterije.\n• Privremene se datoteke uklanjaju radi oslobađanja prostora.\n\nDa biste ponovo odobrili dopuštenja i obavijesti, otvorite aplikaciju."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Posljednji put otvoreno prije više od <xliff:g id="NUMBER">%s</xliff:g> mj."</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Aplikacija je posljednji put otvorena <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Posljednje otvaranje <xliff:g id="DATE">%s</xliff:g>"</string>
-    <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Ako dopustite upravljanje svim datotekama, ova će aplikacija moći pristupati datotekama u zajedničkoj pohrani na ovom uređaju ili povezanim uređajima za pohranu te ih mijenjati i brisati. Aplikacija može pristupati datotekama bez vašeg dopuštenja."</string>
+    <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Ako dopustite upravljanje svim datotekama, ova će aplikacija moći pristupati datotekama u zajedničkoj pohrani na ovom uređaju ili povezanim uređajima za pohranu te ih mijenjati i brisati. Aplikacija će moći pristupati datotekama bez vašeg dopuštenja."</string>
     <string name="special_file_access_dialog" msgid="583804114020740610">"Želite li ovoj aplikaciji dopustiti da pristupi datotekama na uređaju ili bilo kojim povezanim uređajima za pohranu te da ih mijenja i briše? Ova aplikacija može pristupiti datotekama bez vašeg dopuštenja."</string>
     <string name="permission_description_summary_generic" msgid="5401399408814903391">"Aplikacije s tim dopuštenjem mogu <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
     <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Aplikacije s tim dopuštenjem mogu pristupati podacima o vašoj tjelesnoj aktivnosti kao što su hodanje, vožnja biciklom, vožnja automobila, broj koraka i ostalo"</string>
