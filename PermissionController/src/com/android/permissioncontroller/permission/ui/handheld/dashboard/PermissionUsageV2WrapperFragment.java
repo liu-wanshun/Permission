@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.debug;
+package com.android.permissioncontroller.permission.ui.handheld.dashboard;
+
+import static com.android.permissioncontroller.Constants.EXTRA_SESSION_ID;
 
 import android.content.Intent;
 import android.os.Build;
@@ -25,32 +27,31 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity;
 import com.android.permissioncontroller.permission.ui.handheld.PermissionsCollapsingToolbarBaseFragment;
 
 /**
- * Wrapper over PermissionDetailsFragment
+ * Wrapper over PermissionUsageV2Fragment
  */
 @RequiresApi(Build.VERSION_CODES.S)
-public class PermissionDetailsWrapperFragment extends PermissionsCollapsingToolbarBaseFragment {
+public class PermissionUsageV2WrapperFragment extends PermissionsCollapsingToolbarBaseFragment{
     @NonNull
     @Override
     public PreferenceFragmentCompat createPreferenceFragment() {
-        return new PermissionDetailsFragment();
+        return new PermissionUsageV2Fragment();
     }
 
     /**
-     * Construct a new instance of PermissionDetailsFragment
+     * @return A new fragment
      */
-    public static @NonNull PermissionDetailsWrapperFragment newInstance(@Nullable String groupName,
-            long numMillis, boolean showSystem) {
-        PermissionDetailsWrapperFragment fragment = new PermissionDetailsWrapperFragment();
+    public static @NonNull PermissionUsageV2WrapperFragment newInstance(@Nullable String groupName,
+            long numMillis, long sessionId) {
+        PermissionUsageV2WrapperFragment fragment = new PermissionUsageV2WrapperFragment();
         Bundle arguments = new Bundle();
         if (groupName != null) {
             arguments.putString(Intent.EXTRA_PERMISSION_GROUP_NAME, groupName);
         }
         arguments.putLong(Intent.EXTRA_DURATION_MILLIS, numMillis);
-        arguments.putBoolean(ManagePermissionsActivity.EXTRA_SHOW_SYSTEM, showSystem);
+        arguments.putLong(EXTRA_SESSION_ID, sessionId);
         fragment.setArguments(arguments);
         return fragment;
     }

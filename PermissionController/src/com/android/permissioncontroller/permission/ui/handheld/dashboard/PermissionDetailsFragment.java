@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.debug;
+package com.android.permissioncontroller.permission.ui.handheld.dashboard;
+
+import static com.android.permissioncontroller.Constants.EXTRA_SESSION_ID;
+import static com.android.permissioncontroller.Constants.INVALID_SESSION_ID;
 
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.HOURS;
@@ -58,7 +61,6 @@ import com.android.permissioncontroller.permission.model.AppPermissionUsage;
 import com.android.permissioncontroller.permission.model.legacy.PermissionApps;
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity;
 import com.android.permissioncontroller.permission.ui.handheld.SettingsWithLargeHeader;
-import com.android.permissioncontroller.permission.ui.handheld.dashboard.PermissionHistoryPreference;
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
 import com.android.permissioncontroller.permission.utils.Utils;
 
@@ -99,6 +101,10 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
     private static final String SHOW_SYSTEM_KEY = PermissionDetailsFragment.class.getName()
             + KEY_SHOW_SYSTEM_PREFS;
 
+    private static final String KEY_SESSION_ID = "_session_id";
+    private static final String SESSION_ID_KEY = PermissionDetailsFragment.class.getName()
+            + KEY_SESSION_ID;
+
     private @Nullable String mFilterGroup;
     private @Nullable List<AppPermissionUsage> mAppPermissionUsages = new ArrayList<>();
     private @NonNull List<TimeFilterItem> mFilterTimes;
@@ -113,6 +119,8 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
     private MenuItem mHideSystemMenu;
     private @NonNull RoleManager mRoleManager;
 
+    private long mSessionId;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,9 +131,11 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
 
         if (savedInstanceState != null) {
             mShowSystem = savedInstanceState.getBoolean(SHOW_SYSTEM_KEY);
+            mSessionId = savedInstanceState.getLong(SESSION_ID_KEY);
         } else {
             mShowSystem = getArguments().getBoolean(
                     ManagePermissionsActivity.EXTRA_SHOW_SYSTEM, false);
+            mSessionId = getArguments().getLong(EXTRA_SESSION_ID, INVALID_SESSION_ID);
         }
 
         if (mFilterGroup == null) {
@@ -220,6 +230,7 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SHOW_SYSTEM_KEY, mShowSystem);
+        outState.putLong(SESSION_ID_KEY, mSessionId);
     }
 
     @Override
@@ -508,7 +519,8 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
                         usage.mAppPermissionUsage.getApp().getIcon(),
                         usage.mAppPermissionUsage.getApp().getLabel(),
                         mFilterGroup, accessTime, summaryLabel, accessTimeList, attributionTags,
-                        usageNum == (numUsages - 1)
+                        usageNum == (numUsages - 1),
+                        mSessionId
                 );
 
                 category.get().addPreference(permissionUsagePreference);
