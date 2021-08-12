@@ -42,6 +42,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import com.android.permissioncontroller.R;
+import com.android.permissioncontroller.permission.compat.IntentCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,8 @@ public class PermissionHistoryPreference extends Preference {
             @NonNull Drawable appIcon,
             @NonNull String preferenceTitle,
             @NonNull String permissionGroup, @NonNull String accessTime,
-            @Nullable CharSequence summaryText, @NonNull List<Long> accessTimeList,
+            @Nullable CharSequence summaryText, boolean showingAttribution,
+            @NonNull List<Long> accessTimeList,
             @NonNull ArrayList<String> attributionTags, boolean isLastUsage, long sessionId) {
         super(context);
         mContext = context;
@@ -96,7 +98,7 @@ public class PermissionHistoryPreference extends Preference {
             setSummary(summaryText);
         }
 
-        mIntent = getViewPermissionUsageForPeriodIntent();
+        mIntent = getViewPermissionUsageForPeriodIntent(showingAttribution);
         if (mIntent != null) {
             mWidgetIcon = mContext.getDrawable(R.drawable.ic_info_outline);
             setWidgetLayoutResource(R.layout.image_view_with_divider);
@@ -168,7 +170,8 @@ public class PermissionHistoryPreference extends Preference {
      * Get a {@link Intent#ACTION_VIEW_PERMISSION_USAGE_FOR_PERIOD} intent, or null if the intent
      * can't be handled.
      */
-    private Intent getViewPermissionUsageForPeriodIntent() {
+    @Nullable
+    private Intent getViewPermissionUsageForPeriodIntent(boolean showingAttribution) {
         Intent viewUsageIntent = new Intent();
         viewUsageIntent.setAction(Intent.ACTION_VIEW_PERMISSION_USAGE_FOR_PERIOD);
         viewUsageIntent.setPackage(mPackageName);
@@ -178,6 +181,7 @@ public class PermissionHistoryPreference extends Preference {
         viewUsageIntent.putExtra(Intent.EXTRA_START_TIME,
                 mAccessTimeList.get(mAccessTimeList.size() - 1));
         viewUsageIntent.putExtra(Intent.EXTRA_END_TIME, mAccessTimeList.get(0));
+        viewUsageIntent.putExtra(IntentCompat.EXTRA_SHOWING_ATTRIBUTION, showingAttribution);
 
         PackageManager packageManager = mContext.getPackageManager();
         ResolveInfo resolveInfo = packageManager.resolveActivity(viewUsageIntent,
