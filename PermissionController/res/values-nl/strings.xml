@@ -115,7 +115,10 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Tijdlijn van wanneer apps in de afgelopen 24 uur je <xliff:g id="PERMGROUP">%1$s</xliff:g> hebben gebruikt"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Wanneer deze app het recht voor <xliff:g id="PERMGROUP">%1$s</xliff:g> heeft gebruikt"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Meer informatie"</string>
-    <string name="permission_usage_duration_and_proxy" msgid="573959201368716399">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <!-- no translation found for history_preference_subtext_2 (1521763591164293683) -->
+    <skip />
+    <!-- no translation found for history_preference_subtext_3 (758761785983094351) -->
+    <skip />
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> dagen</item>
       <item quantity="one">1 dag</item>
@@ -212,7 +215,7 @@
     <string name="approximate_image_description" msgid="938803699637069884">"Geschatte locatie"</string>
     <string name="app_permission_location_accuracy" msgid="7166912915040018669">"Exacte locatie gebruiken"</string>
     <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"Als de exacte locatie uitstaat, hebben apps toegang tot je geschatte locatie"</string>
-    <string name="app_permission_title" msgid="2090897901051370711">"Recht van <xliff:g id="PERM">%1$s</xliff:g>"</string>
+    <string name="app_permission_title" msgid="2090897901051370711">"<xliff:g id="PERM">%1$s</xliff:g> rechten"</string>
     <string name="app_permission_header" msgid="2951363137032603806">"Toegang tot <xliff:g id="PERM">%1$s</xliff:g> voor deze app"</string>
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"Alle rechten van <xliff:g id="APP">%1$s</xliff:g> bekijken"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Alle apps met dit recht bekijken"</string>
