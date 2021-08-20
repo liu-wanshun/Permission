@@ -25,11 +25,14 @@ import static com.android.permissioncontroller.PermissionControllerStatsLog.APP_
 import static com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISSION_GROUPS_FRAGMENT_AUTO_REVOKE_ACTION__ACTION__OPENED_FOR_AUTO_REVOKE;
 import static com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISSION_GROUPS_FRAGMENT_AUTO_REVOKE_ACTION__ACTION__OPENED_FROM_INTENT;
 import static com.android.permissioncontroller.PermissionControllerStatsLog.AUTO_REVOKE_NOTIFICATION_CLICKED;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_USAGE_FRAGMENT_INTERACTION;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_USAGE_FRAGMENT_INTERACTION__ACTION__OPEN;
 
 import android.app.ActionBar;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.util.Log;
@@ -45,9 +48,6 @@ import com.android.permissioncontroller.Constants;
 import com.android.permissioncontroller.DeviceUtils;
 import com.android.permissioncontroller.PermissionControllerStatsLog;
 import com.android.permissioncontroller.R;
-import com.android.permissioncontroller.permission.debug.PermissionDetailsWrapperFragment;
-import com.android.permissioncontroller.permission.debug.PermissionUsageV2WrapperFragment;
-import com.android.permissioncontroller.permission.debug.UtilsKt;
 import com.android.permissioncontroller.permission.ui.auto.AutoAllAppPermissionsFragment;
 import com.android.permissioncontroller.permission.ui.auto.AutoAppPermissionsFragment;
 import com.android.permissioncontroller.permission.ui.auto.AutoManageStandardPermissionsFragment;
@@ -57,6 +57,8 @@ import com.android.permissioncontroller.permission.ui.handheld.AppPermissionFrag
 import com.android.permissioncontroller.permission.ui.handheld.AppPermissionGroupsFragment;
 import com.android.permissioncontroller.permission.ui.handheld.HandheldUnusedAppsWrapperFragment;
 import com.android.permissioncontroller.permission.ui.handheld.PermissionAppsFragment;
+import com.android.permissioncontroller.permission.ui.handheld.dashboard.PermissionDetailsWrapperFragment;
+import com.android.permissioncontroller.permission.ui.handheld.dashboard.PermissionUsageV2WrapperFragment;
 import com.android.permissioncontroller.permission.ui.legacy.AppPermissionActivity;
 import com.android.permissioncontroller.permission.ui.wear.AppPermissionsFragmentWear;
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
@@ -158,26 +160,31 @@ public final class ManagePermissionsActivity extends SettingsActivity {
                 break;
 
             case Intent.ACTION_REVIEW_PERMISSION_USAGE: {
-                if (!UtilsKt.isPrivacyHubEnabled()) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                     finishAfterTransition();
                     return;
                 }
 
+
+                PermissionControllerStatsLog.write(PERMISSION_USAGE_FRAGMENT_INTERACTION, sessionId,
+                        PERMISSION_USAGE_FRAGMENT_INTERACTION__ACTION__OPEN);
                 String groupName = getIntent().getStringExtra(Intent.EXTRA_PERMISSION_GROUP_NAME);
                 androidXFragment = PermissionUsageV2WrapperFragment.newInstance(groupName,
-                        Long.MAX_VALUE);
+                        Long.MAX_VALUE, sessionId);
             } break;
 
             case Intent.ACTION_REVIEW_PERMISSION_HISTORY: {
-                if (UtilsKt.isPrivacyHubEnabled()) {
-                    String groupName = getIntent()
-                            .getStringExtra(Intent.EXTRA_PERMISSION_GROUP_NAME);
-                    boolean showSystem = getIntent()
-                            .getBooleanExtra(EXTRA_SHOW_SYSTEM, false);
-                    androidXFragment = PermissionDetailsWrapperFragment
-                            .newInstance(groupName, Long.MAX_VALUE, showSystem);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                    finishAfterTransition();
+                    return;
                 }
 
+                String groupName = getIntent()
+                        .getStringExtra(Intent.EXTRA_PERMISSION_GROUP_NAME);
+                boolean showSystem = getIntent()
+                        .getBooleanExtra(EXTRA_SHOW_SYSTEM, false);
+                androidXFragment = PermissionDetailsWrapperFragment
+                        .newInstance(groupName, Long.MAX_VALUE, showSystem, sessionId);
                 break;
             }
 
