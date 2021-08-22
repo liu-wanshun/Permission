@@ -27,12 +27,14 @@ apex_defaults {
     updatable: true,
     min_sdk_version: "30",
     bootclasspath_fragments: ["com.android.permission-bootclasspath-fragment"],
+    systemserverclasspath_fragments: ["com.android.permission-systemserverclasspath-fragment"],
+    prebuilts: ["current_sdkinfo"],
     key: "com.android.permission.key",
     certificate: ":com.android.permission.certificate",
-    java_libs: [
-        "service-permission",
-    ],
     apps: ["PermissionController"],
+    // Indicates that pre-installed version of this apex can be compressed.
+    // Whether it actually will be compressed is controlled on per-device basis.
+    compressible: true,
 }
 
 apex_key {
@@ -57,5 +59,12 @@ sdk {
 bootclasspath_fragment {
     name: "com.android.permission-bootclasspath-fragment",
     contents: ["framework-permission"],
+    apex_available: ["com.android.permission"],
+}
+
+// Encapsulate the contributions made by the com.android.permission to the systemserverclasspath.
+systemserverclasspath_fragment {
+    name: "com.android.permission-systemserverclasspath-fragment",
+    contents: ["service-permission"],
     apex_available: ["com.android.permission"],
 }
