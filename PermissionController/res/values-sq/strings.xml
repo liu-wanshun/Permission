@@ -115,8 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Kronologjia se kur e kanë përdorur aplikacionet <xliff:g id="PERMGROUP">%1$s</xliff:g> tënd në 24 orët e fundit"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Kur ky aplikacion ka përdorur lejen për: <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Mëso më shumë"</string>
-    <!-- no translation found for permission_usage_duration_and_proxy (573959201368716399) -->
-    <skip />
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> ditë</item>
       <item quantity="one">1 ditë</item>
@@ -394,7 +394,7 @@
     <string name="role_call_screening_label" msgid="883935222060878724">"Aplikacioni i parazgjedhur për ID-në dhe telefonuesit e bezdisshëm"</string>
     <string name="role_call_screening_short_label" msgid="2048465565063130834">"Aplikacioni për ID-në e telefonuesit dhe telefonuesit e bezdisshëm"</string>
     <string name="role_call_screening_description" msgid="2349431420497468981">"Aplikacionet që të lejojnë të identifikosh telefonatat dhe të bllokosh komunikimet e bezdisshme, telefonatat e automatizuara ose numrat e padëshiruar"</string>
-    <string name="role_call_screening_request_title" msgid="7358309224566977290">"Dëshiron të caktosh <xliff:g id="APP_NAME">%1$s</xliff:g> si aplikacionin e parazgjedhur për ID-në e telefonuesit dhe telefonuesit të padëshiruar?"</string>
+    <string name="role_call_screening_request_title" msgid="7358309224566977290">"Dëshiron të caktosh <xliff:g id="APP_NAME">%1$s</xliff:g> si apl. e parazgjedhur për ID-në e telefonuesit dhe filtrimin telefonatave të bezdisshme?"</string>
     <string name="role_call_screening_request_description" msgid="7338511921032446006">"Nuk ka nevojë për asnjë autorizim"</string>
     <string name="role_watch_description" msgid="267003778693177779">"<xliff:g id="APP_NAME">%1$s</xliff:g> do të lejohet të ndërveprojë me njoftimet e tua dhe të ketë qasje te lejet e \"Telefonit\", \"SMS-ve\", \"Kontakteve\" dhe \"Kalendarit\"."</string>
     <string name="request_role_current_default" msgid="738722892438247184">"Parazgjedhja aktuale"</string>

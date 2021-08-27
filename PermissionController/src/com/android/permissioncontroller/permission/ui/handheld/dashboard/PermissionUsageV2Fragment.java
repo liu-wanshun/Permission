@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.debug;
+package com.android.permissioncontroller.permission.ui.handheld.dashboard;
 
+import static com.android.permissioncontroller.Constants.EXTRA_SESSION_ID;
+import static com.android.permissioncontroller.Constants.INVALID_SESSION_ID;
 import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_USAGE_FRAGMENT_INTERACTION;
-import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_USAGE_FRAGMENT_INTERACTION__ACTION__OPEN;
 import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_USAGE_FRAGMENT_INTERACTION__ACTION__SEE_OTHER_PERMISSIONS_CLICKED;
 import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_USAGE_FRAGMENT_INTERACTION__ACTION__SHOW_SYSTEM_CLICKED;
 import static com.android.permissioncontroller.PermissionControllerStatsLog.write;
@@ -47,7 +48,6 @@ import androidx.preference.PreferenceGroupAdapter;
 import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.model.AppPermissionGroup;
 import com.android.permissioncontroller.permission.model.AppPermissionUsage;
@@ -55,7 +55,6 @@ import com.android.permissioncontroller.permission.model.AppPermissionUsage.Grou
 import com.android.permissioncontroller.permission.model.legacy.PermissionApps;
 import com.android.permissioncontroller.permission.ui.handheld.PermissionUsageV2ControlPreference;
 import com.android.permissioncontroller.permission.ui.handheld.SettingsWithLargeHeader;
-import com.android.permissioncontroller.permission.ui.handheld.dashboard.PermissionUsageGraphicPreference;
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
 import com.android.permissioncontroller.permission.utils.Utils;
 import com.android.settingslib.HelpUtils;
@@ -65,7 +64,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -94,8 +92,9 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
             PERMISSION_GROUP_ORDER.size() + 1;
     private static final int EXPAND_BUTTON_ORDER = 999;
 
-    private static final String KEY_SESSION_ID = PermissionUsageV2Fragment.class.getName()
-            + "_REQUEST_ID";
+    private static final String KEY_SESSION_ID = "_session_id";
+    private static final String SESSION_ID_KEY = PermissionUsageV2Fragment.class.getName()
+            + KEY_SESSION_ID;
 
     private @NonNull PermissionUsages mPermissionUsages;
     private @Nullable List<AppPermissionUsage> mAppPermissionUsages = new ArrayList<>();
@@ -121,10 +120,10 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            mSessionId = new Random().nextLong();
+        if (savedInstanceState != null) {
+            mSessionId = savedInstanceState.getLong(SESSION_ID_KEY);
         } else {
-            mSessionId = savedInstanceState.getLong(KEY_SESSION_ID);
+            mSessionId = getArguments().getLong(EXTRA_SESSION_ID, INVALID_SESSION_ID);
         }
 
         mFinishedInitialLoad = false;
@@ -199,9 +198,7 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
             mOtherExpanded = false;
             preference.setTitle(R.string.perm_usage_adv_info_title);
             preference.setSummary(preferenceScreen.getSummary());
-            if (SdkLevel.isAtLeastS()) {
-                preference.setLayoutResource(R.layout.expand_button_with_large_title);
-            }
+            preference.setLayoutResource(R.layout.expand_button_with_large_title);
             if (mGraphic != null) {
                 mGraphic.setShowOtherCategory(false);
             }
@@ -218,8 +215,6 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
         super.onStart();
         getActivity().setTitle(R.string.permission_usage_title);
 
-        write(PERMISSION_USAGE_FRAGMENT_INTERACTION, mSessionId,
-                PERMISSION_USAGE_FRAGMENT_INTERACTION__ACTION__OPEN);
     }
 
     @Override
@@ -289,7 +284,7 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (outState != null) {
-            outState.putLong(KEY_SESSION_ID, mSessionId);
+            outState.putLong(SESSION_ID_KEY, mSessionId);
         }
     }
 
