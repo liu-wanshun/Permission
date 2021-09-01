@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.debug;
+package com.android.permissioncontroller.permission.ui.handheld.dashboard;
+
+import static com.android.permissioncontroller.Constants.EXTRA_SESSION_ID;
+import static com.android.permissioncontroller.Constants.INVALID_SESSION_ID;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_USAGE_FRAGMENT_INTERACTION;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_USAGE_FRAGMENT_INTERACTION__ACTION__SEE_OTHER_PERMISSIONS_CLICKED;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_USAGE_FRAGMENT_INTERACTION__ACTION__SHOW_SYSTEM_CLICKED;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.write;
 
 import static java.util.concurrent.TimeUnit.DAYS;
 
@@ -23,6 +30,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.role.RoleManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.ArrayMap;
 import android.util.ArraySet;
@@ -33,19 +41,18 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroupAdapter;
 import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.model.AppPermissionGroup;
 import com.android.permissioncontroller.permission.model.AppPermissionUsage;
 import com.android.permissioncontroller.permission.model.AppPermissionUsage.GroupUsage;
 import com.android.permissioncontroller.permission.model.legacy.PermissionApps;
-import com.android.permissioncontroller.permission.ui.handheld.PermissionUsageGraphicPreference;
 import com.android.permissioncontroller.permission.ui.handheld.PermissionUsageV2ControlPreference;
 import com.android.permissioncontroller.permission.ui.handheld.SettingsWithLargeHeader;
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
@@ -62,6 +69,7 @@ import java.util.Set;
 /**
  * The main page for the privacy dashboard.
  */
+@RequiresApi(Build.VERSION_CODES.S)
 public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implements
         PermissionUsages.PermissionsUsagesChangeCallback {
     private static final String LOG_TAG = "PermUsageV2Fragment";
@@ -84,6 +92,10 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
             PERMISSION_GROUP_ORDER.size() + 1;
     private static final int EXPAND_BUTTON_ORDER = 999;
 
+    private static final String KEY_SESSION_ID = "_session_id";
+    private static final String SESSION_ID_KEY = PermissionUsageV2Fragment.class.getName()
+            + KEY_SESSION_ID;
+
     private @NonNull PermissionUsages mPermissionUsages;
     private @Nullable List<AppPermissionUsage> mAppPermissionUsages = new ArrayList<>();
 
@@ -91,6 +103,7 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
     private boolean mHasSystemApps;
     private MenuItem mShowSystemMenu;
     private MenuItem mHideSystemMenu;
+    private boolean mOtherExpanded;
 
     private ArrayMap<String, Integer> mGroupAppCounts = new ArrayMap<>();
 
@@ -100,14 +113,26 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
 
     private PermissionUsageGraphicPreference mGraphic;
 
+    /** Unique Id of a request */
+    private long mSessionId;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mSessionId = savedInstanceState.getLong(SESSION_ID_KEY);
+        } else {
+            mSessionId = getArguments().getLong(EXTRA_SESSION_ID, INVALID_SESSION_ID);
+        }
 
         mFinishedInitialLoad = false;
 
         // By default, do not show system app usages.
         mShowSystem = false;
+
+        // Start out with 'other' permissions not expanded.
+        mOtherExpanded = false;
 
         setLoading(true, false);
         setHasOptionsMenu(true);
@@ -170,15 +195,15 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
 
         // This is a hacky way of getting the expand button preference for advanced info
         if (preference.getOrder() == EXPAND_BUTTON_ORDER) {
+            mOtherExpanded = false;
             preference.setTitle(R.string.perm_usage_adv_info_title);
             preference.setSummary(preferenceScreen.getSummary());
-            if (SdkLevel.isAtLeastS()) {
-                preference.setLayoutResource(R.layout.expand_button_with_large_title);
-            }
+            preference.setLayoutResource(R.layout.expand_button_with_large_title);
             if (mGraphic != null) {
                 mGraphic.setShowOtherCategory(false);
             }
         } else {
+            mOtherExpanded = true;
             if (mGraphic != null) {
                 mGraphic.setShowOtherCategory(true);
             }
@@ -189,6 +214,7 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
     public void onStart() {
         super.onStart();
         getActivity().setTitle(R.string.permission_usage_title);
+
     }
 
     @Override
@@ -217,6 +243,9 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
                 getActivity().finishAfterTransition();
                 return true;
             case MENU_SHOW_SYSTEM:
+                write(PERMISSION_USAGE_FRAGMENT_INTERACTION, mSessionId,
+                        PERMISSION_USAGE_FRAGMENT_INTERACTION__ACTION__SHOW_SYSTEM_CLICKED);
+                // fall through
             case MENU_HIDE_SYSTEM:
                 mShowSystem = item.getItemId() == MENU_SHOW_SYSTEM;
                 // We already loaded all data, so don't reload
@@ -251,6 +280,14 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
         return R.string.no_permission_usages;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (outState != null) {
+            outState.putLong(SESSION_ID_KEY, mSessionId);
+        }
+    }
+
     private void updateUI() {
         if (mAppPermissionUsages.isEmpty() || getActivity() == null) {
             return;
@@ -263,7 +300,17 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
             setPreferenceScreen(screen);
         }
         screen.removeAll();
-        screen.setInitialExpandedChildrenCount(PERMISSION_USAGE_INITIAL_EXPANDED_CHILDREN_COUNT);
+
+        if (mOtherExpanded) {
+            screen.setInitialExpandedChildrenCount(Integer.MAX_VALUE);
+        } else {
+            screen.setInitialExpandedChildrenCount(
+                    PERMISSION_USAGE_INITIAL_EXPANDED_CHILDREN_COUNT);
+        }
+        screen.setOnExpandButtonClickListener(() -> {
+            write(PERMISSION_USAGE_FRAGMENT_INTERACTION, mSessionId,
+                    PERMISSION_USAGE_FRAGMENT_INTERACTION__ACTION__SEE_OTHER_PERMISSIONS_CLICKED);
+        });
 
         long curTime = System.currentTimeMillis();
         long startTime = Math.max(curTime - TIME_FILTER_MILLIS,
@@ -426,7 +473,7 @@ public class PermissionUsageV2Fragment extends SettingsWithLargeHeader implement
                 Map.Entry<String, Integer> currentEntry = usages.get(i);
                 PermissionUsageV2ControlPreference permissionUsagePreference =
                         new PermissionUsageV2ControlPreference(context, currentEntry.getKey(),
-                                currentEntry.getValue(), mShowSystem);
+                                currentEntry.getValue(), mShowSystem, mSessionId);
                 category.addPreference(permissionUsagePreference);
             }
 

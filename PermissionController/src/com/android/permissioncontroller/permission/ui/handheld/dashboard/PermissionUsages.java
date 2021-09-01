@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.debug;
+package com.android.permissioncontroller.permission.ui.handheld.dashboard;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.RECORD_AUDIO;
@@ -33,6 +33,7 @@ import android.content.Loader;
 import android.content.pm.PackageInfo;
 import android.media.AudioManager;
 import android.media.AudioRecordingConfiguration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
 import android.util.ArrayMap;
@@ -42,6 +43,7 @@ import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.android.permissioncontroller.permission.model.AppPermissionGroup;
 import com.android.permissioncontroller.permission.model.AppPermissionUsage;
@@ -63,6 +65,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Loads all permission usages for a set of apps and permission groups.
  */
+@RequiresApi(Build.VERSION_CODES.S)
 public final class PermissionUsages implements LoaderCallbacks<List<AppPermissionUsage>> {
     public static final int USAGE_FLAG_LAST = 1 << 0;
     public static final int USAGE_FLAG_HISTORICAL = 1 << 2;
@@ -85,6 +88,7 @@ public final class PermissionUsages implements LoaderCallbacks<List<AppPermissio
     // TODO: theianchen move them to SystemApi
     private static final String OPSTR_PHONE_CALL_MICROPHONE = "android:phone_call_microphone";
     private static final String OPSTR_PHONE_CALL_CAMERA = "android:phone_call_camera";
+    public static final int HISTORY_FLAG_GET_ATTRIBUTION_CHAINS = 1 << 2;
 
     private @Nullable PermissionsUsagesChangeCallback mCallback;
 
@@ -352,7 +356,8 @@ public final class PermissionUsages implements LoaderCallbacks<List<AppPermissio
                         mFilterBeginTimeMillis, mFilterEndTimeMillis)
                         .setFlags(AppOpsManager.OP_FLAG_SELF
                                 | AppOpsManager.OP_FLAG_TRUSTED_PROXIED)
-                        .setHistoryFlags(AppOpsManager.HISTORY_FLAG_DISCRETE)
+                        .setHistoryFlags(AppOpsManager.HISTORY_FLAG_DISCRETE
+                                | HISTORY_FLAG_GET_ATTRIBUTION_CHAINS)
                         .build();
                 appOpsManager.getHistoricalOps(request, Runnable::run,
                         (HistoricalOps ops) -> {

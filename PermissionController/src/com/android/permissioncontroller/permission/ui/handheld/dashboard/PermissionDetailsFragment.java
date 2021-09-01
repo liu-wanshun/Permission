@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.debug;
+package com.android.permissioncontroller.permission.ui.handheld.dashboard;
+
+import static com.android.permissioncontroller.Constants.EXTRA_SESSION_ID;
+import static com.android.permissioncontroller.Constants.INVALID_SESSION_ID;
 
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
-import android.Manifest;
 import android.Manifest.permission_group;
 import android.app.ActionBar;
+import android.app.Activity;
+import android.app.AppOpsManager.OpEventProxyInfo;
 import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.UserHandle;
 import android.text.format.DateFormat;
 import android.util.ArraySet;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,19 +48,26 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.permissioncontroller.PermissionControllerApplication;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.model.AppPermissionGroup;
 import com.android.permissioncontroller.permission.model.AppPermissionUsage;
+import com.android.permissioncontroller.permission.model.AppPermissionUsage.TimelineUsage;
 import com.android.permissioncontroller.permission.model.legacy.PermissionApps;
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity;
-import com.android.permissioncontroller.permission.ui.handheld.PermissionGroupPreference;
-import com.android.permissioncontroller.permission.ui.handheld.PermissionHistoryPreference;
 import com.android.permissioncontroller.permission.ui.handheld.SettingsWithLargeHeader;
+import com.android.permissioncontroller.permission.utils.KotlinUtils;
+import com.android.permissioncontroller.permission.utils.SubattributionUtils;
 import com.android.permissioncontroller.permission.utils.Utils;
+
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -63,6 +76,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -70,9 +84,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import kotlin.Triple;
+
 /**
  * The permission details page showing the history/timeline of a permission
  */
+@RequiresApi(Build.VERSION_CODES.S)
 public class PermissionDetailsFragment extends SettingsWithLargeHeader implements
         PermissionUsages.PermissionsUsagesChangeCallback {
     public static final int FILTER_24_HOURS = 2;
@@ -88,6 +105,10 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
     private static final String SHOW_SYSTEM_KEY = PermissionDetailsFragment.class.getName()
             + KEY_SHOW_SYSTEM_PREFS;
 
+    private static final String KEY_SESSION_ID = "_session_id";
+    private static final String SESSION_ID_KEY = PermissionDetailsFragment.class.getName()
+            + KEY_SESSION_ID;
+
     private @Nullable String mFilterGroup;
     private @Nullable List<AppPermissionUsage> mAppPermissionUsages = new ArrayList<>();
     private @NonNull List<TimeFilterItem> mFilterTimes;
@@ -102,6 +123,8 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
     private MenuItem mHideSystemMenu;
     private @NonNull RoleManager mRoleManager;
 
+    private long mSessionId;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,9 +135,11 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
 
         if (savedInstanceState != null) {
             mShowSystem = savedInstanceState.getBoolean(SHOW_SYSTEM_KEY);
+            mSessionId = savedInstanceState.getLong(SESSION_ID_KEY);
         } else {
             mShowSystem = getArguments().getBoolean(
                     ManagePermissionsActivity.EXTRA_SHOW_SYSTEM, false);
+            mSessionId = getArguments().getLong(EXTRA_SESSION_ID, INVALID_SESSION_ID);
         }
 
         if (mFilterGroup == null) {
@@ -141,32 +166,34 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
         ViewGroup rootView = (ViewGroup) super.onCreateView(inflater, container,
                 savedInstanceState);
 
-        if (mExtendedFab != null) {
-            // Load the background tint color from the application theme
-            // rather than the Material Design theme
-            final int colorAccentTertiary = getContext().getColor(
-                    android.R.color.system_accent3_100);
-            mExtendedFab.setBackgroundTintList(ColorStateList.valueOf(colorAccentTertiary));
-
-            mExtendedFab.setText(R.string.manage_permission);
-            final boolean isDarkMode = (getActivity().getResources().getConfiguration().uiMode
-                    & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
-            int textColor = isDarkMode ? android.R.attr.textColorPrimaryInverse
-                    : android.R.attr.textColorPrimary;
-            TypedArray colorArray = getActivity().obtainStyledAttributes(
-                    new int[]{
-                            textColor
-                    }
-            );
-            mExtendedFab.setTextColor(colorArray.getColor(0, -1));
-            mExtendedFab.setIcon(getActivity().getDrawable(R.drawable.ic_settings_outline));
-            mExtendedFab.setVisibility(View.VISIBLE);
-            mExtendedFab.setOnClickListener(v -> {
-                Intent intent = new Intent(Intent.ACTION_MANAGE_PERMISSION_APPS)
-                        .putExtra(Intent.EXTRA_PERMISSION_NAME, mFilterGroup);
-                startActivity(intent);
-            });
-        }
+        PermissionDetailsWrapperFragment parentFragment = (PermissionDetailsWrapperFragment)
+                requireParentFragment();
+        CoordinatorLayout coordinatorLayout = parentFragment.getCoordinatorLayout();
+        inflater.inflate(R.layout.permission_details_extended_fab, coordinatorLayout);
+        ExtendedFloatingActionButton extendedFab = coordinatorLayout.requireViewById(
+                R.id.extended_fab);
+        // Load the background tint color from the application theme
+        // rather than the Material Design theme
+        Activity activity = getActivity();
+        ColorStateList backgroundColor = activity.getColorStateList(
+                android.R.color.system_accent3_100);
+        extendedFab.setBackgroundTintList(backgroundColor);
+        extendedFab.setText(R.string.manage_permission);
+        boolean isUiModeNight = (activity.getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        int textColorAttr = isUiModeNight ? android.R.attr.textColorPrimaryInverse
+                : android.R.attr.textColorPrimary;
+        TypedArray typedArray = activity.obtainStyledAttributes(new int[] { textColorAttr });
+        ColorStateList textColor = typedArray.getColorStateList(0);
+        typedArray.recycle();
+        extendedFab.setTextColor(textColor);
+        extendedFab.setIcon(activity.getDrawable(R.drawable.ic_settings_outline));
+        extendedFab.setVisibility(View.VISIBLE);
+        extendedFab.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_MANAGE_PERMISSION_APPS)
+                    .putExtra(Intent.EXTRA_PERMISSION_NAME, mFilterGroup);
+            startActivity(intent);
+        });
         RecyclerView recyclerView = getListView();
         int bottomPadding = getResources()
                 .getDimensionPixelSize(R.dimen.privhub_details_recycler_view_bottom_padding);
@@ -180,7 +207,12 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
     @Override
     public void onStart() {
         super.onStart();
-        getActivity().setTitle(R.string.permission_history_title);
+        CharSequence title = getString(R.string.permission_history_title);
+        if (mFilterGroup != null) {
+            title = getResources().getString(R.string.permission_group_usage_title,
+                    KotlinUtils.INSTANCE.getPermGroupLabel(getActivity(), mFilterGroup));
+        }
+        getActivity().setTitle(title);
     }
 
     @Override
@@ -202,6 +234,7 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(SHOW_SYSTEM_KEY, mShowSystem);
+        outState.putLong(SESSION_ID_KEY, mSessionId);
     }
 
     @Override
@@ -248,6 +281,41 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
         return super.onOptionsItemSelected(item);
     }
 
+    private static boolean shouldShowSubattributionForApp(Context context,
+            AppPermissionUsage appPermissionUsage) {
+        if (!UtilsKt.shouldShowSubattributionInPermissionsDashboard()) {
+            return false;
+        }
+        return SubattributionUtils.isSubattributionSupported(context,
+                appPermissionUsage.getApp().getAppInfo());
+    }
+
+    private List<UsageData> filterAndConvert(AppPermissionUsage appPermissionUsage,
+            String filterGroup) {
+        if (shouldShowSubattributionForApp(getContext(), appPermissionUsage)) {
+            return appPermissionUsage.getGroupUsages()
+                    .stream()
+                    .filter(groupUsage ->
+                            groupUsage.getGroup().getName().equals(filterGroup))
+                    .map(AppPermissionUsage.GroupUsage::getAttributionLabelledGroupUsages)
+                    .flatMap(Collection::stream)
+                    .map(labelledGroupUsage ->
+                            new UsageData(filterGroup, appPermissionUsage.getApp(),
+                                    Arrays.asList(labelledGroupUsage),
+                                    labelledGroupUsage.getLabel())
+                    )
+                    .collect(Collectors.toList());
+        }
+        List<TimelineUsage> groupUsages = appPermissionUsage.getGroupUsages()
+                .stream()
+                .filter(groupUsage ->
+                        groupUsage.getGroup().getName().equals(filterGroup))
+                .collect(Collectors.toList());
+        return Arrays.asList(
+                new UsageData(filterGroup, appPermissionUsage.getApp(), groupUsages,
+                        Resources.ID_NULL));
+    }
+
     private void updateUI() {
         if (mAppPermissionUsages.isEmpty() || getActivity() == null) {
             return;
@@ -267,104 +335,116 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
 
         Set<String> exemptedPackages = Utils.getExemptedPackages(mRoleManager);
 
-        PermissionGroupPreference permissionPreference = new PermissionGroupPreference(context,
-                getResources(), mFilterGroup);
-        screen.addPreference(permissionPreference);
+        Preference subtitlePreference = new Preference(context);
+        subtitlePreference.setSummary(
+                getResources().getString(R.string.permission_group_usage_subtitle,
+                        KotlinUtils.INSTANCE.getPermGroupLabel(getActivity(), mFilterGroup)));
+        subtitlePreference.setSelectable(false);
+        screen.addPreference(subtitlePreference);
 
         AtomicBoolean seenSystemApp = new AtomicBoolean(false);
 
         ArrayList<PermissionApps.PermissionApp> permApps = new ArrayList<>();
         List<AppPermissionUsageEntry> usages = mAppPermissionUsages.stream()
                 .filter(appUsage -> !exemptedPackages.contains(appUsage.getPackageName()))
-                .map(appUsage -> {
-            // Fetch the access time list of the app accesses mFilterGroup permission group
-            // The DiscreteAccessTime is a Pair of (access time, access duration) of that app
-            List<Pair<Long, Long>> discreteAccessTimeList = new ArrayList<>();
-            List<AppPermissionUsage.GroupUsage> appGroups = appUsage.getGroupUsages();
-            int numGroups = appGroups.size();
-            for (int groupIndex = 0; groupIndex < numGroups; groupIndex++) {
-                AppPermissionUsage.GroupUsage groupUsage = appGroups.get(groupIndex);
-                if (!groupUsage.getGroup().getName().equals(mFilterGroup)
-                        || !groupUsage.hasDiscreteData()) {
-                    continue;
-                }
+                .map(appUsage -> filterAndConvert(appUsage, mFilterGroup))
+                .flatMap(Collection::stream)
+                .map(usageData -> {
+                    // Fetch the access time list of the app accesses mFilterGroup permission group
+                    // The DiscreteAccessTime is a Triple of (access time, access duration,
+                    // proxy) of that app
+                    List<Triple<Long, Long, OpEventProxyInfo>> discreteAccessTimeList =
+                            new ArrayList<>();
+                    List<TimelineUsage> timelineUsages = usageData.getTimelineUsages();
+                    int numGroups = timelineUsages.size();
+                    for (int groupIndex = 0; groupIndex < numGroups; groupIndex++) {
+                        TimelineUsage timelineUsage = timelineUsages.get(groupIndex);
+                        if (!timelineUsage.hasDiscreteData()) {
+                            continue;
+                        }
 
-                final boolean isSystemApp = !Utils.isGroupOrBgGroupUserSensitive(
-                        groupUsage.getGroup());
-                seenSystemApp.set(seenSystemApp.get() || isSystemApp);
-                if (isSystemApp && !mShowSystem) {
-                    continue;
-                }
+                        final boolean isSystemApp = !Utils.isGroupOrBgGroupUserSensitive(
+                                timelineUsage.getGroup());
+                        seenSystemApp.set(seenSystemApp.get() || isSystemApp);
+                        if (isSystemApp && !mShowSystem) {
+                            continue;
+                        }
 
-                List<Pair<Long, Long>> allDiscreteAccessTime = groupUsage
-                        .getAllDiscreteAccessTime();
-                int numAllDiscreteAccessTime = allDiscreteAccessTime.size();
-                for (int discreteAccessTimeIndex = 0;
-                        discreteAccessTimeIndex < numAllDiscreteAccessTime;
-                        discreteAccessTimeIndex++) {
-                    Pair<Long, Long> discreteAccessTime = allDiscreteAccessTime
-                            .get(discreteAccessTimeIndex);
-                    if (discreteAccessTime.first == 0 || discreteAccessTime.first < startTime) {
-                        continue;
+                        List<Triple<Long, Long, OpEventProxyInfo>> allDiscreteAccessTime =
+                                timelineUsage.getAllDiscreteAccessTime();
+                        int numAllDiscreteAccessTime = allDiscreteAccessTime.size();
+                        for (int discreteAccessTimeIndex = 0;
+                                discreteAccessTimeIndex < numAllDiscreteAccessTime;
+                                discreteAccessTimeIndex++) {
+                            Triple<Long, Long, OpEventProxyInfo> discreteAccessTime =
+                                    allDiscreteAccessTime.get(discreteAccessTimeIndex);
+                            if (discreteAccessTime.getFirst() == 0
+                                    || discreteAccessTime.getFirst() < startTime) {
+                                continue;
+                            }
+
+                            discreteAccessTimeList.add(discreteAccessTime);
+                        }
                     }
 
-                    discreteAccessTimeList.add(discreteAccessTime);
-                }
-            }
+                    Collections.sort(
+                            discreteAccessTimeList, (x, y) -> y.getFirst().compareTo(x.getFirst()));
 
-            Collections.sort(discreteAccessTimeList, (x, y) -> y.first.compareTo(x.first));
-
-            if (discreteAccessTimeList.size() > 0) {
-                permApps.add(appUsage.getApp());
-            }
-
-            // If the current permission group is not LOCATION or there's only one access for
-            // the app, return individual entry early.
-            if (!ALLOW_CLUSTERING_PERMISSION_GROUPS.contains(mFilterGroup)
-                    || discreteAccessTimeList.size() <= 1) {
-                return discreteAccessTimeList.stream().map(
-                    time -> new AppPermissionUsageEntry(appUsage, time.first,
-                        Collections.singletonList(time))).collect(Collectors.toList());
-            }
-
-            // Group access time list
-            List<AppPermissionUsageEntry> usageEntries = new ArrayList<>();
-            AppPermissionUsageEntry ongoingEntry = null;
-            for (Pair<Long, Long> time : discreteAccessTimeList) {
-                if (ongoingEntry == null) {
-                    ongoingEntry = new AppPermissionUsageEntry(appUsage, time.first,
-                        Stream.of(time).collect(Collectors.toCollection(ArrayList::new)));
-                } else {
-                    List<Pair<Long, Long>> ongoingAccessTimeList =
-                            ongoingEntry.mClusteredAccessTimeList;
-                    if (time.first / ONE_HOUR_MS
-                            != ongoingAccessTimeList.get(0).first / ONE_HOUR_MS
-                            || ongoingAccessTimeList.get(ongoingAccessTimeList.size() - 1).first
-                            / ONE_MINUTE_MS - time.first / ONE_MINUTE_MS
-                            > CLUSTER_MINUTES_APART) {
-                        // If the current access time is not in the same hour nor within
-                        // CLUSTER_MINUTES_APART, add the ongoing entry to the usage list and start
-                        // a new ongoing entry.
-                        usageEntries.add(ongoingEntry);
-                        ongoingEntry = new AppPermissionUsageEntry(appUsage, time.first,
-                            Stream.of(time).collect(Collectors.toCollection(ArrayList::new)));
-                    } else {
-                        ongoingAccessTimeList.add(time);
+                    if (discreteAccessTimeList.size() > 0) {
+                        permApps.add(usageData.getApp());
                     }
-                }
-            }
-            usageEntries.add(ongoingEntry);
 
-            return usageEntries;
-        }).flatMap(Collection::stream).sorted((x, y) -> {
-            // Sort all usage entries by startTime desc, and then by app name.
-            int timeCompare = Long.compare(y.mEndTime, x.mEndTime);
-            if (timeCompare != 0) {
-                return timeCompare;
-            }
-            return x.mAppPermissionUsage.getApp().getLabel().compareTo(
-                    y.mAppPermissionUsage.getApp().getLabel());
-        }).collect(Collectors.toList());
+                    // If the current permission group is not LOCATION or there's only one access
+                    // for the app, return individual entry early.
+                    if (!ALLOW_CLUSTERING_PERMISSION_GROUPS.contains(mFilterGroup)
+                            || discreteAccessTimeList.size() <= 1) {
+                        return discreteAccessTimeList.stream().map(
+                                time -> new AppPermissionUsageEntry(usageData, time.getFirst(),
+                                        Collections.singletonList(time)))
+                                .collect(Collectors.toList());
+                    }
+
+                    // Group access time list
+                    List<AppPermissionUsageEntry> usageEntries = new ArrayList<>();
+                    AppPermissionUsageEntry ongoingEntry = null;
+                    for (Triple<Long, Long, OpEventProxyInfo> time : discreteAccessTimeList) {
+                        if (ongoingEntry == null) {
+                            ongoingEntry = new AppPermissionUsageEntry(usageData, time.getFirst(),
+                                    Stream.of(time)
+                                            .collect(Collectors.toCollection(ArrayList::new)));
+                        } else {
+                            List<Triple<Long, Long, OpEventProxyInfo>> ongoingAccessTimeList =
+                                    ongoingEntry.mClusteredAccessTimeList;
+                            if (time.getFirst() / ONE_HOUR_MS
+                                    != ongoingAccessTimeList.get(0).getFirst() / ONE_HOUR_MS
+                                    || ongoingAccessTimeList.get(ongoingAccessTimeList.size() - 1)
+                                    .getFirst()
+                                    / ONE_MINUTE_MS - time.getFirst() / ONE_MINUTE_MS
+                                    > CLUSTER_MINUTES_APART) {
+                                // If the current access time is not in the same hour nor within
+                                // CLUSTER_MINUTES_APART, add the ongoing entry to the usage list
+                                // and start a new ongoing entry.
+                                usageEntries.add(ongoingEntry);
+                                ongoingEntry = new AppPermissionUsageEntry(usageData,
+                                        time.getFirst(), Stream.of(time)
+                                        .collect(Collectors.toCollection(ArrayList::new)));
+                            } else {
+                                ongoingAccessTimeList.add(time);
+                            }
+                        }
+                    }
+                    usageEntries.add(ongoingEntry);
+
+                    return usageEntries;
+                }).flatMap(Collection::stream).sorted((x, y) -> {
+                    // Sort all usage entries by startTime desc, and then by app name.
+                    int timeCompare = Long.compare(y.mEndTime, x.mEndTime);
+                    if (timeCompare != 0) {
+                        return timeCompare;
+                    }
+                    return x.getUsageData().getApp().getLabel().compareTo(
+                            y.getUsageData().getApp().getLabel());
+                }).collect(Collectors.toList());
 
         if (mHasSystemApps != seenSystemApp.get()) {
             mHasSystemApps = seenSystemApp.get();
@@ -414,24 +494,18 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
                 String accessTime = DateFormat.getTimeFormat(context).format(usage.mEndTime);
                 Long durationLong = usage.mClusteredAccessTimeList
                         .stream()
-                        .map(p -> p.second)
+                        .map(p -> p.getSecond())
                         .filter(dur -> dur > 0)
                         .reduce(0L, (dur1, dur2) -> dur1 + dur2);
 
                 List<Long> accessTimeList = usage.mClusteredAccessTimeList
-                        .stream().map(p -> p.first).collect(Collectors.toList());
-                ArrayList<String> attributionTags =
-                        usage.mAppPermissionUsage.getGroupUsages().stream().filter(groupUsage ->
-                                groupUsage.getGroup().getName().equals(mFilterGroup)).map(
-                                AppPermissionUsage.GroupUsage::getAttributionTags).filter(
-                                Objects::nonNull).flatMap(Collection::stream).collect(
-                                Collectors.toCollection(ArrayList::new));
+                        .stream().map(p -> p.getFirst()).collect(Collectors.toList());
 
-                // Determine duration string.
-                String accessDuration = null;
+                // Determine the preference summary. Start with the duration string
+                String summaryLabel = null;
                 // Since Location accesses are atomic, we manually calculate the access duration
                 // by comparing the first and last access within the cluster
-                if (mFilterGroup.equals(Manifest.permission_group.LOCATION)) {
+                if (mFilterGroup.equals(permission_group.LOCATION)) {
                     if (accessTimeList.size() > 1) {
                         durationLong = accessTimeList.get(0)
                                 - accessTimeList.get(accessTimeList.size() - 1);
@@ -440,7 +514,7 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
                         // than the clustering granularity.
                         if (durationLong
                                 >= (MINUTES.toMillis(CLUSTER_MINUTES_APART) + 1)) {
-                            accessDuration = UtilsKt.getDurationUsedStr(context, durationLong);
+                            summaryLabel = UtilsKt.getDurationUsedStr(context, durationLong);
                         }
                     }
                 } else {
@@ -449,17 +523,71 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
                     // information.
                     if ((durationLong != null)
                             && durationLong >= MINUTES.toMillis(CLUSTER_MINUTES_APART + 1)) {
-                        accessDuration = UtilsKt.getDurationUsedStr(context, durationLong);
+                        summaryLabel = UtilsKt.getDurationUsedStr(context, durationLong);
                     }
+                }
+
+                String proxyPackageLabel = null;
+                for (int i = 0; i < usage.mClusteredAccessTimeList.size(); i++) {
+                    OpEventProxyInfo proxy = usage.mClusteredAccessTimeList.get(i).getThird();
+                    if (proxy != null && proxy.getPackageName() != null) {
+                        proxyPackageLabel = KotlinUtils.INSTANCE.getPackageLabel(
+                                PermissionControllerApplication.get(), proxy.getPackageName(),
+                                UserHandle.getUserHandleForUid(proxy.getUid()));
+                        break;
+                    }
+                }
+
+                // fetch the subattribution label for this usage.
+                String subattributionLabel = null;
+                if (usage.mUsageData.getLabel() != Resources.ID_NULL) {
+                    Map<Integer, String> attributionLabels =
+                            usage.getUsageData().getApp().getAttributionLabels();
+                    if (attributionLabels != null) {
+                        subattributionLabel = attributionLabels.get(
+                                usage.mUsageData.getLabel());
+                    }
+                }
+
+                // create subtext string.
+                List<String> subTextStrings = new ArrayList<>();
+                boolean showingAttribution =
+                        subattributionLabel != null && subattributionLabel.length() > 0;
+                if (showingAttribution) {
+                    subTextStrings.add(subattributionLabel);
+                }
+                if (proxyPackageLabel != null) {
+                    subTextStrings.add(proxyPackageLabel);
+                }
+                if (summaryLabel != null) {
+                    subTextStrings.add(summaryLabel);
+                }
+                String subText = null;
+                if (subTextStrings.size() == 3) {
+                    subText = context.getString(
+                            R.string.history_preference_subtext_3,
+                            subTextStrings.get(0),
+                            subTextStrings.get(1),
+                            subTextStrings.get(2));
+                } else if (subTextStrings.size() == 2) {
+                    subText = context.getString(R.string.history_preference_subtext_2,
+                            subTextStrings.get(0),
+                            subTextStrings.get(1));
+                } else if (subTextStrings.size() == 1) {
+                    subText = subTextStrings.get(0);
                 }
 
                 PermissionHistoryPreference permissionUsagePreference = new
                         PermissionHistoryPreference(context,
-                        usage.mAppPermissionUsage.getPackageName(),
-                        usage.mAppPermissionUsage.getApp().getIcon(),
-                        usage.mAppPermissionUsage.getApp().getLabel(),
-                        mFilterGroup, accessTime, accessDuration, accessTimeList, attributionTags,
-                        usageNum == (numUsages - 1)
+                        UserHandle.getUserHandleForUid(usage.getUsageData().getApp().getUid()),
+                        usage.getUsageData().getApp().getPackageName(),
+                        usage.getUsageData().getApp().getIcon(),
+                        usage.getUsageData().getApp().getLabel(),
+                        mFilterGroup, accessTime, subText,
+                        showingAttribution, accessTimeList,
+                        usage.getUsageData().getAttributionTags(),
+                        usageNum == (numUsages - 1),
+                        mSessionId
                 );
 
                 category.get().addPreference(permissionUsagePreference);
@@ -485,7 +613,7 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
      *
      * @param groupName The name of the permission group.
      *
-     * @return an AppPermissionGroup rerepsenting the given permission group or null if no such
+     * @return an AppPermissionGroup representing the given permission group or null if no such
      * AppPermissionGroup is found.
      */
     private @Nullable AppPermissionGroup getGroup(@NonNull String groupName) {
@@ -589,30 +717,75 @@ public class PermissionDetailsFragment extends SettingsWithLargeHeader implement
         }
     }
 
+    /** A class representing an app's usage for a group. */
+    private static class UsageData {
+        private final String mGroup;
+        private final PermissionApps.PermissionApp mPermissionApp;
+        private final List<TimelineUsage> mTimelineUsages;
+        private final int mLabel;
+
+        UsageData(String group,
+                PermissionApps.PermissionApp permissionApp,
+                List<TimelineUsage> timelineUsages,
+                int label) {
+            mGroup = group;
+            mPermissionApp = permissionApp;
+            mTimelineUsages = timelineUsages;
+            mLabel = label;
+        }
+
+        String getGroup() {
+            return mGroup;
+        }
+
+        // All GroupUsage(s) have group name as filterGroup.
+        List<TimelineUsage> getTimelineUsages() {
+            return mTimelineUsages;
+        }
+
+        // we need a PermissionApp because the loader takes the PermissionApp
+        // object and loads the icon and label information asynchronously
+        PermissionApps.PermissionApp getApp() {
+            return mPermissionApp;
+        }
+
+        int getLabel() {
+            return mLabel;
+        }
+
+        ArrayList<String> getAttributionTags() {
+            return getTimelineUsages().stream().map(
+                    TimelineUsage::getAttributionTags).filter(
+                    Objects::nonNull).flatMap(Collection::stream).collect(
+                    Collectors.toCollection(ArrayList::new));
+        }
+    }
+
+
     /**
      * A class representing an app usage entry in Permission Usage.
      */
     private static class AppPermissionUsageEntry {
-        private final AppPermissionUsage mAppPermissionUsage;
-        private final List<Pair<Long, Long>> mClusteredAccessTimeList;
+        private final UsageData mUsageData;
+        private final List<Triple<Long, Long, OpEventProxyInfo>> mClusteredAccessTimeList;
         private long mEndTime;
 
-        AppPermissionUsageEntry(AppPermissionUsage appPermissionUsage, long endTime,
-                List<Pair<Long, Long>> clusteredAccessTimeList) {
-            mAppPermissionUsage = appPermissionUsage;
+        AppPermissionUsageEntry(UsageData usageData, long endTime,
+                List<Triple<Long, Long, OpEventProxyInfo>> clusteredAccessTimeList) {
+            mUsageData = usageData;
             mEndTime = endTime;
             mClusteredAccessTimeList = clusteredAccessTimeList;
         }
 
-        public AppPermissionUsage getAppPermissionUsage() {
-            return mAppPermissionUsage;
+        public UsageData getUsageData() {
+            return mUsageData;
         }
 
         public long getEndTime() {
             return mEndTime;
         }
 
-        public List<Pair<Long, Long>> getAccessTime() {
+        public List<Triple<Long, Long, OpEventProxyInfo>> getAccessTime() {
             return mClusteredAccessTimeList;
         }
     }
