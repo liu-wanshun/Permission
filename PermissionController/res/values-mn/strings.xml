@@ -107,7 +107,7 @@
     <string name="current_permissions_category" msgid="4292990083585728880">"Одоогийн зөвшөөрөл"</string>
     <string name="message_staging" msgid="9110563899955511866">"Аппыг байршуулж байна…"</string>
     <string name="app_name_unknown" msgid="1319665005754048952">"Тодорхойгүй"</string>
-    <string name="permission_usage_title" msgid="1568233336351734538">"Нууцлалтай хяналтын самбар"</string>
+    <string name="permission_usage_title" msgid="1568233336351734538">"Нууцлалын хяналтын самбар"</string>
     <string name="permission_group_usage_title" msgid="2595013198075285173">"<xliff:g id="PERMGROUP">%1$s</xliff:g>-н ашиглалт"</string>
     <string name="perm_usage_adv_info_title" msgid="3357831829538873708">"Бусад зөвшөөрлийг харах"</string>
     <string name="perm_usage_adv_info_summary_2_items" msgid="3702175198750127822">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g>"</string>
@@ -115,10 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Өнгөрсөн 24 цагт аппууд таны <xliff:g id="PERMGROUP">%1$s</xliff:g>-г хэзээ ашигласан болохыг харуулсан он цагийн хэлхээс"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Энэ апп таны <xliff:g id="PERMGROUP">%1$s</xliff:g>-н зөвшөөрлийг ашигласан үед"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Нэмэлт мэдээлэл авах"</string>
-    <!-- no translation found for history_preference_subtext_2 (1521763591164293683) -->
-    <skip />
-    <!-- no translation found for history_preference_subtext_3 (758761785983094351) -->
-    <skip />
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> өдөр</item>
       <item quantity="one">1 өдөр</item>
@@ -499,4 +497,8 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Бусад"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Хоосон"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Өнгөрсөн\n24 цагт"</string>
+    <!-- no translation found for exempt_mic_camera_info_label (6273581737010902815) -->
+    <skip />
+    <!-- no translation found for exempt_info_label (6286190981253476699) -->
+    <skip />
 </resources>
