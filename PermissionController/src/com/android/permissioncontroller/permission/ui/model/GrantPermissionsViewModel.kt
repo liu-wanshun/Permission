@@ -58,8 +58,6 @@ import com.android.permissioncontroller.permission.data.LightPackageInfoLiveData
 import com.android.permissioncontroller.permission.data.PackagePermissionsLiveData
 import com.android.permissioncontroller.permission.data.SmartUpdateMediatorLiveData
 import com.android.permissioncontroller.permission.data.get
-import com.android.permissioncontroller.permission.debug.getDefaultPrecision
-import com.android.permissioncontroller.permission.debug.isLocationAccuracyEnabled
 import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPackageInfo
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPermGroupInfo
@@ -89,6 +87,8 @@ import com.android.permissioncontroller.permission.ui.GrantPermissionsViewHandle
 import com.android.permissioncontroller.permission.ui.GrantPermissionsViewHandler.DENIED_DO_NOT_ASK_AGAIN
 import com.android.permissioncontroller.permission.ui.GrantPermissionsViewHandler.GRANTED_ALWAYS
 import com.android.permissioncontroller.permission.ui.GrantPermissionsViewHandler.GRANTED_FOREGROUND_ONLY
+import com.android.permissioncontroller.permission.ui.handheld.dashboard.getDefaultPrecision
+import com.android.permissioncontroller.permission.ui.handheld.dashboard.isLocationAccuracyEnabled
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity.EXTRA_RESULT_PERMISSION_INTERACTED
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity.EXTRA_RESULT_PERMISSION_RESULT
@@ -417,7 +417,8 @@ class GrantPermissionsViewModel(
 
                 // Show location permission dialogs based on location permissions
                 val locationVisibilities = MutableList(NEXT_LOCATION_DIALOG) { false }
-                if (groupState.group.permGroupName == LOCATION && isLocationAccuracyEnabled()) {
+                if (groupState.group.permGroupName == LOCATION && isLocationAccuracyEnabled() &&
+                        packageInfo.targetSdkVersion >= Build.VERSION_CODES.S) {
                     if (needFgPermissions) {
                         locationVisibilities[LOCATION_ACCURACY_LAYOUT] = true
                         if (fgState != null &&
@@ -433,6 +434,12 @@ class GrantPermissionsViewModel(
                                     buttonVisibilities[ALLOW_FOREGROUND_BUTTON] = false
                                 }
                             } else {
+                                if (!fgState.affectedPermissions.contains(ACCESS_COARSE_LOCATION)) {
+                                    Log.e(LOG_TAG, "ACCESS_FINE_LOCATION must be requested " +
+                                            "with ACCESS_COARSE_LOCATION.")
+                                    value = null
+                                    return
+                                }
                                 if (coarseLocationPerm?.isOneTime == false &&
                                         !coarseLocationPerm.isUserSet &&
                                         !coarseLocationPerm.isUserFixed) {
@@ -870,7 +877,8 @@ class GrantPermissionsViewModel(
                 KotlinUtils.revokeBackgroundRuntimePermissions(app, groupState.group,
                     userFixed = doNotAskAgain, filterPermissions = groupState.affectedPermissions)
             } else {
-                if (affectedForegroundPermissions == null) {
+                if (affectedForegroundPermissions == null ||
+                        affectedForegroundPermissions.contains(ACCESS_COARSE_LOCATION)) {
                     KotlinUtils.revokeForegroundRuntimePermissions(app, groupState.group,
                         userFixed = doNotAskAgain,
                         filterPermissions = groupState.affectedPermissions, oneTime = isOneTime)

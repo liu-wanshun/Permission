@@ -45,9 +45,11 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
+import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.permission.ui.GrantPermissionsActivity.ALLOW_ALWAYS_BUTTON
 import com.android.permissioncontroller.permission.ui.GrantPermissionsActivity.ALLOW_BUTTON
@@ -192,12 +194,21 @@ class GrantPermissionsViewHandlerImpl(
     override fun createView(): View {
         // Make this activity be Non-IME target to prevent hiding keyboard flicker when it show up.
         mActivity.window.addFlags(LayoutParams.FLAG_ALT_FOCUSABLE_IM)
-        val rootView = LayoutInflater.from(mActivity)
-            .inflate(R.layout.grant_permissions, null) as ViewGroup
+
+        val useMaterial3PermissionGrantDialog = mActivity.resources
+                .getBoolean(R.bool.config_useMaterial3PermissionGrantDialog)
+        val rootView = if (useMaterial3PermissionGrantDialog || SdkLevel.isAtLeastT()) {
+            LayoutInflater.from(mActivity)
+                    .inflate(R.layout.grant_permissions_material3, null) as ViewGroup
+        } else {
+            LayoutInflater.from(mActivity)
+                    .inflate(R.layout.grant_permissions, null) as ViewGroup
+        }
         this.rootView = rootView
 
-        val h = mActivity.resources.displayMetrics.heightPixels
-        rootView.minimumHeight = h
+        // Uses the gravity of the PermissionGrantSingleton style to position the window
+        mActivity.window.setGravity(
+                rootView.requireViewById<LinearLayout>(R.id.grant_singleton).gravity)
         // Cancel dialog
         rootView.findViewById<View>(R.id.grant_singleton)!!.setOnClickListener(this)
         // Swallow click event
@@ -326,17 +337,25 @@ class GrantPermissionsViewHandlerImpl(
             } else {
                 View.GONE
             }
-            if (pos == ALLOW_FOREGROUND_BUTTON && buttonVisibilities[pos] &&
-                    locationVisibilities[LOCATION_ACCURACY_LAYOUT] &&
-                    locationVisibilities[DIALOG_WITH_FINE_LOCATION_ONLY]) {
-                buttons[pos]?.text = mActivity.resources.getString(
-                        R.string.grant_dialog_button_change_to_precise_location)
+            if (pos == ALLOW_FOREGROUND_BUTTON && buttonVisibilities[pos]) {
+                if (locationVisibilities[LOCATION_ACCURACY_LAYOUT] &&
+                        locationVisibilities[DIALOG_WITH_FINE_LOCATION_ONLY]) {
+                    buttons[pos]?.text = mActivity.resources.getString(
+                            R.string.grant_dialog_button_change_to_precise_location)
+                } else {
+                    buttons[pos]?.text = mActivity.resources.getString(
+                            R.string.grant_dialog_button_allow_foreground)
+                }
             }
-            if ((pos == DENY_BUTTON || pos == DENY_AND_DONT_ASK_AGAIN_BUTTON) &&
-                    locationVisibilities[LOCATION_ACCURACY_LAYOUT] &&
-                    locationVisibilities[DIALOG_WITH_FINE_LOCATION_ONLY]) {
-                buttons[pos]?.text = mActivity.resources.getString(
-                        R.string.grant_dialog_button_keey_approximate_location)
+            if ((pos == DENY_BUTTON || pos == DENY_AND_DONT_ASK_AGAIN_BUTTON)) {
+                if (locationVisibilities[LOCATION_ACCURACY_LAYOUT] &&
+                        locationVisibilities[DIALOG_WITH_FINE_LOCATION_ONLY]) {
+                    buttons[pos]?.text = mActivity.resources.getString(
+                            R.string.grant_dialog_button_keey_approximate_location)
+                } else {
+                    buttons[pos]?.text = mActivity.resources.getString(
+                            R.string.grant_dialog_button_deny)
+                }
             }
             buttons[pos]?.requestLayout()
         }

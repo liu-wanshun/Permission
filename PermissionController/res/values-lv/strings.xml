@@ -51,8 +51,7 @@
     <string name="app_permissions_breadcrumb" msgid="5136969550489411650">"Lietotnes"</string>
     <string name="app_permissions" msgid="3369917736607944781">"Lietotņu atļaujas"</string>
     <string name="unused_apps" msgid="2058057455175955094">"Neizmantotās lietotnes"</string>
-    <!-- no translation found for no_unused_apps (12809387670415295) -->
-    <skip />
+    <string name="no_unused_apps" msgid="12809387670415295">"Nav neizmantotu lietotņu"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"Atspējot lietotni"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"Ja atspējosiet šo lietotni, Android un citas lietotnes, iespējams, vairs nedarbosies, kā paredzēts. Ņemiet vērā, ka šo lietotni nevar izdzēst, jo tā bija iepriekš instalēta ierīcē. Ja atspējosiet lietotni, tā tiks izslēgta un paslēpta jūsu ierīcē."</string>
     <string name="app_permission_manager" msgid="3903811137630909550">"Atļauju pārvaldnieks"</string>
@@ -117,6 +116,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Šajā laika skalā ir norādīts, kuras lietotnes pēdējo 24 stundu laikā izmantoja atļauju <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Tālāk norādīts, kad šī lietotne izmantoja šādu atļauju: <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Uzzināt vairāk"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="zero"><xliff:g id="NUMBER">%s</xliff:g> dienu</item>
       <item quantity="one"><xliff:g id="NUMBER">%s</xliff:g> diena</item>
@@ -230,6 +231,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Skatīt visas lietotnes, kam ir šī atļauja"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Rādīt Asistenta mikrofona lietojumu"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Noņemt atļaujas, ja lietotne netiek izmantota"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Noņemt atļaujas un atbrīvot vietu"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Ja lietotni dažus mēnešus neizmantosiet, tai tiks noņemtas tālāk norādītās atļaujas, lai aizsargātu jūsu datus."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Ja lietotni dažus mēnešus neizmantosiet, tai tiks noņemtas tālāk norādītās atļaujas, lai aizsargātu jūsu datus: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Lai aizsargātu jūsu datus, tika atsauktas atļaujas tām lietotnēm, kas nav izmantotas vairākus mēnešus."</string>
@@ -245,8 +247,7 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Atļauja “<xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g>” un “<xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g>” tika automātiski noņemta"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Atļauja “<xliff:g id="PERMISSION_NAME">%1$s</xliff:g>” un vēl <xliff:g id="NUMBER">%2$s</xliff:g> tika automātiski noņemtas"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Neizmantotās lietotnes"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Ja kāda lietotne nav izmantota vairākus mēnešus:\n\n• tiek noņemtas atļaujas, lai aizsargātu jūsu datus;\n• tiek apturēti paziņojumi, lai taupītu akumulatora enerģiju;\n• tiek noņemti pagaidu faili, lai atbrīvotu vietu.\n\nLai atkal piešķirtu atļaujas un atļautu paziņojumus, atveriet lietotni."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Pēdējoreiz atvērtas pirms vairāk nekā <xliff:g id="NUMBER">%s</xliff:g> mēnešiem"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Lietotne pēdējoreiz tika atvērta <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Pēdējoreiz atvērta <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -258,7 +259,7 @@
     <string name="permission_description_summary_call_log" msgid="7321437186317577624">"Lietotnes, kurām ir šī atļauja, var lasīt un rakstīt tālruņa zvanu žurnālu"</string>
     <string name="permission_description_summary_camera" msgid="108004375101882069">"Lietotnes, kurām ir šī atļauja, var uzņemt attēlus un ierakstīt videoklipus"</string>
     <string name="permission_description_summary_contacts" msgid="2337798886460408996">"Lietotnes, kurām ir šī atļauja, var piekļūt jūsu kontaktpersonām"</string>
-    <string name="permission_description_summary_location" msgid="2817531799933480694">"Lietotnes, kurām ir šī atļauja, var piekļūt šīs ierīces atrašanās vietai"</string>
+    <string name="permission_description_summary_location" msgid="2817531799933480694">"Lietotnes, kurām ir šī atļauja, var piekļūt šīs ierīces atrašanās vietas datiem"</string>
     <string name="permission_description_summary_nearby_devices" msgid="8269183818275073741">"Lietotnes, kurām ir šī atļauja, var atrast tuvumā esošas ierīces, veidot savienojumus ar tām un noteikt to relatīvo atrašanās vietu."</string>
     <string name="permission_description_summary_microphone" msgid="630834800308329907">"Lietotnes, kurām ir šī atļauja, var ierakstīt audio"</string>
     <string name="permission_description_summary_phone" msgid="4515277217435233619">"Lietotnes, kurām ir šī atļauja, var veikt un pārvaldīt tālruņa zvanus"</string>
@@ -476,8 +477,8 @@
     <string name="permgroupbackgroundrequestdetail_location" msgid="8021219324989662957">"Iespējams, šī lietotne vēlēsies piekļūt jūsu atrašanās vietai vienmēr, pat ja neizmantojat lietotni. "<annotation id="link">"Atļauju varat piešķirt iestatījumos"</annotation>"."</string>
     <string name="permgroupupgraderequest_location" msgid="8328408946822691636">"Vai mainīt lietotnei &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; piekļuvi atrašanās vietai?"</string>
     <string name="permgroupupgraderequestdetail_location" msgid="1550899076845189165">"Šī lietotne vēlas piekļūt jūsu atrašanās vietai vienmēr, pat ja neizmantojat lietotni. "<annotation id="link">"Atļauju varat piešķirt iestatījumos"</annotation>"."</string>
-    <string name="permgrouprequest_nearby_devices" msgid="2272829282660436700">"Vai atļaut &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; atrast ierīces tuvumā, veidot savienojumus ar tām un noteikt to relatīvo atrašanās vietu?"</string>
-    <string name="permgroupupgraderequestdetail_nearby_devices" msgid="6877531270654738614">"Vai atļaut &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; atrast ierīces tuvumā, veidot savienojumus ar tām un noteikt to relatīvo atrašanās vietu? "<annotation id="link">"Varat to atļaut iestatījumos."</annotation></string>
+    <string name="permgrouprequest_nearby_devices" msgid="2272829282660436700">"Vai atļaut &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; atrast tuvumā esošas ierīces, veidot savienojumus ar tām un noteikt to relatīvo atrašanās vietu?"</string>
+    <string name="permgroupupgraderequestdetail_nearby_devices" msgid="6877531270654738614">"Vai atļaut &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; atrast tuvumā esošas ierīces, veidot savienojumus ar tām un noteikt to relatīvo atrašanās vietu? "<annotation id="link">"Varat to atļaut iestatījumos."</annotation></string>
     <string name="permgrouprequest_fineupgrade" msgid="2334242928821697672">"Vai mainīt lietotnes <xliff:g id="APP_NAME">&lt;b&gt;%1$s&lt;/b&gt;</xliff:g> piekļuvi atrašanās vietai no aptuvenās uz precīzo?"</string>
     <string name="permgrouprequest_coarselocation" msgid="7244605063736425232">"Vai atļaut lietotnei &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; piekļūt aptuvenai šīs ierīces atrašanās vietai?"</string>
     <string name="permgrouprequest_finelocation_imagetext" msgid="1313062433398914334">"Precīza"</string>
@@ -515,4 +516,6 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Cita"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Nav"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Pēdējās\n24 stundās"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"Lietotnes <xliff:g id="APP_NAME">%1$s</xliff:g> aizsardzību nodrošina Android. Tā kā jūsu dati tiek apstrādāti šajā ierīcē, šīs lietotnes atļauju lietojums netiek rādīts statusa joslā vai jūsu konfidencialitātes informācijas panelī."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"Lietotnes <xliff:g id="APP_NAME">%1$s</xliff:g> aizsardzību nodrošina Android. Tā kā jūsu dati tiek apstrādāti šajā ierīcē, šīs lietotnes atļauju lietojums netiek rādīts jūsu konfidencialitātes informācijas panelī."</string>
 </resources>

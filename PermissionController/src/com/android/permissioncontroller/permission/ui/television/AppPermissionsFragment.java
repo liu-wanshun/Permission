@@ -17,6 +17,7 @@
 package com.android.permissioncontroller.permission.ui.television;
 
 import static com.android.permissioncontroller.Constants.INVALID_SESSION_ID;
+import static com.android.permissioncontroller.hibernation.HibernationPolicyKt.isHibernationEnabled;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -42,6 +43,7 @@ import android.widget.Toast;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.PreferenceViewHolder;
 import androidx.preference.SwitchPreference;
@@ -65,6 +67,7 @@ public final class AppPermissionsFragment extends SettingsWithHeader
 
     static final String EXTRA_HIDE_INFO_BUTTON = "hideInfoButton";
     private static final String AUTO_REVOKE_SWITCH_KEY = "_AUTO_REVOKE_SWITCH_KEY";
+    private static final String UNUSED_APPS_KEY = "_UNUSED_APPS_KEY";
 
     private static final int MENU_ALL_PERMS = 0;
 
@@ -406,10 +409,20 @@ public final class AppPermissionsFragment extends SettingsWithHeader
             android.util.Log.w(LOG_TAG, "setAutoRevoke " + autoRevokeSwitch.isChecked());
             return true;
         });
-        autoRevokeSwitch.setTitle(R.string.auto_revoke_label);
+        autoRevokeSwitch.setTitle(isHibernationEnabled() ? R.string.unused_apps_label
+                : R.string.auto_revoke_label);
         autoRevokeSwitch.setSummary(R.string.auto_revoke_summary);
         autoRevokeSwitch.setKey(AUTO_REVOKE_SWITCH_KEY);
-        screen.addPreference(autoRevokeSwitch);
+        if (isHibernationEnabled()) {
+            PreferenceCategory unusedAppsCategory = new PreferenceCategory(
+                    screen.getPreferenceManager().getContext());
+            unusedAppsCategory.setKey(UNUSED_APPS_KEY);
+            unusedAppsCategory.setTitle(R.string.unused_apps);
+            screen.addPreference(unusedAppsCategory);
+            unusedAppsCategory.addPreference(autoRevokeSwitch);
+        } else {
+            screen.addPreference(autoRevokeSwitch);
+        }
     }
 
     private void setAutoRevokeToggleState(HibernationSettingState state) {
@@ -418,12 +431,17 @@ public final class AppPermissionsFragment extends SettingsWithHeader
         if (state == null || autoRevokeSwitch == null) {
             return;
         }
-        if (!state.isEnabledGlobal()) {
+        if (!state.isEnabledGlobal() || state.getRevocableGroupNames().isEmpty()) {
+            if (isHibernationEnabled()) {
+                getPreferenceScreen().findPreference(UNUSED_APPS_KEY).setVisible(false);
+            }
             autoRevokeSwitch.setVisible(false);
             return;
         }
+        if (isHibernationEnabled()) {
+            getPreferenceScreen().findPreference(UNUSED_APPS_KEY).setVisible(true);
+        }
         autoRevokeSwitch.setVisible(true);
-        autoRevokeSwitch.setEnabled(state.getShouldAllowUserToggle());
         autoRevokeSwitch.setChecked(state.isEnabledForApp());
     }
 

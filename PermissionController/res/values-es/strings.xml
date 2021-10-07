@@ -115,6 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Cronología de cuándo han usado las aplicaciones tu <xliff:g id="PERMGROUP">%1$s</xliff:g> en las últimas 24 horas"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Cuándo ha utilizado esta aplicación tu permiso de <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Más información"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> días</item>
       <item quantity="one">1 día</item>
@@ -216,7 +218,8 @@
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"Ver todos los permisos de <xliff:g id="APP">%1$s</xliff:g>"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Ver todas las aplicaciones con este permiso"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Mostrar el uso del micrófono del Asistente"</string>
-    <string name="auto_revoke_label" msgid="5068393642936571656">"Quitar permisos si la aplicación no se utiliza"</string>
+    <string name="auto_revoke_label" msgid="5068393642936571656">"Quitar permisos si la aplicación no se usa"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Quitar permisos y liberar espacio"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Para proteger tus datos, se quitarán los permisos de esta aplicación si no la usas durante unos meses."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Para proteger tus datos, si la aplicación no se ha utilizado durante unos meses, se quitarán los siguientes permisos: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Para proteger tus datos, se han quitado los permisos de las aplicaciones que llevas unos meses sin usar."</string>
@@ -232,12 +235,11 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Permisos <xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> y <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g> quitados"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Permisos <xliff:g id="PERMISSION_NAME">%1$s</xliff:g> y <xliff:g id="NUMBER">%2$s</xliff:g> más quitados"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Aplicaciones no usadas"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Si una aplicación lleva varios meses sin usarse:\n\n• Se le quitan los permisos para proteger tus datos\n• Se detienen sus notificaciones para ahorrar batería\n• Se eliminan sus archivos temporales para liberar espacio\n\nSi quieres volver a dar permisos a la aplicación y activar de nuevo sus notificaciones, ábrela."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Abiertas por última vez hace más de <xliff:g id="NUMBER">%s</xliff:g> meses"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"La aplicación se abrió por última vez el <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Se abrió por última vez el <xliff:g id="DATE">%s</xliff:g>"</string>
-    <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Si permites la gestión de todos los archivos, esta aplicación puede consultar, modificar y eliminar cualquier archivo que haya en el almacenamiento común de este dispositivo o en los dispositivos de almacenamiento conectados. Es posible que acceda a archivos sin preguntarte."</string>
+    <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Si permites la gestión de todos los archivos, esta aplicación podrá consultar, modificar y eliminar cualquier archivo que haya en el almacenamiento común de este dispositivo o en los dispositivos de almacenamiento conectados. Es posible que acceda a archivos sin preguntarte."</string>
     <string name="special_file_access_dialog" msgid="583804114020740610">"¿Quieres permitir que esta aplicación pueda consultar, modificar y eliminar archivos de este dispositivo o de los dispositivos de almacenamiento conectados? Quizá acceda a archivos sin solicitarlo explícitamente."</string>
     <string name="permission_description_summary_generic" msgid="5401399408814903391">"Las aplicaciones con este permiso pueden <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
     <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Las aplicaciones con este permiso pueden acceder a tu actividad física, como paseos a pie o en bici, trayectos en coche, número de pasos y más"</string>
@@ -495,4 +497,6 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Otro"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Nada"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Últimas\n24 horas"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> está protegido por Android. Como tus datos están procesados en este dispositivo, el uso de los permisos de esta aplicación no se muestra ni en la barra de estado ni en tu panel de privacidad."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> está protegido por Android. Como tus datos están procesados en este dispositivo, el uso de los permisos de esta aplicación no se muestra en tu panel de privacidad."</string>
 </resources>
