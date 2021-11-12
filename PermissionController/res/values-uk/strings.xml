@@ -117,6 +117,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Хронологія використання додатками дозволу \"<xliff:g id="PERMGROUP">%1$s</xliff:g>\" за останні 24 години"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Коли цей додаток використовував ваш дозвіл \"<xliff:g id="PERMGROUP">%1$s</xliff:g>\""</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Докладніше"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="one"><xliff:g id="NUMBER">%s</xliff:g> день</item>
       <item quantity="few"><xliff:g id="NUMBER">%s</xliff:g> дні</item>
@@ -241,6 +243,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Переглянути всі додатки з цим дозволом"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Показати статус мікрофона Асистента"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Відкликати дозволи, якщо додаток не використовується"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Вилучати дозволи й звільняти місце"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Щоб захистити ваші дані, дозволи для цього додатка буде автоматично скасовано, якщо ви не будете користуватися ним кілька місяців."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Якщо додаток не використовується впродовж кількох місяців, для захисту ваших даних буде скасовано такі дозволи: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Щоб захистити ваші дані, було скасовано дозволи додатків, які не використовувалися впродовж кількох місяців."</string>
@@ -256,8 +259,7 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Дозволи \"<xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g>\" та \"<xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g>\" скасовано"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Дозвіл \"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g>\" і ще <xliff:g id="NUMBER">%2$s</xliff:g> скасовано"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Додатки, що не використовуються"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Якщо ви не користуєтеся додатком кілька місяців:\n\n• дозволи буде скасовано, щоб захистити ваші дані;\n• показ сповіщень буде припинено, щоб заощаджувати заряд акумулятора;\n• тимчасові файли буде видалено, щоб звільнити місце на диску.\n\nЩоб відновити дозволи й показ сповіщень, відкрийте додаток."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Відкривались понад <xliff:g id="NUMBER">%s</xliff:g> міс. тому"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Додаток востаннє відкрито <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Востаннє відкрито <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -533,4 +535,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Інше"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Немає"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Минулі\n24 години"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"Додаток <xliff:g id="APP_NAME">%1$s</xliff:g> захищено системою Android. Оскільки ваші дані обробляються на цьому пристрої, інформація про те, як додаток використовує дозволи, не відображається на відповідній панелі керування чи в рядку стану."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"Додаток <xliff:g id="APP_NAME">%1$s</xliff:g> захищено системою Android. Оскільки ваші дані обробляються на цьому пристрої, інформація про те, як додаток використовує дозволи, не відображається на відповідній панелі керування."</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"<xliff:g id="SENSOR_NAME">%1$s</xliff:g> пристрою: заблоковано"</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"<xliff:g id="SENSOR_NAME">%1$s</xliff:g> пристрою: вимкнено"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"Для додатків і сервісів"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"Дані мікрофона можуть усе одно передаватися під час виклику екстреного номера."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Змінити"</string>
 </resources>

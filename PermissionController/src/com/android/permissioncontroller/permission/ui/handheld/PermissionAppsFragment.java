@@ -22,12 +22,12 @@ import static com.android.permissioncontroller.PermissionControllerStatsLog.PERM
 import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_APPS_FRAGMENT_VIEWED__CATEGORY__ALLOWED_FOREGROUND;
 import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_APPS_FRAGMENT_VIEWED__CATEGORY__DENIED;
 import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_APPS_FRAGMENT_VIEWED__CATEGORY__UNDEFINED;
-import static com.android.permissioncontroller.permission.debug.UtilsKt.shouldShowPermissionsDashboard;
 import static com.android.permissioncontroller.permission.ui.Category.ALLOWED;
 import static com.android.permissioncontroller.permission.ui.Category.ALLOWED_FOREGROUND;
 import static com.android.permissioncontroller.permission.ui.Category.ASK;
 import static com.android.permissioncontroller.permission.ui.Category.DENIED;
 import static com.android.permissioncontroller.permission.ui.handheld.UtilsKt.pressBack;
+import static com.android.permissioncontroller.permission.ui.handheld.dashboard.UtilsKt.shouldShowPermissionsDashboard;
 import static com.android.permissioncontroller.permission.utils.Utils.LAST_24H_CONTENT_PROVIDER;
 import static com.android.permissioncontroller.permission.utils.Utils.LAST_24H_SENSOR_TODAY;
 import static com.android.permissioncontroller.permission.utils.Utils.LAST_24H_SENSOR_YESTERDAY;
@@ -40,10 +40,12 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.UserHandle;
+import android.provider.Settings;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.view.Menu;
@@ -52,6 +54,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -59,10 +62,10 @@ import androidx.preference.PreferenceCategory;
 import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.PermissionControllerStatsLog;
 import com.android.permissioncontroller.R;
-import com.android.permissioncontroller.permission.debug.PermissionUsages;
 import com.android.permissioncontroller.permission.model.AppPermissionUsage;
 import com.android.permissioncontroller.permission.ui.Category;
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity;
+import com.android.permissioncontroller.permission.ui.handheld.dashboard.PermissionUsages;
 import com.android.permissioncontroller.permission.ui.model.PermissionAppsViewModel;
 import com.android.permissioncontroller.permission.ui.model.PermissionAppsViewModelFactory;
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
@@ -75,6 +78,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -95,6 +99,7 @@ public final class PermissionAppsFragment extends SettingsWithLargeHeader implem
     private static final String LOG_TAG = "PermissionAppsFragment";
     private static final String STORAGE_ALLOWED_FULL = "allowed_storage_full";
     private static final String STORAGE_ALLOWED_SCOPED = "allowed_storage_scoped";
+    private static final String BLOCKED_SENSOR_PREF_KEY = "sensor_card";
     private static final int SHOW_LOAD_DELAY_MS = 200;
     private static final int AGGREGATE_DATA_FILTER_BEGIN_DAYS = 1;
 
@@ -121,6 +126,7 @@ public final class PermissionAppsFragment extends SettingsWithLargeHeader implem
     private PermissionAppsViewModel mViewModel;
     private PermissionUsages mPermissionUsages;
     private List<AppPermissionUsage> mAppPermissionUsages = new ArrayList<>();
+    private Boolean mSensorStatus;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -171,10 +177,15 @@ public final class PermissionAppsFragment extends SettingsWithLargeHeader implem
             mPermissionUsages.load(null, null, filterTimeBeginMillis, Long.MAX_VALUE,
                     PermissionUsages.USAGE_FLAG_LAST, getActivity().getLoaderManager(),
                     false, false, this, false);
+
+            if (Utils.shouldDisplayCardIfBlocked(mPermGroupName)) {
+                mViewModel.getSensorStatusLiveData().observe(this, this::setSensorStatus);
+            }
         }
     }
 
     @Override
+    @RequiresApi(Build.VERSION_CODES.S)
     public void onPermissionUsagesChanged() {
         if (mPermissionUsages.getUsages().isEmpty()) {
             return;
@@ -240,6 +251,62 @@ public final class PermissionAppsFragment extends SettingsWithLargeHeader implem
         }
     }
 
+
+    private void setSensorStatus(Boolean sensorStatus) {
+        mSensorStatus = sensorStatus;
+        displaySensorCard();
+    }
+
+    private void displaySensorCard() {
+        if (Utils.shouldDisplayCardIfBlocked(mPermGroupName)) {
+            if (mSensorStatus) {
+                setSensorCard();
+            } else {
+                removeSensorCard();
+            }
+        }
+    }
+
+
+    private void setSensorCard() {
+        CardViewPreference sensorCard = findPreference(BLOCKED_SENSOR_PREF_KEY);
+        if (sensorCard == null) {
+            sensorCard = createSensorCard();
+            getPreferenceScreen().addPreference(sensorCard);
+        }
+        sensorCard.setVisible(true);
+    }
+
+    private CardViewPreference createSensorCard() {
+        String label = KotlinUtils.INSTANCE.getPermGroupLabel(getPreferenceManager().getContext(),
+                mPermGroupName).toString().toLowerCase(
+                Locale.ROOT);
+        boolean isLocation = Manifest.permission_group.LOCATION.equals(mPermGroupName);
+        Context context = getPreferenceManager().getContext();
+        String action = isLocation ? Settings.ACTION_LOCATION_SOURCE_SETTINGS
+                : Settings.ACTION_PRIVACY_SETTINGS;
+        CardViewPreference sensorCard = new CardViewPreference(context, action);
+        sensorCard.setKey(BLOCKED_SENSOR_PREF_KEY);
+        sensorCard.setIcon(Utils.getBlockedIcon(mPermGroupName));
+        int cardTitle =
+                isLocation ? R.string.blocked_location_title : R.string.blocked_sensor_title;
+        sensorCard.setTitle(context.getString(cardTitle, label));
+        boolean isMicrophone = Manifest.permission_group.MICROPHONE.equals(mPermGroupName);
+        int cardSummary =
+                isMicrophone ? R.string.blocked_mic_summary : R.string.blocked_sensor_summary;
+        sensorCard.setSummary(context.getString(cardSummary));
+        sensorCard.setVisible(true);
+        sensorCard.setOrder(-1);
+        return sensorCard;
+    }
+
+    private void removeSensorCard() {
+        CardViewPreference sensorCard = findPreference(BLOCKED_SENSOR_PREF_KEY);
+        if (sensorCard != null) {
+            sensorCard.setVisible(false);
+        }
+    }
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -282,8 +349,11 @@ public final class PermissionAppsFragment extends SettingsWithLargeHeader implem
         Map<String, Preference> existingPrefs = new ArrayMap<>();
 
         for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); i++) {
-            PreferenceCategory category = (PreferenceCategory)
-                    getPreferenceScreen().getPreference(i);
+            Preference pref = getPreferenceScreen().getPreference(i);
+            if (BLOCKED_SENSOR_PREF_KEY.equals(pref.getKey())) {
+                continue;
+            }
+            PreferenceCategory category = (PreferenceCategory) pref;
             category.setOrderingAsAdded(true);
             int numPreferences = category.getPreferenceCount();
             for (int j = 0; j < numPreferences; j++) {

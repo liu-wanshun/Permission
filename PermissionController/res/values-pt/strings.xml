@@ -54,7 +54,7 @@
     <string name="no_unused_apps" msgid="12809387670415295">"Nenhum app não usado"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"Desativar app"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"Se você desativar este app, o Android e outros apps poderão deixar de funcionar como deveriam. Não é possível excluir esse app porque ele veio pré-instalado no seu dispositivo. Ao optar pela desativação, você desativa o app e o oculta no dispositivo."</string>
-    <string name="app_permission_manager" msgid="3903811137630909550">"Gerenciar permissões"</string>
+    <string name="app_permission_manager" msgid="3903811137630909550">"Gerenciador de permissões"</string>
     <string name="never_ask_again" msgid="4728762438198560329">"Não perguntar novamente"</string>
     <string name="no_permissions" msgid="3881676756371148563">"Sem permissões"</string>
     <string name="additional_permissions" msgid="5801285469338873430">"Outras permissões"</string>
@@ -65,7 +65,7 @@
     </plurals>
     <string name="old_sdk_deny_warning" msgid="2382236998845153919">"Este app foi projetado para uma versão anterior do Android. Negar a permissão pode fazer com que ele deixe de funcionar conforme esperado."</string>
     <string name="default_permission_description" msgid="4624464917726285203">"executar uma ação desconhecida"</string>
-    <string name="app_permissions_group_summary" msgid="8788419008958284002">"<xliff:g id="COUNT_0">%1$d</xliff:g> de <xliff:g id="COUNT_1">%2$d</xliff:g> app permitido"</string>
+    <string name="app_permissions_group_summary" msgid="8788419008958284002">"<xliff:g id="COUNT_0">%1$d</xliff:g> de <xliff:g id="COUNT_1">%2$d</xliff:g> app(s) permitido(s)"</string>
     <string name="app_permissions_group_summary2" msgid="4329922444840521150">"<xliff:g id="COUNT_0">%1$d</xliff:g>/<xliff:g id="COUNT_1">%2$d</xliff:g> apps permitidos"</string>
     <string name="menu_show_system" msgid="4254021607027872504">"Mostrar sistema"</string>
     <string name="menu_hide_system" msgid="3855390843744028465">"Ocultar sistema"</string>
@@ -115,6 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Linha do tempo de quando apps usaram <xliff:g id="PERMGROUP">%1$s</xliff:g> nas últimas 24 horas"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Quando esse app usou a permissão <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Saiba mais"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="one"><xliff:g id="NUMBER">%s</xliff:g> dia</item>
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> dias</item>
@@ -172,10 +174,10 @@
       <item quantity="one"><xliff:g id="NUMBER">%s</xliff:g> app</item>
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> apps</item>
     </plurals>
-    <string name="permission_usage_preference_summary_not_used" msgid="8806755646449754282">"Não usada nas últimas 24 horas"</string>
+    <string name="permission_usage_preference_summary_not_used" msgid="8806755646449754282">"Permissão não usada nas últimas 24 horas"</string>
     <plurals name="permission_usage_preference_label" formatted="false" msgid="9033113721294293706">
-      <item quantity="one">Usada por <xliff:g id="NUMBER">%1$d</xliff:g> app</item>
-      <item quantity="other">Usada por <xliff:g id="NUMBER">%1$d</xliff:g> apps</item>
+      <item quantity="one">Dados usados por <xliff:g id="NUMBER">%1$d</xliff:g> app</item>
+      <item quantity="other">Dados usados por <xliff:g id="NUMBER">%1$d</xliff:g> apps</item>
     </plurals>
     <string name="permission_usage_view_details" msgid="6675335735468752787">"Ver tudo no painel"</string>
     <string name="app_permission_usage_filter_label" msgid="7182861154638631550">"Filtrado por: <xliff:g id="PERM">%1$s</xliff:g>"</string>
@@ -209,14 +211,15 @@
     <string name="app_permission_button_deny" msgid="6016454069832050300">"Não permitir"</string>
     <string name="precise_image_description" msgid="6349638632303619872">"Local exato"</string>
     <string name="approximate_image_description" msgid="938803699637069884">"Local aproximado"</string>
-    <string name="app_permission_location_accuracy" msgid="7166912915040018669">"Usar local exato"</string>
-    <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"Apps podem acessar seu local aproximado quando o local exato está desativado"</string>
+    <string name="app_permission_location_accuracy" msgid="7166912915040018669">"Usar localização exata"</string>
+    <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"Apps podem acessar a localização aproximada quando a localização exata estiver desativada"</string>
     <string name="app_permission_title" msgid="2090897901051370711">"Permissão para acessar <xliff:g id="PERM">%1$s</xliff:g>"</string>
     <string name="app_permission_header" msgid="2951363137032603806">"Permitir que este app acesse: <xliff:g id="PERM">%1$s</xliff:g>"</string>
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"Ver todas as permissões do app <xliff:g id="APP">%1$s</xliff:g>"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Ver todos os apps que têm esta permissão"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Mostrar uso de microfone pelo Assistente"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Remover permissões se o app não for usado"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Remover permissões e liberar espaço"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Para proteger seus dados, as permissões serão removidas se o app não for usado por alguns meses."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Para proteger seus dados, se o app não for usado por alguns meses, as seguintes permissões serão removidas: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Para proteger seus dados, as permissões de apps que não foram usados nos últimos meses foram removidas."</string>
@@ -232,8 +235,7 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Permissões <xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> e <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g> removidas"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> e mais <xliff:g id="NUMBER">%2$s</xliff:g> permissões removidas"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Apps não usados"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Se um app fica sem uso por alguns meses:\n\n• as permissões são removidas para proteger seus dados;\n• as notificações são interrompidas para economizar bateria;\n• os arquivos temporários são removidos para liberar espaço.\n\nPara retomar as permissões e notificações, abra o app."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Abertos pela última vez há mais de <xliff:g id="NUMBER">%s</xliff:g> meses"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"App aberto pela última vez em <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Aberto pela última vez em <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -245,7 +247,7 @@
     <string name="permission_description_summary_call_log" msgid="7321437186317577624">"Apps que têm esta permissão podem ler e gravar o registro de chamadas do smartphone"</string>
     <string name="permission_description_summary_camera" msgid="108004375101882069">"Apps que têm esta permissão podem tirar fotos e gravar vídeos"</string>
     <string name="permission_description_summary_contacts" msgid="2337798886460408996">"Apps que têm esta permissão podem acessar seus contatos"</string>
-    <string name="permission_description_summary_location" msgid="2817531799933480694">"Apps que têm esta permissão podem acessar o local deste dispositivo"</string>
+    <string name="permission_description_summary_location" msgid="2817531799933480694">"Apps que têm esta permissão podem acessar a localização deste dispositivo"</string>
     <string name="permission_description_summary_nearby_devices" msgid="8269183818275073741">"Apps com essa permissão podem encontrar, conectar-se e determinar a posição relativa de dispositivos por perto"</string>
     <string name="permission_description_summary_microphone" msgid="630834800308329907">"Apps que têm esta permissão podem gravar áudio"</string>
     <string name="permission_description_summary_phone" msgid="4515277217435233619">"Apps que têm esta permissão podem fazer e gerenciar chamadas telefônicas"</string>
@@ -495,4 +497,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Outra"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Nenhuma"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Últimas\n24 horas"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"O app <xliff:g id="APP_NAME">%1$s</xliff:g> é protegido pelo Android. Como seus dados são processados no dispositivo, o uso da permissão do app não é mostrado na barra de status nem no painel de privacidade."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"O app <xliff:g id="APP_NAME">%1$s</xliff:g> é protegido pelo Android. Como seus dados são processados no dispositivo, o uso da permissão do app não é mostrado no painel de privacidade."</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"A <xliff:g id="SENSOR_NAME">%1$s</xliff:g> do dispositivo está bloqueada"</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"A <xliff:g id="SENSOR_NAME">%1$s</xliff:g> do dispositivo está desativada"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"Para apps e serviços"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"Os dados do microfone ainda poderão ser compartilhados quando você ligar para um número de emergência."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Mudar"</string>
 </resources>

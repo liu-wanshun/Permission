@@ -116,6 +116,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Vremenski slijed kada su aplikacije u posljednja 24 sata koristile: <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Kada je ova aplikacija koristila vaše odobrenje za: <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Saznajte više"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="one"><xliff:g id="NUMBER">%s</xliff:g> dan</item>
       <item quantity="few"><xliff:g id="NUMBER">%s</xliff:g> dana</item>
@@ -229,6 +231,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Prikaži sve aplikacije s ovim odobrenjem"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Prikaži korištenje mikrofona asistenta"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Ukloni odobrenja ako se aplikacija ne koristi"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Ukloni odobrenja i oslobodi prostor"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Zbog zaštite vaših podataka, odobrenja za ovu aplikaciju će se ukloniti ako se ona ne bude koristila nekoliko mjeseci."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Radi zaštite vaših podataka, ako se aplikacija ne bude koristila nekoliko mjeseci, uklonit će se sljedeća odobrenja: <xliff:g id="PERMS">%1$s</xliff:g>."</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Zbog zaštite vaših podataka uklonjena su odobrenja iz aplikacija koje niste koristili nekoliko mjeseci."</string>
@@ -244,8 +247,7 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Uklonjena su odobrenja <xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> i <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g>"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Uklonjeno je odobrenje <xliff:g id="PERMISSION_NAME">%1$s</xliff:g> i njih još <xliff:g id="NUMBER">%2$s</xliff:g>"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Nekorištene aplikacije"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Ako se aplikacija ne koristi nekoliko mjeseci:\n\n• odobrenja će se ukloniti radi zaštite vaših podataka\n• obavještenja će se zaustaviti radi uštede baterije\n• privremeni fajlovi će se ukloniti radi oslobađanja prostora\n\nDa ponovo dozvolite odobrenja i obavještenja, otvorite aplikaciju."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Posljednji put otvoreno prije više od <xliff:g id="NUMBER">%s</xliff:g> mj."</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Aplikacija je posljednji put otvorena na dan <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Posljednji put otvoreno na dan <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -514,4 +516,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Drugo"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Ništa"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Protekla\n24 sata"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"Aplikaciju <xliff:g id="APP_NAME">%1$s</xliff:g> štiti Android. S obzirom na to da se vaši podaci obrađuju na ovom uređaju, korištenje odobrenja ove aplikacije nije prikazano na statusnoj traci ili kontrolnoj tabli za privatnost."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"Aplikaciju <xliff:g id="APP_NAME">%1$s</xliff:g> štiti Android. S obzirom na to da se vaši podaci obrađuju na ovom uređaju, korištenje odobrenja ove aplikacije nije prikazano na kontrolnoj tabli za privatnost."</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"Funkcija \"<xliff:g id="SENSOR_NAME">%1$s</xliff:g>\" uređaja je blokirana"</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"Funkcija \"<xliff:g id="SENSOR_NAME">%1$s</xliff:g>\" uređaja je isključena"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"Za aplikacije i usluge"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"Podaci mikrofona se i dalje mogu dijeliti kada pozovete broj za hitne slučajeve."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Promijeni"</string>
 </resources>

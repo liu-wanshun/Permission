@@ -51,8 +51,7 @@
     <string name="app_permissions_breadcrumb" msgid="5136969550489411650">"Aplikace"</string>
     <string name="app_permissions" msgid="3369917736607944781">"Oprávnění aplikací"</string>
     <string name="unused_apps" msgid="2058057455175955094">"Nepoužívané aplikace"</string>
-    <!-- no translation found for no_unused_apps (12809387670415295) -->
-    <skip />
+    <string name="no_unused_apps" msgid="12809387670415295">"Žádné nepoužívané aplikace"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"Deaktivovat aplikaci"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"Pokud tuto aplikaci deaktivujete, systém Android a ostatní aplikace nemusejí fungovat správně. Připomínáme, že tuto aplikaci nelze smazat, protože byla v zařízení předinstalována. Deaktivováním ji vypnete a skryjete."</string>
     <string name="app_permission_manager" msgid="3903811137630909550">"Správce oprávnění"</string>
@@ -118,6 +117,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"<xliff:g id="PERMGROUP">%1$s</xliff:g> – časový přehled využívání aplikacemi za posledních 24 hodin"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Kdy tato aplikace použila oprávnění <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Další informace"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="few"><xliff:g id="NUMBER">%s</xliff:g> dny</item>
       <item quantity="many"><xliff:g id="NUMBER">%s</xliff:g> dne</item>
@@ -234,7 +235,7 @@
     <string name="app_permission_button_deny" msgid="6016454069832050300">"Nepovolovat"</string>
     <string name="precise_image_description" msgid="6349638632303619872">"Přesná poloha"</string>
     <string name="approximate_image_description" msgid="938803699637069884">"Přibližná poloha"</string>
-    <string name="app_permission_location_accuracy" msgid="7166912915040018669">"Použít přesnou polohu"</string>
+    <string name="app_permission_location_accuracy" msgid="7166912915040018669">"Používat přesnou polohu"</string>
     <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"Když je přesná poloha vypnutá, aplikace mají přístup k vaší přibližné poloze"</string>
     <string name="app_permission_title" msgid="2090897901051370711">"<xliff:g id="PERM">%1$s</xliff:g>: oprávnění"</string>
     <string name="app_permission_header" msgid="2951363137032603806">"<xliff:g id="PERM">%1$s</xliff:g>: Přístup této aplikace"</string>
@@ -242,6 +243,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Zobrazit všechny aplikace s tímto oprávněním"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Zobrazit používání mikrofonu asistentem"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Odebrat oprávnění, pokud se aplikace nepoužívá"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Odebrat oprávnění a uvolnit místo"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Pokud tuto aplikaci několik měsíců nepoužijete, kvůli ochraně vašich dat jí budou oprávnění odebrána."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Pokud tuto aplikaci několik měsíců nepoužijete, budou jí kvůli ochraně vašich dat odebrána následující oprávnění: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Za účelem ochrany vašich dat byla odebrána oprávnění aplikacím, které jste několik měsíců nepoužili."</string>
@@ -257,12 +259,11 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Byla odebrána oprávnění <xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> a <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g>"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Bylo odebráno oprávnění <xliff:g id="PERMISSION_NAME">%1$s</xliff:g> a další oprávnění (<xliff:g id="NUMBER">%2$s</xliff:g>)"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Nepoužívané aplikace"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Když aplikaci několik měsíců nepoužíváte:\n\n• Oprávnění jsou odstraněna kvůli ochraně dat\n• Oznámení se přestanou zobrazovat kvůli úspoře baterie\n• Dočasné soubory jsou odstraněny kvůli uvolnění místa\n\nPokud chcete oprávnění a oznámení znovu povolit, otevřete aplikaci."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Naposledy otevřeno před více než <xliff:g id="NUMBER">%s</xliff:g> měsíci"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Aplikace byla naposledy otevřena <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Naposledy otevřeno <xliff:g id="DATE">%s</xliff:g>"</string>
-    <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Pokud povolíte správu všech souborů, aplikace může číst, upravovat a mazat všechny soubory ve společném úložišti na tomto zařízení i na připojených úložných zařízeních. Aplikace se může dostat k souborům, aniž by se vás zeptala."</string>
+    <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Pokud povolíte správu všech souborů, tato aplikace může číst, upravovat a mazat všechny soubory ve společném úložišti na tomto zařízení i na připojených úložných zařízeních. Aplikace se může dostat k souborům, aniž by se vás zeptala."</string>
     <string name="special_file_access_dialog" msgid="583804114020740610">"Chcete této aplikaci povolit číst, upravovat a mazat soubory v tomto zařízení a v připojených úložných zařízeních? Aplikace může přistupovat k souborům, aniž by se vás zeptala."</string>
     <string name="permission_description_summary_generic" msgid="5401399408814903391">"Aplikace s tímto oprávněním mohou <xliff:g id="DESCRIPTION">%1$s</xliff:g>"</string>
     <string name="permission_description_summary_activity_recognition" msgid="2652850576497070146">"Aplikace s tímto oprávněním mají přístup k  vaší fyzické aktivitě, jako je chůze, jízda na kole, jízda autem, počet kroků a další"</string>
@@ -534,4 +535,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Jiné"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Žádné"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Posledních\n24 hodin"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"Aplikace <xliff:g id="APP_NAME">%1$s</xliff:g> je chráněna systémem Android. Protože se vaše data zpracovávají na tomto zařízení, oprávnění používaná touto aplikací se nezobrazují na stavovém řádku ani na panelu ochrany soukromí."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"Aplikace <xliff:g id="APP_NAME">%1$s</xliff:g> je chráněna systémem Android. Protože se vaše data zpracovávají na tomto zařízení, oprávnění používaná touto aplikací se nezobrazují na panelu ochrany soukromí."</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"Zařízení <xliff:g id="SENSOR_NAME">%1$s</xliff:g> je blokováno"</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"Zařízení <xliff:g id="SENSOR_NAME">%1$s</xliff:g> je vypnuté"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"Aplikace a služby"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"Když zavoláte na číslo tísňového volání, mohou být nadále sdílena data z mikrofonu."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Změnit"</string>
 </resources>

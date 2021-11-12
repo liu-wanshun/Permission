@@ -117,6 +117,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Храналогія выкарыстання праграмамі дазволаў \"<xliff:g id="PERMGROUP">%1$s</xliff:g>\" за апошнія 24 гадзіны"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Калі гэта праграма выкарыстоўвала ваш дазвол \"<xliff:g id="PERMGROUP">%1$s</xliff:g>\""</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Даведацца больш"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="one"><xliff:g id="NUMBER">%s</xliff:g> дзень</item>
       <item quantity="few"><xliff:g id="NUMBER">%s</xliff:g> дні</item>
@@ -241,6 +243,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Паказаць усе праграмы з гэтым дазволам"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Паказваць выкарыстанне мікрафона памочнікам"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Выдаляць дазволы, калі праграма не выкарыстоўваецца"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Выдаліць дазволы і вызваліць месца"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Калі праграма не выкарыстоўваецца на працягу некалькіх месяцаў, то ў мэтах абароны вашых даных з яе будуць выдалены дазволы."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Калі праграма не выкарыстоўваецца на працягу некалькіх месяцаў, у мэтах абароны вашых даных будуць выдалены наступныя дазволы: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"У мэтах абароны вашых даных выдалены дазволы для праграм, якія не выкарыстоўваліся некалькі месяцаў."</string>
@@ -256,8 +259,7 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Дазволы \"<xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g>\" і \"<xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g>\" выдалены"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"\"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g>\" і іншыя дазволы (<xliff:g id="NUMBER">%2$s</xliff:g> шт.) выдалены"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Праграмы, якія не выкарыстоўваюцца"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Калі праграма не выкарыстоўвалася некалькі месяцаў:\n\n• у мэтах абароны вашых даных выдаляюцца дазволы;\n• дзеля эканоміі зараду акумулятара спыняюцца апавяшчэнні;\n• для вызвалення месца выдаляюцца часовыя файлы.\n\nКаб зноў уключыць дазволы і апавяшчэнні, адкрыйце праграму."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Адкрывалася ў апошні раз больш за <xliff:g id="NUMBER">%s</xliff:g> мес. таму"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Праграма адкрывалася ў апошні раз <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Адкрывалася ў апошні раз <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -533,4 +535,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Іншае"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Няма"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"За апошнія\n24 гадзіны"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"Праграма \"<xliff:g id="APP_NAME">%1$s</xliff:g>\" абаронена Android. З прычыны таго, што вашы даныя апрацоўваюцца на гэтай прыладзе, на панэлі стану і панэлі кіравання доступам не паказваецца інфармацыя пра выкарыстанне дазволаў гэтай праграмай."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"Праграма \"<xliff:g id="APP_NAME">%1$s</xliff:g>\" абаронена Android. З прычыны таго, што вашы даныя апрацоўваюцца на гэтай прыладзе, на панэлі кіравання доступам не паказваецца інфармацыя пра выкарыстанне дазволаў гэтай праграмай."</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"Прылада \"<xliff:g id="SENSOR_NAME">%1$s</xliff:g>\" заблакіравана"</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"Прылада \"<xliff:g id="SENSOR_NAME">%1$s</xliff:g>\" выключана"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"Для праграм і сэрвісаў"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"Даныя з мікрафона па-ранейшаму могуць абагульвацца падчас выкліку нумара экстраннай службы."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Змяніць"</string>
 </resources>

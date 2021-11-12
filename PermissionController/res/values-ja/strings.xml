@@ -54,7 +54,7 @@
     <string name="no_unused_apps" msgid="12809387670415295">"使用されていないアプリなし"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"アプリを無効にする"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"このアプリを無効にすると、Android などの他のアプリが正しく動作しなくなるおそれがあります。このアプリはデバイスにプリインストールされているため、削除できません。無効にするには、このアプリをオフにし、デバイスにアプリが表示されないようにします。"</string>
-    <string name="app_permission_manager" msgid="3903811137630909550">"権限マネージャ"</string>
+    <string name="app_permission_manager" msgid="3903811137630909550">"権限マネージャー"</string>
     <string name="never_ask_again" msgid="4728762438198560329">"今後表示しない"</string>
     <string name="no_permissions" msgid="3881676756371148563">"権限がありません"</string>
     <string name="additional_permissions" msgid="5801285469338873430">"その他の権限"</string>
@@ -115,6 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"過去 24 時間におけるアプリによる<xliff:g id="PERMGROUP">%1$s</xliff:g>の使用状況"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"このアプリが<xliff:g id="PERMGROUP">%1$s</xliff:g>の権限を使用した時刻"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"詳細"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g>日</item>
       <item quantity="one">1日</item>
@@ -210,13 +212,14 @@
     <string name="precise_image_description" msgid="6349638632303619872">"正確な現在地"</string>
     <string name="approximate_image_description" msgid="938803699637069884">"おおよその現在地"</string>
     <string name="app_permission_location_accuracy" msgid="7166912915040018669">"正確な位置情報を使用"</string>
-    <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"正確な位置情報がオフの場合、アプリはおおよその位置情報にアクセスできます"</string>
+    <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"正確な位置情報が OFF の場合、アプリはおおよその位置情報にアクセスできます"</string>
     <string name="app_permission_title" msgid="2090897901051370711">"<xliff:g id="PERM">%1$s</xliff:g>の権限"</string>
     <string name="app_permission_header" msgid="2951363137032603806">"このアプリによる<xliff:g id="PERM">%1$s</xliff:g>へのアクセス"</string>
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"「<xliff:g id="APP">%1$s</xliff:g>」アプリの権限をすべて表示"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"この権限があるアプリをすべて表示"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"アシスタントのマイクの使用を表示"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"アプリが使用されていない場合に権限を削除"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"権限を削除して空き容量を増やす"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"データ保護のため、このアプリが数か月使用されていない場合はアプリの権限が取り消されます。"</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"データ保護のため、アプリが数か月使用されていない場合は以下の権限が取り消されます。<xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"データ保護のため、数か月使用していないアプリの権限を削除しました。"</string>
@@ -494,4 +497,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"その他"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"なし"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"24 時間\n以内"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> は Android によって保護されています。あなたのデータはこのデバイス上で処理されるため、このアプリの権限の使用状況はステータスバーやプライバシー ダッシュボードには表示されません。"</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> は Android によって保護されています。あなたのデータはこのデバイス上で処理されるため、このアプリの権限の使用状況はプライバシー ダッシュボードには表示されません。"</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"デバイスの<xliff:g id="SENSOR_NAME">%1$s</xliff:g>はブロックされています"</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"デバイスの<xliff:g id="SENSOR_NAME">%1$s</xliff:g>は OFF です"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"アプリとサービス"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"緊急通報番号に発信したときは、マイクのデータが引き続き共有されることがあります。"</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"変更"</string>
 </resources>

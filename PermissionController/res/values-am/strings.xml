@@ -51,8 +51,7 @@
     <string name="app_permissions_breadcrumb" msgid="5136969550489411650">"መተግበሪያዎች"</string>
     <string name="app_permissions" msgid="3369917736607944781">"የመተግበሪያ ፈቃዶች"</string>
     <string name="unused_apps" msgid="2058057455175955094">"ጥቅም ላይ ያልዋሉ መተግበሪያዎች"</string>
-    <!-- no translation found for no_unused_apps (12809387670415295) -->
-    <skip />
+    <string name="no_unused_apps" msgid="12809387670415295">"አገልግሎት ላይ ያልዋሉ መተግበሪያዎች የሉም"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"መተግበሪያን አሰናክል"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"ይህን መተግበሪያ ካሰናከሉት ከዚህ በኋላ Android እና ሌሎች መተግበሪያዎች እንደተፈለገው ላይሠሩ ይችላሉ። ያስታውሱ፣ በእርስዎ መሣሪያ ላይ አስቀድሞ ተጭኖ ስለሚመጣ ይህን መተግበሪያ መሰረዝ አይችሉም። በማሰናከልዎት፣ ይህን መተግበሪያ ያጠፉታል እና በእርስዎ መሣሪያ ላይ ይደብቁታል።"</string>
     <string name="app_permission_manager" msgid="3903811137630909550">"የፈቃድ አቀናባሪ"</string>
@@ -116,6 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"ባለፉት 24 ሰዓታት ውስጥ መተግበሪያዎች የእርስዎን <xliff:g id="PERMGROUP">%1$s</xliff:g> ሲጠቀሙበት የነበሩበት የጊዜ መስመር"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"ይህ መተግበሪያ የእርስዎን የ<xliff:g id="PERMGROUP">%1$s</xliff:g> ፈቃድ ሲጠቀም"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"የበለጠ ለመረዳት"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="one"><xliff:g id="NUMBER">%s</xliff:g> ቀናት</item>
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> ቀናት</item>
@@ -218,6 +219,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"ከዚህ መተግበሪያ ጋር ሁሉንም መተግበሪያዎች ይመልከቱ"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"የረዳት ማይክሮፎን አጠቃቀምን አሳይ"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"መተግበሪያ ጥቅም ላይ ካልዋለ ፈቃዶችን አስወግድ"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"ፈቃዶችን ያስወግዱ እና ቦታ ያስለቅቁ"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"ለእርስዎ ውሂብ ጥበቃ ለማድረግ፣ ለዚህ መተግበሪያ የተሰጡ ፈቃዶች መተግበሪያው ለጥቂት ወራት ጥቅም ላይ ካልዋለ ይህ መተግበሪያ ይወገዳል።"</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"የእርስዎን ውሂብ ለመጠበቅ፣ መተግበሪያው ለጥቂት ወራት ጥቅም ላይ ካልዋለ፣ የሚከተሉት ፈቃዶች ይወገዳሉ፦ <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"የእርስዎን ውሂብ ለመጠበቅ ሲባል ለጥቂት ወራት ካልተጠቀሙባቸው መተግበሪያዎች ላይ ፈቃዶች ተወግደዋል።"</string>
@@ -233,8 +235,7 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"የ<xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> እና <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g> ፈቃዶች ተወግደዋል"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> እና <xliff:g id="NUMBER">%2$s</xliff:g> ሌሎች ፈቃዶች ተወግደዋል"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"ስራ ላይ ያልዋሉ መተግበሪያዎች"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"አንድ መተግበሪያ ለጥቂት ወራት ስራ ላይ ካልዋለ፦\n\n• ውሂብዎን ለመጠበቅ ፈቃዶች ይወገዳሉ\n• ባትሪን ለመቆጠብ ማሳወቂያዎች ይቆማሉ\n• ባዶ ቦታ ለማስለቀቅ ጊዜያዊ ፋይሎች ይወገዳሉ\n\nፈቃዶችን እና ማሳወቂያዎችን እንደገና ለመፍቀድ መተግበሪያውን ይክፈቱት።"</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"መጨረሻ የተከፈተው ከ<xliff:g id="NUMBER">%s</xliff:g> ወሮች በላይ በፊት ነበር"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"መተግበሪያ ለመጨረሻ ጊዜ በ<xliff:g id="DATE">%s</xliff:g> ላይ ተከፍቷል"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"መጨረሻ የተከፈተው <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -496,4 +497,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"ሌላ"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"ምንም"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"ባለፉት\n24 ሰዓታት"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> በAndroid የተጠበቀ ነው። በዚህ መሣሪያ ላይ የእርስዎ ውሂብ ስለተሰናዳ፣ የዚህ መተግበሪያ ፈቃድ አጠቃቀም በሁኔታ አሞሌ ወይም በግላዊነት ዳሽቦርድዎ ላይ አይታይም።"</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> በAndroid የተጠበቀ ነው። በዚህ መሣሪያ ላይ የእርስዎ ውሂብ ስለተሰናዳ፣ የዚህ መተግበሪያ ፈቃድ አጠቃቀም በግላዊነት ዳሽቦርድዎ ላይ አይታይም።"</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"መሣሪያ <xliff:g id="SENSOR_NAME">%1$s</xliff:g> ታግዷል"</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"መሣሪያ <xliff:g id="SENSOR_NAME">%1$s</xliff:g> ጠፍቷል"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"ለመተግበሪያዎች እና አገልግሎቶች"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"እርስዎ ወደ አንድ የአደጋ ጊዜ ቁጥር ሲደውሉ የማይክሮፎን ውሂብ አሁንም ሊጋራ ይችላል።"</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"ቀይር"</string>
 </resources>

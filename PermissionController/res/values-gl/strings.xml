@@ -51,8 +51,7 @@
     <string name="app_permissions_breadcrumb" msgid="5136969550489411650">"Aplicacións"</string>
     <string name="app_permissions" msgid="3369917736607944781">"Permisos de aplicacións"</string>
     <string name="unused_apps" msgid="2058057455175955094">"Aplicacións que non se usan"</string>
-    <!-- no translation found for no_unused_apps (12809387670415295) -->
-    <skip />
+    <string name="no_unused_apps" msgid="12809387670415295">"Non hai aplicacións sen usar"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"Desactivar aplicación"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"Se desactivas esta aplicación, Android e outras aplicacións poden deixar de funcionar segundo o previsto. Ten en conta que esta aplicación non se pode desinstalar, xa que viña preinstalada no dispositivo. Se a desactivas, ocultarase no dispositivo."</string>
     <string name="app_permission_manager" msgid="3903811137630909550">"Xestor de permisos"</string>
@@ -116,6 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Cronoloxía da utilización do permiso <xliff:g id="PERMGROUP">%1$s</xliff:g> por parte das aplicacións nas últimas 24 horas"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Cando utilizou esta aplicación o permiso de <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Máis información"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> días</item>
       <item quantity="one">1 día</item>
@@ -218,6 +219,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Ver todas as aplicacións que teñen este permiso"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Mostrar uso do micrófono do Asistente"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Quitar permisos se non se usa a aplicación"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Quitar permisos e liberar espazo"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Para protexer os teus datos, quitaranse os permisos desta aplicación se pasas varios meses sen utilizala."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Para protexer os teus datos, se a aplicación leva varios meses sen usarse, quitaranse os seguintes permisos: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Para protexer os teus datos, quitáronse os permisos das aplicacións que levas varios meses sen usar."</string>
@@ -233,8 +235,7 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Quitáronse os permisos (<xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> e <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g>)"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Quitáronse os permisos (<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> e <xliff:g id="NUMBER">%2$s</xliff:g> máis)"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Aplicacións que non se usan"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Se durante uns meses non se usa unha aplicación:\n\n• Quítanselle os permisos para protexer os teus datos.\n• Detéñense as notificacións para aforrar batería.\n• Quítanse os ficheiros temporais para liberar espazo.\n\nSe queres dar permisos e recibir notificacións de novo, abre a aplicación."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Última vez que se abriu: hai máis de <xliff:g id="NUMBER">%s</xliff:g> meses"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"A aplicación abriuse por última vez o <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Abriuse por última vez o <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -496,4 +497,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Outro"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Ningún"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Últimas\n24 horas"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"A aplicación <xliff:g id="APP_NAME">%1$s</xliff:g> está protexida por Android. Dado que os teus datos se procesan neste dispositivo, o uso de permisos por parte desta aplicación non se mostra na barra de estado nin no teu panel de privacidade."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"A aplicación <xliff:g id="APP_NAME">%1$s</xliff:g> está protexida por Android. Dado que os teus datos se procesan neste dispositivo, o uso de permisos por parte desta aplicación non se mostra no teu panel de privacidade."</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"A <xliff:g id="SENSOR_NAME">%1$s</xliff:g> do dispositivo está bloqueada"</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"A <xliff:g id="SENSOR_NAME">%1$s</xliff:g> do dispositivo está desactivada"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"Para aplicacións e servizos"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"Con todo, é posible que se compartan os datos do micrófono cando chames a un número de emerxencias."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Cambiar"</string>
 </resources>
