@@ -71,7 +71,7 @@
     <string name="menu_hide_system" msgid="3855390843744028465">"Жүйені жасыру"</string>
     <string name="manage_permission" msgid="2895385393037061964">"Рұқсатты басқару"</string>
     <string name="no_apps" msgid="2412612731628386816">"Қолданба жоқ"</string>
-    <string name="location_settings" msgid="3624412509133422562">"Орналасу параметрлері"</string>
+    <string name="location_settings" msgid="3624412509133422562">"Локация параметрлері"</string>
     <string name="location_warning" msgid="2381649060929040962">"<xliff:g id="APP_NAME">%1$s</xliff:g> – осы құрылғыға орынды анықтау қызметтерін көрсететін қолданба. Орынды пайдалану мүмкіндігін орынды анықтау параметрлерінде өзгертуге болады."</string>
     <string name="system_warning" msgid="1173400963234358816">"Бұл рұқсатты бермесеңіз, құрылғының негізгі функциялары енді көзделгендей жұмыс істемеуі мүмкін."</string>
     <string name="cdm_profile_revoke_warning" msgid="4443893270719106700">"Бұл рұқсаттан бас тартсаңыз, осы қолданба арқылы басқарылатын құрылғыңыздың кейбір функциясы бұдан былай ойдағыдай жұмыс істемеуі мүмкін."</string>
@@ -115,7 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Қолданбалардың соңғы 24 сағатта <xliff:g id="PERMGROUP">%1$s</xliff:g> рұқсатын пайдалану хронологиясы"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Бұл қолданба <xliff:g id="PERMGROUP">%1$s</xliff:g> рұқсатын қолданған кезде"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Толығырақ"</string>
-    <string name="permission_usage_duration_and_proxy" msgid="573959201368716399">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> күн</item>
       <item quantity="one">1 күн</item>
@@ -496,4 +497,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Басқа"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Жоқ"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Соңғы\n24 сағатта"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> қолданбасы Android арқылы қорғалады. Деректеріңіз осы құрылғыда өңделетіндіктен, бұл қолданба рұқсатының пайдаланылуы күй жолағында немесе құпиялылық тақтасында көрсетілмейді."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> қолданбасы Android арқылы қорғалады. Деректеріңіз осы құрылғыда өңделетіндіктен, бұл қолданба рұқсатының пайдаланылуы құпиялылық тақтасында көрсетілмейді."</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"Құрылғыдағы <xliff:g id="SENSOR_NAME">%1$s</xliff:g> бөгелген"</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"Құрылғыдағы <xliff:g id="SENSOR_NAME">%1$s</xliff:g> өшірулі"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"Қолданбалар мен қызметтер үшін"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"Құтқару қызметінің нөміріне қоңырау шалу кезінде микрофон деректері әлі бөлісіліп жатуы мүмкін."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Өзгерту"</string>
 </resources>

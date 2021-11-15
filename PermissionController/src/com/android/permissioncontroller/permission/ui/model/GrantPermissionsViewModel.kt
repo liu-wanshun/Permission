@@ -303,7 +303,7 @@ class GrantPermissionsViewModel(
                 var detailMessage = RequestMessage.NO_MESSAGE
 
                 if (groupState.group.packageInfo.targetSdkVersion >= Build.VERSION_CODES.R) {
-                    if (isBackground || groupState.group.hasPermWithBackgroundMode) {
+                    if (isBackground || Utils.hasPermWithBackgroundModeCompat(groupState.group)) {
                         if (needFgPermissions) {
                             if (needBgPermissions) {
                                 if (groupState.group.permGroupName
@@ -362,7 +362,7 @@ class GrantPermissionsViewModel(
                         buttonVisibilities[DENY_AND_DONT_ASK_AGAIN_BUTTON] = isFgUserSet
                     }
                 } else {
-                    if (isBackground || groupState.group.hasPermWithBackgroundMode) {
+                    if (isBackground || Utils.hasPermWithBackgroundModeCompat(groupState.group)) {
                         if (needFgPermissions) {
                             // Case: sdk < R, BG/FG permission requesting both or FG only
                             buttonVisibilities[ALLOW_BUTTON] = false
@@ -417,7 +417,8 @@ class GrantPermissionsViewModel(
 
                 // Show location permission dialogs based on location permissions
                 val locationVisibilities = MutableList(NEXT_LOCATION_DIALOG) { false }
-                if (groupState.group.permGroupName == LOCATION && isLocationAccuracyEnabled()) {
+                if (groupState.group.permGroupName == LOCATION && isLocationAccuracyEnabled() &&
+                        packageInfo.targetSdkVersion >= Build.VERSION_CODES.S) {
                     if (needFgPermissions) {
                         locationVisibilities[LOCATION_ACCURACY_LAYOUT] = true
                         if (fgState != null &&
@@ -433,6 +434,12 @@ class GrantPermissionsViewModel(
                                     buttonVisibilities[ALLOW_FOREGROUND_BUTTON] = false
                                 }
                             } else {
+                                if (!fgState.affectedPermissions.contains(ACCESS_COARSE_LOCATION)) {
+                                    Log.e(LOG_TAG, "ACCESS_FINE_LOCATION must be requested " +
+                                            "with ACCESS_COARSE_LOCATION.")
+                                    value = null
+                                    return
+                                }
                                 if (coarseLocationPerm?.isOneTime == false &&
                                         !coarseLocationPerm.isUserSet &&
                                         !coarseLocationPerm.isUserFixed) {
@@ -870,7 +877,8 @@ class GrantPermissionsViewModel(
                 KotlinUtils.revokeBackgroundRuntimePermissions(app, groupState.group,
                     userFixed = doNotAskAgain, filterPermissions = groupState.affectedPermissions)
             } else {
-                if (affectedForegroundPermissions == null) {
+                if (affectedForegroundPermissions == null ||
+                        affectedForegroundPermissions.contains(ACCESS_COARSE_LOCATION)) {
                     KotlinUtils.revokeForegroundRuntimePermissions(app, groupState.group,
                         userFixed = doNotAskAgain,
                         filterPermissions = groupState.affectedPermissions, oneTime = isOneTime)

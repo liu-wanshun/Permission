@@ -115,7 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"აპების მიერ თქვენი <xliff:g id="PERMGROUP">%1$s</xliff:g>-ის გამოყენების ქრონოლოგია ბოლო 24 საათის განმავლობაში"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"როცა ამ აპმა გამოიყენა თქვენი ნებართვა <xliff:g id="PERMGROUP">%1$s</xliff:g>-ზე"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"შეიტყვეთ მეტი"</string>
-    <string name="permission_usage_duration_and_proxy" msgid="573959201368716399">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> დღე</item>
       <item quantity="one">1 დღე</item>
@@ -496,4 +497,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"სხვა"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"არცერთი"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"გასული\n24 საათი"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> დაცულია Android-ის მიერ. ვინაიდან თქვენი მონაცემები მუშავდება ამ მოწყობილობაზე, ამ აპის ნებართვის გამოყენება არ აისახება სტატუსის ზოლში ან კონფიდენციალურობის საინფორმაციო დაფაზე."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> დაცულია Android-ის მიერ. ვინაიდან თქვენი მონაცემები მუშავდება ამ მოწყობილობაზე, ამ აპის ნებართვის გამოყენება არ აისახება კონფიდენციალურობის საინფორმაციო დაფაზე."</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"მოწყობილობის <xliff:g id="SENSOR_NAME">%1$s</xliff:g> დაბლოკილია"</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"მოწყობილობის <xliff:g id="SENSOR_NAME">%1$s</xliff:g> გამორთულია"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"აპებისა და სერვისებისთვის"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"მიკროფონის მონაცემები, შესაძლოა, მაინც გაზიარდეს გადაუდებელი დახმარების სამსახურის ნომერზე დარეკვისას."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"შეცვლა"</string>
 </resources>

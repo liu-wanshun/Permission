@@ -115,7 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"ଗତ 24 ଘଣ୍ଟାରେ ଯେତେବେଳେ ଆପଗୁଡ଼ିକ ଆପଣଙ୍କ <xliff:g id="PERMGROUP">%1$s</xliff:g> ବ୍ୟବହାର କରିଥାଏ ତାହାର ଟାଇମଲାଇନ୍"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"ଏହି ଆପ୍ କେତେବେଳେ ଆପଣଙ୍କ <xliff:g id="PERMGROUP">%1$s</xliff:g> ଅନୁମତି ବ୍ୟବହାର କରିଛି"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"ଅଧିକ ଜାଣନ୍ତୁ"</string>
-    <string name="permission_usage_duration_and_proxy" msgid="573959201368716399">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> ଦିନ</item>
       <item quantity="one">1 ଦିନ</item>
@@ -496,4 +497,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"ଅନ୍ୟ"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"କିଛି ନାହିଁ"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"ଗତ\n24 ଘଣ୍ଟା"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g>କୁ Android ଦ୍ୱାରା ସୁରକ୍ଷିତ କରାଯାଇଛି। ଏହି ଡିଭାଇସରେ ଆପଣଙ୍କ ଡାଟା ପ୍ରକ୍ରିୟାକରଣ କରାଯାଇଥିବା ଯୋଗୁଁ ଏହି ଆପର ଅନୁମତି ବ୍ୟବହାରର ସୂଚନା ଷ୍ଟାଟସ୍ ବାରରେ କିମ୍ବା ଆପଣଙ୍କ ଗୋପନୀୟତା ଡ୍ୟାସବୋର୍ଡରେ ଦେଖାଯାଉ ନାହିଁ।"</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g>କୁ Android ଦ୍ୱାରା ସୁରକ୍ଷିତ କରାଯାଇଛି। ଏହି ଡିଭାଇସରେ ଆପଣଙ୍କ ଡାଟା ପ୍ରକ୍ରିୟାକରଣ କରାଯାଇଥିବା ଯୋଗୁଁ ଏହି ଆପର ଅନୁମତି ବ୍ୟବହାରର ସୂଚନା ଆପଣଙ୍କ ଗୋପନୀୟତା ଡ୍ୟାସବୋର୍ଡରେ ଦେଖାଯାଉ ନାହିଁ।"</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"ଡିଭାଇସ <xliff:g id="SENSOR_NAME">%1$s</xliff:g>କୁ ବ୍ଲକ କରାଯାଇଛି"</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"ଡିଭାଇସ <xliff:g id="SENSOR_NAME">%1$s</xliff:g> ବନ୍ଦ ଅଛି"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"ଆପ ଓ ସେବାଗୁଡ଼ିକ ପାଇଁ"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"ଆପଣ ଏକ ଜରୁରୀକାଳୀନ ନମ୍ବରକୁ କଲ କରିବା ସମୟରେ ମାଇକ୍ରୋଫୋନ ଡାଟା ଏବେ ବି ସେୟାର କରାଯାଇପାରେ।"</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"ପରିବର୍ତ୍ତନ କରନ୍ତୁ"</string>
 </resources>

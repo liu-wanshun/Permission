@@ -115,7 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"過去 24 小時內應用程式使用「<xliff:g id="PERMGROUP">%1$s</xliff:g>」權限的時間軸"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"當這個應用程式使用你的<xliff:g id="PERMGROUP">%1$s</xliff:g>權限時"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"瞭解詳情"</string>
-    <string name="permission_usage_duration_and_proxy" msgid="573959201368716399">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> 天</item>
       <item quantity="one">1 天</item>
@@ -341,10 +342,10 @@
     <string name="app_perms_content_provider_all_files" msgid="3315281519230304799">"上次存取時間：過去 24 小時內 • 所有檔案"</string>
     <string name="no_permissions_allowed" msgid="6081976856354669209">"未授予任何權限"</string>
     <string name="no_permissions_denied" msgid="8159923922804043282">"未拒絕授予任何權限"</string>
-    <string name="no_apps_allowed" msgid="7718822655254468631">"未授權給任何應用程式"</string>
+    <string name="no_apps_allowed" msgid="7718822655254468631">"未允許任何應用程式"</string>
     <string name="no_apps_allowed_full" msgid="8011716991498934104">"未授予任何應用程式「允許存取所有檔案」的權限"</string>
     <string name="no_apps_allowed_scoped" msgid="4908850477787659501">"未授予任何應用程式「僅允許存取媒體檔案」的權限"</string>
-    <string name="no_apps_denied" msgid="7663435886986784743">"未拒絕授權給任何應用程式"</string>
+    <string name="no_apps_denied" msgid="7663435886986784743">"未拒絕任何應用程式"</string>
     <string name="car_permission_selected" msgid="180837028920791596">"已選取"</string>
     <string name="settings" msgid="5409109923158713323">"設定"</string>
     <string name="accessibility_service_dialog_title_single" msgid="7956432823014102366">"「<xliff:g id="SERVICE_NAME">%s</xliff:g>」可完整存取你的裝置"</string>
@@ -496,4 +497,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"其他"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"無"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"過去\n24 小時"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"Android 會保護「<xliff:g id="APP_NAME">%1$s</xliff:g>」。系統是在這部裝置上處理你的資料，因此狀態列或隱私資訊主頁不會顯示這個應用程式的權限使用情形。"</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"Android 會保護「<xliff:g id="APP_NAME">%1$s</xliff:g>」。系統是在這部裝置上處理你的資料，因此隱私資訊主頁不會顯示這個應用程式的權限使用情形。"</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"<xliff:g id="SENSOR_NAME">%1$s</xliff:g>的裝置已遭封鎖"</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"<xliff:g id="SENSOR_NAME">%1$s</xliff:g>的裝置已關閉"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"應用程式和服務"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"當你撥打緊急電話號碼時，系統仍會提供麥克風的資料。"</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"變更"</string>
 </resources>

@@ -119,7 +119,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"المخطط الزمني لاستخدام التطبيقات لـ <xliff:g id="PERMGROUP">%1$s</xliff:g> في آخر 24 ساعة"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"وقت استخدام هذا التطبيق لإذن <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"مزيد من المعلومات"</string>
-    <string name="permission_usage_duration_and_proxy" msgid="573959201368716399">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="zero"><xliff:g id="NUMBER">%s</xliff:g> يوم</item>
       <item quantity="two">يومان (<xliff:g id="NUMBER">%s</xliff:g>)</item>
@@ -572,4 +573,11 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"غير ذلك"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"بلا أذونات"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"آخر\n24 ساعة"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"‏تطبيق <xliff:g id="APP_NAME">%1$s</xliff:g> محمي بواسطة Android. لأن بياناتك تتم معالجتها على هذا الجهاز، لا يظهر استخدام إذن هذا التطبيق في شريط الحالة أو لوحة بيانات الخصوصية."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"‏تطبيق <xliff:g id="APP_NAME">%1$s</xliff:g> محمي بواسطة Android. لأن بياناتك تتم معالجتها على هذا الجهاز، لا يظهر استخدام إذن هذا التطبيق في لوحة بيانات الخصوصية."</string>
+    <string name="blocked_sensor_title" msgid="4946499097784258613">"تم حظر <xliff:g id="SENSOR_NAME">%1$s</xliff:g> الجهاز."</string>
+    <string name="blocked_location_title" msgid="1651982726048750742">"<xliff:g id="SENSOR_NAME">%1$s</xliff:g> للجهاز غير مفعّل."</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"للتطبيقات والخدمات"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"لا يزال يمكن مشاركة بيانات الميكروفون عند الاتصال برقم طوارئ."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"تغيير"</string>
 </resources>
