@@ -51,8 +51,7 @@
     <string name="app_permissions_breadcrumb" msgid="5136969550489411650">"تطبيقات"</string>
     <string name="app_permissions" msgid="3369917736607944781">"أذونات التطبيق"</string>
     <string name="unused_apps" msgid="2058057455175955094">"التطبيقات غير المستخدمة"</string>
-    <!-- no translation found for no_unused_apps (12809387670415295) -->
-    <skip />
+    <string name="no_unused_apps" msgid="12809387670415295">"ما مِن تطبيقات غير مستخدمة."</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"إيقاف التطبيق"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"‏قد يؤدي إيقاف هذا التطبيق إلى عدم عمل نظام Android وتطبيقات أخرى على النحو المنشود. تجدر الإشارة إلى أنه لا يمكنك حذف هذا التطبيق لأنه من التطبيقات المثبّتة تلقائيًا على جهازك. ويعني إيقاف التطبيق أنه سيتم إيقافه وإخفاؤه على جهازك."</string>
     <string name="app_permission_manager" msgid="3903811137630909550">"مدير الأذونات"</string>
@@ -120,6 +119,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"المخطط الزمني لاستخدام التطبيقات لـ <xliff:g id="PERMGROUP">%1$s</xliff:g> في آخر 24 ساعة"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"وقت استخدام هذا التطبيق لإذن <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"مزيد من المعلومات"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="zero"><xliff:g id="NUMBER">%s</xliff:g> يوم</item>
       <item quantity="two">يومان (<xliff:g id="NUMBER">%s</xliff:g>)</item>
@@ -266,6 +267,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"الاطّلاع على جميع التطبيقات التي لديها هذا الإذن"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"‏عرض أذونات استخدام ميكروفون \"مساعد Google\""</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"إزالة الأذونات في حال عدم استخدام التطبيق"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"إزالة الأذونات وإخلاء مساحة"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"لحماية بياناتك، ستتم إزالة أذونات هذا التطبيق إذا لم يتم استخدامه لبضعة أشهر."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"لحماية بياناتك، إذا لم يتم استخدام التطبيق لبضعة أشهر، ستتم إزالة الأذونات التالية: <xliff:g id="PERMS">%1$s</xliff:g>."</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"لحماية بياناتك، تمت إزالة الأذونات من هذه التطبيقات التي لم تستخدمها منذ بضعة أشهر."</string>
@@ -281,8 +283,7 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"تمت إزالة إذنَي \"<xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g>\" و\"<xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g>\"."</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"تمت إزالة إذن \"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g>\" وعدد <xliff:g id="NUMBER">%2$s</xliff:g> من الأذونات الأخرى."</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"التطبيقات غير المستخدمة"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"في حال عدم استخدام التطبيق لبضعة أشهر:\n\n• تتم إزالة الأذونات لحماية بياناتك.\n• يتم إيقاف الإشعارات لتوفير شحن البطارية.\n• تتم إزالة الملفات المؤقتة لتوفير مساحة.\n\nلمنح الأذونات والسماح للتطبيقات مرة أخرى، افتح التطبيق."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"تم فتح هذه التطبيقات آخر مرة قبل أكثر من <xliff:g id="NUMBER">%s</xliff:g> شهر"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"آخر مرة تم فتح التطبيق فيها: <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"آخر مرة تم فتحه: <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -306,8 +307,8 @@
     <string name="app_permission_never_accessed_summary" msgid="401346181461975090">"لم يستخدم الإذن مطلقًا"</string>
     <string name="app_permission_never_accessed_denied_summary" msgid="6596000497490905146">"تم الرفض / لم يسبق الحصول على الإذن"</string>
     <string name="allowed_header" msgid="7769277978004790414">"التطبيقات المسموح بها"</string>
-    <string name="allowed_always_header" msgid="6455903312589013545">"التطبيقات المسموح بها طوال الوقت"</string>
-    <string name="allowed_foreground_header" msgid="6845655788447833353">"التطبيقات المسموح بها فقط أثناء استخدامها"</string>
+    <string name="allowed_always_header" msgid="6455903312589013545">"التطبيقات المسموح لها طوال الوقت"</string>
+    <string name="allowed_foreground_header" msgid="6845655788447833353">"التطبيقات المسموح لها فقط أثناء استخدامها"</string>
     <string name="allowed_storage_scoped" msgid="5383645873719086975">"التطبيقات المسموح لها بالوصول إلى الوسائط فقط"</string>
     <string name="allowed_storage_full" msgid="5356699280625693530">"التطبيقات المسموح لها بإدارة كل الملفات"</string>
     <string name="ask_header" msgid="2633816846459944376">"الطلب في كل مرة"</string>
@@ -403,7 +404,7 @@
     <string name="permission_subtitle_media_only" msgid="8917869683764720717">"الوسائط"</string>
     <string name="permission_subtitle_all_files" msgid="4982613338298067862">"كل الملفات"</string>
     <string name="permission_subtitle_background" msgid="8916750995309083180">"تم السماح بالوصول طوال الوقت"</string>
-    <string name="app_perms_24h_access" msgid="99069906850627181">"تم الوصول آخر مرة للأذونات في <xliff:g id="TIME_DATE">%1$s</xliff:g>."</string>
+    <string name="app_perms_24h_access" msgid="99069906850627181">"تم استخدام إذن الوصول آخر مرة في <xliff:g id="TIME_DATE">%1$s</xliff:g>."</string>
     <string name="app_perms_24h_access_yest" msgid="5411926024794555022">"تم الوصول آخر مرة للأذونات أمس في <xliff:g id="TIME_DATE">%1$s</xliff:g>."</string>
     <string name="app_perms_content_provider" msgid="6996750793881252778">"تم الوصول للأذونات في آخر 24 ساعة."</string>
     <string name="app_perms_24h_access_background" msgid="3413674718969576843">"تم الوصول آخر مرة في <xliff:g id="TIME_DATE">%1$s</xliff:g> • تم السماح بالوصول طوال الوقت"</string>
@@ -572,4 +573,6 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"غير ذلك"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"بلا أذونات"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"آخر\n24 ساعة"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"‏تطبيق <xliff:g id="APP_NAME">%1$s</xliff:g> محمي بواسطة Android. لأن بياناتك تتم معالجتها على هذا الجهاز، لا يظهر استخدام إذن هذا التطبيق في شريط الحالة أو لوحة بيانات الخصوصية."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"‏تطبيق <xliff:g id="APP_NAME">%1$s</xliff:g> محمي بواسطة Android. لأن بياناتك تتم معالجتها على هذا الجهاز، لا يظهر استخدام إذن هذا التطبيق في لوحة بيانات الخصوصية."</string>
 </resources>

@@ -115,6 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"បន្ទាត់ពេលវេលានៃ​ពេលដែលកម្មវិធី​បានប្រើ <xliff:g id="PERMGROUP">%1$s</xliff:g> របស់អ្នក​ក្នុងរយៈពេល 24 ម៉ោងចុងក្រោយ"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"នៅពេលកម្មវិធីនេះបានប្រើការអនុញ្ញាត <xliff:g id="PERMGROUP">%1$s</xliff:g> របស់អ្នក"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"ស្វែងយល់បន្ថែម"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> ថ្ងៃ</item>
       <item quantity="one">1 ថ្ងៃ</item>
@@ -217,6 +219,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"មើលកម្មវិធី​ទាំងអស់​ដែលមាន​ការអនុញ្ញាត​នេះ"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"បង្ហាញការប្រើប្រាស់​មីក្រូហ្វូនរបស់ជំនួយការ"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"ដកការ​អនុញ្ញាតចេញ ប្រសិនបើ​មិនប្រើប្រាស់​កម្មវិធី"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"ដក​ការអនុញ្ញាតចេញ និងបង្កើន​ទំហំផ្ទុក"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"ដើម្បីការពារ​ទិន្នន័យរបស់អ្នក ការអនុញ្ញាត​សម្រាប់កម្មវិធីនេះ​នឹងត្រូវ​ដកចេញ ប្រសិនបើ​មិនប្រើប្រាស់​កម្មវិធីនេះ​រយៈពេល​ពីរបីខែ។"</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"ដើម្បីការពារ​ទិន្នន័យរបស់អ្នក ការអនុញ្ញាត​ខាងក្រោម​នឹងត្រូវដកចេញ ប្រសិនបើ​មិនប្រើប្រាស់​កម្មវិធីនេះ​រយៈពេល​ពីរបីខែ៖ <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"ដើម្បីការពារ​ទិន្នន័យរបស់អ្នក ការអនុញ្ញាត​ត្រូវបាន​ដកចេញ​ពីកម្មវិធី​ដែល​អ្នកមិនបាន​ប្រើប្រាស់​រយៈពេល​ពីរបីខែ។"</string>
@@ -494,4 +497,6 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"ផ្សេងៗ"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"គ្មាន"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"24 ម៉ោង\nចុងក្រោយ"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> ត្រូវបានការពារ​ដោយ Android។ ដោយសារ​ទិន្នន័យរបស់អ្នក​ត្រូវបានដំណើរការ​នៅលើឧបករណ៍នេះ ការប្រើប្រាស់​ការអនុញ្ញាត​របស់កម្មវិធីនេះ​មិនបង្ហាញនៅលើ​របារស្ថានភាព ឬផ្ទាំងគ្រប់គ្រង​ឯកជនភាព​របស់អ្នកទេ។"</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> ត្រូវបានការពារ​ដោយ Android។ ដោយសារ​ទិន្នន័យរបស់អ្នក​ត្រូវបានដំណើរការ​នៅលើឧបករណ៍នេះ ការប្រើប្រាស់​ការអនុញ្ញាត​របស់កម្មវិធីនេះ​មិនបង្ហាញនៅលើ​ផ្ទាំងគ្រប់គ្រង​ឯកជនភាព​របស់អ្នកទេ។"</string>
 </resources>

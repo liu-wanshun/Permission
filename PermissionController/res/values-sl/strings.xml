@@ -117,6 +117,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Časovna os uporabe dovoljenja »<xliff:g id="PERMGROUP">%1$s</xliff:g>« po aplikacijah v zadnjih 24 urah"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Uporaba dovoljenja »<xliff:g id="PERMGROUP">%1$s</xliff:g>« za to aplikacijo"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Več o tem"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="one"><xliff:g id="NUMBER">%s</xliff:g> dan</item>
       <item quantity="two"><xliff:g id="NUMBER">%s</xliff:g> dneva</item>
@@ -241,6 +243,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Ogled vseh aplikacij s tem dovoljenjem"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Prikaz uporabe pomožnega mikrofona"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Odstrani dovoljenja, če aplikacija ni v uporabi"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Odstrani dovoljenja in sprosti prostor"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Z namenom zaščite podatkov bodo dovoljenja za to aplikacijo odstranjena, če je več mesecev ne boste uporabljali."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Če aplikacije več mesecev ne boste uporabljali, bodo z namenom zaščite podatkov odstranjena ta dovoljenja: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Z namenom zaščite podatkov so bila odstranjena dovoljenja za aplikacije, ki jih več mesecev niste uporabljali."</string>
@@ -256,8 +259,7 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Odstranjeni sta bili dovoljenji <xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> in <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g>"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Odstranjeno je bilo dovoljenje <xliff:g id="PERMISSION_NAME">%1$s</xliff:g> in še toliko drugih: <xliff:g id="NUMBER">%2$s</xliff:g>"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Neuporabljene aplikacije"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Po nekaj mesecih neuporabe aplikacije se zgodi to:\n\n• Dovoljenja se odstranijo, da se zaščiti vaša zasebnost.\n• Obvestila se zaustavijo, da varčujete z energijo baterije.\n• Začasne datoteke se odstranijo, da se sprosti prostor.\n\nČe želite znova omogočiti dovoljenja in obvestila, odprite aplikacijo."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Nazadnje odprto pred več kot toliko meseci: <xliff:g id="NUMBER">%s</xliff:g>"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Aplikacija je bila nazadnje odprta <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Nazadnje odprto: <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -533,4 +535,6 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Drugo"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Brez"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"V zadnjih\n24 urah"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"Varnost aplikacije <xliff:g id="APP_NAME">%1$s</xliff:g> zagotavlja Android. Ker obdelava podatkov poteka v tej napravi, uporaba dovoljenj za to aplikacijo ni prikazana v vrstici stanja ali na nadzorni plošči za zasebnost."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"Varnost aplikacije <xliff:g id="APP_NAME">%1$s</xliff:g> zagotavlja Android. Ker obdelava podatkov poteka v tej napravi, uporaba dovoljenj za to aplikacijo ni prikazana na nadzorni plošči za zasebnost."</string>
 </resources>

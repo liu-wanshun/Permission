@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.debug;
+package com.android.permissioncontroller.permission.ui.handheld.dashboard;
+
+import static com.android.permissioncontroller.Constants.EXTRA_SESSION_ID;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity;
@@ -29,6 +33,7 @@ import com.android.permissioncontroller.permission.ui.handheld.PermissionsCollap
 /**
  * Wrapper over PermissionDetailsFragment
  */
+@RequiresApi(Build.VERSION_CODES.S)
 public class PermissionDetailsWrapperFragment extends PermissionsCollapsingToolbarBaseFragment {
     @NonNull
     @Override
@@ -40,7 +45,7 @@ public class PermissionDetailsWrapperFragment extends PermissionsCollapsingToolb
      * Construct a new instance of PermissionDetailsFragment
      */
     public static @NonNull PermissionDetailsWrapperFragment newInstance(@Nullable String groupName,
-            long numMillis, boolean showSystem) {
+            long numMillis, boolean showSystem, long sessionId) {
         PermissionDetailsWrapperFragment fragment = new PermissionDetailsWrapperFragment();
         Bundle arguments = new Bundle();
         if (groupName != null) {
@@ -48,6 +53,7 @@ public class PermissionDetailsWrapperFragment extends PermissionsCollapsingToolb
         }
         arguments.putLong(Intent.EXTRA_DURATION_MILLIS, numMillis);
         arguments.putBoolean(ManagePermissionsActivity.EXTRA_SHOW_SYSTEM, showSystem);
+        arguments.putLong(EXTRA_SESSION_ID, sessionId);
         fragment.setArguments(arguments);
         return fragment;
     }

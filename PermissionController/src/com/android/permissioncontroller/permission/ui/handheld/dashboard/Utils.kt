@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.debug
+package com.android.permissioncontroller.permission.ui.handheld.dashboard
 
 import android.content.Context
 import android.icu.util.Calendar
@@ -22,6 +22,7 @@ import android.provider.DeviceConfig
 import android.text.format.DateFormat.getMediumDateFormat
 import android.text.format.DateFormat.getTimeFormat
 import android.util.Pair
+import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.permission.model.AppPermissionUsage.GroupUsage
 import java.util.Locale
@@ -38,11 +39,11 @@ const val PROPERTY_LOCATION_INDICATORS_ENABLED = "location_indicators_enabled"
 /* Whether location accuracy feature is enabled */
 const val PROPERTY_LOCATION_ACCURACY_ENABLED = "location_accuracy_enabled"
 
+/** Whether subattribution is enabled in Permissions Hub. */
+const val PROPERTY_PERMISSIONS_HUB_SUBATTRIBUTION_ENABLED = "permissions_hub_subattribution_enabled"
+
 /* Default location precision */
 const val PROPERTY_LOCATION_PRECISION = "location_precision"
-
-/* Whether privacy hub feature is enabled */
-const val PROPERTY_PRIVACY_HUB_ENABLED = "privacy_hub_enabled"
 
 const val SECONDS = 1
 const val MINUTES = 2
@@ -65,6 +66,24 @@ fun isPermissionsHub2FlagEnabled(): Boolean {
  */
 fun shouldShowPermissionsDashboard(): Boolean {
     return isPermissionsHub2FlagEnabled()
+}
+
+/**
+ * Whether the Permissions Hub Subattribution flag is enabled
+ *
+ * @return whether the flag is enabled
+ */
+fun isPermissionsHubSubattributionFlagEnabled(): Boolean {
+    return DeviceConfig.getBoolean(DeviceConfig.NAMESPACE_PRIVACY,
+            PROPERTY_PERMISSIONS_HUB_SUBATTRIBUTION_ENABLED, false)
+}
+/**
+ * Whether to show the subattribution in the Permissions Dashboard
+ *
+ * @return whether to show subattribution in the Permissions Dashboard.
+ */
+fun shouldShowSubattributionInPermissionsDashboard(): Boolean {
+    return SdkLevel.isAtLeastS() && isPermissionsHubSubattributionFlagEnabled()
 }
 
 /**
@@ -121,14 +140,6 @@ fun isLocationAccuracyEnabled(): Boolean {
 fun getDefaultPrecision(): Boolean {
     return DeviceConfig.getBoolean(DeviceConfig.NAMESPACE_PRIVACY,
             PROPERTY_LOCATION_PRECISION, true)
-}
-
-/**
- * Whether the privacy hub feature is enabled
- */
-fun isPrivacyHubEnabled(): Boolean {
-    return DeviceConfig.getBoolean(DeviceConfig.NAMESPACE_PRIVACY,
-            PROPERTY_PRIVACY_HUB_ENABLED, true)
 }
 
 /**

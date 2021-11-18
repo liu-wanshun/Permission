@@ -51,8 +51,7 @@
     <string name="app_permissions_breadcrumb" msgid="5136969550489411650">"Apl"</string>
     <string name="app_permissions" msgid="3369917736607944781">"Kebenaran apl"</string>
     <string name="unused_apps" msgid="2058057455175955094">"Apl yang tidak digunakan"</string>
-    <!-- no translation found for no_unused_apps (12809387670415295) -->
-    <skip />
+    <string name="no_unused_apps" msgid="12809387670415295">"Tiada apl yang tidak digunakan"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"Lumpuhkan apl"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"Jika anda melumpuhkan apl ini, Android dan apl lain mungkin tidak berfungsi seperti yang sepatutnya. Jangan lupa, anda tidak boleh memadamkan apl ini kerana apl diprapasang pada peranti anda. Dengan melumpuhkan apl, anda mematikan dan menyembunyikan apl ini pada peranti anda."</string>
     <string name="app_permission_manager" msgid="3903811137630909550">"Pengurus kebenaran"</string>
@@ -116,6 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Garis masa aplikasi menggunakan <xliff:g id="PERMGROUP">%1$s</xliff:g> anda dalam tempoh 24 jam yang lalu"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Apabila apl ini menggunakan kebenaran <xliff:g id="PERMGROUP">%1$s</xliff:g> anda"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Ketahui lebih lanjut"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> hari</item>
       <item quantity="one">1 hari</item>
@@ -218,6 +219,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Lihat semua apl dengan kebenaran ini"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Tunjukkan penggunaan mikrofon pembantu"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Alih keluar kebenaran jika apl tidak digunakan"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Alih keluar kebenaran dan kosongkan ruang"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Untuk melindungi data anda, kebenaran apl ini akan dialih keluar jika apl tidak digunakan selama beberapa bulan."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Untuk melindungi data anda, jika apl tidak digunakan selama beberapa bulan, kebenaran berikut akan dialih keluar: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Untuk melindungi data anda, kebenaran telah dialih keluar daripada apl yang tidak anda gunakan selama beberapa bulan."</string>
@@ -233,8 +235,7 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Kebenaran <xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> dan <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g> dialih keluar"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> dan <xliff:g id="NUMBER">%2$s</xliff:g> kebenaran lain dialih keluar"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Apl yang tidak digunakan"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Jika apl tidak digunakan selama beberapa bulan:\n\n• Kebenaran dialih keluar untuk melindungi data anda\n• Pemberitahuan diberhentikan untuk menjimatkan bateri\n• Fail sementara dialih keluar untuk mengosongkan ruang\n\nUntuk memberikan kebenaran dan pemberitahuan lagi, buka apl tersebut."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Terakhir dibuka lebih <xliff:g id="NUMBER">%s</xliff:g> bulan yang lalu"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Apl dibuka kali terakhir pada <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Terakhir dibuka <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -496,4 +497,6 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Lain-lain"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Tiada"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"24 jam\nyang lalu"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> dilindungi oleh Android. Oleh sebab data anda diproses pada peranti ini, penggunaan kebenaran apl ini tidak ditunjukkan pada bar status atau papan pemuka privasi anda."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> dilindungi oleh Android. Oleh sebab data anda diproses pada peranti ini, penggunaan kebenaran apl ini tidak ditunjukkan pada papan pemuka privasi anda."</string>
 </resources>

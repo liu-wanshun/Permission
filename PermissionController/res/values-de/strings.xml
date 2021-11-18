@@ -65,7 +65,7 @@
     </plurals>
     <string name="old_sdk_deny_warning" msgid="2382236998845153919">"Diese App wurde für eine ältere Android-Version entwickelt. Wenn du keine Berechtigung gewährst, funktioniert sie möglicherweise nicht mehr ordnungsgemäß."</string>
     <string name="default_permission_description" msgid="4624464917726285203">"Unbekannte Aktion durchführen"</string>
-    <string name="app_permissions_group_summary" msgid="8788419008958284002">"<xliff:g id="COUNT_0">%1$d</xliff:g> von <xliff:g id="COUNT_1">%2$d</xliff:g> Apps mit Berechtigung"</string>
+    <string name="app_permissions_group_summary" msgid="8788419008958284002">"<xliff:g id="COUNT_0">%1$d</xliff:g> von <xliff:g id="COUNT_1">%2$d</xliff:g> App(s) mit Berechtigung"</string>
     <string name="app_permissions_group_summary2" msgid="4329922444840521150">"<xliff:g id="COUNT_0">%1$d</xliff:g> von <xliff:g id="COUNT_1">%2$d</xliff:g> Apps zugelassen"</string>
     <string name="menu_show_system" msgid="4254021607027872504">"System-Apps anzeigen"</string>
     <string name="menu_hide_system" msgid="3855390843744028465">"System-Apps ausblenden"</string>
@@ -115,6 +115,8 @@
     <string name="permission_group_usage_subtitle" msgid="712843174810251274">"Zeitachse, wann Apps in den letzten 24 Stunden die Berechtigung „<xliff:g id="PERMGROUP">%1$s</xliff:g>“ verwendet haben"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Als diese App deine <xliff:g id="PERMGROUP">%1$s</xliff:g>-Berechtigung verwendet hat"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Weitere Informationen"</string>
+    <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
+    <string name="history_preference_subtext_3" msgid="758761785983094351">"<xliff:g id="ATTRIBUTION_NAME">%1$s</xliff:g> • <xliff:g id="APP_NAME">%2$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%3$s</xliff:g>"</string>
     <plurals name="duration_used_days" formatted="false" msgid="1993098309578536308">
       <item quantity="other"><xliff:g id="NUMBER">%s</xliff:g> Tage</item>
       <item quantity="one">1 Tag</item>
@@ -217,6 +219,7 @@
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Alle Apps mit dieser Berechtigung anzeigen"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Nutzung der Berechtigung \"Mikrofon\" für Assistant anzeigen"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Berechtigungen entfernen, wenn die App nicht verwendet wird"</string>
+    <string name="unused_apps_label" msgid="2595428768404901064">"Berechtigungen löschen und Speicherplatz freigeben"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Zum Schutz deiner Daten werden dieser App die Berechtigungen entzogen, wenn du sie einige Monate nicht verwendest."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Zum Schutz deiner Daten werden dieser App die folgenden Berechtigungen entzogen, wenn du sie einige Monate nicht verwendest: <xliff:g id="PERMS">%1$s</xliff:g>."</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Zum Schutz deiner Daten wurden Apps, die du einige Monate nicht verwendet hast, Berechtigungen entzogen."</string>
@@ -232,8 +235,7 @@
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"Berechtigungen für <xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> und <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g> entfernt"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Berechtigungen für <xliff:g id="PERMISSION_NAME">%1$s</xliff:g> und <xliff:g id="NUMBER">%2$s</xliff:g> weitere entfernt"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Nicht verwendete Apps"</string>
-    <!-- no translation found for unused_apps_page_summary (1867593913217272155) -->
-    <skip />
+    <string name="unused_apps_page_summary" msgid="1867593913217272155">"Wenn du eine App seit einigen Monaten nicht mehr verwendet hast, geschieht Folgendes:\n\n• Zum Schutz deiner Daten werden die Berechtigungen entfernt.\n• Benachrichtigungen werden gestoppt, um den Akku zu schonen.\n• Temporäre Dateien werden gelöscht, um Speicherplatz freizugeben.\n\nÖffne die App, um Berechtigungen und Benachrichtigungen wieder zu aktivieren."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Zuletzt geöffnet vor mehr als <xliff:g id="NUMBER">%s</xliff:g> Monaten"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"App wurde zuletzt geöffnet am <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Zuletzt geöffnet am <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -495,4 +497,6 @@
     <string name="privdash_label_other" msgid="3710394147423236033">"Sonstiges"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Keine"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Letzte\n24 Stunden"</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> ist durch Android geschützt. Weil deine Daten direkt auf diesem Gerät verarbeitet werden, wird weder in der Statusleiste noch auf deinem Privatsphäredashboard die Nutzung der Berechtigungen durch diese App angezeigt."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> ist durch Android geschützt. Weil deine Daten direkt auf diesem Gerät verarbeitet werden, wird auf deinem Privatsphäredashboard die Nutzung der Berechtigungen durch diese App nicht angezeigt."</string>
 </resources>
