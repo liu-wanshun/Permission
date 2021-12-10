@@ -95,6 +95,7 @@ import com.android.permissioncontroller.DeviceUtils;
 import com.android.permissioncontroller.PermissionControllerApplication;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.model.AppPermissionGroup;
+import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup;
 
 import java.lang.annotation.Retention;
 import java.time.ZonedDateTime;
@@ -1227,5 +1228,26 @@ public final class Utils {
         }
 
         return new Pair<>(lastAccessTimeFormatted, lastAccessType);
+    }
+
+    /**
+     * Returns if the permission group is Camera or Microphone (status bar indicators).
+     **/
+    public static boolean isStatusBarIndicatorPermission(@NonNull String permissionGroupName) {
+        return CAMERA.equals(permissionGroupName) || MICROPHONE.equals(permissionGroupName);
+    }
+
+    /**
+     * Returns if the permission group has a background mode, even if the background mode is
+     * introduced in a platform version after the one currently running
+     **/
+    public static boolean hasPermWithBackgroundModeCompat(LightAppPermGroup group) {
+        if (SdkLevel.isAtLeastS()) {
+            return group.getHasPermWithBackgroundMode();
+        }
+        String groupName = group.getPermGroupName();
+        return group.getHasPermWithBackgroundMode()
+                || Manifest.permission_group.CAMERA.equals(groupName)
+                || Manifest.permission_group.MICROPHONE.equals(groupName);
     }
 }
