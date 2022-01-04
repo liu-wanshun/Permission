@@ -434,13 +434,13 @@
     <string name="home_missing_work_profile_support" msgid="1756855847669387977">"Ondersteunt geen werkprofielen"</string>
     <string name="encryption_unaware_confirmation_message" msgid="8274491794636402484">"Opmerking: Als je het apparaat opnieuw opstart en een schermvergrendeling hebt ingesteld, kan deze app pas worden gestart nadat je het apparaat hebt ontgrendeld."</string>
     <string name="assistant_confirmation_message" msgid="7476540402884416212">"De assistentie-app kan informatie over de gebruikte apps in je systeem lezen, waaronder informatie die zichtbaar is op je scherm of toegankelijk is in de apps."</string>
-    <string name="incident_report_channel_name" msgid="3144954065936288440">"Foutopsporingsgegevens delen"</string>
-    <string name="incident_report_notification_title" msgid="4635984625656519773">"Gedetailleerde foutopsporingsgegevens delen?"</string>
+    <string name="incident_report_channel_name" msgid="3144954065936288440">"Foutopsporingsinformatie delen"</string>
+    <string name="incident_report_notification_title" msgid="4635984625656519773">"Gedetailleerde foutopsporingsinformatie delen?"</string>
     <string name="incident_report_notification_text" msgid="3376480583513587923">"<xliff:g id="APP_NAME">%1$s</xliff:g> wil foutopsporingsinformatie uploaden."</string>
-    <string name="incident_report_dialog_title" msgid="669104389325204095">"Foutopsporingsgegevens delen?"</string>
+    <string name="incident_report_dialog_title" msgid="669104389325204095">"Foutopsporingsinformatie delen?"</string>
     <string name="incident_report_dialog_intro" msgid="5897733669850951832">"Het systeem heeft een probleem gedetecteerd."</string>
     <string name="incident_report_dialog_text" msgid="5675553296891757523">"<xliff:g id="APP_NAME_0">%1$s</xliff:g> wil een bugrapport van dit apparaat uploaden dat is gemaakt op <xliff:g id="DATE">%2$s</xliff:g> om <xliff:g id="TIME">%3$s</xliff:g>. Bugrapporten omvatten persoonlijke informatie over je apparaat of gegevens die zijn geregistreerd door apps, zoals gebruikersnamen, locatiegegevens, apparaat-ID\'s en netwerkgegevens. Deel alleen bugrapporten met mensen en apps die je met deze informatie vertrouwt. Wil je <xliff:g id="APP_NAME_1">%4$s</xliff:g> toestaan een bugrapport te uploaden?"</string>
-    <string name="incident_report_error_dialog_text" msgid="4189647113387092272">"Er is een fout opgetreden bij het verwerken van het bugrapport voor <xliff:g id="APP_NAME">%1$s</xliff:g>. Het delen van de gedetailleerde foutopsporingsgegevens is daarom geweigerd. Onze excuses voor de onderbreking."</string>
+    <string name="incident_report_error_dialog_text" msgid="4189647113387092272">"Er is een fout opgetreden bij het verwerken van het bugrapport voor <xliff:g id="APP_NAME">%1$s</xliff:g>. Het delen van de gedetailleerde foutopsporingsinformatie is daarom geweigerd. Onze excuses voor de onderbreking."</string>
     <string name="incident_report_dialog_allow_label" msgid="2970242967721155239">"Toestaan"</string>
     <string name="incident_report_dialog_deny_label" msgid="3535314290677579383">"Weigeren"</string>
     <string name="adjust_user_sensitive_title" msgid="4196724451314280527">"Geavanceerde instellingen"</string>
@@ -499,9 +499,4 @@
     <string name="privdash_label_24h" msgid="1512532123865375319">"Afgelopen\n24 uur"</string>
     <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> wordt beveiligd door Android. Omdat je gegevens worden verwerkt op dit apparaat, wordt het gebruik van rechten door deze app niet getoond in de statusbalk of op je privacydashboard."</string>
     <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> wordt beveiligd door Android. Omdat je gegevens worden verwerkt op dit apparaat, wordt het gebruik van rechten door deze app niet getoond op je privacydashboard."</string>
-    <string name="blocked_sensor_title" msgid="4946499097784258613">"Apparaat <xliff:g id="SENSOR_NAME">%1$s</xliff:g> is geblokkeerd"</string>
-    <string name="blocked_location_title" msgid="1651982726048750742">"Apparaat <xliff:g id="SENSOR_NAME">%1$s</xliff:g> staat uit"</string>
-    <string name="blocked_sensor_summary" msgid="4443707628305027375">"Voor apps en services"</string>
-    <string name="blocked_mic_summary" msgid="8960466941528458347">"Microfoongegevens kunnen nog altijd worden gedeeld als je een alarmnummer belt."</string>
-    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Wijzigen"</string>
 </resources>
