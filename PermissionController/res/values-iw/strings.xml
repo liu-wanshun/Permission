@@ -242,7 +242,7 @@
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"הצגת כל ההרשאות של \'<xliff:g id="APP">%1$s</xliff:g>\'"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"הצגת כל האפליקציות עם ההרשאה הזו"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"‏הצגת השימוש במיקרופון של Assistant"</string>
-    <string name="auto_revoke_label" msgid="5068393642936571656">"הסרת ההרשאות אם האפליקציה לא נמצאת בשימוש"</string>
+    <string name="auto_revoke_label" msgid="5068393642936571656">"הסרת ההרשאות כשלא בשימוש"</string>
     <string name="unused_apps_label" msgid="2595428768404901064">"הסרת הרשאות ופינוי מקום אחסון"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"כדי להגן על הנתונים שלך, אם האפליקציה הזו לא תהיה בשימוש במשך מספר חודשים, ההרשאות שניתנו לה יוסרו."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"כדי להגן על הנתונים שלך, אם האפליקציה לא תהיה בשימוש במשך מספר חודשים, ההרשאות הבאות יוסרו: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
@@ -537,9 +537,4 @@
     <string name="privdash_label_24h" msgid="1512532123865375319">"ב-24 השעות\nהאחרונות"</string>
     <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"‏האפליקציה <xliff:g id="APP_NAME">%1$s</xliff:g> מוגנת על ידי Android. השימוש של האפליקציה הזו בהרשאות לא מוצג בשורת הסטטוס או במרכז הבקרה להגדרות הפרטיות כי הנתונים שלך מעובדים במכשיר הזה."</string>
     <string name="exempt_info_label" msgid="6286190981253476699">"‏האפליקציה <xliff:g id="APP_NAME">%1$s</xliff:g> מוגנת על ידי Android. השימוש של האפליקציה הזו בהרשאות לא מוצג במרכז הבקרה להגדרות הפרטיות כי הנתונים שלך מעובדים במכשיר הזה."</string>
-    <string name="blocked_sensor_title" msgid="4946499097784258613">"המכשיר <xliff:g id="SENSOR_NAME">%1$s</xliff:g> חסום"</string>
-    <string name="blocked_location_title" msgid="1651982726048750742">"המכשיר <xliff:g id="SENSOR_NAME">%1$s</xliff:g> כבוי"</string>
-    <string name="blocked_sensor_summary" msgid="4443707628305027375">"לאפליקציות ולשירותים"</string>
-    <string name="blocked_mic_summary" msgid="8960466941528458347">"יכול להיות שהנתונים מהמיקרופון ישותפו בכל זאת בשיחה עם מספר חירום."</string>
-    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"שינוי"</string>
 </resources>

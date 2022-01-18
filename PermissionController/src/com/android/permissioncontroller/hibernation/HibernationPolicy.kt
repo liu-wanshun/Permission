@@ -592,7 +592,8 @@ class HibernationJobService : JobService() {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         val pendingIntent = PendingIntent.getActivity(this, 0, clickIntent,
-                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_UPDATE_CURRENT)
+                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_UPDATE_CURRENT or
+                PendingIntent.FLAG_IMMUTABLE)
 
         var notifTitle: String
         var notifContent: String
@@ -737,10 +738,14 @@ class InstallerPackagesLiveData(val user: UserHandle)
         val packageManager = PermissionControllerApplication.get().packageManager
 
         userPackageInfos!!.forEach { pkgInfo ->
-            val installerPkg =
+            try {
+                val installerPkg =
                     packageManager.getInstallSourceInfo(pkgInfo.packageName).installingPackageName
-            if (installerPkg != null) {
-                installerPackages.add(installerPkg)
+                if (installerPkg != null) {
+                    installerPackages.add(installerPkg)
+                }
+            } catch (e: PackageManager.NameNotFoundException) {
+                DumpableLog.w(LOG_TAG, "Unable to find installer source info", e)
             }
         }
 
