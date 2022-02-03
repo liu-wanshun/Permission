@@ -467,7 +467,7 @@
     <string name="permgrouprequest_calendar" msgid="1493150855673603806">"Saako &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; kalenterisi käyttöoikeuden?"</string>
     <string name="permgrouprequest_sms" msgid="5672063688745420991">"Saako &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; lähettää ja lukea tekstiviestejä?"</string>
     <string name="permgrouprequest_storage" msgid="8717773092518621602">"Saako &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; käyttää laitteellasi olevia kuvia, mediaa ja tiedostoja?"</string>
-    <string name="permgrouprequest_microphone" msgid="2825208549114811299">"Saako &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; nauhoittaa ääntä?"</string>
+    <string name="permgrouprequest_microphone" msgid="2825208549114811299">"Saako &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; nauhoittaa audiota?"</string>
     <string name="permgrouprequestdetail_microphone" msgid="8510456971528228861">"Sovellus voi tallentaa audiota vain silloin, kun käytät sitä"</string>
     <string name="permgroupbackgroundrequest_microphone" msgid="8874462606796368183">"Saako &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; tallentaa audiota?"</string>
     <string name="permgroupbackgroundrequestdetail_microphone" msgid="553702902263681838">"Sovellus voi haluta tallentaa audiota aina, myös silloin kun et käytä sitä. "<annotation id="link">"Myönnä lupa asetuksista"</annotation>"."</string>
@@ -499,9 +499,4 @@
     <string name="privdash_label_24h" msgid="1512532123865375319">"Viimeiset\n24 tuntia"</string>
     <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> on Androidin suojaama. Koska datasi käsitellään tällä laitteella, sovelluksen lupien käyttö ei näy tilapalkissa eikä yksityisyydenhallintapaneelisi."</string>
     <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> on Androidin suojaama. Koska datasi käsitellään tällä laitteella, sovelluksen lupien käyttö ei näy yksityisyydenhallintapaneelissasi."</string>
-    <string name="blocked_sensor_title" msgid="4946499097784258613">"Laitteen <xliff:g id="SENSOR_NAME">%1$s</xliff:g> on estetty"</string>
-    <string name="blocked_location_title" msgid="1651982726048750742">"Laitteen <xliff:g id="SENSOR_NAME">%1$s</xliff:g> on poissa päältä"</string>
-    <string name="blocked_sensor_summary" msgid="4443707628305027375">"Sovellukset ja palvelut"</string>
-    <string name="blocked_mic_summary" msgid="8960466941528458347">"Mikrofonidataa saatetaan silti jakaa, kun soitat hätänumeroon."</string>
-    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Muuta"</string>
 </resources>
