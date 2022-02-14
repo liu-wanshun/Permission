@@ -218,7 +218,7 @@
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"Mostra tutte le autorizzazioni di <xliff:g id="APP">%1$s</xliff:g>"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Mostra tutte le app con questa autorizzazione"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Mostra utilizzo microfono dell\'assistente"</string>
-    <string name="auto_revoke_label" msgid="5068393642936571656">"Rimuovi le autorizzazioni se l\'app non viene utilizzata"</string>
+    <string name="auto_revoke_label" msgid="5068393642936571656">"Rimuovi autorizzazioni se non in uso"</string>
     <string name="unused_apps_label" msgid="2595428768404901064">"Rimuovi autorizzazioni e libera spazio"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Per proteggere i tuoi dati, le autorizzazioni di questa app verranno rimosse se l\'app non viene usata per alcuni mesi."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Per proteggere i tuoi dati, se l\'app non viene usata per alcuni mesi, le seguenti autorizzazioni verranno rimosse: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
@@ -499,4 +499,10 @@
     <string name="privdash_label_24h" msgid="1512532123865375319">"Ultime\n24 ore"</string>
     <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"L\'app <xliff:g id="APP_NAME">%1$s</xliff:g> è protetta da Android. I tuoi dati vengono elaborati su questo dispositivo, pertanto l\'utilizzo delle autorizzazioni di questa app non viene mostrato nella barra di stato o nella dashboard della privacy."</string>
     <string name="exempt_info_label" msgid="6286190981253476699">"L\'app <xliff:g id="APP_NAME">%1$s</xliff:g> è protetta da Android. I tuoi dati vengono elaborati su questo dispositivo, pertanto l\'utilizzo delle autorizzazioni di questa app non viene mostrato nella dashboard della privacy."</string>
+    <string name="blocked_camera_title" msgid="1128510551791284384">"La fotocamera del dispositivo è bloccata"</string>
+    <string name="blocked_microphone_title" msgid="1631517143648232585">"Il microfono del dispositivo è bloccato"</string>
+    <string name="blocked_location_title" msgid="2005608279812892383">"La posizione del dispositivo è disattivata"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"Per app e servizi"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"I dati del microfono potrebbero comunque essere condivisi quando chiami un numero di emergenza."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Cambia"</string>
 </resources>

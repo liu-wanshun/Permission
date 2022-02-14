@@ -455,7 +455,7 @@
     <string name="permgrouprequest_location" msgid="6990232580121067883">"Gailuaren kokapena atzitzeko baimena eman nahi diozu &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; aplikazioari?"</string>
     <string name="permgrouprequestdetail_location" msgid="2635935335778429894">"Hura erabiltzen ari zarenean soilik atzituko du aplikazioak kokapena"</string>
     <string name="permgroupbackgroundrequest_location" msgid="1085680897265734809">"Gailuaren kokapena atzitzeko baimena eman nahi diozu &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; aplikazioari?"</string>
-    <string name="permgroupbackgroundrequestdetail_location" msgid="8021219324989662957">"Baliteke aplikazioak beti atzitu nahi izatea zure kokapena, baita aplikazioa erabiltzen ari ez zarenean ere. "<annotation id="link">"Eman baimen hori Ezarpenak atalean"</annotation>"."</string>
+    <string name="permgroupbackgroundrequestdetail_location" msgid="8021219324989662957">"Baliteke aplikazioak beti atzitu behar izatea zure kokapena, baita aplikazioa erabiltzen ari ez zarenean ere. "<annotation id="link">"Eman baimen hori Ezarpenak atalean"</annotation>"."</string>
     <string name="permgroupupgraderequest_location" msgid="8328408946822691636">"Kokapenerako sarbidea aldatu nahi diozu &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; aplikazioari?"</string>
     <string name="permgroupupgraderequestdetail_location" msgid="1550899076845189165">"Aplikazioak beti atzitu nahi du zure kokapena, baita aplikazioa erabiltzen ari ez zarenean ere. "<annotation id="link">"Eman baimen hori Ezarpenak atalean"</annotation>"."</string>
     <string name="permgrouprequest_nearby_devices" msgid="2272829282660436700">"Inguruko gailuak aurkitzeko, haietara konektatzeko eta haien arteko distantzia erlatiboa zehazteko baimena eman nahi diozu &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&amp;gt aplikazioari?"</string>
@@ -499,4 +499,10 @@
     <string name="privdash_label_24h" msgid="1512532123865375319">"Azken\n24 orduak"</string>
     <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"Android-ek babesten du <xliff:g id="APP_NAME">%1$s</xliff:g>. Datuak gailuan prozesatzen direnez, aplikazioaren baimenen erabilera ez da agertzen ez egoera-barran ezta pribatutasun-panelean ere."</string>
     <string name="exempt_info_label" msgid="6286190981253476699">"Android-ek babesten du <xliff:g id="APP_NAME">%1$s</xliff:g>. Datuak gailuan prozesatzen direnez, aplikazioaren baimenen erabilera ez da agertzen pribatutasun-panelean."</string>
+    <string name="blocked_camera_title" msgid="1128510551791284384">"Gailuaren kamera blokeatuta dago"</string>
+    <string name="blocked_microphone_title" msgid="1631517143648232585">"Gailuaren mikrofonoa blokeatuta dago"</string>
+    <string name="blocked_location_title" msgid="2005608279812892383">"Gailuaren kokapena desaktibatuta dago"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"Aplikazio eta zerbitzuetarako"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"Agian mikrofonotik lortutako datuak larrialdietarako zenbaki batera deitzen duzunean partekatuko dira."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Aldatu"</string>
 </resources>
