@@ -117,7 +117,7 @@ public class GrantPermissionsAutoViewHandler implements GrantPermissionsViewHand
                 .setAllowDismissButton(false)
                 .setOnDismissListener((dialog) -> {
                     mDialog = null;
-                    mResultListener.onPermissionGrantResult(mGroupName, CANCELED);
+                    mResultListener.onPermissionGrantResult(mGroupName, DENIED);
                 });
         if (mGroupIcon != null) {
             builder.setIcon(mGroupIcon.loadDrawable(mContext));
@@ -160,7 +160,6 @@ public class GrantPermissionsAutoViewHandler implements GrantPermissionsViewHand
         }
 
         CarUiContentListItem item = new CarUiContentListItem(CarUiContentListItem.Action.NONE);
-        item.setSecure(true);
         item.setTitle(mContext.getString(stringId));
         item.setOnItemClickedListener(i -> {
             mDialog.setOnDismissListener(null);
@@ -200,7 +199,7 @@ public class GrantPermissionsAutoViewHandler implements GrantPermissionsViewHand
         if (mDialog != null) {
             mDialog.dismiss();
         } else if (mResultListener != null) {
-            mResultListener.onPermissionGrantResult(mGroupName, CANCELED);
+            mResultListener.onPermissionGrantResult(mGroupName, DENIED);
         }
     }
 }
