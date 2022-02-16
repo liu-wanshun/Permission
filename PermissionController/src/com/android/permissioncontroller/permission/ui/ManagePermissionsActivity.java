@@ -28,16 +28,13 @@ import static com.android.permissioncontroller.PermissionControllerStatsLog.AUTO
 import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_USAGE_FRAGMENT_INTERACTION;
 import static com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_USAGE_FRAGMENT_INTERACTION__ACTION__OPEN;
 
-import android.Manifest;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Process;
 import android.os.UserHandle;
-import android.permission.PermissionManager;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -55,10 +52,7 @@ import com.android.permissioncontroller.permission.ui.auto.AutoAllAppPermissions
 import com.android.permissioncontroller.permission.ui.auto.AutoAppPermissionsFragment;
 import com.android.permissioncontroller.permission.ui.auto.AutoManageStandardPermissionsFragment;
 import com.android.permissioncontroller.permission.ui.auto.AutoPermissionAppsFragment;
-import com.android.permissioncontroller.permission.ui.auto.AutoReviewPermissionDecisionsFragment;
 import com.android.permissioncontroller.permission.ui.auto.AutoUnusedAppsFragment;
-import com.android.permissioncontroller.permission.ui.auto.dashboard.AutoPermissionUsageDetailsFragment;
-import com.android.permissioncontroller.permission.ui.auto.dashboard.AutoPermissionUsageFragment;
 import com.android.permissioncontroller.permission.ui.handheld.AppPermissionFragment;
 import com.android.permissioncontroller.permission.ui.handheld.AppPermissionGroupsFragment;
 import com.android.permissioncontroller.permission.ui.handheld.HandheldUnusedAppsWrapperFragment;
@@ -104,12 +98,6 @@ public final class ManagePermissionsActivity extends SettingsActivity {
      */
     public static final String EXTRA_SHOW_SYSTEM = "com.android"
             + ".permissioncontroller.extra.SHOW_SYSTEM";
-
-    /**
-     * Whether to show 7 days permission usage data in UI receiving an intent containing this extra.
-     */
-    public static final String EXTRA_SHOW_7_DAYS = "com.android"
-            + ".permissioncontroller.extra.SHOW_7_DAYS";
 
     /**
      * The requestCode used when we decide not to use this activity, but instead launch
@@ -177,14 +165,12 @@ public final class ManagePermissionsActivity extends SettingsActivity {
                     return;
                 }
 
+
                 PermissionControllerStatsLog.write(PERMISSION_USAGE_FRAGMENT_INTERACTION, sessionId,
                         PERMISSION_USAGE_FRAGMENT_INTERACTION__ACTION__OPEN);
-                if (DeviceUtils.isAuto(this)) {
-                    androidXFragment = new AutoPermissionUsageFragment();
-                } else {
-                    androidXFragment = PermissionUsageV2WrapperFragment.newInstance(
-                            Long.MAX_VALUE, sessionId);
-                }
+                String groupName = getIntent().getStringExtra(Intent.EXTRA_PERMISSION_GROUP_NAME);
+                androidXFragment = PermissionUsageV2WrapperFragment.newInstance(groupName,
+                        Long.MAX_VALUE, sessionId);
             } break;
 
             case Intent.ACTION_REVIEW_PERMISSION_HISTORY: {
@@ -197,16 +183,8 @@ public final class ManagePermissionsActivity extends SettingsActivity {
                         .getStringExtra(Intent.EXTRA_PERMISSION_GROUP_NAME);
                 boolean showSystem = getIntent()
                         .getBooleanExtra(EXTRA_SHOW_SYSTEM, false);
-                boolean show7Days = getIntent()
-                        .getBooleanExtra(EXTRA_SHOW_7_DAYS, false);
-                if (DeviceUtils.isAuto(this)) {
-                    androidXFragment = AutoPermissionUsageDetailsFragment.Companion.newInstance(
-                            groupName, showSystem, sessionId);
-                } else {
-                    androidXFragment = PermissionDetailsWrapperFragment
-                            .newInstance(groupName, Long.MAX_VALUE, showSystem, sessionId,
-                                    show7Days);
-                }
+                androidXFragment = PermissionDetailsWrapperFragment
+                        .newInstance(groupName, Long.MAX_VALUE, showSystem, sessionId);
                 break;
             }
 
@@ -219,34 +197,10 @@ public final class ManagePermissionsActivity extends SettingsActivity {
                     return;
                 }
                 String packageName = getIntent().getStringExtra(Intent.EXTRA_PACKAGE_NAME);
-
-                if (packageName == null) {
-                    Log.i(LOG_TAG, "Missing mandatory argument EXTRA_PACKAGE_NAME");
-                    finishAfterTransition();
-                    return;
-                }
                 permissionName = getIntent().getStringExtra(Intent.EXTRA_PERMISSION_NAME);
                 String groupName = getIntent().getStringExtra(Intent.EXTRA_PERMISSION_GROUP_NAME);
-
-                if (permissionName == null && groupName == null) {
-                    Log.i(LOG_TAG, "Missing mandatory argument EXTRA_PERMISSION_NAME or"
-                            + "EXTRA_PERMISSION_GROUP_NAME");
-                    finishAfterTransition();
-                    return;
-                }
-
                 UserHandle userHandle = getIntent().getParcelableExtra(Intent.EXTRA_USER);
                 String caller = getIntent().getStringExtra(EXTRA_CALLER_NAME);
-
-                if (groupName == null) {
-                    groupName = getGroupFromPermission(permissionName);
-                }
-
-                if (groupName != null
-                        && groupName.equals(Manifest.permission_group.NOTIFICATIONS)) {
-                    // Redirect notification group to notification settings
-                    Utils.navigateToAppNotificationSettings(this, packageName, userHandle);
-                }
 
                 Bundle args = AppPermissionFragment.createArgs(packageName, permissionName,
                         groupName, userHandle, caller, sessionId, null);
@@ -264,7 +218,7 @@ public final class ManagePermissionsActivity extends SettingsActivity {
 
                 UserHandle userHandle = getIntent().getParcelableExtra(Intent.EXTRA_USER);
                 if (userHandle == null) {
-                    userHandle = Process.myUserHandle();
+                    userHandle = UserHandle.of(UserHandle.myUserId());
                 }
 
                 try {
@@ -302,10 +256,10 @@ public final class ManagePermissionsActivity extends SettingsActivity {
                 if (DeviceUtils.isAuto(this)) {
                     if (allPermissions) {
                         androidXFragment = AutoAllAppPermissionsFragment.newInstance(packageName,
-                                userHandle, sessionId);
+                                userHandle);
                     } else {
                         androidXFragment = AutoAppPermissionsFragment.newInstance(packageName,
-                                userHandle, sessionId, /* isSystemPermsScreen= */ true);
+                                userHandle);
                     }
                 } else if (DeviceUtils.isWear(this)) {
                     androidXFragment = AppPermissionsFragmentWear.newInstance(packageName);
@@ -314,7 +268,7 @@ public final class ManagePermissionsActivity extends SettingsActivity {
                             .AppPermissionsFragment.newInstance(packageName, userHandle);
                 } else {
                     Bundle args = AppPermissionGroupsFragment.createArgs(packageName, userHandle,
-                            sessionId, /* isSystemPermsScreen= */  true);
+                            sessionId, true);
                     setNavGraph(args, R.id.app_permission_groups);
                     return;
                 }
@@ -325,7 +279,6 @@ public final class ManagePermissionsActivity extends SettingsActivity {
 
                 String permissionGroupName = getIntent().getStringExtra(
                         Intent.EXTRA_PERMISSION_GROUP_NAME);
-
                 if (permissionGroupName == null) {
                     try {
                         PermissionInfo permInfo = getPackageManager().getPermissionInfo(
@@ -336,30 +289,21 @@ public final class ManagePermissionsActivity extends SettingsActivity {
                     }
                 }
 
-                if (permissionGroupName == null) {
-                    permissionGroupName = permissionName;
-                }
-
                 if (permissionName == null && permissionGroupName == null) {
                     Log.i(LOG_TAG, "Missing mandatory argument EXTRA_PERMISSION_NAME or"
                             + "EXTRA_PERMISSION_GROUP_NAME");
                     finishAfterTransition();
                     return;
                 }
-
-                // Redirect notification group to notification settings
-                if (permissionGroupName.equals(Manifest.permission_group.NOTIFICATIONS)) {
-                    Utils.navigateToNotificationSettings(this);
-                }
-
                 if (DeviceUtils.isAuto(this)) {
-                    androidXFragment =
-                            AutoPermissionAppsFragment.newInstance(permissionGroupName, sessionId);
+                    androidXFragment = AutoPermissionAppsFragment.newInstance(permissionName);
                 } else if (DeviceUtils.isTelevision(this)) {
                     androidXFragment = com.android.permissioncontroller.permission.ui.television
-                            .PermissionAppsFragment.newInstance(permissionGroupName);
+                            .PermissionAppsFragment.newInstance(permissionName);
                 } else {
+
                     Bundle args = PermissionAppsFragment.createArgs(permissionGroupName, sessionId);
+                    args.putString(Intent.EXTRA_PERMISSION_NAME, permissionName);
                     setNavGraph(args, R.id.permission_apps);
                     return;
                 }
@@ -383,22 +327,6 @@ public final class ManagePermissionsActivity extends SettingsActivity {
                     return;
                 }
             } break;
-            case PermissionManager.ACTION_REVIEW_PERMISSION_DECISIONS: {
-
-                UserHandle userHandle = getIntent().getParcelableExtra(Intent.EXTRA_USER);
-                if (userHandle == null) {
-                    userHandle = Process.myUserHandle();
-                }
-                if (DeviceUtils.isAuto(this)) {
-                    androidXFragment = AutoReviewPermissionDecisionsFragment.Companion
-                            .newInstance(sessionId, userHandle);
-                } else {
-                    Log.e(LOG_TAG, "ACTION_REVIEW_PERMISSION_DECISIONS is not "
-                            + "supported on this device type");
-                    finishAfterTransition();
-                    return;
-                }
-            } break;
 
             default: {
                 Log.w(LOG_TAG, "Unrecognized action " + action);
@@ -414,17 +342,6 @@ public final class ManagePermissionsActivity extends SettingsActivity {
             getSupportFragmentManager().beginTransaction().replace(android.R.id.content,
                     androidXFragment).commit();
         }
-    }
-
-    private String getGroupFromPermission(String permissionName) {
-        try {
-            PermissionInfo permInfo = getPackageManager().getPermissionInfo(
-                    permissionName, 0);
-            return Utils.getGroupOfPermission(permInfo);
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.i(LOG_TAG, "Permission " + permissionName + " does not exist");
-        }
-        return null;
     }
 
     private void setNavGraph(Bundle args, int startDestination) {
