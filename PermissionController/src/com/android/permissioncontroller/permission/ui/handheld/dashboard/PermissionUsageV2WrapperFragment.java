@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -42,10 +43,13 @@ public class PermissionUsageV2WrapperFragment extends PermissionsCollapsingToolb
     /**
      * @return A new fragment
      */
-    public static @NonNull PermissionUsageV2WrapperFragment newInstance(long numMillis,
-            long sessionId) {
+    public static @NonNull PermissionUsageV2WrapperFragment newInstance(@Nullable String groupName,
+            long numMillis, long sessionId) {
         PermissionUsageV2WrapperFragment fragment = new PermissionUsageV2WrapperFragment();
         Bundle arguments = new Bundle();
+        if (groupName != null) {
+            arguments.putString(Intent.EXTRA_PERMISSION_GROUP_NAME, groupName);
+        }
         arguments.putLong(Intent.EXTRA_DURATION_MILLIS, numMillis);
         arguments.putLong(EXTRA_SESSION_ID, sessionId);
         fragment.setArguments(arguments);

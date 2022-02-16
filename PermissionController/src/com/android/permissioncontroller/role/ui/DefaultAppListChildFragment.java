@@ -16,8 +16,6 @@
 
 package com.android.permissioncontroller.role.ui;
 
-import android.app.admin.DevicePolicyManager;
-import android.app.admin.DevicePolicyResources.Strings.PermissionController;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -39,7 +37,6 @@ import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
-import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.utils.Utils;
 import com.android.permissioncontroller.role.model.Role;
@@ -135,7 +132,7 @@ public class DefaultAppListChildFragment<PF extends PreferenceFragmentCompat
             if (workPreferenceCategory == null) {
                 workPreferenceCategory = new PreferenceCategory(context);
                 workPreferenceCategory.setKey(PREFERENCE_KEY_WORK_CATEGORY);
-                workPreferenceCategory.setTitle(getDefaultAppsForWorkTitle(context));
+                workPreferenceCategory.setTitle(R.string.default_apps_for_work);
             }
             preferenceScreen.addPreference(workPreferenceCategory);
             addPreferences(workPreferenceCategory, workRoleItems, oldWorkPreferences, this,
@@ -143,19 +140,6 @@ public class DefaultAppListChildFragment<PF extends PreferenceFragmentCompat
         }
 
         preferenceFragment.onPreferenceScreenChanged();
-    }
-
-    @NonNull
-    private String getDefaultAppsForWorkTitle(@NonNull Context context) {
-        if (SdkLevel.isAtLeastT()) {
-            DevicePolicyManager devicePolicyManager = context.getSystemService(
-                    DevicePolicyManager.class);
-            return devicePolicyManager.getString(
-                    PermissionController.WORK_PROFILE_DEFAULT_APPS_TITLE,
-                    () -> context.getString(R.string.default_apps_for_work));
-        } else {
-            return context.getString(R.string.default_apps_for_work);
-        }
     }
 
     private static void clearPreferences(@NonNull PreferenceGroup preferenceGroup,
@@ -181,7 +165,7 @@ public class DefaultAppListChildFragment<PF extends PreferenceFragmentCompat
             Role role = roleItem.getRole();
             Preference preference = oldPreferences.get(role.getName());
             if (preference == null) {
-                preference = (Preference) preferenceFragment.createPreference();
+                preference = (Preference) preferenceFragment.createPreference(context);
                 preference.setKey(role.getName());
                 preference.setIconSpaceReserved(true);
                 preference.setTitle(role.getShortLabelResource());
@@ -292,10 +276,12 @@ public class DefaultAppListChildFragment<PF extends PreferenceFragmentCompat
         /**
          * Create a new preference for a default app.
          *
+         * @param context the {@code Context} to use when creating the preference.
+         *
          * @return a new preference for a default app
          */
         @NonNull
-        TwoTargetPreference createPreference();
+        TwoTargetPreference createPreference(@NonNull Context context);
 
         /**
          * Callback when changes have been made to the {@link PreferenceScreen} of the parent
