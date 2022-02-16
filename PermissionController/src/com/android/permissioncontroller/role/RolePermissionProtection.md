@@ -56,7 +56,7 @@ Edit [roles.xml](../../../../../res/xml/roles.xml) to add your new role:
     name="android.app.role.SYSTEM_YOUR_ROLE_NAME"
     defaultHolders="config_systemYourRoleName"
     exclusive="true"
-    minSdkVersion="33"
+    minSdkVersion="31"
     static="true"
     systemOnly="true"
     visible="false">
@@ -97,10 +97,10 @@ Edit `frameworks/base/core/res/res/values/public.xml` to expose the new config r
 API:
 
 ```xml
-<staging-public-group type="string" first-id="0xXXXXXXXX">
+<public-group type="string" first-id="0xXXXXXXXX">
     <!-- @hide @SystemApi -->
     <public name="config_systemYourRoleName" />
-</staging-public-group>
+</public-group>
 ```
 
 Then run `m update-api` to update the API text files.
