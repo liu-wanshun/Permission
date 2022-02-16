@@ -42,12 +42,6 @@ public class Constants {
     public static final int HIBERNATION_JOB_ID = 2;
 
     /**
-     * ID of the periodic job
-     * {@link com.android.permissioncontroller.permission.service.RecentPermissionDecisionsStorageImpl}
-     */
-    public static final int OLD_PERMISSION_DECISION_CLEANUP_JOB_ID = 3;
-
-    /**
      * Name of file to containing the packages we already showed a notificaiton for.
      *
      * @see com.android.permissioncontroller.permission.service.LocationAccessCheck
@@ -66,12 +60,6 @@ public class Constants {
      * {@link HibernationJobService}.
      */
     public static final int UNUSED_APPS_NOTIFICATION_ID = 1;
-
-    /**
-     * ID for notification shown by
-     * {@link com.android.permissioncontroller.auto.DrivingDecisionReminderService}.
-     */
-    public static final int PERMISSION_DECISION_REMINDER_NOTIFICATION_ID = 2;
 
     /**
      * String action for navigating to the auto revoke screen.
@@ -95,9 +83,7 @@ public class Constants {
 
     /**
      * Channel of the notifications shown by
-     * {@link com.android.permissioncontroller.permission.service.LocationAccessCheck},
-     * {@link com.android.permissioncontroller.hibernation.HibernationPolicyKt}, and
-     * {@link com.android.permissioncontroller.auto.DrivingDecisionReminderService}
+     * {@link com.android.permissioncontroller.permission.service.LocationAccessCheck}.
      */
     public static final String PERMISSION_REMINDER_CHANNEL_ID = "permission reminders";
 

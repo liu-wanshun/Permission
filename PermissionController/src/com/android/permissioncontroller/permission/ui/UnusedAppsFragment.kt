@@ -20,12 +20,12 @@ import android.Manifest.permission_group
 import android.app.AlertDialog
 import android.app.Application
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.UserHandle
 import android.util.Log
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.Preference
@@ -52,9 +52,11 @@ import java.text.Collator
  * A fragment displaying all applications that are unused as well as the option to remove them
  * and to open them.
  */
-class UnusedAppsFragment<PF, UnusedAppPref> : Fragment()
+class UnusedAppsFragment<PF, UnusedAppPref> : PreferenceFragmentCompat()
     where PF : PreferenceFragmentCompat, PF : UnusedAppsFragment.Parent<UnusedAppPref>,
-        UnusedAppPref : Preference, UnusedAppPref : RemovablePref {
+          UnusedAppPref : Preference, UnusedAppPref : RemovablePref {
+
+    private val INFO_MSG_CATEGORY = "info_msg_category"
 
     private lateinit var viewModel: UnusedAppsViewModel
     private lateinit var collator: Collator
@@ -62,7 +64,6 @@ class UnusedAppsFragment<PF, UnusedAppPref> : Fragment()
     private var isFirstLoad = false
 
     companion object {
-        public const val INFO_MSG_CATEGORY = "info_msg_category"
         private const val SHOW_LOAD_DELAY_MS = 200L
         private const val INFO_MSG_KEY = "info_msg"
         private const val ELEVATION_HIGH = 8f
@@ -88,6 +89,10 @@ class UnusedAppsFragment<PF, UnusedAppPref> : Fragment()
             bundle.putLong(EXTRA_SESSION_ID, sessionId)
             return bundle
         }
+    }
+
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        // empty
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -154,14 +159,14 @@ class UnusedAppsFragment<PF, UnusedAppPref> : Fragment()
      */
     private fun createPreferenceScreen() {
         val preferenceFragment: PF = requirePreferenceFragment()
-        val preferenceScreen = preferenceFragment.preferenceManager.inflateFromResource(
+        val preferenceScreen = preferenceManager.inflateFromResource(
             context,
             R.xml.unused_app_categories,
             /* rootPreferences= */ null)
         preferenceFragment.preferenceScreen = preferenceScreen
 
         val infoMsgCategory = preferenceScreen.findPreference<PreferenceCategory>(INFO_MSG_CATEGORY)
-        val footerPreference = preferenceFragment.createFooterPreference()
+        val footerPreference = preferenceFragment.createFooterPreference(context!!)
         footerPreference.key = INFO_MSG_KEY
         infoMsgCategory?.addPreference(footerPreference)
     }
@@ -212,7 +217,7 @@ class UnusedAppsFragment<PF, UnusedAppPref> : Fragment()
                 var pref = category.findPreference<UnusedAppPref>(key)
                 if (pref == null) {
                     pref = removedPrefs[key] ?: preferenceFragment.createUnusedAppPref(
-                        activity!!.application, pkgName, user)
+                        activity!!.application, pkgName, user, preferenceManager.context!!)
                     pref.key = key
                     pref.title = KotlinUtils.getPackageLabel(activity!!.application, pkgName, user)
                 }
@@ -254,7 +259,9 @@ class UnusedAppsFragment<PF, UnusedAppPref> : Fragment()
             }
         }
 
-        preferenceFragment.setEmptyState(allCategoriesEmpty)
+        val infoMsgCategory =
+            preferenceScreen.findPreference<PreferenceCategory>(INFO_MSG_CATEGORY)!!
+        infoMsgCategory.isVisible = !allCategoriesEmpty
 
         if (isFirstLoad) {
             if (categorizedPackages[Months.SIX]!!.isNotEmpty() ||
@@ -348,8 +355,10 @@ class UnusedAppsFragment<PF, UnusedAppPref> : Fragment()
         /**
          * Creates the footer preference that explains why permissions have been re-used and how an
          * app can re-request them.
+         *
+         * @param context The current context
          */
-        fun createFooterPreference(): Preference
+        fun createFooterPreference(context: Context): Preference
 
         /**
          * Sets the loading state of the view.
@@ -366,18 +375,13 @@ class UnusedAppsFragment<PF, UnusedAppPref> : Fragment()
          * @param app The current application
          * @param packageName The name of the package whose icon this preference will retrieve
          * @param user The user whose package icon will be retrieved
+         * @param context The current context
          */
         fun createUnusedAppPref(
             app: Application,
             packageName: String,
-            user: UserHandle
+            user: UserHandle,
+            context: Context
         ): UnusedAppPref
-
-        /**
-         * Updates the state based on whether the content is empty.
-         *
-         * @param empty whether the content is empty
-         */
-        fun setEmptyState(empty: Boolean)
     }
 }

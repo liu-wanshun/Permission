@@ -19,9 +19,6 @@ package com.android.permissioncontroller.permission.ui.legacy;
 import static android.content.Intent.ACTION_MANAGE_APP_PERMISSION;
 import static android.view.WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
 
-import static com.android.permissioncontroller.Constants.EXTRA_SESSION_ID;
-import static com.android.permissioncontroller.Constants.INVALID_SESSION_ID;
-
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionGroupInfo;
@@ -45,7 +42,6 @@ import com.android.permissioncontroller.permission.utils.LocationUtils;
 import com.android.permissioncontroller.permission.utils.Utils;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Manage a single permission of a single app.
@@ -150,13 +146,8 @@ public final class AppPermissionActivity extends FragmentActivity {
         if (DeviceUtils.isAuto(this)) {
             Fragment androidXFragment;
 
-            long sessionId = getIntent().getLongExtra(EXTRA_SESSION_ID, INVALID_SESSION_ID);
-            while (sessionId == INVALID_SESSION_ID) {
-                sessionId = new Random().nextLong();
-            }
-
             androidXFragment = AutoAppPermissionFragment.newInstance(packageName, permissionName,
-                    groupName, userHandle, sessionId);
+                    groupName, userHandle);
 
             getSupportFragmentManager().beginTransaction().replace(android.R.id.content,
                     androidXFragment).commit();
