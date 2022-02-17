@@ -20,6 +20,7 @@ filegroup {
     name: "service-permission-sources",
     srcs: [
         "java/**/*.java",
+        "java/**/*.kt",
     ],
     path: "java",
     visibility: ["//visibility:private"],
@@ -77,7 +78,10 @@ java_library {
 
 java_sdk_library {
     name: "service-permission",
-    defaults: ["framework-system-server-module-defaults"],
+    defaults: [
+        "framework-system-server-module-defaults",
+        "framework-system-server-module-optimize-defaults",
+    ],
     impl_library_visibility: [
         "//frameworks/base/apex/permission/tests",
         "//frameworks/base/services/tests/mockingservicestests",
@@ -89,19 +93,29 @@ java_sdk_library {
         ":service-permission-javastream-protos",
     ],
     libs: [
+        "androidx.annotation_annotation",
         // TODO(b/177884622): Short term solution to prevent service-permission from seeing hidden
         //  APIs in framework-permission, as we don't actually have any dependency in it.
         //"framework-permission",
         "framework-permission-s.impl",
-        "androidx.annotation_annotation",
         "framework-permission-s-shared",
-        "modules-annotation-minsdk",
     ],
     static_libs: [
+        "kotlin-stdlib",
+        "modules-utils-backgroundthread",
         "modules-utils-os",
+        "safety-center-config",
+        "safety-center-resources-lib",
         "service-permission-shared",
     ],
+    exclude_kotlinc_generated_files: true,
     jarjar_rules: ":permission-jarjar-rules",
+    kotlincflags: [
+        "-Xjvm-default=all",
+        "-Xno-call-assertions",
+        "-Xno-param-assertions",
+        "-Xno-receiver-assertions",
+    ],
     lint: {
         strict_updatability_linting: true,
     },
