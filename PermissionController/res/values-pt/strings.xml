@@ -188,8 +188,8 @@
     <string name="sort_spinner_most_permissions" msgid="1704349738096822836">"Maior número de permissões"</string>
     <string name="sort_spinner_most_accesses" msgid="5283913004357220161">"Maior número de acessos"</string>
     <string name="sort_spinner_recent" msgid="7513845273076525203">"Recentes"</string>
-    <string name="sort_by_app" msgid="4055799843051138087">"Classificar por uso de app"</string>
-    <string name="sort_by_time" msgid="5435045320002150456">"Classificar por tempo"</string>
+    <string name="sort_by_app" msgid="4055799843051138087">"Ordenar por uso de app"</string>
+    <string name="sort_by_time" msgid="5435045320002150456">"Ordenar por tempo"</string>
     <string name="item_separator" msgid="4030255389809224513">", "</string>
     <string name="permission_usage_refresh" msgid="2264056346561305420">"Atualizar"</string>
     <plurals name="permission_usage_permission_filter_subtitle" formatted="false" msgid="2452104463317798268">
@@ -499,4 +499,10 @@
     <string name="privdash_label_24h" msgid="1512532123865375319">"Últimas\n24 horas"</string>
     <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"O app <xliff:g id="APP_NAME">%1$s</xliff:g> é protegido pelo Android. Como seus dados são processados no dispositivo, o uso da permissão do app não é mostrado na barra de status nem no painel de privacidade."</string>
     <string name="exempt_info_label" msgid="6286190981253476699">"O app <xliff:g id="APP_NAME">%1$s</xliff:g> é protegido pelo Android. Como seus dados são processados no dispositivo, o uso da permissão do app não é mostrado no painel de privacidade."</string>
+    <string name="blocked_camera_title" msgid="1128510551791284384">"A câmera do dispositivo está bloqueada"</string>
+    <string name="blocked_microphone_title" msgid="1631517143648232585">"O microfone do dispositivo está bloqueado"</string>
+    <string name="blocked_location_title" msgid="2005608279812892383">"A localização do dispositivo está desativada"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"Para apps e serviços"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"Os dados do microfone ainda poderão ser compartilhados quando você ligar para um número de emergência."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Mudar"</string>
 </resources>
