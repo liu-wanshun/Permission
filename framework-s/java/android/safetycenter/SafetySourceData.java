@@ -29,6 +29,7 @@ import android.os.Parcelable;
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,7 +40,6 @@ import java.util.Objects;
  * @hide
  */
 @SystemApi
-// TODO(b/207399899): Add timestamp field(s) to data model classes.
 @RequiresApi(TIRAMISU)
 public final class SafetySourceData implements Parcelable {
 
@@ -48,13 +48,15 @@ public final class SafetySourceData implements Parcelable {
             new Parcelable.Creator<SafetySourceData>() {
                 @Override
                 public SafetySourceData createFromParcel(Parcel in) {
-                    String id = requireNonNull(in.readString());
-                    SafetySourceStatus status =
-                            in.readParcelable(SafetySourceStatus.class.getClassLoader(),
-                                    SafetySourceStatus.class);
-                    List<SafetySourceIssue> issues = new ArrayList<>();
-                    in.readParcelableList(issues, SafetySourceIssue.class.getClassLoader());
-                    return new SafetySourceData(id, status, issues);
+                    SafetySourceStatus status = in.readTypedObject(SafetySourceStatus.CREATOR);
+                    List<SafetySourceIssue> issues =
+                            in.createTypedArrayList(SafetySourceIssue.CREATOR);
+                    Builder builder = new Builder().setStatus(status);
+                    // TODO(b/224513050): Consider simplifying by adding a new API to the builder.
+                    for (int i = 0; i < issues.size(); i++) {
+                        builder.addIssue(issues.get(i));
+                    }
+                    return builder.build();
                 }
 
                 @Override
@@ -63,38 +65,24 @@ public final class SafetySourceData implements Parcelable {
                 }
             };
 
-    @NonNull
-    private final String mId;
     @Nullable
     private final SafetySourceStatus mStatus;
     @NonNull
     private final List<SafetySourceIssue> mIssues;
 
-    private SafetySourceData(@NonNull String id, @Nullable SafetySourceStatus status,
+    private SafetySourceData(@Nullable SafetySourceStatus status,
             @NonNull List<SafetySourceIssue> issues) {
-        this.mId = id;
         this.mStatus = status;
         this.mIssues = new ArrayList<>(issues);
     }
 
-    /**
-     * Returns the id of the associated safety source.
-     *
-     * <p>The id uniquely identifies a safety source within the scope of the application that is
-     * creating the source.
-     */
-    @NonNull
-    public String getId() {
-        return mId;
-    }
-
-    /** Returns the data for the safety source status to be shown in UI. */
+    /** Returns the data for the {@link SafetySourceStatus} to be shown in UI. */
     @Nullable
     public SafetySourceStatus getStatus() {
         return mStatus;
     }
 
-    /** Returns the data for the list of safety source issues to be shown in UI. */
+    /** Returns the data for the list of {@link SafetySourceIssue}s to be shown in UI. */
     @NonNull
     public List<SafetySourceIssue> getIssues() {
         return new ArrayList<>(mIssues);
@@ -107,9 +95,8 @@ public final class SafetySourceData implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(mId);
-        dest.writeParcelable(mStatus, flags);
-        dest.writeParcelableList(mIssues, flags);
+        dest.writeTypedObject(mStatus, flags);
+        dest.writeTypedList(mIssues);
     }
 
     @Override
@@ -117,21 +104,18 @@ public final class SafetySourceData implements Parcelable {
         if (this == o) return true;
         if (!(o instanceof SafetySourceData)) return false;
         SafetySourceData that = (SafetySourceData) o;
-        return mId.equals(that.mId) && Objects.equals(mStatus, that.mStatus)
+        return Objects.equals(mStatus, that.mStatus)
                 && mIssues.equals(that.mIssues);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mStatus, mIssues);
+        return Objects.hash(mStatus, mIssues);
     }
 
     @Override
     public String toString() {
         return "SafetySourceData{"
-                + "mId='"
-                + mId
-                + '\''
                 + ", mStatus="
                 + mStatus
                 + ", mIssues="
@@ -142,30 +126,18 @@ public final class SafetySourceData implements Parcelable {
     /** Builder class for {@link SafetySourceData}. */
     public static final class Builder {
         @NonNull
-        private final String mId;
-        @NonNull
         private final List<SafetySourceIssue> mIssues = new ArrayList<>();
         @Nullable
         private SafetySourceStatus mStatus;
 
-        /**
-         * Creates a {@link Builder} for a {@link SafetySourceData}.
-         *
-         * @param id uniquely identifies the associated safety source, scoped within the application
-         *           that is creating the associated safety source.
-         */
-        public Builder(@NonNull String id) {
-            this.mId = requireNonNull(id);
-        }
-
-        /** Sets data for the safety source status to be shown in UI. */
+        /** Sets data for the {@link SafetySourceStatus} to be shown in UI. */
         @NonNull
         public Builder setStatus(@Nullable SafetySourceStatus status) {
             mStatus = status;
             return this;
         }
 
-        /** Adds data for a safety source issue to be shown in UI. */
+        /** Adds data for a {@link SafetySourceIssue} to be shown in UI. */
         @NonNull
         public Builder addIssue(@NonNull SafetySourceIssue safetySourceIssue) {
             mIssues.add(requireNonNull(safetySourceIssue));
@@ -173,7 +145,8 @@ public final class SafetySourceData implements Parcelable {
         }
 
         /**
-         * Clears data for all the safety source issues that were added to this {@link Builder}.
+         * Clears data for all the {@link SafetySourceIssue}s that were added to this
+         * {@link Builder}.
          */
         @NonNull
         public Builder clearIssues() {
@@ -186,7 +159,7 @@ public final class SafetySourceData implements Parcelable {
         public SafetySourceData build() {
             // TODO(b/207329841): Validate data matches validation in S, for eg that the status
             //  and severity levels of the settings and issues are compatible.
-            return new SafetySourceData(mId, mStatus, mIssues);
+            return new SafetySourceData(mStatus, Collections.unmodifiableList(mIssues));
         }
     }
 }

@@ -18,10 +18,10 @@ package android.safetycenter.config;
 
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 
-import android.annotation.IdRes;
 import android.annotation.IntDef;
 import android.annotation.NonNull;
 import android.annotation.Nullable;
+import android.annotation.StringRes;
 import android.annotation.SystemApi;
 import android.content.res.Resources;
 import android.os.Parcel;
@@ -122,11 +122,11 @@ public final class SafetySource implements Parcelable {
     private final String mId;
     @Nullable
     private final String mPackageName;
-    @IdRes
+    @StringRes
     private final int mTitleResId;
-    @IdRes
+    @StringRes
     private final int mTitleForWorkResId;
-    @IdRes
+    @StringRes
     private final int mSummaryResId;
     @Nullable
     private final String mIntentAction;
@@ -135,29 +135,31 @@ public final class SafetySource implements Parcelable {
     @InitialDisplayState
     private final int mInitialDisplayState;
     private final int mMaxSeverityLevel;
-    @IdRes
+    @StringRes
     private final int mSearchTermsResId;
     @Nullable
     private final String mBroadcastReceiverClassName;
-    private final boolean mAllowLogging;
-    private final boolean mAllowRefreshOnPageOpen;
+    private final boolean mLoggingAllowed;
+    private final boolean mRefreshOnPageOpenAllowed;
+    private final boolean mAutomaticNotificationFromIssueAllowed;
 
     /** Returns the id of this safety source. */
     private SafetySource(
             @SafetySourceType int type,
             @NonNull String id,
             @Nullable String packageName,
-            @IdRes int titleResId,
-            @IdRes int titleForWorkResId,
-            @IdRes int summaryResId,
+            @StringRes int titleResId,
+            @StringRes int titleForWorkResId,
+            @StringRes int summaryResId,
             @Nullable String intentAction,
             @Profile int profile,
             @InitialDisplayState int initialDisplayState,
             int maxSeverityLevel,
-            @IdRes int searchTermsResId,
+            @StringRes int searchTermsResId,
             @Nullable String broadcastReceiverClassName,
-            boolean allowLogging,
-            boolean allowRefreshOnPageOpen) {
+            boolean loggingAllowed,
+            boolean refreshOnPageOpenAllowed,
+            boolean automaticNotificationFromIssueAllowed) {
         mType = type;
         mId = id;
         mPackageName = packageName;
@@ -170,8 +172,9 @@ public final class SafetySource implements Parcelable {
         mMaxSeverityLevel = maxSeverityLevel;
         mSearchTermsResId = searchTermsResId;
         mBroadcastReceiverClassName = broadcastReceiverClassName;
-        mAllowLogging = allowLogging;
-        mAllowRefreshOnPageOpen = allowRefreshOnPageOpen;
+        mLoggingAllowed = loggingAllowed;
+        mRefreshOnPageOpenAllowed = refreshOnPageOpenAllowed;
+        mAutomaticNotificationFromIssueAllowed = automaticNotificationFromIssueAllowed;
     }
 
     /** Returns the type of this safety source. */
@@ -197,7 +200,7 @@ public final class SafetySource implements Parcelable {
     }
 
     /** Returns the resource id of the title of this safety source. */
-    @IdRes
+    @StringRes
     public int getTitleResId() {
         if (mType == SAFETY_SOURCE_TYPE_ISSUE_ONLY) {
             throw new UnsupportedOperationException(
@@ -207,7 +210,7 @@ public final class SafetySource implements Parcelable {
     }
 
     /** Returns the resource id of the title for work of this safety source. */
-    @IdRes
+    @StringRes
     public int getTitleForWorkResId() {
         if (mType == SAFETY_SOURCE_TYPE_ISSUE_ONLY) {
             throw new UnsupportedOperationException(
@@ -221,7 +224,7 @@ public final class SafetySource implements Parcelable {
     }
 
     /** Returns the resource id of the summary of this safety source. */
-    @IdRes
+    @StringRes
     public int getSummaryResId() {
         if (mType == SAFETY_SOURCE_TYPE_ISSUE_ONLY) {
             throw new UnsupportedOperationException(
@@ -231,7 +234,7 @@ public final class SafetySource implements Parcelable {
     }
 
     /** Returns the intent action of this safety source. */
-    @NonNull
+    @Nullable
     public String getIntentAction() {
         if (mType == SAFETY_SOURCE_TYPE_ISSUE_ONLY) {
             throw new UnsupportedOperationException(
@@ -273,7 +276,7 @@ public final class SafetySource implements Parcelable {
      * Returns the resource id of the search terms of this safety source if set; otherwise
      * {@link Resources#ID_NULL}.
      */
-    @IdRes
+    @StringRes
     public int getSearchTermsResId() {
         if (mType == SAFETY_SOURCE_TYPE_ISSUE_ONLY) {
             throw new UnsupportedOperationException(
@@ -292,22 +295,31 @@ public final class SafetySource implements Parcelable {
         return mBroadcastReceiverClassName;
     }
 
-    /** Returns the allow logging property of this safety source. */
-    public boolean isAllowLogging() {
+    /** Returns the logging allowed property of this safety source. */
+    public boolean isLoggingAllowed() {
         if (mType == SAFETY_SOURCE_TYPE_STATIC) {
             throw new UnsupportedOperationException(
-                    "isAllowLogging unsupported for static safety source");
+                    "isLoggingAllowed unsupported for static safety source");
         }
-        return mAllowLogging;
+        return mLoggingAllowed;
     }
 
-    /** Returns the allow refresh on page open property of this safety source. */
-    public boolean isAllowRefreshOnPageOpen() {
+    /** Returns the refresh on page open allowed property of this safety source. */
+    public boolean isRefreshOnPageOpenAllowed() {
         if (mType == SAFETY_SOURCE_TYPE_STATIC) {
             throw new UnsupportedOperationException(
-                    "isAllowRefreshOnPageOpen unsupported for static safety source");
+                    "isRefreshOnPageOpenAllowed unsupported for static safety source");
         }
-        return mAllowRefreshOnPageOpen;
+        return mRefreshOnPageOpenAllowed;
+    }
+
+    /** Returns the automatic notification from issue allowed property of this safety source. */
+    public boolean isAutomaticNotificationFromIssueAllowed() {
+        if (mType == SAFETY_SOURCE_TYPE_STATIC) {
+            throw new UnsupportedOperationException(
+                    "automaticNotificationFromIssueAllowed unsupported for static safety source");
+        }
+        return mAutomaticNotificationFromIssueAllowed;
     }
 
     @Override
@@ -327,16 +339,18 @@ public final class SafetySource implements Parcelable {
                 && mMaxSeverityLevel == that.mMaxSeverityLevel
                 && mSearchTermsResId == that.mSearchTermsResId
                 && Objects.equals(mBroadcastReceiverClassName, that.mBroadcastReceiverClassName)
-                && mAllowLogging == that.mAllowLogging
-                && mAllowRefreshOnPageOpen == that.mAllowRefreshOnPageOpen;
+                && mLoggingAllowed == that.mLoggingAllowed
+                && mRefreshOnPageOpenAllowed == that.mRefreshOnPageOpenAllowed
+                && mAutomaticNotificationFromIssueAllowed
+                == that.mAutomaticNotificationFromIssueAllowed;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(mType, mId, mPackageName, mTitleResId, mTitleForWorkResId,
                 mSummaryResId, mIntentAction, mProfile, mInitialDisplayState, mMaxSeverityLevel,
-                mSearchTermsResId, mBroadcastReceiverClassName, mAllowLogging,
-                mAllowRefreshOnPageOpen);
+                mSearchTermsResId, mBroadcastReceiverClassName, mLoggingAllowed,
+                mRefreshOnPageOpenAllowed, mAutomaticNotificationFromIssueAllowed);
     }
 
     @Override
@@ -354,8 +368,10 @@ public final class SafetySource implements Parcelable {
                 + ", mMaxSeverityLevel=" + mMaxSeverityLevel
                 + ", mSearchTermsResId=" + mSearchTermsResId
                 + ", mBroadcastReceiverClassName='" + mBroadcastReceiverClassName + '\''
-                + ", mAllowLogging=" + mAllowLogging
-                + ", mAllowRefreshOnPageOpen=" + mAllowRefreshOnPageOpen
+                + ", mLoggingAllowed=" + mLoggingAllowed
+                + ", mRefreshOnPageOpenAllowed=" + mRefreshOnPageOpenAllowed
+                + ", mAutomaticNotificationFromIssueAllowed="
+                + mAutomaticNotificationFromIssueAllowed
                 + '}';
     }
 
@@ -378,8 +394,9 @@ public final class SafetySource implements Parcelable {
         dest.writeInt(mMaxSeverityLevel);
         dest.writeInt(mSearchTermsResId);
         dest.writeString(mBroadcastReceiverClassName);
-        dest.writeBoolean(mAllowLogging);
-        dest.writeBoolean(mAllowRefreshOnPageOpen);
+        dest.writeBoolean(mLoggingAllowed);
+        dest.writeBoolean(mRefreshOnPageOpenAllowed);
+        dest.writeBoolean(mAutomaticNotificationFromIssueAllowed);
     }
 
     @NonNull
@@ -387,24 +404,22 @@ public final class SafetySource implements Parcelable {
             new Parcelable.Creator<SafetySource>() {
                 @Override
                 public SafetySource createFromParcel(Parcel in) {
-                    int type = in.readInt();
-                    String id = in.readString();
-                    String packageName = in.readString();
-                    int titleResId = in.readInt();
-                    int titleForWorkResId = in.readInt();
-                    int summaryResId = in.readInt();
-                    String intentAction = in.readString();
-                    int profile = in.readInt();
-                    int initialDisplayState = in.readInt();
-                    int maxSeverityLevel = in.readInt();
-                    int searchTermsResId = in.readInt();
-                    String broadcastReceiverClassName = in.readString();
-                    boolean allowLogging = in.readBoolean();
-                    boolean allowRefreshOnPageOpen = in.readBoolean();
-                    return new SafetySource(type, id, packageName, titleResId, titleForWorkResId,
-                            summaryResId, intentAction, profile, initialDisplayState,
-                            maxSeverityLevel, searchTermsResId, broadcastReceiverClassName,
-                            allowLogging, allowRefreshOnPageOpen);
+                    return new Builder(in.readInt())
+                            .setId(in.readString())
+                            .setPackageName(in.readString())
+                            .setTitleResId(in.readInt())
+                            .setTitleForWorkResId(in.readInt())
+                            .setSummaryResId(in.readInt())
+                            .setIntentAction(in.readString())
+                            .setProfile(in.readInt())
+                            .setInitialDisplayState(in.readInt())
+                            .setMaxSeverityLevel(in.readInt())
+                            .setSearchTermsResId(in.readInt())
+                            .setBroadcastReceiverClassName(in.readString())
+                            .setLoggingAllowed(in.readBoolean())
+                            .setRefreshOnPageOpenAllowed(in.readBoolean())
+                            .setAutomaticNotificationFromIssueAllowed(in.readBoolean())
+                            .build();
                 }
 
                 @Override
@@ -422,13 +437,13 @@ public final class SafetySource implements Parcelable {
         @Nullable
         private String mPackageName;
         @Nullable
-        @IdRes
+        @StringRes
         private Integer mTitleResId;
         @Nullable
-        @IdRes
+        @StringRes
         private Integer mTitleForWorkResId;
         @Nullable
-        @IdRes
+        @StringRes
         private Integer mSummaryResId;
         @Nullable
         private String mIntentAction;
@@ -441,14 +456,16 @@ public final class SafetySource implements Parcelable {
         @Nullable
         private Integer mMaxSeverityLevel;
         @Nullable
-        @IdRes
+        @StringRes
         private Integer mSearchTermsResId;
         @Nullable
         private String mBroadcastReceiverClassName;
         @Nullable
-        private Boolean mAllowLogging;
+        private Boolean mLoggingAllowed;
         @Nullable
-        private Boolean mAllowRefreshOnPageOpen;
+        private Boolean mRefreshOnPageOpenAllowed;
+        @Nullable
+        private Boolean mAutomaticNotificationFromIssueAllowed;
 
         /** Creates a {@link Builder} for a {@link SafetySource}. */
         public Builder(@SafetySourceType int type) {
@@ -471,21 +488,21 @@ public final class SafetySource implements Parcelable {
 
         /** Sets the resource id of the title of this safety source. */
         @NonNull
-        public Builder setTitleResId(@IdRes int titleResId) {
+        public Builder setTitleResId(@StringRes int titleResId) {
             mTitleResId = titleResId;
             return this;
         }
 
         /** Sets the resource id of the title for work of this safety source. */
         @NonNull
-        public Builder setTitleForWorkResId(@IdRes int titleForWorkResId) {
+        public Builder setTitleForWorkResId(@StringRes int titleForWorkResId) {
             mTitleForWorkResId = titleForWorkResId;
             return this;
         }
 
         /** Sets the resource id of the summary of this safety source. */
         @NonNull
-        public Builder setSummaryResId(@IdRes int summaryResId) {
+        public Builder setSummaryResId(@StringRes int summaryResId) {
             mSummaryResId = summaryResId;
             return this;
         }
@@ -504,14 +521,14 @@ public final class SafetySource implements Parcelable {
             return this;
         }
 
-        /** Sets the initial display state of this safety source. */
+        /** Sets the initial display state of this safety source. Defaults to enabled. */
         @NonNull
         public Builder setInitialDisplayState(@InitialDisplayState int initialDisplayState) {
             mInitialDisplayState = initialDisplayState;
             return this;
         }
 
-        /** Sets the maximum severity level of this safety source. */
+        /** Sets the maximum severity level of this safety source. Defaults to no maximum. */
         @NonNull
         public Builder setMaxSeverityLevel(int maxSeverityLevel) {
             mMaxSeverityLevel = maxSeverityLevel;
@@ -520,7 +537,7 @@ public final class SafetySource implements Parcelable {
 
         /** Sets the resource id of the search terms of this safety source. */
         @NonNull
-        public Builder setSearchTermsResId(@IdRes int searchTermsResId) {
+        public Builder setSearchTermsResId(@StringRes int searchTermsResId) {
             mSearchTermsResId = searchTermsResId;
             return this;
         }
@@ -532,17 +549,31 @@ public final class SafetySource implements Parcelable {
             return this;
         }
 
-        /** Sets the allow logging property of this safety source. */
+        /** Sets the logging allowed property of this safety source. Defaults to {@code true}. */
         @NonNull
-        public Builder setAllowLogging(boolean allowLogging) {
-            mAllowLogging = allowLogging;
+        public Builder setLoggingAllowed(boolean loggingAllowed) {
+            mLoggingAllowed = loggingAllowed;
             return this;
         }
 
-        /** Sets the allow refresh on page open property of this safety source. */
+        /**
+         * Sets the refresh on page open allowed property of this safety source. Defaults to {@code
+         * false}.
+         */
         @NonNull
-        public Builder setAllowRefreshOnPageOpen(boolean allowRefreshOnPageOpen) {
-            mAllowRefreshOnPageOpen = allowRefreshOnPageOpen;
+        public Builder setRefreshOnPageOpenAllowed(boolean refreshOnPageOpenAllowed) {
+            mRefreshOnPageOpenAllowed = refreshOnPageOpenAllowed;
+            return this;
+        }
+
+        /**
+         * Sets the automatic notification from issue allowed property of this safety source.
+         * Defaults to {@code false}.
+         */
+        @NonNull
+        public Builder setAutomaticNotificationFromIssueAllowed(
+                boolean automaticNotificationFromIssueAllowed) {
+            mAutomaticNotificationFromIssueAllowed = automaticNotificationFromIssueAllowed;
             return this;
         }
 
@@ -583,14 +614,17 @@ public final class SafetySource implements Parcelable {
                     false, isIssueOnly);
             BuilderUtils.validateAttribute(mBroadcastReceiverClassName,
                     "broadcastReceiverClassName", false, isStatic);
-            boolean allowLogging = BuilderUtils.validateBoolean(mAllowLogging, "allowLogging",
+            boolean loggingAllowed = BuilderUtils.validateBoolean(mLoggingAllowed, "loggingAllowed",
                     false, isStatic, true);
-            boolean allowRefreshOnPageOpen = BuilderUtils.validateBoolean(mAllowRefreshOnPageOpen,
-                    "allowRefreshOnPageOpen", false, isStatic, false);
+            boolean refreshOnPageOpenAllowed = BuilderUtils.validateBoolean(
+                    mRefreshOnPageOpenAllowed, "refreshOnPageOpenAllowed", false, isStatic, false);
+            boolean automaticNotificationFromIssueAllowed = BuilderUtils.validateBoolean(
+                    mAutomaticNotificationFromIssueAllowed, "automaticNotificationFromIssueAllowed",
+                    false, isStatic, false);
             return new SafetySource(mType, mId, mPackageName, titleResId, titleForWorkResId,
                     summaryResId, mIntentAction, profile, initialDisplayState, maxSeverityLevel,
-                    searchTermsResId, mBroadcastReceiverClassName, allowLogging,
-                    allowRefreshOnPageOpen);
+                    searchTermsResId, mBroadcastReceiverClassName, loggingAllowed,
+                    refreshOnPageOpenAllowed, automaticNotificationFromIssueAllowed);
         }
     }
 
