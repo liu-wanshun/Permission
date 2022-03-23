@@ -16,7 +16,6 @@
 
 package com.android.permissioncontroller.hibernation
 
-import android.annotation.SuppressLint
 import android.Manifest
 import android.Manifest.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION
 import android.accessibilityservice.AccessibilityService
@@ -84,7 +83,6 @@ import com.android.permissioncontroller.permission.data.get
 import com.android.permissioncontroller.permission.data.getUnusedPackages
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPackageInfo
 import com.android.permissioncontroller.permission.service.revokeAppPermissions
-import com.android.permissioncontroller.permission.utils.StringUtils
 import com.android.permissioncontroller.permission.utils.Utils
 import com.android.permissioncontroller.permission.utils.forEachInParallel
 import kotlinx.coroutines.Dispatchers.Main
@@ -160,9 +158,10 @@ class HibernationOnBootReceiver : BroadcastReceiver() {
         // Write first boot time if first boot
         context.firstBootTime
 
+        val userManager = context.getSystemService(UserManager::class.java)!!
         // If this user is a profile, then its hibernation/auto-revoke will be handled by the
         // primary user
-        if (isProfile(context)) {
+        if (userManager.isProfile) {
             if (DEBUG_HIBERNATION_POLICY) {
                 DumpableLog.i(LOG_TAG, "user ${Process.myUserHandle().identifier} is a profile." +
                         " Not running hibernation job.")
@@ -189,14 +188,6 @@ class HibernationOnBootReceiver : BroadcastReceiver() {
                     "Could not schedule ${HibernationJobService::class.java.simpleName}: $status")
             }
         }
-    }
-
-    // UserManager#isProfile was already a systemAPI, linter started complaining after it
-    // was exposed as a public API thinking it was a newly exposed API.
-    @SuppressLint("NewApi")
-    private fun isProfile(context: Context): Boolean {
-        val userManager = context.getSystemService(UserManager::class.java)!!
-        return userManager.isProfile
     }
 
     /**
@@ -242,6 +233,9 @@ private suspend fun getAppsToHibernate(
     val now = System.currentTimeMillis()
     val firstBootTime = context.firstBootTime
 
+    // TODO ntmyren: remove once b/154796729 is fixed
+    Log.i(LOG_TAG, "getting UserPackageInfoLiveData for all users " +
+            "in " + HibernationJobService::class.java.simpleName)
     val allPackagesByUser = AllPackageInfosLiveData.getInitializedValue(forceUpdate = true)
     val allPackagesByUserByUid = allPackagesByUser.mapValues { (_, pkgs) ->
         pkgs.groupBy { pkg -> pkg.uid }
@@ -430,8 +424,8 @@ suspend fun isPackageHibernationExemptBySystem(
         return true
     }
 
-    val context = PermissionControllerApplication.get()
     if (SdkLevel.isAtLeastS()) {
+        val context = PermissionControllerApplication.get()
         val hasInstallOrUpdatePermissions =
                 context.checkPermission(
                         Manifest.permission.INSTALL_PACKAGES, -1 /* pid */, pkg.uid) ==
@@ -460,17 +454,6 @@ suspend fun isPackageHibernationExemptBySystem(
         if (roleHolders.contains(pkg.packageName)) {
             if (DEBUG_HIBERNATION_POLICY) {
                 DumpableLog.i(LOG_TAG, "Exempted ${pkg.packageName} - wellbeing app")
-            }
-            return true
-        }
-    }
-
-    if (SdkLevel.isAtLeastT()) {
-        val roleHolders = context.getSystemService(android.app.role.RoleManager::class.java)!!
-            .getRoleHolders(RoleManager.ROLE_DEVICE_POLICY_MANAGEMENT)
-        if (roleHolders.contains(pkg.packageName)) {
-            if (DEBUG_HIBERNATION_POLICY) {
-                DumpableLog.i(LOG_TAG, "Exempted ${pkg.packageName} - device policy manager app")
             }
             return true
         }
@@ -610,14 +593,14 @@ class HibernationJobService : JobService() {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         val pendingIntent = PendingIntent.getActivity(this, 0, clickIntent,
-            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_UPDATE_CURRENT or
-            PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_UPDATE_CURRENT or
+                PendingIntent.FLAG_IMMUTABLE)
 
         var notifTitle: String
         var notifContent: String
         if (isHibernationEnabled()) {
-            notifTitle = StringUtils.getIcuPluralsString(this,
-                R.string.unused_apps_notification_title, numUnused)
+            notifTitle = getResources().getQuantityString(
+                R.plurals.unused_apps_notification_title, numUnused, numUnused)
             notifContent = getString(R.string.unused_apps_notification_content)
         } else {
             notifTitle = getString(R.string.auto_revoke_permission_notification_title)

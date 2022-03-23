@@ -16,7 +16,6 @@
 
 package com.android.permissioncontroller.role.ui;
 
-import android.app.admin.DevicePolicyResources.Strings.PermissionController;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -133,9 +132,7 @@ public class DefaultAppListChildFragment<PF extends PreferenceFragmentCompat
             if (workPreferenceCategory == null) {
                 workPreferenceCategory = new PreferenceCategory(context);
                 workPreferenceCategory.setKey(PREFERENCE_KEY_WORK_CATEGORY);
-                workPreferenceCategory.setTitle(Utils.getEnterpriseString(context,
-                        PermissionController.WORK_PROFILE_DEFAULT_APPS_TITLE,
-                        R.string.default_apps_for_work));
+                workPreferenceCategory.setTitle(R.string.default_apps_for_work);
             }
             preferenceScreen.addPreference(workPreferenceCategory);
             addPreferences(workPreferenceCategory, workRoleItems, oldWorkPreferences, this,
@@ -168,7 +165,7 @@ public class DefaultAppListChildFragment<PF extends PreferenceFragmentCompat
             Role role = roleItem.getRole();
             Preference preference = oldPreferences.get(role.getName());
             if (preference == null) {
-                preference = (Preference) preferenceFragment.createPreference();
+                preference = (Preference) preferenceFragment.createPreference(context);
                 preference.setKey(role.getName());
                 preference.setIconSpaceReserved(true);
                 preference.setTitle(role.getShortLabelResource());
@@ -279,10 +276,12 @@ public class DefaultAppListChildFragment<PF extends PreferenceFragmentCompat
         /**
          * Create a new preference for a default app.
          *
+         * @param context the {@code Context} to use when creating the preference.
+         *
          * @return a new preference for a default app
          */
         @NonNull
-        TwoTargetPreference createPreference();
+        TwoTargetPreference createPreference(@NonNull Context context);
 
         /**
          * Callback when changes have been made to the {@link PreferenceScreen} of the parent

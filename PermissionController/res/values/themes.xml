@@ -57,10 +57,6 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
-    <style name="GrantPermissions.Car">
-        <item name="carUiActivity">true</item>
-    </style>
-
     <!-- Unused since R but exposed as overlayable. -->
     <style name="Header.Settings"
             parent="@android:style/Theme.DeviceDefault.Settings">
@@ -122,19 +118,11 @@
         <item name="android:filterTouchesWhenObscured">true</item>
     </style>
 
-    <style name="GrantPermissions.Car.FilterTouches">
-        <item name="android:filterTouchesWhenObscured">true</item>
-    </style>
-
     <style name="RequestRole.FilterTouches">
         <item name="android:filterTouchesWhenObscured">true</item>
     </style>
 
     <style name="PermissionDialog.FilterTouches">
-        <item name="android:filterTouchesWhenObscured">true</item>
-    </style>
-
-    <style name="SafetyCenter" parent="@android:style/Theme.DeviceDefault.NoActionBar">
         <item name="android:filterTouchesWhenObscured">true</item>
     </style>
 
