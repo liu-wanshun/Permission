@@ -18,7 +18,6 @@
 
 package com.android.permissioncontroller.permission.service
 
-import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager.FLAG_PERMISSION_AUTO_REVOKED
 import android.content.pm.PackageManager.FLAG_PERMISSION_USER_SET
@@ -47,8 +46,7 @@ private const val LOG_TAG = "AutoRevokePermissions"
 const val DEBUG_AUTO_REVOKE = true
 
 private val EXEMPT_PERMISSIONS = listOf(
-        Manifest.permission.ACTIVITY_RECOGNITION,
-        Manifest.permission.POST_NOTIFICATIONS)
+        android.Manifest.permission.ACTIVITY_RECOGNITION)
 
 private val SERVER_LOG_ID =
     PERMISSION_GRANT_REQUEST_RESULT_REPORTED__RESULT__AUTO_UNUSED_APP_PERMISSION_REVOKED
