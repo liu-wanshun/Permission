@@ -115,11 +115,11 @@ public interface RoleBehavior {
     }
 
     /**
-     * @see Role#shouldAllowBypassingQualification(Context)
+     * @see Role#getQualifyingPackagesAsUser(UserHandle, Context)
      */
     @Nullable
-    default Boolean shouldAllowBypassingQualification(@NonNull Role role,
-                                                      @NonNull Context context) {
+    default List<String> getQualifyingPackagesAsUser(@NonNull Role role, @NonNull UserHandle user,
+            @NonNull Context context) {
         return null;
     }
 
@@ -129,15 +129,6 @@ public interface RoleBehavior {
     @Nullable
     default Boolean isPackageQualified(@NonNull Role role, @NonNull String packageName,
             @NonNull Context context) {
-        return null;
-    }
-
-    /**
-     * @see Role#getQualifyingPackagesAsUser(UserHandle, Context)
-     */
-    @Nullable
-    default List<String> getQualifyingPackagesAsUser(@NonNull Role role, @NonNull UserHandle user,
-                                                     @NonNull Context context) {
         return null;
     }
 

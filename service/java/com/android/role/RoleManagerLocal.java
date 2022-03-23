@@ -21,7 +21,7 @@ import android.annotation.SystemApi;
 import android.annotation.UserIdInt;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
+import com.android.modules.annotation.MinSdk;
 
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +31,7 @@ import java.util.Set;
  *
  * @hide
  */
-@RequiresApi(Build.VERSION_CODES.S)
+@MinSdk(Build.VERSION_CODES.S)
 @SystemApi(client = SystemApi.Client.SYSTEM_SERVER)
 public interface RoleManagerLocal {
     /**

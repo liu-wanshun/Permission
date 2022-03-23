@@ -21,13 +21,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.WindowManager;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.navigation.NavGraph;
-import androidx.navigation.NavInflater;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.android.permissioncontroller.DeviceUtils;
 import com.android.permissioncontroller.R;
@@ -45,9 +41,6 @@ public final class ReviewPermissionsActivity extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().addSystemFlags(
-                WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS);
-
         PackageInfo packageInfo = getTargetPackageInfo();
         if (packageInfo == null) {
             finish();
@@ -59,14 +52,11 @@ public final class ReviewPermissionsActivity extends FragmentActivity
             getSupportFragmentManager().beginTransaction()
                     .replace(android.R.id.content, fragment).commit();
         } else {
-            setContentView(R.layout.nav_host_fragment);
-            NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.nav_host_fragment);
-            NavInflater inflater = navHost.getNavController().getNavInflater();
-            NavGraph graph = inflater.inflate(R.navigation.nav_graph);
-            graph.setStartDestination(R.id.review_permissions_dest);
-            navHost.getNavController().setGraph(graph,
-                    ReviewPermissionsFragment.getArgs(packageInfo));
+            setContentView(R.layout.review_permissions);
+            if (getSupportFragmentManager().findFragmentById(R.id.preferences_frame) == null) {
+                getSupportFragmentManager().beginTransaction().add(R.id.preferences_frame,
+                        ReviewPermissionsFragment.newInstance(packageInfo)).commit();
+            }
         }
     }
 
