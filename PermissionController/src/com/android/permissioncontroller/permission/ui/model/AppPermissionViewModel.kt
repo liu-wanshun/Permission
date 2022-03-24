@@ -18,14 +18,14 @@ package com.android.permissioncontroller.permission.ui.model
 
 import android.Manifest
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission_group.LOCATION
 import android.app.AppOpsManager
 import android.app.AppOpsManager.MODE_ALLOWED
 import android.app.AppOpsManager.MODE_ERRORED
 import android.app.AppOpsManager.OPSTR_MANAGE_EXTERNAL_STORAGE
 import android.app.Application
 import android.content.Intent
-import android.Manifest.permission_group.LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.os.Build
 import android.os.Bundle
 import android.os.UserHandle
@@ -36,6 +36,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.PermissionControllerStatsLog
 import com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISSION_FRAGMENT_ACTION_REPORTED
 import com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISSION_FRAGMENT_VIEWED
@@ -45,30 +46,28 @@ import com.android.permissioncontroller.permission.data.FullStoragePermissionApp
 import com.android.permissioncontroller.permission.data.LightAppPermGroupLiveData
 import com.android.permissioncontroller.permission.data.SmartUpdateMediatorLiveData
 import com.android.permissioncontroller.permission.data.get
-
 import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPermission
-import com.android.permissioncontroller.permission.utils.KotlinUtils
-import com.android.permissioncontroller.permission.utils.LocationUtils
-import com.android.permissioncontroller.permission.utils.SafetyNetLogger
+import com.android.permissioncontroller.permission.service.RecentPermissionDecisionsStorage
 import com.android.permissioncontroller.permission.ui.handheld.dashboard.getDefaultPrecision
 import com.android.permissioncontroller.permission.ui.handheld.dashboard.isLocationAccuracyEnabled
 import com.android.permissioncontroller.permission.ui.model.AppPermissionViewModel.ButtonType.ALLOW
 import com.android.permissioncontroller.permission.ui.model.AppPermissionViewModel.ButtonType.ALLOW_ALWAYS
 import com.android.permissioncontroller.permission.ui.model.AppPermissionViewModel.ButtonType.ALLOW_FOREGROUND
-import com.android.permissioncontroller.permission.ui.model.AppPermissionViewModel.ButtonType.ASK_ONCE
 import com.android.permissioncontroller.permission.ui.model.AppPermissionViewModel.ButtonType.ASK
+import com.android.permissioncontroller.permission.ui.model.AppPermissionViewModel.ButtonType.ASK_ONCE
 import com.android.permissioncontroller.permission.ui.model.AppPermissionViewModel.ButtonType.DENY
 import com.android.permissioncontroller.permission.ui.model.AppPermissionViewModel.ButtonType.DENY_FOREGROUND
 import com.android.permissioncontroller.permission.ui.model.AppPermissionViewModel.ButtonType.LOCATION_ACCURACY
+import com.android.permissioncontroller.permission.utils.KotlinUtils
+import com.android.permissioncontroller.permission.utils.LocationUtils
+import com.android.permissioncontroller.permission.utils.SafetyNetLogger
 import com.android.permissioncontroller.permission.utils.Utils
 import com.android.permissioncontroller.permission.utils.navigateSafe
 import com.android.settingslib.RestrictedLockUtils
 import java.util.Random
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.filter
-import kotlin.collections.iterator
 
 /**
  * ViewModel for the AppPermissionFragment. Determines button state and detail text strings, logs
@@ -113,7 +112,8 @@ class AppPermissionViewModel(
         GRANT_FOREGROUND_ONLY(GRANT_FOREGROUND.value or REVOKE_BACKGROUND.value),
         GRANT_All_FILE_ACCESS(16),
         GRANT_FINE_LOCATION(32),
-        REVOKE_FINE_LOCATION(64);
+        REVOKE_FINE_LOCATION(64),
+        GRANT_STORAGE_SUPERGROUP(128);
 
         infix fun andValue(other: ChangeRequest): Int {
             return value and other.value
@@ -131,9 +131,12 @@ class AppPermissionViewModel(
         LOCATION_ACCURACY(7);
     }
 
-    private val isStorage = permGroupName == Manifest.permission_group.STORAGE
+    private val isStorageAndLessThanT =
+        permGroupName == Manifest.permission_group.STORAGE && !SdkLevel.isAtLeastT()
     private var hasConfirmedRevoke = false
     private var lightAppPermGroup: LightAppPermGroup? = null
+
+    private val mediaStorageSupergroupPermGroups = mutableMapOf<String, LightAppPermGroup>()
 
     /* Whether the current ViewModel is Location permission with both Coarse and Fine */
     private var shouldShowLocationAccuracy: Boolean? = null
@@ -152,7 +155,7 @@ class AppPermissionViewModel(
      */
     val fullStorageStateLiveData = object : SmartUpdateMediatorLiveData<FullStoragePackageState>() {
         init {
-            if (isStorage) {
+            if (isStorageAndLessThanT) {
                 addSource(FullStoragePermissionAppsLiveData) {
                     update()
                 }
@@ -189,14 +192,20 @@ class AppPermissionViewModel(
 
         private val appPermGroupLiveData = LightAppPermGroupLiveData[packageName, permGroupName,
             user]
+        private val mediaStorageSupergroupLiveData =
+            mutableMapOf<String, LightAppPermGroupLiveData>()
 
         init {
+
             addSource(appPermGroupLiveData) { appPermGroup ->
                 lightAppPermGroup = appPermGroup
+                if (permGroupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS) {
+                    onMediaPermGroupUpdate(permGroupName, appPermGroup)
+                }
                 if (appPermGroupLiveData.isInitialized && appPermGroup == null) {
                     value = null
                 } else if (appPermGroup != null) {
-                    if (isStorage && !fullStorageStateLiveData.isInitialized) {
+                    if (isStorageAndLessThanT && !fullStorageStateLiveData.isInitialized) {
                         return@addSource
                     }
                     if (value == null) {
@@ -206,15 +215,43 @@ class AppPermissionViewModel(
                 }
             }
 
-            if (isStorage) {
+            if (isStorageAndLessThanT) {
                 addSource(fullStorageStateLiveData) {
                     update()
                 }
+            }
+
+            if (permGroupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS) {
+                for (permGroupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS) {
+                    val liveData = LightAppPermGroupLiveData[packageName, permGroupName, user]
+                    mediaStorageSupergroupLiveData[permGroupName] = liveData
+                }
+                for (permGroupName in mediaStorageSupergroupLiveData.keys) {
+                    val liveData = mediaStorageSupergroupLiveData[permGroupName]!!
+                    addSource(liveData) { permGroup ->
+                        onMediaPermGroupUpdate(permGroupName, permGroup)
+                    }
+                }
+            }
+        }
+
+        private fun onMediaPermGroupUpdate(permGroupName: String, permGroup: LightAppPermGroup?) {
+            if (permGroup == null) {
+                mediaStorageSupergroupPermGroups.remove(permGroupName)
+                value = null
+            } else {
+                mediaStorageSupergroupPermGroups[permGroupName] = permGroup!!
+                update()
             }
         }
 
         override fun onUpdate() {
             val group = appPermGroupLiveData.value ?: return
+            for (mediaGroupLiveData in mediaStorageSupergroupLiveData.values) {
+                if (!mediaGroupLiveData.isInitialized) {
+                    return
+                }
+            }
 
             val admin = RestrictedLockUtils.getProfileOrDeviceOwner(app, user)
 
@@ -239,9 +276,10 @@ class AppPermissionViewModel(
                 }
 
                 allowedAlwaysState.isChecked = group.background.isGranted &&
-                    group.foreground.isGranted
+                    group.foreground.isGranted && !group.background.isOneTime
                 allowedForegroundState.isChecked = group.foreground.isGranted &&
-                    !group.background.isGranted && !group.isOneTime
+                        (!group.background.isGranted || group.background.isOneTime) &&
+                        !group.foreground.isOneTime
                 askState.isChecked = !group.foreground.isGranted && group.isOneTime
                 askOneTimeState.isChecked = group.foreground.isGranted && group.isOneTime
                 askOneTimeState.isShown = askOneTimeState.isChecked
@@ -268,7 +306,7 @@ class AppPermissionViewModel(
                 // Allow / Deny case
                 allowedState.isShown = true
 
-                allowedState.isChecked = group.foreground.isGranted
+                allowedState.isChecked = group.foreground.isGranted && !group.foreground.isOneTime
                 askState.isChecked = !group.foreground.isGranted && group.isOneTime
                 askOneTimeState.isChecked = group.foreground.isGranted && group.isOneTime
                 askOneTimeState.isShown = askOneTimeState.isChecked
@@ -301,7 +339,7 @@ class AppPermissionViewModel(
             }
 
             val storageState = fullStorageStateLiveData.value
-            if (isStorage && storageState?.isLegacy != true) {
+            if (isStorageAndLessThanT && storageState?.isLegacy != true) {
                 val allowedAllFilesState = allowedAlwaysState
                 val allowedMediaOnlyState = allowedForegroundState
                 if (storageState != null) {
@@ -564,58 +602,88 @@ class AppPermissionViewModel(
             return
         }
 
-        var newGroup = group
-        val oldGroup = group
-
-        if (shouldRevokeBackground && group.hasBackgroundGroup &&
-                (wasBackgroundGranted || group.background.isUserFixed ||
-                        group.isOneTime != setOneTime)) {
-            newGroup = KotlinUtils
-                    .revokeBackgroundRuntimePermissions(app, newGroup, oneTime = setOneTime)
-
-            // only log if we have actually denied permissions, not if we switch from
-            // "ask every time" to denied
-            if (wasBackgroundGranted) {
-                SafetyNetLogger.logPermissionToggled(newGroup, true)
+        if (expandsToStorageSupergroup(group)) {
+            if (changeRequest == ChangeRequest.GRANT_FOREGROUND) {
+                defaultDeny.showConfirmDialog(ChangeRequest.GRANT_STORAGE_SUPERGROUP,
+                        R.string.storage_supergroup_warning_allow, buttonClicked, false)
+                return
+            } else if (changeRequest == ChangeRequest.REVOKE_BOTH) {
+                defaultDeny.showConfirmDialog(changeRequest,
+                        R.string.storage_supergroup_warning_deny, buttonClicked, false)
+                return
             }
         }
 
-        if (shouldRevokeForeground && (wasForegroundGranted || group.isOneTime != setOneTime)) {
-            newGroup = KotlinUtils
-                    .revokeForegroundRuntimePermissions(app, newGroup, false, setOneTime)
+        val groupsToUpdate = expandToSupergroup(group)
+        for (group in groupsToUpdate) {
+            var newGroup = group
+            val oldGroup = group
 
-            // only log if we have actually denied permissions, not if we switch from
-            // "ask every time" to denied
-            if (wasForegroundGranted) {
-                SafetyNetLogger.logPermissionToggled(newGroup)
+            if (shouldRevokeBackground && group.hasBackgroundGroup &&
+                    (wasBackgroundGranted || group.background.isUserFixed ||
+                            group.isOneTime != setOneTime)) {
+                newGroup = KotlinUtils
+                        .revokeBackgroundRuntimePermissions(app, newGroup, oneTime = setOneTime)
+
+                // only log if we have actually denied permissions, not if we switch from
+                // "ask every time" to denied
+                if (wasBackgroundGranted) {
+                    SafetyNetLogger.logPermissionToggled(newGroup, true)
+                }
+            }
+
+            if (shouldRevokeForeground && (wasForegroundGranted || group.isOneTime != setOneTime)) {
+                newGroup = KotlinUtils
+                        .revokeForegroundRuntimePermissions(app, newGroup, false, setOneTime)
+
+                // only log if we have actually denied permissions, not if we switch from
+                // "ask every time" to denied
+                if (wasForegroundGranted) {
+                    SafetyNetLogger.logPermissionToggled(newGroup)
+                }
+            }
+
+            if (shouldGrantForeground) {
+                if (shouldShowLocationAccuracy == true && !isFineLocationChecked(newGroup)) {
+                    newGroup = KotlinUtils.grantForegroundRuntimePermissions(app, newGroup,
+                            filterPermissions = listOf(ACCESS_COARSE_LOCATION))
+                } else {
+                    newGroup = KotlinUtils.grantForegroundRuntimePermissions(app, newGroup)
+                }
+
+                if (!wasForegroundGranted) {
+                    SafetyNetLogger.logPermissionToggled(newGroup)
+                }
+            }
+
+            if (shouldGrantBackground && group.hasBackgroundGroup) {
+                newGroup = KotlinUtils.grantBackgroundRuntimePermissions(app, newGroup)
+
+                if (!wasBackgroundGranted) {
+                    SafetyNetLogger.logPermissionToggled(newGroup, true)
+                }
+            }
+
+            logPermissionChanges(oldGroup, newGroup, buttonClicked)
+
+            fullStorageStateLiveData.value?.let {
+                FullStoragePermissionAppsLiveData.recalculate()
             }
         }
+    }
 
-        if (shouldGrantForeground) {
-            if (shouldShowLocationAccuracy == true && !isFineLocationChecked(newGroup)) {
-                newGroup = KotlinUtils.grantForegroundRuntimePermissions(app, newGroup,
-                    filterPermissions = listOf(ACCESS_COARSE_LOCATION))
-            } else {
-                newGroup = KotlinUtils.grantForegroundRuntimePermissions(app, newGroup)
-            }
+    private fun expandsToStorageSupergroup(group: LightAppPermGroup): Boolean {
+        return group.packageInfo.targetSdkVersion <= Build.VERSION_CODES.S_V2 &&
+            group.permGroupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS
+    }
 
-            if (!wasForegroundGranted) {
-                SafetyNetLogger.logPermissionToggled(newGroup)
-            }
-        }
-
-        if (shouldGrantBackground && group.hasBackgroundGroup) {
-            newGroup = KotlinUtils.grantBackgroundRuntimePermissions(app, newGroup)
-
-            if (!wasBackgroundGranted) {
-                SafetyNetLogger.logPermissionToggled(newGroup, true)
-            }
-        }
-
-        logPermissionChanges(oldGroup, newGroup, buttonClicked)
-
-        fullStorageStateLiveData.value?.let {
-            FullStoragePermissionAppsLiveData.recalculate()
+    private fun expandToSupergroup(group: LightAppPermGroup): List<LightAppPermGroup> {
+        val mediaSupergroup = Utils.STORAGE_SUPERGROUP_PERMISSIONS
+                .mapNotNull { mediaStorageSupergroupPermGroups[it] }
+        return if (expandsToStorageSupergroup(group)) {
+            mediaSupergroup
+        } else {
+            listOf(group)
         }
     }
 
@@ -631,39 +699,45 @@ class AppPermissionViewModel(
      */
     fun onDenyAnyWay(changeRequest: ChangeRequest, buttonPressed: Int, oneTime: Boolean) {
         val group = lightAppPermGroup ?: return
-        val wasForegroundGranted = group.foreground.isGranted
-        val wasBackgroundGranted = group.background.isGranted
-        var hasDefaultPermissions = false
 
-        var newGroup = group
-        val oldGroup = group
+        val groupsToUpdate = expandToSupergroup(group)
+        for (group in groupsToUpdate) {
+            val wasForegroundGranted = group.foreground.isGranted
+            val wasBackgroundGranted = group.background.isGranted
+            var hasDefaultPermissions = false
 
-        if (changeRequest andValue ChangeRequest.REVOKE_BACKGROUND != 0 &&
-            group.hasBackgroundGroup) {
-            newGroup = KotlinUtils.revokeBackgroundRuntimePermissions(app, newGroup, false, oneTime)
+            var newGroup = group
+            val oldGroup = group
 
-            if (wasBackgroundGranted) {
-                SafetyNetLogger.logPermissionToggled(newGroup)
+            if (changeRequest andValue ChangeRequest.REVOKE_BACKGROUND != 0 &&
+                    group.hasBackgroundGroup) {
+                newGroup =
+                    KotlinUtils.revokeBackgroundRuntimePermissions(app, newGroup, false, oneTime)
+
+                if (wasBackgroundGranted) {
+                    SafetyNetLogger.logPermissionToggled(newGroup)
+                }
+                hasDefaultPermissions = hasDefaultPermissions ||
+                        group.background.isGrantedByDefault
             }
-            hasDefaultPermissions = hasDefaultPermissions ||
-                group.background.isGrantedByDefault
-        }
 
-        if (changeRequest andValue ChangeRequest.REVOKE_FOREGROUND != 0) {
-            newGroup = KotlinUtils.revokeForegroundRuntimePermissions(app, newGroup, false, oneTime)
-            if (wasForegroundGranted) {
-                SafetyNetLogger.logPermissionToggled(newGroup)
+            if (changeRequest andValue ChangeRequest.REVOKE_FOREGROUND != 0) {
+                newGroup =
+                    KotlinUtils.revokeForegroundRuntimePermissions(app, newGroup, false, oneTime)
+                if (wasForegroundGranted) {
+                    SafetyNetLogger.logPermissionToggled(newGroup)
+                }
+                hasDefaultPermissions = group.foreground.isGrantedByDefault
             }
-            hasDefaultPermissions = group.foreground.isGrantedByDefault
-        }
-        logPermissionChanges(oldGroup, newGroup, buttonPressed)
+            logPermissionChanges(oldGroup, newGroup, buttonPressed)
 
-        if (hasDefaultPermissions || !group.supportsRuntimePerms) {
-            hasConfirmedRevoke = true
-        }
+            if (hasDefaultPermissions || !group.supportsRuntimePerms) {
+                hasConfirmedRevoke = true
+            }
 
-        fullStorageStateLiveData.value?.let {
-            FullStoragePermissionAppsLiveData.recalculate()
+            fullStorageStateLiveData.value?.let {
+                FullStoragePermissionAppsLiveData.recalculate()
+            }
         }
     }
 
@@ -770,6 +844,8 @@ class AppPermissionViewModel(
             if (permission.isGrantedIncludingAppOp != newPermission.isGrantedIncludingAppOp ||
                 permission.flags != newPermission.flags) {
                 logAppPermissionFragmentActionReported(changeId, newPermission, buttonPressed)
+                RecentPermissionDecisionsStorage.recordPermissionDecision(app.applicationContext,
+                    packageName, permGroupName, newPermission.isGrantedIncludingAppOp)
             }
         }
     }
