@@ -42,12 +42,38 @@ public class Constants {
     public static final int HIBERNATION_JOB_ID = 2;
 
     /**
-     * Name of file to containing the packages we already showed a notificaiton for.
+     * ID of the periodic job
+     * {@link com.android.permissioncontroller.permission.service.RecentPermissionDecisionsStorageImpl}
+     */
+    public static final int OLD_PERMISSION_DECISION_CLEANUP_JOB_ID = 3;
+
+    /**
+     * ID for the periodic job in
+     * {@link com.android.permissioncontroller.permission.service.v33.NotificationListenerCheck}.
+     */
+    public static final int PERIODIC_NOTIFICATION_LISTENER_CHECK_JOB_ID = 4;
+
+    /**
+     * ID for the on-demand, but delayed job in
+     * {@link com.android.permissioncontroller.permission.service.v33.NotificationListenerCheck}.
+     */
+    public static final int NOTIFICATION_LISTENER_CHECK_JOB_ID = 5;
+
+    /**
+     * Name of file to containing the packages we already showed a notification for.
      *
      * @see com.android.permissioncontroller.permission.service.LocationAccessCheck
      */
     public static final String LOCATION_ACCESS_CHECK_ALREADY_NOTIFIED_FILE =
             "packages_already_notified_location_access";
+
+    /**
+     * Name of file to containing the packages we already showed a notification for.
+     *
+     * @see com.android.permissioncontroller.permission.service.v33.NotificationListenerCheck
+     */
+    public static final String NOTIFICATION_LISTENER_CHECK_ALREADY_NOTIFIED_FILE =
+            "packages_already_notified_notification_listener";
 
     /**
      * ID for notification shown by
@@ -60,6 +86,18 @@ public class Constants {
      * {@link HibernationJobService}.
      */
     public static final int UNUSED_APPS_NOTIFICATION_ID = 1;
+
+    /**
+     * ID for notification shown by
+     * {@link com.android.permissioncontroller.auto.DrivingDecisionReminderService}.
+     */
+    public static final int PERMISSION_DECISION_REMINDER_NOTIFICATION_ID = 2;
+
+    /**
+     * ID for notification shown by
+     * {@link com.android.permissioncontroller.permission.service.v33.NotificationListenerCheck}.
+     */
+    public static final int NOTIFICATION_LISTENER_CHECK_NOTIFICATION_ID = 3;
 
     /**
      * String action for navigating to the auto revoke screen.
@@ -83,7 +121,10 @@ public class Constants {
 
     /**
      * Channel of the notifications shown by
-     * {@link com.android.permissioncontroller.permission.service.LocationAccessCheck}.
+     * {@link com.android.permissioncontroller.permission.service.LocationAccessCheck},
+     * {@link com.android.permissioncontroller.permission.service.v33.NotificationListenerCheck},
+     * {@link com.android.permissioncontroller.hibernation.HibernationPolicyKt}, and
+     * {@link com.android.permissioncontroller.auto.DrivingDecisionReminderService}
      */
     public static final String PERMISSION_REMINDER_CHANNEL_ID = "permission reminders";
 
@@ -105,6 +146,13 @@ public class Constants {
      */
     public static final String KEY_LAST_LOCATION_ACCESS_NOTIFICATION_SHOWN =
             "last_location_access_notification_shown";
+
+    /**
+     * Key in the generic shared preferences that stores when the last notification was shown by
+     * {@link com.android.permissioncontroller.permission.service.v33.NotificationListenerCheck}
+     */
+    public static final String KEY_LAST_NOTIFICATION_LISTENER_NOTIFICATION_SHOWN =
+            "last_notification_listener_notification_shown";
 
     /**
      * Key in the generic shared preferences that stores if the user manually selected the "none"
