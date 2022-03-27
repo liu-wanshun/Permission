@@ -4,8 +4,8 @@
   xmlns:tools="http://schemas.android.com/tools"
   package="com.android.permissioncontroller"
   coreApp="true"
-  android:versionCode="339999900"
-  android:versionName="33 system image"
+  android:versionCode="330210000"
+  android:versionName="aml_go_per_330210000"
 >
 
     <original-package android:name="com.android.permissioncontroller" />
@@ -119,6 +119,16 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name="com.android.permissioncontroller.privacysources.SafetyCenterReceiver"
+                  android:exported="true">
+            <intent-filter>
+                <action android:name="android.safetycenter.action.SAFETY_CENTER_ENABLED_CHANGED"/>
+                <action android:name="android.safetycenter.action.REFRESH_SAFETY_SOURCES"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
 
         <service android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$LocationAccessCheckJobService"
                  android:permission="android.permission.BIND_JOB_SERVICE" />
