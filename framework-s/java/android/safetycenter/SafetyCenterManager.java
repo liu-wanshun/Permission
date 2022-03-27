@@ -501,6 +501,7 @@ public final class SafetyCenterManager {
             } catch (RemoteException e) {
                 throw e.rethrowFromSystemServer();
             }
+            delegate.markAsRemoved();
             mListenersToDelegates.remove(listener);
         }
     }
@@ -549,52 +550,56 @@ public final class SafetyCenterManager {
     }
 
     /**
-     * Clears all {@link SafetySourceData} set by safety sources using {@link #setSafetySourceData}.
+     * Clears all {@link SafetySourceData} (set by safety sources using
+     * {@link #setSafetySourceData}) for testing.
      *
      * <p>Note: This API serves to facilitate CTS testing and should not be used for other purposes.
      */
     @RequiresPermission(MANAGE_SAFETY_CENTER)
-    public void clearAllSafetySourceData() {
+    public void clearAllSafetySourceDataForTests() {
         try {
-            mService.clearAllSafetySourceData();
+            mService.clearAllSafetySourceDataForTests();
         } catch (RemoteException e) {
             throw e.rethrowFromSystemServer();
         }
     }
 
     /**
-     * Sets an override of the {@link SafetyCenterConfig} set through XML.
+     * Overrides the {@link SafetyCenterConfig} for testing.
      *
-     * When set, the override {@link SafetyCenterConfig} will be used instead of the
+     * <p>When set, the overridden {@link SafetyCenterConfig} will be used instead of the
      * {@link SafetyCenterConfig} parsed from the XML file to read configured safety sources.
      *
      * <p>Note: This API serves to facilitate CTS testing and should not be used to configure safety
      * sources dynamically for production. Once used for testing, the override should be cleared.
      *
-     * @see #clearSafetyCenterConfigOverride()
+     * @see #clearSafetyCenterConfigForTests()
      */
     @RequiresPermission(MANAGE_SAFETY_CENTER)
-    public void setSafetyCenterConfigOverride(@NonNull SafetyCenterConfig safetyCenterConfig) {
+    public void setSafetyCenterConfigForTests(@NonNull SafetyCenterConfig safetyCenterConfig) {
         requireNonNull(safetyCenterConfig, "safetyCenterConfig cannot be null");
 
         try {
-            mService.setSafetyCenterConfigOverride(safetyCenterConfig);
+            mService.setSafetyCenterConfigForTests(safetyCenterConfig);
         } catch (RemoteException e) {
             throw e.rethrowFromSystemServer();
         }
     }
 
     /**
-     * Clears the override of the {@link SafetyCenterConfig} set through XML.
+     * Clears the override of the {@link SafetyCenterConfig} set for testing.
+     *
+     * <p>Once cleared, the {@link SafetyCenterConfig} parsed from the XML file will be used to
+     * read configured safety sources.
      *
      * <p>Note: This API serves to facilitate CTS testing and should not be used for other purposes.
      *
-     * @see #setSafetyCenterConfigOverride(SafetyCenterConfig)
+     * @see #setSafetyCenterConfigForTests(SafetyCenterConfig)
      */
     @RequiresPermission(MANAGE_SAFETY_CENTER)
-    public void clearSafetyCenterConfigOverride() {
+    public void clearSafetyCenterConfigForTests() {
         try {
-            mService.clearSafetyCenterConfigOverride();
+            mService.clearSafetyCenterConfigForTests();
         } catch (RemoteException e) {
             throw e.rethrowFromSystemServer();
         }
@@ -606,6 +611,8 @@ public final class SafetyCenterManager {
         private final Executor mExecutor;
         @NonNull
         private final OnSafetyCenterDataChangedListener mOriginalListener;
+
+        private volatile boolean mRemoved = false;
 
         private ListenerDelegate(
                 @NonNull Executor executor,
@@ -620,8 +627,16 @@ public final class SafetyCenterManager {
 
             final long identity = Binder.clearCallingIdentity();
             try {
-                mExecutor.execute(
-                        () -> mOriginalListener.onSafetyCenterDataChanged(safetyCenterData));
+                mExecutor.execute(() -> {
+                    if (mRemoved) {
+                        return;
+                    }
+                    // The remove call could still complete at this point, but we're ok with this
+                    // raciness on separate threads. If the listener is removed on the same thread
+                    // as `mExecutor`; the above check should ensure that the listener won't be
+                    // called after the remove call.
+                    mOriginalListener.onSafetyCenterDataChanged(safetyCenterData);
+                });
             } finally {
                 Binder.restoreCallingIdentity(identity);
             }
@@ -633,10 +648,23 @@ public final class SafetyCenterManager {
 
             final long identity = Binder.clearCallingIdentity();
             try {
-                mExecutor.execute(() -> mOriginalListener.onError(safetyCenterErrorDetails));
+                mExecutor.execute(() -> {
+                    if (mRemoved) {
+                        return;
+                    }
+                    // The remove call could still complete at this point, but we're ok with this
+                    // raciness on separate threads. If the listener is removed on the same thread
+                    // as `mExecutor`; the above check should ensure that the listener won't be
+                    // called after the remove call.
+                    mOriginalListener.onError(safetyCenterErrorDetails);
+                });
             } finally {
                 Binder.restoreCallingIdentity(identity);
             }
+        }
+
+        public void markAsRemoved() {
+            mRemoved = true;
         }
     }
 }
