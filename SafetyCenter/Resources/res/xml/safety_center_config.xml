@@ -27,14 +27,27 @@
                 summary="@string/lock_screen_summary_disabled"
                 initialDisplayState="disabled"
                 packageName="com.android.settings"
-                broadcastReceiverClassName="com.android.settings.safetycenter.SafetySourceBroadcastReceiver"
                 id="LockScreen"/>
             <dynamic-safety-source
                 profile="primary_profile_only"
                 packageName="com.android.settings"
                 initialDisplayState="hidden"
-                broadcastReceiverClassName="com.android.settings.safetycenter.SafetySourceBroadcastReceiver"
                 id="Biometrics"/>
+        </safety-sources-group>
+        <safety-sources-group
+            id="PrivacySources">
+            <issue-only-safety-source
+                id="AccessibilitySource"
+                profile="primary_profile_only"
+                packageName="com.android.permissioncontroller" />
+            <issue-only-safety-source
+                id="NotificationListenerSource"
+                profile="primary_profile_only"
+                packageName="com.android.permissioncontroller" />
+            <issue-only-safety-source
+                id="BackgroundLocationSource"
+                profile="primary_profile_only"
+                packageName="com.android.permissioncontroller" />
         </safety-sources-group>
     </safety-sources-config>
 </safety-center-config>

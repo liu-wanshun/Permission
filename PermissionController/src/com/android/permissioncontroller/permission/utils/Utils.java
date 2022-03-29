@@ -1386,7 +1386,6 @@ public final class Utils {
      */
     public static void navigateToNotificationSettings(@NonNull Context context) {
         Intent notificationIntent = new Intent(Settings.ACTION_ALL_APPS_NOTIFICATION_SETTINGS);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(notificationIntent);
     }
 
@@ -1401,7 +1400,6 @@ public final class Utils {
             @NonNull String packageName, @NonNull UserHandle user) {
         Intent notificationIntent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
         notificationIntent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivityAsUser(notificationIntent, user);
     }
 
@@ -1460,7 +1458,7 @@ public final class Utils {
         return SdkLevel.isAtLeastT()
                 ? getUpdatableEnterpriseString(
                         context, updatableStringId, defaultStringId, formatArgs)
-                : context.getString(defaultStringId);
+                : context.getString(defaultStringId, formatArgs);
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -1468,7 +1466,7 @@ public final class Utils {
     private static String getUpdatableEnterpriseString(@NonNull Context context,
             @NonNull String updatableStringId, int defaultStringId, @NonNull Object... formatArgs) {
         DevicePolicyManager dpm = getSystemServiceSafe(context, DevicePolicyManager.class);
-        return  dpm.getString(updatableStringId, () -> context.getString(
+        return  dpm.getResources().getString(updatableStringId, () -> context.getString(
                 defaultStringId, formatArgs), formatArgs);
     }
 }

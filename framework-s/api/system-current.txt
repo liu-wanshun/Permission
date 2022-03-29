@@ -201,8 +201,8 @@ package android.safetycenter {
 
   public final class SafetyCenterManager {
     method @RequiresPermission(android.Manifest.permission.MANAGE_SAFETY_CENTER) public void addOnSafetyCenterDataChangedListener(@NonNull java.util.concurrent.Executor, @NonNull android.safetycenter.SafetyCenterManager.OnSafetyCenterDataChangedListener);
-    method @RequiresPermission(android.Manifest.permission.MANAGE_SAFETY_CENTER) public void clearAllSafetySourceData();
-    method @RequiresPermission(android.Manifest.permission.MANAGE_SAFETY_CENTER) public void clearSafetyCenterConfigOverride();
+    method @RequiresPermission(android.Manifest.permission.MANAGE_SAFETY_CENTER) public void clearAllSafetySourceDataForTests();
+    method @RequiresPermission(android.Manifest.permission.MANAGE_SAFETY_CENTER) public void clearSafetyCenterConfigForTests();
     method @RequiresPermission(android.Manifest.permission.MANAGE_SAFETY_CENTER) public void dismissSafetyCenterIssue(@NonNull String);
     method @RequiresPermission(android.Manifest.permission.MANAGE_SAFETY_CENTER) public void executeSafetyCenterIssueAction(@NonNull String, @NonNull String);
     method @Nullable @RequiresPermission(android.Manifest.permission.MANAGE_SAFETY_CENTER) public android.safetycenter.config.SafetyCenterConfig getSafetyCenterConfig();
@@ -212,7 +212,7 @@ package android.safetycenter {
     method @RequiresPermission(android.Manifest.permission.MANAGE_SAFETY_CENTER) public void refreshSafetySources(int);
     method @RequiresPermission(android.Manifest.permission.MANAGE_SAFETY_CENTER) public void removeOnSafetyCenterDataChangedListener(@NonNull android.safetycenter.SafetyCenterManager.OnSafetyCenterDataChangedListener);
     method @RequiresPermission(android.Manifest.permission.SEND_SAFETY_CENTER_UPDATE) public void reportSafetySourceError(@NonNull String, @NonNull android.safetycenter.SafetySourceErrorDetails);
-    method @RequiresPermission(android.Manifest.permission.MANAGE_SAFETY_CENTER) public void setSafetyCenterConfigOverride(@NonNull android.safetycenter.config.SafetyCenterConfig);
+    method @RequiresPermission(android.Manifest.permission.MANAGE_SAFETY_CENTER) public void setSafetyCenterConfigForTests(@NonNull android.safetycenter.config.SafetyCenterConfig);
     method @RequiresPermission(android.Manifest.permission.SEND_SAFETY_CENTER_UPDATE) public void setSafetySourceData(@NonNull String, @Nullable android.safetycenter.SafetySourceData, @NonNull android.safetycenter.SafetyEvent);
     field public static final String ACTION_REFRESH_SAFETY_SOURCES = "android.safetycenter.action.REFRESH_SAFETY_SOURCES";
     field public static final String ACTION_SAFETY_CENTER_ENABLED_CHANGED = "android.safetycenter.action.SAFETY_CENTER_ENABLED_CHANGED";
@@ -221,6 +221,9 @@ package android.safetycenter {
     field public static final String EXTRA_REFRESH_SAFETY_SOURCES_BROADCAST_ID = "android.safetycenter.extra.REFRESH_SAFETY_SOURCES_BROADCAST_ID";
     field public static final String EXTRA_REFRESH_SAFETY_SOURCES_REQUEST_TYPE = "android.safetycenter.extra.REFRESH_SAFETY_SOURCES_REQUEST_TYPE";
     field public static final String EXTRA_REFRESH_SAFETY_SOURCE_IDS = "android.safetycenter.extra.REFRESH_SAFETY_SOURCE_IDS";
+    field public static final String EXTRA_SAFETY_SOURCE_ID = "android.safetycenter.extra.SAFETY_SOURCE_ID";
+    field public static final String EXTRA_SAFETY_SOURCE_ISSUE_ID = "android.safetycenter.extra.SAFETY_SOURCE_ISSUE_ID";
+    field public static final String EXTRA_SAFETY_SOURCE_USER_HANDLE = "android.safetycenter.extra.SAFETY_SOURCE_USER_HANDLE";
     field public static final int REFRESH_REASON_DEVICE_LOCALE_CHANGE = 400; // 0x190
     field public static final int REFRESH_REASON_DEVICE_REBOOT = 300; // 0x12c
     field public static final int REFRESH_REASON_OTHER = 600; // 0x258
@@ -318,6 +321,10 @@ package android.safetycenter {
     method @Nullable public android.safetycenter.SafetySourceStatus getStatus();
     method public void writeToParcel(@NonNull android.os.Parcel, int);
     field @NonNull public static final android.os.Parcelable.Creator<android.safetycenter.SafetySourceData> CREATOR;
+    field public static final int SEVERITY_LEVEL_CRITICAL_WARNING = 400; // 0x190
+    field public static final int SEVERITY_LEVEL_INFORMATION = 200; // 0xc8
+    field public static final int SEVERITY_LEVEL_RECOMMENDATION = 300; // 0x12c
+    field public static final int SEVERITY_LEVEL_UNSPECIFIED = 100; // 0x64
   }
 
   public static final class SafetySourceData.Builder {
@@ -382,13 +389,6 @@ package android.safetycenter {
     method @NonNull public android.safetycenter.SafetySourceIssue.Builder setSubtitle(@Nullable CharSequence);
   }
 
-  public class SafetySourceSeverity {
-    field public static final int LEVEL_CRITICAL_WARNING = 400; // 0x190
-    field public static final int LEVEL_INFORMATION = 200; // 0xc8
-    field public static final int LEVEL_RECOMMENDATION = 300; // 0x12c
-    field public static final int LEVEL_UNSPECIFIED = 100; // 0x64
-  }
-
   public final class SafetySourceStatus implements android.os.Parcelable {
     method public int describeContents();
     method @Nullable public android.safetycenter.SafetySourceStatus.IconAction getIconAction();
@@ -445,7 +445,6 @@ package android.safetycenter.config {
 
   public final class SafetySource implements android.os.Parcelable {
     method public int describeContents();
-    method @Nullable public String getBroadcastReceiverClassName();
     method @NonNull public String getId();
     method public int getInitialDisplayState();
     method @Nullable public String getIntentAction();
@@ -475,7 +474,6 @@ package android.safetycenter.config {
   public static final class SafetySource.Builder {
     ctor public SafetySource.Builder(int);
     method @NonNull public android.safetycenter.config.SafetySource build();
-    method @NonNull public android.safetycenter.config.SafetySource.Builder setBroadcastReceiverClassName(@Nullable String);
     method @NonNull public android.safetycenter.config.SafetySource.Builder setId(@Nullable String);
     method @NonNull public android.safetycenter.config.SafetySource.Builder setInitialDisplayState(int);
     method @NonNull public android.safetycenter.config.SafetySource.Builder setIntentAction(@Nullable String);

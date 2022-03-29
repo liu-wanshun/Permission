@@ -665,7 +665,7 @@ public final class PermissionControllerServiceImpl extends PermissionControllerL
         long requestId = Utils.getValidSessionId();
         for (AppPermissionGroup group : groups) {
             AppPermissionGroup bgGroup = group.getBackgroundPermissions();
-            if (group.areRuntimePermissionsGranted()) {
+            if (group.areRuntimePermissionsGranted(null, true, false)) {
                 logOneTimeSessionRevoke(packageName, uid, group, requestId);
                 // Revoke only one time granted permissions if not all
                 List<String> oneTimeGrantedPermissions = group.getPermissions().stream()
@@ -702,10 +702,10 @@ public final class PermissionControllerServiceImpl extends PermissionControllerL
             }
             group.persistChanges(false, ONE_TIME_PERMISSION_REVOKED_REASON);
             if (bgGroup != null) {
-                bgGroup.persistChanges(false, ONE_TIME_PERMISSION_REVOKED_REASON);
                 if (!bgGroup.supportsOneTimeGrant()) {
                     bgGroup.setOneTime(false);
                 }
+                bgGroup.persistChanges(false, ONE_TIME_PERMISSION_REVOKED_REASON);
             }
         }
     }
