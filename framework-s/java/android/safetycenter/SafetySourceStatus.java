@@ -18,6 +18,8 @@ package android.safetycenter;
 
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 
+import static com.android.internal.util.Preconditions.checkArgument;
+
 import static java.util.Objects.requireNonNull;
 
 import android.annotation.IntDef;
@@ -54,7 +56,7 @@ public final class SafetySourceStatus implements Parcelable {
                             TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in),
                             TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in),
                             in.readInt())
-                            .setPendingIntent(PendingIntent.readPendingIntentOrNullFromParcel(in))
+                            .setPendingIntent(in.readTypedObject(PendingIntent.CREATOR))
                             .setIconAction(in.readTypedObject(IconAction.CREATOR))
                             .setEnabled(in.readBoolean())
                             .build();
@@ -70,7 +72,7 @@ public final class SafetySourceStatus implements Parcelable {
     private final CharSequence mTitle;
     @NonNull
     private final CharSequence mSummary;
-    @SafetySourceSeverity.Level
+    @SafetySourceData.SeverityLevel
     private final int mSeverityLevel;
     @Nullable
     private final PendingIntent mPendingIntent;
@@ -78,9 +80,13 @@ public final class SafetySourceStatus implements Parcelable {
     private final IconAction mIconAction;
     private final boolean mEnabled;
 
-    private SafetySourceStatus(@NonNull CharSequence title, @NonNull CharSequence summary,
-            @SafetySourceSeverity.Level int severityLevel, @Nullable PendingIntent pendingIntent,
-            @Nullable IconAction iconAction, boolean enabled) {
+    private SafetySourceStatus(
+            @NonNull CharSequence title,
+            @NonNull CharSequence summary,
+            @SafetySourceData.SeverityLevel int severityLevel,
+            @Nullable PendingIntent pendingIntent,
+            @Nullable IconAction iconAction,
+            boolean enabled) {
         this.mTitle = title;
         this.mSummary = summary;
         this.mSeverityLevel = severityLevel;
@@ -101,8 +107,8 @@ public final class SafetySourceStatus implements Parcelable {
         return mSummary;
     }
 
-    /** Returns the {@link SafetySourceSeverity.Level} of the status. */
-    @SafetySourceSeverity.Level
+    /** Returns the {@link SafetySourceData.SeverityLevel} of the status. */
+    @SafetySourceData.SeverityLevel
     public int getSeverityLevel() {
         return mSeverityLevel;
     }
@@ -110,6 +116,8 @@ public final class SafetySourceStatus implements Parcelable {
     /**
      * Returns an optional {@link PendingIntent} that will start an activity when the safety source
      * status UI is clicked on.
+     *
+     * <p> The action contained in the {@link PendingIntent} must start an activity.
      *
      * <p>If {@code null} the intent action defined in the Safety Center configuration will be
      * invoked when the safety source status UI is clicked on. If the intent action is undefined
@@ -134,7 +142,7 @@ public final class SafetySourceStatus implements Parcelable {
     /**
      * Returns whether the safety source status is enabled.
      *
-     * <p>A safety source status should be disabled if it is currently unavailable on the device.
+     * <p>A safety source status should be disabled if it is currently unavailable on the device.aga
      *
      * <p>If disabled, the status will show as grayed out in the UI, and interactions with it may
      * be limited.
@@ -153,7 +161,7 @@ public final class SafetySourceStatus implements Parcelable {
         TextUtils.writeToParcel(mTitle, dest, flags);
         TextUtils.writeToParcel(mSummary, dest, flags);
         dest.writeInt(mSeverityLevel);
-        PendingIntent.writePendingIntentOrNullToParcel(mPendingIntent, dest);
+        dest.writeTypedObject(mPendingIntent, flags);
         dest.writeTypedObject(mIconAction, flags);
         dest.writeBoolean(mEnabled);
     }
@@ -217,8 +225,7 @@ public final class SafetySourceStatus implements Parcelable {
                     @Override
                     public IconAction createFromParcel(Parcel in) {
                         int iconType = in.readInt();
-                        PendingIntent pendingIntent =
-                                requireNonNull(PendingIntent.readPendingIntentOrNullFromParcel(in));
+                        PendingIntent pendingIntent = in.readTypedObject(PendingIntent.CREATOR);
                         return new IconAction(iconType, pendingIntent);
                     }
 
@@ -234,8 +241,8 @@ public final class SafetySourceStatus implements Parcelable {
         private final PendingIntent mPendingIntent;
 
         public IconAction(@IconType int iconType, @NonNull PendingIntent pendingIntent) {
-            this.mIconType = iconType;
-            this.mPendingIntent = pendingIntent;
+            this.mIconType = validateIconType(iconType);
+            this.mPendingIntent = requireNonNull(pendingIntent);
         }
 
         /**
@@ -265,7 +272,7 @@ public final class SafetySourceStatus implements Parcelable {
         @Override
         public void writeToParcel(@NonNull Parcel dest, int flags) {
             dest.writeInt(mIconType);
-            mPendingIntent.writeToParcel(dest, flags);
+            dest.writeTypedObject(mPendingIntent, flags);
         }
 
         @Override
@@ -310,6 +317,16 @@ public final class SafetySourceStatus implements Parcelable {
         @Retention(RetentionPolicy.SOURCE)
         public @interface IconType {
         }
+
+        @IconType
+        private static int validateIconType(int value) {
+            switch (value) {
+                case ICON_TYPE_GEAR:
+                case ICON_TYPE_INFO:
+                    return value;
+            }
+            throw new IllegalArgumentException(String.format("Unexpected IconType: %s", value));
+        }
     }
 
     /** Builder class for {@link SafetySourceStatus}. */
@@ -318,7 +335,7 @@ public final class SafetySourceStatus implements Parcelable {
         private final CharSequence mTitle;
         @NonNull
         private final CharSequence mSummary;
-        @SafetySourceSeverity.Level
+        @SafetySourceData.SeverityLevel
         private final int mSeverityLevel;
         @Nullable
         private PendingIntent mPendingIntent;
@@ -328,19 +345,23 @@ public final class SafetySourceStatus implements Parcelable {
 
         /** Creates a {@link Builder} for a {@link SafetySourceStatus}. */
         public Builder(@NonNull CharSequence title, @NonNull CharSequence summary,
-                @SafetySourceSeverity.Level int severityLevel) {
+                @SafetySourceData.SeverityLevel int severityLevel) {
             this.mTitle = requireNonNull(title);
             this.mSummary = requireNonNull(summary);
-            this.mSeverityLevel = severityLevel;
+            this.mSeverityLevel = SafetySourceData.validateSeverityLevelForSource(severityLevel);
         }
 
         /**
          * Sets an optional {@link PendingIntent} for the safety source status.
          *
+         * <p>The action contained in the {@link PendingIntent} must start an activity.
+         *
          * @see #getPendingIntent()
          */
         @NonNull
         public Builder setPendingIntent(@Nullable PendingIntent pendingIntent) {
+            checkArgument(pendingIntent == null || pendingIntent.isActivity(),
+                    "Safety source status pending intent must start an activity");
             this.mPendingIntent = pendingIntent;
             return this;
         }
@@ -359,12 +380,16 @@ public final class SafetySourceStatus implements Parcelable {
         /**
          * Sets whether the safety source status is enabled.
          *
-         * <p>By default, the safety source status will be enabled.
+         * <p>By default, the safety source status will be enabled. If disabled, the status severity
+         * level must be set to {@link SafetySourceSeverity#LEVEL_UNSPECIFIED}.
          *
          * @see #isEnabled()
          */
         @NonNull
         public Builder setEnabled(boolean enabled) {
+            checkArgument(enabled || mSeverityLevel == SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED,
+                    "Safety source status must have a severity level of "
+                            + "SEVERITY_LEVEL_UNSPECIFIED when disabled");
             this.mEnabled = enabled;
             return this;
         }
