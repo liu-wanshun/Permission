@@ -18,8 +18,11 @@ package android.safetycenter;
 
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 
+import static com.android.internal.util.Preconditions.checkArgument;
+
 import static java.util.Objects.requireNonNull;
 
+import android.annotation.IntDef;
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.annotation.SystemApi;
@@ -28,7 +31,10 @@ import android.os.Parcelable;
 
 import androidx.annotation.RequiresApi;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,21 +45,150 @@ import java.util.Objects;
  * @hide
  */
 @SystemApi
-// TODO(b/207399899): Add timestamp field(s) to data model classes.
 @RequiresApi(TIRAMISU)
 public final class SafetySourceData implements Parcelable {
+
+    /**
+     * Indicates that no opinion is currently associated with the information provided.
+     *
+     * <p>This severity level will be reflected in the UI of a {@link SafetySourceStatus} through a
+     * grey icon.
+     *
+     * <p>For a {@link SafetySourceStatus}, this severity level indicates that the safety source
+     * currently does not have sufficient information on the severity level of the
+     * {@link SafetySourceStatus}.
+     *
+     * <p>This severity level cannot be used to indicate the severity level of a
+     * {@link SafetySourceIssue}.
+     */
+    public static final int SEVERITY_LEVEL_UNSPECIFIED = 100;
+
+    /**
+     * Indicates the presence of an informational message or the absence of any safety issues.
+     *
+     * <p>This severity level will be reflected in the UI of either a {@link SafetySourceStatus} or
+     * a {@link SafetySourceIssue} through a green icon.
+     *
+     * <p>For a {@link SafetySourceStatus}, this severity level indicates either the absence of any
+     * {@link SafetySourceIssue}s or the presence of only {@link SafetySourceIssue}s with the same
+     * severity level.
+     *
+     * <p>For a {@link SafetySourceIssue}, this severity level indicates that the
+     * {@link SafetySourceIssue} represents an informational message relating to the safety source.
+     * {@link SafetySourceIssue}s of this severity level will be dismissible by the user from the
+     * UI, and will not trigger a confirmation dialog upon a user attempting to dismiss the warning.
+     */
+    public static final int SEVERITY_LEVEL_INFORMATION = 200;
+
+    /**
+     * Indicates the presence of a medium-severity safety issue which the user is encouraged to act
+     * on.
+     *
+     * <p>This severity level will be reflected in the UI of either a {@link SafetySourceStatus} or
+     * a {@link SafetySourceIssue} through a yellow icon.
+     *
+     * <p>For a {@link SafetySourceStatus}, this severity level indicates the presence of at least
+     * one medium-severity {@link SafetySourceIssue} relating to the safety source which the user is
+     * encouraged to act on, and no {@link SafetySourceIssue}s with higher severity level.
+     *
+     * <p>For a {@link SafetySourceIssue}, this severity level indicates that the
+     * {@link SafetySourceIssue} represents a medium-severity safety issue relating to the safety
+     * source which the user is encouraged to act on. {@link SafetySourceIssue}s of this severity
+     * level will be dismissible by the user from the UI, and will trigger a confirmation dialog
+     * upon a user attempting to dismiss the warning.
+     */
+    public static final int SEVERITY_LEVEL_RECOMMENDATION = 300;
+
+    /**
+     * Indicates the presence of a critical or urgent safety issue that should be addressed by the
+     * user.
+     *
+     * <p>This severity level will be reflected in the UI of either a {@link SafetySourceStatus} or
+     * a {@link SafetySourceIssue} through a red icon.
+     *
+     * <p>For a {@link SafetySourceStatus}, this severity level indicates the presence of at least
+     * one critical or urgent {@link SafetySourceIssue} relating to the safety source that should be
+     * addressed by the user.
+     *
+     * <p>For a {@link SafetySourceIssue}, this severity level indicates that the
+     * {@link SafetySourceIssue} represents a critical or urgent safety issue relating to the safety
+     * source that should be addressed by the user. {@link SafetySourceIssue}s of this severity
+     * level will be dismissible by the user from the UI, and will trigger a confirmation dialog
+     * upon a user attempting to dismiss the warning.
+     */
+    public static final int SEVERITY_LEVEL_CRITICAL_WARNING = 400;
+
+    /**
+     * All possible severity levels for a {@link SafetySourceStatus} or a {@link SafetySourceIssue}.
+     *
+     * <p>The numerical values of the levels are not used directly, rather they are used to build a
+     * continuum of levels which support relative comparison. The higher the severity level the
+     * higher the threat to the user.
+     *
+     * <p>For a {@link SafetySourceStatus}, the severity level is meant to convey the aggregated
+     * severity of the safety source, and it contributes to the overall severity level in the Safety
+     * Center. If the {@link SafetySourceData} contains {@link SafetySourceIssue}s, the severity
+     * level of the s{@link SafetySourceStatus} must match the highest severity level among the
+     * {@link SafetySourceIssue}s.
+     *
+     * <p>For a {@link SafetySourceIssue}, not all severity levels can be used. The severity level
+     * also determines how a {@link SafetySourceIssue}s is "dismissible" by the user, i.e. how the
+     * user can choose to ignore the issue and remove it from view in the Safety Center.
+     *
+     * @hide
+     */
+    @IntDef(prefix = {"SEVERITY_LEVEL_"}, value = {
+            SEVERITY_LEVEL_UNSPECIFIED,
+            SEVERITY_LEVEL_INFORMATION,
+            SEVERITY_LEVEL_RECOMMENDATION,
+            SEVERITY_LEVEL_CRITICAL_WARNING
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SeverityLevel {
+    }
+
+    @SeverityLevel
+    static int validateSeverityLevelForSource(int value) {
+        switch (value) {
+            case SEVERITY_LEVEL_UNSPECIFIED:
+            case SEVERITY_LEVEL_INFORMATION:
+            case SEVERITY_LEVEL_RECOMMENDATION:
+            case SEVERITY_LEVEL_CRITICAL_WARNING:
+                return value;
+            default:
+                throw new IllegalArgumentException(
+                        String.format("Unexpected Level for source: %s", value));
+        }
+    }
+
+    @SeverityLevel
+    static int validateSeverityLevelForIssue(int value) {
+        switch (value) {
+            case SEVERITY_LEVEL_INFORMATION:
+            case SEVERITY_LEVEL_RECOMMENDATION:
+            case SEVERITY_LEVEL_CRITICAL_WARNING:
+                return value;
+            case SEVERITY_LEVEL_UNSPECIFIED:
+            default:
+                throw new IllegalArgumentException(
+                        String.format("Unexpected Level for issue: %s", value));
+        }
+    }
 
     @NonNull
     public static final Parcelable.Creator<SafetySourceData> CREATOR =
             new Parcelable.Creator<SafetySourceData>() {
                 @Override
                 public SafetySourceData createFromParcel(Parcel in) {
-                    SafetySourceStatus status =
-                            in.readParcelable(SafetySourceStatus.class.getClassLoader(),
-                                    SafetySourceStatus.class);
-                    List<SafetySourceIssue> issues = new ArrayList<>();
-                    in.readParcelableList(issues, SafetySourceIssue.class.getClassLoader());
-                    return new SafetySourceData(status, issues);
+                    SafetySourceStatus status = in.readTypedObject(SafetySourceStatus.CREATOR);
+                    List<SafetySourceIssue> issues =
+                            requireNonNull(in.createTypedArrayList(SafetySourceIssue.CREATOR));
+                    Builder builder = new Builder().setStatus(status);
+                    // TODO(b/224513050): Consider simplifying by adding a new API to the builder.
+                    for (int i = 0; i < issues.size(); i++) {
+                        builder.addIssue(issues.get(i));
+                    }
+                    return builder.build();
                 }
 
                 @Override
@@ -73,13 +208,13 @@ public final class SafetySourceData implements Parcelable {
         this.mIssues = new ArrayList<>(issues);
     }
 
-    /** Returns the data for the safety source status to be shown in UI. */
+    /** Returns the data for the {@link SafetySourceStatus} to be shown in UI. */
     @Nullable
     public SafetySourceStatus getStatus() {
         return mStatus;
     }
 
-    /** Returns the data for the list of safety source issues to be shown in UI. */
+    /** Returns the data for the list of {@link SafetySourceIssue}s to be shown in UI. */
     @NonNull
     public List<SafetySourceIssue> getIssues() {
         return new ArrayList<>(mIssues);
@@ -92,8 +227,8 @@ public final class SafetySourceData implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeParcelable(mStatus, flags);
-        dest.writeParcelableList(mIssues, flags);
+        dest.writeTypedObject(mStatus, flags);
+        dest.writeTypedList(mIssues);
     }
 
     @Override
@@ -127,14 +262,14 @@ public final class SafetySourceData implements Parcelable {
         @Nullable
         private SafetySourceStatus mStatus;
 
-        /** Sets data for the safety source status to be shown in UI. */
+        /** Sets data for the {@link SafetySourceStatus} to be shown in UI. */
         @NonNull
         public Builder setStatus(@Nullable SafetySourceStatus status) {
             mStatus = status;
             return this;
         }
 
-        /** Adds data for a safety source issue to be shown in UI. */
+        /** Adds data for a {@link SafetySourceIssue} to be shown in UI. */
         @NonNull
         public Builder addIssue(@NonNull SafetySourceIssue safetySourceIssue) {
             mIssues.add(requireNonNull(safetySourceIssue));
@@ -142,7 +277,8 @@ public final class SafetySourceData implements Parcelable {
         }
 
         /**
-         * Clears data for all the safety source issues that were added to this {@link Builder}.
+         * Clears data for all the {@link SafetySourceIssue}s that were added to this
+         * {@link Builder}.
          */
         @NonNull
         public Builder clearIssues() {
@@ -153,9 +289,24 @@ public final class SafetySourceData implements Parcelable {
         /** Creates the {@link SafetySourceData} defined by this {@link Builder}. */
         @NonNull
         public SafetySourceData build() {
-            // TODO(b/207329841): Validate data matches validation in S, for eg that the status
-            //  and severity levels of the settings and issues are compatible.
-            return new SafetySourceData(mStatus, mIssues);
+            if (mStatus != null) {
+                int issuesMaxSeverityLevel = getIssuesMaxSeverityLevel();
+                if (issuesMaxSeverityLevel > SafetySourceData.SEVERITY_LEVEL_INFORMATION) {
+                    checkArgument(issuesMaxSeverityLevel <= mStatus.getSeverityLevel(),
+                            "Safety source data must not contain any issue with a severity level "
+                                    + "both greater than SEVERITY_LEVEL_INFORMATION and greater "
+                                    + "than the status severity level");
+                }
+            }
+            return new SafetySourceData(mStatus, Collections.unmodifiableList(mIssues));
+        }
+
+        private int getIssuesMaxSeverityLevel() {
+            int max = Integer.MIN_VALUE;
+            for (int i = 0; i < mIssues.size(); i++) {
+                max = Math.max(max, mIssues.get(i).getSeverityLevel());
+            }
+            return max;
         }
     }
 }
