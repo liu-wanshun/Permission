@@ -29,6 +29,7 @@ import androidx.test.filters.SdkSuppress
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.test.assertFailsWith
 
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = TIRAMISU, codeName = "Tiramisu")
@@ -46,26 +47,20 @@ class SafetyCenterIssueTest {
         )
 
     private val action1 =
-        SafetyCenterIssue.Action.Builder("action_id_1")
-            .setLabel("an action")
-            .setPendingIntent(pendingIntent1)
+        SafetyCenterIssue.Action.Builder("action_id_1", "an action", pendingIntent1)
             .setWillResolve(true)
             .setIsInFlight(true)
             .setSuccessMessage("a success message")
             .build()
     private val action2 =
-        SafetyCenterIssue.Action.Builder("action_id_2")
-            .setLabel("another action")
-            .setPendingIntent(pendingIntent2)
+        SafetyCenterIssue.Action.Builder("action_id_2", "another action", pendingIntent2)
             .setWillResolve(false)
             .setIsInFlight(false)
             .build()
 
     private val issue1 =
-        SafetyCenterIssue.Builder("issue_id")
-            .setTitle("Everything's good")
+        SafetyCenterIssue.Builder("issue_id", "Everything's good", "Please acknowledge this")
             .setSubtitle("In the neighborhood")
-            .setSummary("Please acknowledge this")
             .setSeverityLevel(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_OK)
             .setDismissible(true)
             .setShouldConfirmDismissal(true)
@@ -73,9 +68,7 @@ class SafetyCenterIssueTest {
             .build()
 
     private val issueWithRequiredFieldsOnly =
-        SafetyCenterIssue.Builder("issue_id")
-            .setTitle("Everything's good")
-            .setSummary("Please acknowledge this")
+        SafetyCenterIssue.Builder("issue_id", "Everything's good", "Please acknowledge this")
             .setSeverityLevel(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_OK)
             .build()
 
@@ -178,12 +171,10 @@ class SafetyCenterIssueTest {
     }
 
     @Test
-    fun getActions_mutationsAreNotReflected() {
+    fun getActions_mutationsAreNotAllowed() {
         val mutatedActions = issue1.actions
-        mutatedActions.add(action2)
 
-        assertThat(mutatedActions).containsExactly(action1, action2).inOrder()
-        assertThat(issue1.actions).doesNotContain(action2)
+        assertFailsWith(UnsupportedOperationException::class) { mutatedActions.add(action2) }
     }
 
     @Test
@@ -204,17 +195,13 @@ class SafetyCenterIssueTest {
             .addEqualityGroup(issue1, SafetyCenterIssue.Builder(issue1).build())
             .addEqualityGroup(issueWithRequiredFieldsOnly)
             .addEqualityGroup(
-                SafetyCenterIssue.Builder("an id")
-                    .setTitle("a title")
+                SafetyCenterIssue.Builder("an id", "a title", "Please acknowledge this")
                     .setSubtitle("In the neighborhood")
-                    .setSummary("Please acknowledge this")
                     .setSeverityLevel(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_OK)
                     .setActions(listOf(action1))
                     .build(),
-                SafetyCenterIssue.Builder("an id")
-                    .setTitle("a title")
+                SafetyCenterIssue.Builder("an id", "a title", "Please acknowledge this")
                     .setSubtitle("In the neighborhood")
-                    .setSummary("Please acknowledge this")
                     .setSeverityLevel(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_OK)
                     .setActions(listOf(action1))
                     .build()
@@ -293,69 +280,51 @@ class SafetyCenterIssueTest {
             .addEqualityGroup(action1)
             .addEqualityGroup(action2)
             .addEqualityGroup(
-                SafetyCenterIssue.Action.Builder("an_id")
-                    .setLabel("a label")
-                    .setPendingIntent(pendingIntent1)
+                SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent1)
                     .setWillResolve(true)
                     .setIsInFlight(true)
                     .setSuccessMessage("a success message")
                     .build(),
-                SafetyCenterIssue.Action.Builder("an_id")
-                    .setLabel("a label")
-                    .setPendingIntent(pendingIntent1)
+                SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent1)
                     .setWillResolve(true)
                     .setIsInFlight(true)
                     .setSuccessMessage("a success message")
                     .build()
             )
             .addEqualityGroup(
-                SafetyCenterIssue.Action.Builder("an_id")
-                    .setLabel("a label")
-                    .setPendingIntent(pendingIntent1)
+                SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent1)
                     .setSuccessMessage("a success message")
                     .build()
             )
             .addEqualityGroup(
-                SafetyCenterIssue.Action.Builder("a_different_id")
-                    .setLabel("a label")
-                    .setPendingIntent(pendingIntent1)
+                SafetyCenterIssue.Action.Builder("a_different_id", "a label", pendingIntent1)
                     .setSuccessMessage("a success message")
                     .build()
             )
             .addEqualityGroup(
-                SafetyCenterIssue.Action.Builder("an_id")
-                    .setLabel("a different label")
-                    .setPendingIntent(pendingIntent1)
+                SafetyCenterIssue.Action.Builder("an_id", "a different label", pendingIntent1)
                     .setSuccessMessage("a success message")
                     .build()
             )
             .addEqualityGroup(
-                SafetyCenterIssue.Action.Builder("an_id")
-                    .setLabel("a label")
-                    .setPendingIntent(pendingIntent2)
+                SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent2)
                     .setSuccessMessage("a success message")
                     .build()
             )
             .addEqualityGroup(
-                SafetyCenterIssue.Action.Builder("an_id")
-                    .setLabel("a label")
-                    .setPendingIntent(pendingIntent1)
+                SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent1)
                     .setWillResolve(true)
                     .setSuccessMessage("a success message")
                     .build()
             )
             .addEqualityGroup(
-                SafetyCenterIssue.Action.Builder("an_id")
-                    .setLabel("a label")
-                    .setPendingIntent(pendingIntent1)
+                SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent1)
                     .setIsInFlight(true)
                     .setSuccessMessage("a success message")
                     .build()
             )
             .addEqualityGroup(
-                SafetyCenterIssue.Action.Builder("an_id")
-                    .setLabel("a label")
-                    .setPendingIntent(pendingIntent1)
+                SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent1)
                     .setSuccessMessage("a different success message")
                     .build()
             )

@@ -38,8 +38,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 /**
- * Data for a safety source status in the Safety Center page, which conveys the overall state of
- * the safety source and allows a user to navigate to the source.
+ * Data for a safety source status in the Safety Center page, which conveys the overall state of the
+ * safety source and allows a user to navigate to the source.
  *
  * @hide
  */
@@ -48,15 +48,15 @@ import java.util.Objects;
 public final class SafetySourceStatus implements Parcelable {
 
     @NonNull
-    public static final Parcelable.Creator<SafetySourceStatus> CREATOR =
-            new Parcelable.Creator<SafetySourceStatus>() {
+    public static final Creator<SafetySourceStatus> CREATOR =
+            new Creator<SafetySourceStatus>() {
                 @Override
                 public SafetySourceStatus createFromParcel(Parcel in) {
-                    return new Builder(
-                            TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in),
-                            TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in),
-                            in.readInt())
-                            .setPendingIntent(PendingIntent.readPendingIntentOrNullFromParcel(in))
+                    CharSequence title = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in);
+                    CharSequence summary = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in);
+                    int severityLevel = in.readInt();
+                    return new Builder(title, summary, severityLevel)
+                            .setPendingIntent(in.readTypedObject(PendingIntent.CREATOR))
                             .setIconAction(in.readTypedObject(IconAction.CREATOR))
                             .setEnabled(in.readBoolean())
                             .build();
@@ -72,7 +72,7 @@ public final class SafetySourceStatus implements Parcelable {
     private final CharSequence mTitle;
     @NonNull
     private final CharSequence mSummary;
-    @SafetySourceSeverity.Level
+    @SafetySourceData.SeverityLevel
     private final int mSeverityLevel;
     @Nullable
     private final PendingIntent mPendingIntent;
@@ -80,9 +80,13 @@ public final class SafetySourceStatus implements Parcelable {
     private final IconAction mIconAction;
     private final boolean mEnabled;
 
-    private SafetySourceStatus(@NonNull CharSequence title, @NonNull CharSequence summary,
-            @SafetySourceSeverity.Level int severityLevel, @Nullable PendingIntent pendingIntent,
-            @Nullable IconAction iconAction, boolean enabled) {
+    private SafetySourceStatus(
+            @NonNull CharSequence title,
+            @NonNull CharSequence summary,
+            @SafetySourceData.SeverityLevel int severityLevel,
+            @Nullable PendingIntent pendingIntent,
+            @Nullable IconAction iconAction,
+            boolean enabled) {
         this.mTitle = title;
         this.mSummary = summary;
         this.mSeverityLevel = severityLevel;
@@ -103,8 +107,8 @@ public final class SafetySourceStatus implements Parcelable {
         return mSummary;
     }
 
-    /** Returns the {@link SafetySourceSeverity.Level} of the status. */
-    @SafetySourceSeverity.Level
+    /** Returns the {@link SafetySourceData.SeverityLevel} of the status. */
+    @SafetySourceData.SeverityLevel
     public int getSeverityLevel() {
         return mSeverityLevel;
     }
@@ -113,11 +117,11 @@ public final class SafetySourceStatus implements Parcelable {
      * Returns an optional {@link PendingIntent} that will start an activity when the safety source
      * status UI is clicked on.
      *
-     * <p> The action contained in the {@link PendingIntent} must start an activity.
+     * <p>The action contained in the {@link PendingIntent} must start an activity.
      *
      * <p>If {@code null} the intent action defined in the Safety Center configuration will be
-     * invoked when the safety source status UI is clicked on. If the intent action is undefined
-     * or disabled the source is considered as disabled.
+     * invoked when the safety source status UI is clicked on. If the intent action is undefined or
+     * disabled the source is considered as disabled.
      */
     @Nullable
     public PendingIntent getPendingIntent() {
@@ -138,10 +142,10 @@ public final class SafetySourceStatus implements Parcelable {
     /**
      * Returns whether the safety source status is enabled.
      *
-     * <p>A safety source status should be disabled if it is currently unavailable on the device.aga
+     * <p>A safety source status should be disabled if it is currently unavailable on the device
      *
-     * <p>If disabled, the status will show as grayed out in the UI, and interactions with it may
-     * be limited.
+     * <p>If disabled, the status will show as grayed out in the UI, and interactions with it may be
+     * limited.
      */
     public boolean isEnabled() {
         return mEnabled;
@@ -157,7 +161,7 @@ public final class SafetySourceStatus implements Parcelable {
         TextUtils.writeToParcel(mTitle, dest, flags);
         TextUtils.writeToParcel(mSummary, dest, flags);
         dest.writeInt(mSeverityLevel);
-        PendingIntent.writePendingIntentOrNullToParcel(mPendingIntent, dest);
+        dest.writeTypedObject(mPendingIntent, flags);
         dest.writeTypedObject(mIconAction, flags);
         dest.writeBoolean(mEnabled);
     }
@@ -216,13 +220,12 @@ public final class SafetySourceStatus implements Parcelable {
     public static final class IconAction implements Parcelable {
 
         @NonNull
-        public static final Parcelable.Creator<IconAction> CREATOR =
-                new Parcelable.Creator<IconAction>() {
+        public static final Creator<IconAction> CREATOR =
+                new Creator<IconAction>() {
                     @Override
                     public IconAction createFromParcel(Parcel in) {
                         int iconType = in.readInt();
-                        PendingIntent pendingIntent =
-                                requireNonNull(PendingIntent.readPendingIntentOrNullFromParcel(in));
+                        PendingIntent pendingIntent = in.readTypedObject(PendingIntent.CREATOR);
                         return new IconAction(iconType, pendingIntent);
                     }
 
@@ -231,6 +234,27 @@ public final class SafetySourceStatus implements Parcelable {
                         return new IconAction[size];
                     }
                 };
+
+        /** Indicates a gear (cog) icon. */
+        public static final int ICON_TYPE_GEAR = 100;
+
+        /** Indicates an information icon. */
+        public static final int ICON_TYPE_INFO = 200;
+
+        /**
+         * All possible icons which can be displayed in an {@link IconAction}.
+         *
+         * @hide
+         */
+        @IntDef(
+                prefix = {"ICON_TYPE_"},
+                value = {
+                        ICON_TYPE_GEAR,
+                        ICON_TYPE_INFO,
+                })
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface IconType {
+        }
 
         @IconType
         private final int mIconType;
@@ -269,7 +293,7 @@ public final class SafetySourceStatus implements Parcelable {
         @Override
         public void writeToParcel(@NonNull Parcel dest, int flags) {
             dest.writeInt(mIconType);
-            mPendingIntent.writeToParcel(dest, flags);
+            dest.writeTypedObject(mPendingIntent, flags);
         }
 
         @Override
@@ -295,26 +319,6 @@ public final class SafetySourceStatus implements Parcelable {
                     + '}';
         }
 
-        /** Indicates a gear (cog) icon. */
-        public static final int ICON_TYPE_GEAR = 100;
-
-        /** Indicates an information icon. */
-        public static final int ICON_TYPE_INFO = 200;
-
-        /**
-         * All possible icons which can be displayed in an {@link IconAction}.
-         *
-         * @hide
-         */
-        @IntDef(prefix = {"ICON_TYPE_"}, value = {
-                ICON_TYPE_GEAR,
-                ICON_TYPE_INFO,
-
-        })
-        @Retention(RetentionPolicy.SOURCE)
-        public @interface IconType {
-        }
-
         @IconType
         private static int validateIconType(int value) {
             switch (value) {
@@ -328,12 +332,14 @@ public final class SafetySourceStatus implements Parcelable {
 
     /** Builder class for {@link SafetySourceStatus}. */
     public static final class Builder {
+
         @NonNull
         private final CharSequence mTitle;
         @NonNull
         private final CharSequence mSummary;
-        @SafetySourceSeverity.Level
+        @SafetySourceData.SeverityLevel
         private final int mSeverityLevel;
+
         @Nullable
         private PendingIntent mPendingIntent;
         @Nullable
@@ -341,11 +347,13 @@ public final class SafetySourceStatus implements Parcelable {
         private boolean mEnabled = true;
 
         /** Creates a {@link Builder} for a {@link SafetySourceStatus}. */
-        public Builder(@NonNull CharSequence title, @NonNull CharSequence summary,
-                @SafetySourceSeverity.Level int severityLevel) {
+        public Builder(
+                @NonNull CharSequence title,
+                @NonNull CharSequence summary,
+                @SafetySourceData.SeverityLevel int severityLevel) {
             this.mTitle = requireNonNull(title);
             this.mSummary = requireNonNull(summary);
-            this.mSeverityLevel = SafetySourceSeverity.validateLevelForSource(severityLevel);
+            this.mSeverityLevel = SafetySourceData.validateSeverityLevelForSource(severityLevel);
         }
 
         /**
@@ -357,7 +365,8 @@ public final class SafetySourceStatus implements Parcelable {
          */
         @NonNull
         public Builder setPendingIntent(@Nullable PendingIntent pendingIntent) {
-            checkArgument(pendingIntent == null || pendingIntent.isActivity(),
+            checkArgument(
+                    pendingIntent == null || pendingIntent.isActivity(),
                     "Safety source status pending intent must start an activity");
             this.mPendingIntent = pendingIntent;
             return this;
@@ -378,15 +387,16 @@ public final class SafetySourceStatus implements Parcelable {
          * Sets whether the safety source status is enabled.
          *
          * <p>By default, the safety source status will be enabled. If disabled, the status severity
-         * level must be set to {@link SafetySourceSeverity#LEVEL_UNSPECIFIED}.
+         * level must be set to {@link SafetySourceData#SEVERITY_LEVEL_UNSPECIFIED}.
          *
          * @see #isEnabled()
          */
         @NonNull
         public Builder setEnabled(boolean enabled) {
-            checkArgument(enabled || mSeverityLevel == SafetySourceSeverity.LEVEL_UNSPECIFIED,
-                    "Safety source status must have a severity level of LEVEL_UNSPECIFIED when "
-                            + "disabled");
+            checkArgument(
+                    enabled || mSeverityLevel == SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED,
+                    "Safety source status must have a severity level of "
+                            + "SEVERITY_LEVEL_UNSPECIFIED when disabled");
             this.mEnabled = enabled;
             return this;
         }
@@ -394,8 +404,8 @@ public final class SafetySourceStatus implements Parcelable {
         /** Creates the {@link SafetySourceStatus} defined by this {@link Builder}. */
         @NonNull
         public SafetySourceStatus build() {
-            return new SafetySourceStatus(mTitle, mSummary, mSeverityLevel, mPendingIntent,
-                    mIconAction, mEnabled);
+            return new SafetySourceStatus(
+                    mTitle, mSummary, mSeverityLevel, mPendingIntent, mIconAction, mEnabled);
         }
     }
 }

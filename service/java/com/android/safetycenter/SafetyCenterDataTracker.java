@@ -38,7 +38,6 @@ import android.safetycenter.SafetyCenterStaticEntryGroup;
 import android.safetycenter.SafetyCenterStatus;
 import android.safetycenter.SafetySourceData;
 import android.safetycenter.SafetySourceIssue;
-import android.safetycenter.SafetySourceSeverity;
 import android.safetycenter.SafetySourceStatus;
 import android.safetycenter.config.SafetyCenterConfig;
 import android.safetycenter.config.SafetySource;
@@ -159,12 +158,12 @@ final class SafetyCenterDataTracker {
     @NonNull
     static SafetyCenterData getDefaultSafetyCenterData() {
         return new SafetyCenterData(
-                new SafetyCenterStatus.Builder()
+                new SafetyCenterStatus.Builder(
+                        getSafetyCenterStatusTitle(
+                                SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN),
+                        getSafetyCenterStatusSummary(
+                                SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN))
                         .setSeverityLevel(SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN)
-                        .setTitle(getSafetyCenterStatusTitle(
-                                SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN))
-                        .setSummary(getSafetyCenterStatusSummary(
-                                SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN))
                         .build(),
                 emptyList(),
                 emptyList(),
@@ -252,10 +251,10 @@ final class SafetyCenterDataTracker {
         int safetyCenterOverallSeverityLevel = entryToSafetyCenterStatusOverallLevel(
                 maxSafetyCenterEntryLevel);
         return new SafetyCenterData(
-                new SafetyCenterStatus.Builder()
+                new SafetyCenterStatus.Builder(
+                        getSafetyCenterStatusTitle(safetyCenterOverallSeverityLevel),
+                        getSafetyCenterStatusSummary(safetyCenterOverallSeverityLevel))
                         .setSeverityLevel(safetyCenterOverallSeverityLevel)
-                        .setTitle(getSafetyCenterStatusTitle(safetyCenterOverallSeverityLevel))
-                        .setSummary(getSafetyCenterStatusSummary(safetyCenterOverallSeverityLevel))
                         .build(),
                 safetyCenterIssues,
                 safetyCenterEntryOrGroups,
@@ -306,21 +305,22 @@ final class SafetyCenterDataTracker {
             SafetySourceIssue.Action safetySourceIssueAction = safetySourceIssueActions.get(i);
 
             safetyCenterIssueActions.add(
-                    new SafetyCenterIssue.Action.Builder(safetySourceIssue.getId())
-                            .setLabel(safetySourceIssueAction.getLabel())
+                    new SafetyCenterIssue.Action.Builder(safetySourceIssue.getId(),
+                            safetySourceIssueAction.getLabel(),
+                            safetySourceIssueAction.getPendingIntent())
                             .setSuccessMessage(safetySourceIssueAction.getSuccessMessage())
-                            .setPendingIntent(safetySourceIssueAction.getPendingIntent())
                             .build()
             );
         }
 
         // TODO(b/218817233): Add missing fields like: dismissible, shouldConfirmDismissal.
-        return new SafetyCenterIssue.Builder(safetySourceIssue.getId())
+        return new SafetyCenterIssue.Builder(
+                safetySourceIssue.getId(),
+                safetySourceIssue.getTitle(),
+                safetySourceIssue.getSummary())
                 .setSeverityLevel(
                         sourceToSafetyCenterIssueSeverityLevel(
                                 safetySourceIssue.getSeverityLevel()))
-                .setTitle(safetySourceIssue.getTitle())
-                .setSummary(safetySourceIssue.getSummary())
                 .setSubtitle(safetySourceIssue.getSubtitle())
                 .setActions(safetyCenterIssueActions)
                 .build();
@@ -352,10 +352,11 @@ final class SafetyCenterDataTracker {
         // TODO(b/218817233): Add missing fields like: statelessIconType.
         safetyCenterEntryOrGroups.add(
                 new SafetyCenterEntryOrGroup(
-                        new SafetyCenterEntryGroup.Builder(safetySourcesGroup.getId())
-                                .setSeverityLevel(maxSafetyCenterEntryLevel)
-                                .setTitle(mSafetyCenterConfigReader.readStringResource(
+                        new SafetyCenterEntryGroup.Builder(
+                                safetySourcesGroup.getId(),
+                                mSafetyCenterConfigReader.readStringResource(
                                         safetySourcesGroup.getTitleResId()))
+                                .setSeverityLevel(maxSafetyCenterEntryLevel)
                                 .setSummary(mSafetyCenterConfigReader.readStringResource(
                                         safetySourcesGroup.getSummaryResId()))
                                 .setEntries(entries)
@@ -387,10 +388,10 @@ final class SafetyCenterDataTracker {
                         // TODO(b/222838784): Automatically mark the source as disabled if the
                         //  pending intent is null again.
                     }
-                    return new SafetyCenterEntry.Builder(safetySource.getId())
+                    return new SafetyCenterEntry.Builder(safetySource.getId(),
+                            safetySourceStatus.getTitle())
                             .setSeverityLevel(sourceToSafetyCenterEntrySeverityLevel(
                                     safetySourceStatus.getSeverityLevel()))
-                            .setTitle(safetySourceStatus.getTitle())
                             .setSummary(safetySourceStatus.getSummary())
                             .setEnabled(safetySourceStatus.isEnabled())
                             .setPendingIntent(pendingIntent).build();
@@ -424,10 +425,9 @@ final class SafetyCenterDataTracker {
         // TODO(b/218817233): Add missing fields like: enabled.
         // TODO(b/222838784): Automatically mark the source as disabled (both dynamic and static?)
         //  if the pending intent is null.
-        return new SafetyCenterEntry.Builder(safetySource.getId())
+        return new SafetyCenterEntry.Builder(safetySource.getId(),
+                mSafetyCenterConfigReader.readStringResource(safetySource.getTitleResId()))
                 .setSeverityLevel(entrySeverityLevel)
-                .setTitle(mSafetyCenterConfigReader.readStringResource(
-                        safetySource.getTitleResId()))
                 .setSummary(mSafetyCenterConfigReader.readStringResource(
                         safetySource.getSummaryResId()))
                 .setPendingIntent(pendingIntent).build();
@@ -454,8 +454,8 @@ final class SafetyCenterDataTracker {
             }
 
             staticEntries.add(
-                    new SafetyCenterStaticEntry.Builder()
-                            .setTitle(mSafetyCenterConfigReader.readStringResource(
+                    new SafetyCenterStaticEntry.Builder(
+                            mSafetyCenterConfigReader.readStringResource(
                                     safetySource.getTitleResId()))
                             .setSummary(mSafetyCenterConfigReader.readStringResource(
                                     safetySource.getSummaryResId()))
@@ -557,15 +557,15 @@ final class SafetyCenterDataTracker {
 
     @SafetyCenterEntry.EntrySeverityLevel
     private static int sourceToSafetyCenterEntrySeverityLevel(
-            @SafetySourceSeverity.Level int safetySourceSeverityLevel) {
+            @SafetySourceData.SeverityLevel int safetySourceSeverityLevel) {
         switch (safetySourceSeverityLevel) {
-            case SafetySourceSeverity.LEVEL_UNSPECIFIED:
+            case SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED:
                 return SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNSPECIFIED;
-            case SafetySourceSeverity.LEVEL_INFORMATION:
+            case SafetySourceData.SEVERITY_LEVEL_INFORMATION:
                 return SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_OK;
-            case SafetySourceSeverity.LEVEL_RECOMMENDATION:
+            case SafetySourceData.SEVERITY_LEVEL_RECOMMENDATION:
                 return SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_RECOMMENDATION;
-            case SafetySourceSeverity.LEVEL_CRITICAL_WARNING:
+            case SafetySourceData.SEVERITY_LEVEL_CRITICAL_WARNING:
                 return SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_CRITICAL_WARNING;
         }
 
@@ -576,18 +576,18 @@ final class SafetyCenterDataTracker {
 
     @SafetyCenterIssue.IssueSeverityLevel
     private static int sourceToSafetyCenterIssueSeverityLevel(
-            @SafetySourceSeverity.Level int safetySourceIssueSeverityLevel) {
+            @SafetySourceData.SeverityLevel int safetySourceIssueSeverityLevel) {
         switch (safetySourceIssueSeverityLevel) {
-            case SafetySourceSeverity.LEVEL_UNSPECIFIED:
+            case SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED:
                 Log.w(TAG,
-                        "Unexpected use of SafetySourceSeverity.LEVEL_UNSPECIFIED in "
+                        "Unexpected use of SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED in "
                                 + "SafetySourceStatus");
                 return SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_OK;
-            case SafetySourceSeverity.LEVEL_INFORMATION:
+            case SafetySourceData.SEVERITY_LEVEL_INFORMATION:
                 return SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_OK;
-            case SafetySourceSeverity.LEVEL_RECOMMENDATION:
+            case SafetySourceData.SEVERITY_LEVEL_RECOMMENDATION:
                 return SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_RECOMMENDATION;
-            case SafetySourceSeverity.LEVEL_CRITICAL_WARNING:
+            case SafetySourceData.SEVERITY_LEVEL_CRITICAL_WARNING:
                 return SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_CRITICAL_WARNING;
         }
 
