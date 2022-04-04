@@ -23,10 +23,8 @@
                 initialDisplayState="disabled"
                 maxSeverityLevel="300"
                 searchTerms="@string/reference"
-                broadcastReceiverClassName="broadcast"
                 loggingAllowed="false"
-                refreshOnPageOpenAllowed="true"
-                automaticNotificationFromIssueAllowed="true"/>
+                refreshOnPageOpenAllowed="true"/>
             <dynamic-safety-source
                 id="dynamic_disabled"
                 packageName="package"
@@ -69,10 +67,8 @@
                 packageName="package"
                 profile="all_profiles"
                 maxSeverityLevel="300"
-                broadcastReceiverClassName="broadcast"
                 loggingAllowed="false"
-                refreshOnPageOpenAllowed="true"
-                automaticNotificationFromIssueAllowed="true"/>
+                refreshOnPageOpenAllowed="true"/>
         </safety-sources-group>
         <safety-sources-group
             id="mixed"
