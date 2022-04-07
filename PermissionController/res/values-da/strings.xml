@@ -482,7 +482,7 @@
     <string name="permgroupupgraderequestdetail_camera" msgid="6642747548010962597">"Denne app vil gerne tage billeder og optage video hele tiden, også når du ikke bruger appen. "<annotation id="link">"Tillad dette i indstillingerne"</annotation>"."</string>
     <string name="permgrouprequest_calllog" msgid="2065327180175371397">"Vil du give &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; adgang til dine opkaldslister?"</string>
     <string name="permgrouprequest_phone" msgid="1829234136997316752">"Vil du give &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; tilladelse til at foretage og administrere telefonopkald?"</string>
-    <string name="permgrouprequest_sensors" msgid="4397358316850652235">"Vil du give &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; adgang til sensordata om dine livstegn?"</string>
+    <string name="permgrouprequest_sensors" msgid="4397358316850652235">"Vil du give &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; adgang til sensordata om dine vitale værdier?"</string>
     <string name="auto_granted_permissions" msgid="6009452264824455892">"Administrerede tilladelser"</string>
     <string name="auto_granted_location_permission_notification_title" msgid="1438871159268985993">"Der er adgang til din lokation"</string>
     <string name="auto_granted_permission_notification_body" msgid="6919835973190443695">"Din it-administrator har givet <xliff:g id="APP_NAME">%s</xliff:g> adgang til din lokation"</string>
@@ -499,4 +499,10 @@
     <string name="privdash_label_24h" msgid="1512532123865375319">"Seneste\n24 timer"</string>
     <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> beskyttes af Android. Da dine data behandles på denne enhed, vises denne apps anvendelse af tilladelser ikke i statusbjælken i dit privatlivspanel."</string>
     <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> beskyttes af Android. Da dine data behandles på denne enhed, vises denne apps anvendelse af tilladelser ikke i dit privatlivspanel."</string>
+    <string name="blocked_camera_title" msgid="1128510551791284384">"Enhedens kamera er blokeret"</string>
+    <string name="blocked_microphone_title" msgid="1631517143648232585">"Enhedens mikrofon er blokeret"</string>
+    <string name="blocked_location_title" msgid="2005608279812892383">"Enhedens lokation er deaktiveret"</string>
+    <string name="blocked_sensor_summary" msgid="4443707628305027375">"For apps og tjenester"</string>
+    <string name="blocked_mic_summary" msgid="8960466941528458347">"Mikrofondata deles muligvis stadig, når du ringer til et alarmnummer."</string>
+    <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Skift"</string>
 </resources>
