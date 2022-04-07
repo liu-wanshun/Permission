@@ -162,7 +162,6 @@ public final class SafetyCenterService extends SystemService {
                     || !checkApiEnabled("setSafetySourceData")) {
                 return;
             }
-            // TODO(b/218812582): Validate the SafetySourceData.
 
             UserProfileGroup userProfileGroup = UserProfileGroup.from(getContext(), userId);
             SafetyCenterData safetyCenterData = null;
@@ -238,7 +237,7 @@ public final class SafetyCenterService extends SystemService {
                 return;
             }
 
-            // TODO(b/218379298): Add implementation
+            // TODO(b/223434689): Implement this properly.
             UserProfileGroup userProfileGroup = UserProfileGroup.from(getContext(), userId);
             List<RemoteCallbackList<IOnSafetyCenterDataChangedListener>> listeners;
             synchronized (mApiLock) {
@@ -356,8 +355,8 @@ public final class SafetyCenterService extends SystemService {
                     || !checkApiEnabled("dismissSafetyCenterIssue")) {
                 return;
             }
-            // TODO(b/202387059): Implement issue dismissal.
 
+            // TODO(b/202387059): Implement this properly.
         }
 
         @Override
@@ -373,7 +372,8 @@ public final class SafetyCenterService extends SystemService {
                     || !checkApiEnabled("executeSafetyCenterIssueAction")) {
                 return;
             }
-            // TODO(b/218379298): Add implementation
+
+            // TODO(b/202485277): Implement this properly.
         }
 
         @Override
@@ -387,7 +387,7 @@ public final class SafetyCenterService extends SystemService {
             synchronized (mApiLock) {
                 mSafetyCenterDataTracker.clear();
                 // TODO(b/223550097): Should we dispatch a new listener update here? This call can
-                // modify the SafetyCenterData.
+                //  modify the SafetyCenterData.
             }
         }
 
@@ -508,8 +508,8 @@ public final class SafetyCenterService extends SystemService {
             synchronized (mBroadcastLock) {
                 mSafetyCenterBroadcastManager.sendEnabledChanged(configInternal);
                 // TODO(b/227342241): Look into whether we should refresh safety sources here too.
-                // Supposedly they could already be listening to
-                // `ACTION_SAFETY_CENTER_ENABLED_CHANGED`, so it might not be necessary.
+                //  Supposedly they could already be listening to
+                //  `ACTION_SAFETY_CENTER_ENABLED_CHANGED`, so it might not be necessary.
             }
         }
 
@@ -519,7 +519,7 @@ public final class SafetyCenterService extends SystemService {
             synchronized (mApiLock) {
                 configInternal = mSafetyCenterConfigReader.getCurrentConfigInternal();
                 mSafetyCenterDataTracker.clear();
-                // TODO(b/227428101): Look into clearing the listeners here as well.
+                mSafetyCenterListeners.clear();
             }
 
             synchronized (mBroadcastLock) {
