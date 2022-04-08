@@ -68,8 +68,18 @@ public class ReviewOngoingUsageFragment extends PreferenceFragmentCompat {
     public static final String VIDEO_CALL = "android:phone_call_camera";
 
     private @Nullable AlertDialog mDialog;
-
     private ReviewOngoingUsageViewModel mViewModel;
+
+    /**
+     * @return A new {@link ReviewOngoingUsageFragment}
+     */
+    public static ReviewOngoingUsageFragment newInstance(long numMillis) {
+        ReviewOngoingUsageFragment fragment = new ReviewOngoingUsageFragment();
+        Bundle arguments = new Bundle();
+        arguments.putLong(Intent.EXTRA_DURATION_MILLIS, numMillis);
+        fragment.setArguments(arguments);
+        return fragment;
+    }
 
     // create new ViewModel in onStart, because viewModel is sometimes persisting after finish()
     // TODO: determine why viewModel is doing this.
@@ -88,7 +98,7 @@ public class ReviewOngoingUsageFragment extends PreferenceFragmentCompat {
                 return;
             }
             if (usages == null) {
-                getActivity().finishAfterTransition();
+                getActivity().finish();
                 return;
             }
 
@@ -98,7 +108,7 @@ public class ReviewOngoingUsageFragment extends PreferenceFragmentCompat {
                         .setPositiveButton(R.string.ongoing_usage_dialog_ok, (dialog, which) ->
                                 PermissionControllerStatsLog.write(PRIVACY_INDICATORS_INTERACTED,
                                         PRIVACY_INDICATORS_INTERACTED__TYPE__DIALOG_DISMISS))
-                        .setOnDismissListener((dialog) -> getActivity().finishAfterTransition());
+                        .setOnDismissListener((dialog) -> getActivity().finish());
                 mDialog = builder.create();
                 mDialog.show();
             } else {

@@ -16,11 +16,11 @@
 
 package com.android.permissioncontroller.permission.ui.model
 
-import android.Manifest
 import android.app.AppOpsManager
 import android.app.AppOpsManager.MODE_ALLOWED
 import android.app.AppOpsManager.MODE_IGNORED
 import android.app.AppOpsManager.OPSTR_AUTO_REVOKE_PERMISSIONS_IF_UNUSED
+import android.Manifest
 import android.os.Bundle
 import android.os.UserHandle
 import android.util.Log
@@ -35,8 +35,8 @@ import com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISS
 import com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISSION_GROUPS_FRAGMENT_AUTO_REVOKE_ACTION__ACTION__SWITCH_ENABLED
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.permission.data.AppPermGroupUiInfoLiveData
+import com.android.permissioncontroller.permission.data.AutoRevokeStateLiveData
 import com.android.permissioncontroller.permission.data.FullStoragePermissionAppsLiveData
-import com.android.permissioncontroller.permission.data.HibernationSettingStateLiveData
 import com.android.permissioncontroller.permission.data.LightPackageInfoLiveData
 import com.android.permissioncontroller.permission.data.PackagePermissionsLiveData
 import com.android.permissioncontroller.permission.data.PackagePermissionsLiveData.Companion.NON_RUNTIME_NORMAL_PERMS
@@ -74,7 +74,6 @@ class AppPermissionGroupsViewModel(
         MEDIA_ONLY(1),
         ALL_FILES(2),
         FOREGROUND_ONLY(3),
-        BACKGROUND(4),
     }
 
     data class GroupUiInfo(
@@ -86,8 +85,7 @@ class AppPermissionGroupsViewModel(
             this(groupName, isSystem, PermSubtitle.NONE)
     }
 
-    // Auto-revoke and hibernation share the same settings
-    val autoRevokeLiveData = HibernationSettingStateLiveData[packageName, user]
+    val autoRevokeLiveData = AutoRevokeStateLiveData[packageName, user]
 
     /**
      * LiveData whose data is a map of grant category (either allowed or denied) to a list
@@ -169,11 +167,10 @@ class AppPermissionGroupsViewModel(
                                 GroupUiInfo(groupName, isSystem, subtitle))
                         }
                         PermGrantState.PERMS_ALLOWED_ALWAYS -> groupGrantStates[
-                            Category.ALLOWED]!!.add(GroupUiInfo(groupName, isSystem,
-                                PermSubtitle.BACKGROUND))
+                            Category.ALLOWED]!!.add(GroupUiInfo(groupName, isSystem))
                         PermGrantState.PERMS_ALLOWED_FOREGROUND_ONLY -> groupGrantStates[
                             Category.ALLOWED]!!.add(GroupUiInfo(groupName, isSystem,
-                                PermSubtitle.FOREGROUND_ONLY))
+                            PermSubtitle.FOREGROUND_ONLY))
                         PermGrantState.PERMS_DENIED -> groupGrantStates[Category.DENIED]!!.add(
                             GroupUiInfo(groupName, isSystem))
                         PermGrantState.PERMS_ASK -> groupGrantStates[Category.ASK]!!.add(

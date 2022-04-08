@@ -47,7 +47,6 @@ public abstract class PermissionsFrameFragment extends PreferenceFragmentCompat 
     private View mLoadingView;
     private ViewGroup mPrefsView;
     private boolean mIsLoading;
-    private TextView mEmptyView;
 
     /**
      * Returns the view group that holds the preferences objects. This will
@@ -67,7 +66,6 @@ public abstract class PermissionsFrameFragment extends PreferenceFragmentCompat 
             mPrefsView = rootView;
         }
         mLoadingView = rootView.findViewById(R.id.loading_container);
-        mEmptyView = (TextView) rootView.findViewById(R.id.no_permissions);
         mPreferencesContainer = (ViewGroup) super.onCreateView(
                 inflater, mPrefsView, savedInstanceState);
         setLoading(mIsLoading, false, true /* force */);
@@ -100,9 +98,6 @@ public abstract class PermissionsFrameFragment extends PreferenceFragmentCompat 
             }
             if (mLoadingView != null) {
                 setViewShown(mLoadingView, loading, animate);
-            }
-            if (!mIsLoading) {
-                checkEmpty();
             }
         }
     }
@@ -152,40 +147,43 @@ public abstract class PermissionsFrameFragment extends PreferenceFragmentCompat 
         final RecyclerView.Adapter<?> adapter = super.onCreateAdapter(preferenceScreen);
 
         if (adapter != null) {
-            onSetEmptyText(mEmptyView);
+            final TextView emptyView = (TextView) getView().findViewById(R.id.no_permissions);
+            emptyView.setText(R.string.no_permissions);
+            onSetEmptyText(emptyView);
+            final RecyclerView recyclerView = getListView();
             adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    checkEmpty();
+                    checkEmpty(adapter, recyclerView, emptyView);
                 }
 
                 @Override
                 public void onItemRangeInserted(int positionStart, int itemCount) {
-                    checkEmpty();
+                    checkEmpty(adapter, recyclerView, emptyView);
                 }
 
                 @Override
                 public void onItemRangeRemoved(int positionStart, int itemCount) {
-                    checkEmpty();
+                    checkEmpty(adapter, recyclerView, emptyView);
                 }
             });
 
-            checkEmpty();
+            checkEmpty(adapter, recyclerView, emptyView);
         }
 
         return adapter;
     }
 
-    private void checkEmpty() {
-        if (mIsLoading || getListView() == null || getListView().getAdapter() == null) return;
-
-        boolean isEmpty = isPreferenceListEmpty();
-        mEmptyView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-        getListView().setVisibility(isEmpty && getListView().getAdapter().getItemCount() == 0
-                ? View.GONE : View.VISIBLE);
-        if (!isEmpty && mGridView != null) {
-            mGridView.requestFocus();
-        }
+    private void checkEmpty(RecyclerView.Adapter<?> adapter, View recyclerView, View emptyView) {
+        emptyView.postDelayed(() -> {
+            boolean isEmpty = isPreferenceListEmpty();
+            emptyView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+            recyclerView.setVisibility(isEmpty && adapter.getItemCount() == 0 ?
+                    View.GONE : View.VISIBLE);
+            if (!isEmpty && mGridView != null) {
+                mGridView.requestFocus();
+            }
+        }, 250);
     }
 
     private boolean isPreferenceListEmpty() {

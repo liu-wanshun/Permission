@@ -281,7 +281,7 @@ public final class AppPermissionGroup implements Comparable<AppPermissionGroup> 
                 getUpgradeRequestDetail(groupInfo), groupInfo.packageName, groupInfo.icon,
                 userHandle, delayChanges, appOpsManager);
 
-        final Set<String> exemptedRestrictedPermissions = context.getPackageManager()
+        final Set<String> whitelistedRestrictedPermissions = context.getPackageManager()
                 .getWhitelistedRestrictedPermissions(packageInfo.packageName,
                         Utils.FLAGS_PERMISSION_WHITELIST_ALL);
 
@@ -380,24 +380,24 @@ public final class AppPermissionGroup implements Comparable<AppPermissionGroup> 
         for (int i = 0; i < numPermissions; i++) {
             Permission permission = allPermissions.valueAt(i);
 
-            if ((!permission.isHardRestricted()
-                    || exemptedRestrictedPermissions.contains(permission.getName()))
-                    && (!permission.isSoftRestricted()
-                    || SoftRestrictedPermissionPolicy.shouldShow(packageInfo, permission))) {
-                if (permission.isBackgroundPermission()) {
-                    if (group.getBackgroundPermissions() == null) {
-                        group.mBackgroundPermissions = new AppPermissionGroup(group.mContext,
-                                group.getApp(), group.getName(), group.getDeclaringPackage(),
-                                group.getLabel(), group.getFullLabel(), group.getDescription(),
-                                group.getRequest(), group.getRequestDetail(),
-                                group.getBackgroundRequest(), group.getBackgroundRequestDetail(),
-                                group.getUpgradeRequest(), group.getUpgradeRequestDetail(),
-                                group.getIconPkg(), group.getIconResId(), group.getUser(),
-                                delayChanges, appOpsManager);
-                    }
+            if (permission.isBackgroundPermission()) {
+                if (group.getBackgroundPermissions() == null) {
+                    group.mBackgroundPermissions = new AppPermissionGroup(group.mContext,
+                            group.getApp(), group.getName(), group.getDeclaringPackage(),
+                            group.getLabel(), group.getFullLabel(), group.getDescription(),
+                            group.getRequest(), group.getRequestDetail(),
+                            group.getBackgroundRequest(), group.getBackgroundRequestDetail(),
+                            group.getUpgradeRequest(), group.getUpgradeRequestDetail(),
+                            group.getIconPkg(), group.getIconResId(), group.getUser(),
+                            delayChanges, appOpsManager);
+                }
 
-                    group.getBackgroundPermissions().addPermission(permission);
-                } else {
+                group.getBackgroundPermissions().addPermission(permission);
+            } else {
+                if ((!permission.isHardRestricted()
+                        || whitelistedRestrictedPermissions.contains(permission.getName()))
+                        && (!permission.isSoftRestricted()
+                        || SoftRestrictedPermissionPolicy.shouldShow(packageInfo, permission))) {
                     group.addPermission(permission);
                 }
             }
@@ -720,23 +720,14 @@ public final class AppPermissionGroup implements Comparable<AppPermissionGroup> 
     }
 
     public boolean areRuntimePermissionsGranted(String[] filterPermissions) {
-        return areRuntimePermissionsGranted(filterPermissions, false);
-    }
-
-    /**
-     * @param filterPermissions the permissions to check for, null for all in this group
-     * @param asOneTime add the requirement that at least one of the granted permissions must have
-     *                 the ONE_TIME flag to return true
-     */
-    public boolean areRuntimePermissionsGranted(String[] filterPermissions, boolean asOneTime) {
         if (LocationUtils.isLocationGroupAndProvider(mContext, mName, mPackageInfo.packageName)) {
-            return LocationUtils.isLocationEnabled(mContext) && !asOneTime;
+            return LocationUtils.isLocationEnabled(mContext);
         }
         // The permission of the extra location controller package is determined by the status of
         // the controller package itself.
         if (LocationUtils.isLocationGroupAndControllerExtraPackage(
                 mContext, mName, mPackageInfo.packageName)) {
-            return LocationUtils.isExtraLocationControllerPackageEnabled(mContext) && !asOneTime;
+            return LocationUtils.isExtraLocationControllerPackageEnabled(mContext);
         }
         final int permissionCount = mPermissions.size();
         for (int i = 0; i < permissionCount; i++) {
@@ -745,7 +736,7 @@ public final class AppPermissionGroup implements Comparable<AppPermissionGroup> 
                     && !ArrayUtils.contains(filterPermissions, permission.getName())) {
                 continue;
             }
-            if (permission.isGrantedIncludingAppOp() && (!asOneTime || permission.isOneTime())) {
+            if (permission.isGrantedIncludingAppOp()) {
                 return true;
             }
         }
@@ -1483,13 +1474,13 @@ public final class AppPermissionGroup implements Comparable<AppPermissionGroup> 
         }
 
         String packageName = mPackageInfo.packageName;
-        if (areRuntimePermissionsGranted(null, true)) {
+        if (isOneTime() && areRuntimePermissionsGranted()) {
             mContext.getSystemService(PermissionManager.class)
                     .startOneTimePermissionSession(packageName,
                             Utils.getOneTimePermissionsTimeout(),
                             ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_RESET_TIMER,
                             ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_KEEP_SESSION_ALIVE);
-        } else {
+        } else if (!Utils.hasOneTimePermissions(mContext, packageName)) {
             mContext.getSystemService(PermissionManager.class)
                     .stopOneTimePermissionSession(packageName);
         }

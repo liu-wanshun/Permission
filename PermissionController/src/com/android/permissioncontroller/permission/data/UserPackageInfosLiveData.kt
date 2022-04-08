@@ -20,6 +20,7 @@ import android.app.Application
 import android.content.pm.PackageManager.GET_PERMISSIONS
 import android.content.pm.PackageManager.MATCH_ALL
 import android.os.UserHandle
+import android.util.Log
 import com.android.permissioncontroller.PermissionControllerApplication
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPackageInfo
 import kotlinx.coroutines.Job
@@ -74,6 +75,9 @@ class UserPackageInfosLiveData private constructor(
         if (job.isCancelled) {
             return
         }
+        // TODO ntmyren: remove once b/154796729 is fixed
+        Log.i("UserPackageInfos", "updating UserPackageInfosLiveData for user " +
+            "${user.identifier}")
         val packageInfos = app.applicationContext.packageManager
             .getInstalledPackagesAsUser(GET_PERMISSIONS or MATCH_ALL, user.identifier)
 
@@ -88,6 +92,8 @@ class UserPackageInfosLiveData private constructor(
         for (packageInfo in value ?: emptyList()) {
             PermissionListenerMultiplexer.addCallback(packageInfo.uid, this)
         }
+
+        updateAsync()
     }
 
     override fun onInactive() {

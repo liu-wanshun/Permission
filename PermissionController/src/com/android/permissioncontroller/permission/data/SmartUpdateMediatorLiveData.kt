@@ -18,6 +18,11 @@ package com.android.permissioncontroller.permission.data
 
 import android.util.Log
 import androidx.annotation.MainThread
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle.State
+import androidx.lifecycle.Lifecycle.State.STARTED
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
@@ -33,11 +38,9 @@ import kotlinx.coroutines.launch
  * A MediatorLiveData which tracks how long it has been inactive, compares new values before setting
  * its value (avoiding unnecessary updates), and can calculate the set difference between a list
  * and a map (used when determining whether or not to add a LiveData as a source).
- *
- * @param isStaticVal Whether or not this LiveData value is expected to change
  */
-abstract class SmartUpdateMediatorLiveData<T>(private val isStaticVal: Boolean = false)
-    : MediatorLiveData<T>(), DataRepository.InactiveTimekeeper {
+abstract class SmartUpdateMediatorLiveData<T> : MediatorLiveData<T>(),
+    DataRepository.InactiveTimekeeper {
 
     companion object {
         const val DEBUG_UPDATES = false
@@ -59,7 +62,12 @@ abstract class SmartUpdateMediatorLiveData<T>(private val isStaticVal: Boolean =
     var isStale = true
         private set
 
+    private val staleObservers = mutableListOf<Pair<LifecycleOwner, Observer<in T>>>()
+
     private val sources = mutableListOf<SmartUpdateMediatorLiveData<*>>()
+
+    private val children =
+        mutableListOf<Triple<SmartUpdateMediatorLiveData<*>, Observer<in T>, Boolean>>()
 
     private val stacktraceExceptionMessage = "Caller of coroutine"
 
@@ -69,24 +77,31 @@ abstract class SmartUpdateMediatorLiveData<T>(private val isStaticVal: Boolean =
 
         if (!isInitialized) {
             isInitialized = true
+            isStale = false
             // If we have received an invalid value, and this is the first time we are set,
             // notify observers.
             if (newValue == null) {
-                isStale = false
                 super.setValue(newValue)
                 return
             }
         }
 
-        val wasStale = isStale
-        // If this liveData is not active, and is not a static value, then it is stale
-        val isActiveOrStaticVal = isStaticVal || hasActiveObservers()
-        // If all of this liveData's sources are non-stale, and this liveData is active or is a
-        // static val, then it is non stale
-        isStale = !(sources.all { !it.isStale } && isActiveOrStaticVal)
-
-        if (valueNotEqual(super.getValue(), newValue) || (wasStale && !isStale)) {
+        if (valueNotEqual(super.getValue(), newValue)) {
+            isStale = false
             super.setValue(newValue)
+        } else if (isStale) {
+            isStale = false
+            // We are no longer stale- notify active stale observers we are up-to-date
+            val liveObservers = staleObservers.filter { it.first.lifecycle.currentState >= STARTED }
+            for ((_, observer) in liveObservers) {
+                observer.onChanged(newValue)
+            }
+
+            for ((liveData, observer, shouldUpdate) in children.toList()) {
+                if (liveData.hasActiveObservers() && shouldUpdate) {
+                    observer.onChanged(newValue)
+                }
+            }
         }
     }
 
@@ -100,17 +115,13 @@ abstract class SmartUpdateMediatorLiveData<T>(private val isStaticVal: Boolean =
         if (DEBUG_UPDATES) {
             Log.i(LOG_TAG, "update ${javaClass.simpleName} ${shortStackTrace()}")
         }
-
-        if (this is SmartAsyncMediatorLiveData<T>) {
-            isStale = true
-        }
         onUpdate()
     }
 
     @MainThread
     protected abstract fun onUpdate()
 
-    override var timeWentInactive: Long? = System.nanoTime()
+    override var timeWentInactive: Long? = null
 
     /**
      * Some LiveDatas have types, like Drawables which do not have a non-default equals method.
@@ -123,6 +134,18 @@ abstract class SmartUpdateMediatorLiveData<T>(private val isStaticVal: Boolean =
      */
     protected open fun valueNotEqual(valOne: T?, valTwo: T?): Boolean {
         return valOne != valTwo
+    }
+
+    @MainThread
+    fun observeStale(owner: LifecycleOwner, observer: Observer<in T>) {
+        val oldStaleObserver = hasStaleObserver()
+        staleObservers.add(owner to observer)
+        if (owner == ForeverActiveLifecycle) {
+            observeForever(observer)
+        } else {
+            observe(owner, observer)
+        }
+        updateSourceStaleObservers(oldStaleObserver, true)
     }
 
     override fun <S : Any?> addSource(source: LiveData<S>, onChanged: Observer<in S>) {
@@ -142,6 +165,8 @@ abstract class SmartUpdateMediatorLiveData<T>(private val isStaticVal: Boolean =
                 if (source in sources) {
                     return@launch
                 }
+                source.addChild(this@SmartUpdateMediatorLiveData, onChanged,
+                    staleObservers.isNotEmpty() || children.any { it.third })
                 sources.add(source)
             }
             try {
@@ -155,6 +180,7 @@ abstract class SmartUpdateMediatorLiveData<T>(private val isStaticVal: Boolean =
     override fun <S : Any?> removeSource(toRemote: LiveData<S>) {
         GlobalScope.launch(Main.immediate) {
             if (toRemote is SmartUpdateMediatorLiveData) {
+                toRemote.removeChild(this@SmartUpdateMediatorLiveData)
                 sources.remove(toRemote)
             }
             super.removeSource(toRemote)
@@ -170,16 +196,16 @@ abstract class SmartUpdateMediatorLiveData<T>(private val isStaticVal: Boolean =
      * @param have The map of livedatas we currently have as sources
      * @param getLiveDataFun A function to turn a key into a liveData
      * @param onUpdateFun An optional function which will update differently based on different
-     * LiveDatas. If blank, will simply call update.
+     * LiveDatas. If blank, will simply call update
      *
-     * @return a pair of (all keys added, all keys removed)
+     * @return a pair of (all keys added, all keys removed).
      */
     fun <K, V : LiveData<*>> setSourcesToDifference(
         desired: Collection<K>,
         have: MutableMap<K, V>,
         getLiveDataFun: (K) -> V,
         onUpdateFun: ((K) -> Unit)? = null
-    ) : Pair<Set<K>, Set<K>>{
+    ): Pair<Set<K>, Set<K>> {
         // Ensure the map is correct when method returns
         val (toAdd, toRemove) = KotlinUtils.getMapAndListDifferences(desired, have)
         for (key in toAdd) {
@@ -217,22 +243,81 @@ abstract class SmartUpdateMediatorLiveData<T>(private val isStaticVal: Boolean =
         return toAdd to toRemove
     }
 
-    override fun onActive() {
-        timeWentInactive = null
-        // If this is not an async livedata, and we have sources, and all sources are non-stale,
-        // force update our value
-        if (sources.isNotEmpty() && sources.all { !it.isStale } &&
-            this !is SmartAsyncMediatorLiveData<T>) {
+    @MainThread
+    private fun <S : Any?> removeChild(liveData: LiveData<S>) {
+        children.removeIf { it.first == liveData }
+    }
+
+    @MainThread
+    private fun <S : Any?> addChild(
+        liveData: SmartUpdateMediatorLiveData<S>,
+        onChanged: Observer<in T>,
+        sendStaleUpdates: Boolean
+    ) {
+        children.add(Triple(liveData, onChanged, sendStaleUpdates))
+    }
+
+    @MainThread
+    private fun <S : Any?> updateShouldSendStaleUpdates(
+        liveData: SmartUpdateMediatorLiveData<S>,
+        sendStaleUpdates: Boolean
+    ) {
+        for ((idx, childTriple) in children.withIndex()) {
+            if (childTriple.first == liveData) {
+                children[idx] = Triple(liveData, childTriple.second, sendStaleUpdates)
+            }
+        }
+    }
+
+    @MainThread
+    override fun removeObserver(observer: Observer<in T>) {
+        val oldStaleObserver = hasStaleObserver()
+        staleObservers.removeIf { it.second == observer }
+        super.removeObserver(observer)
+        updateSourceStaleObservers(oldStaleObserver, hasStaleObserver())
+    }
+
+    @MainThread
+    override fun removeObservers(owner: LifecycleOwner) {
+        val oldStaleObserver = hasStaleObserver()
+        staleObservers.removeIf { it.first == owner }
+        super.removeObservers(owner)
+        updateSourceStaleObservers(oldStaleObserver, hasStaleObserver())
+    }
+
+    @MainThread
+    override fun observeForever(observer: Observer<in T>) {
+        super.observeForever(observer)
+    }
+
+    @MainThread
+    private fun updateSourceStaleObservers(hadStaleObserver: Boolean, hasStaleObserver: Boolean) {
+        if (hadStaleObserver == hasStaleObserver) {
+            return
+        }
+        for (liveData in sources) {
+            liveData.updateShouldSendStaleUpdates(this, hasStaleObserver)
+        }
+
+        // if all sources are not stale, and we just requested stale updates, and we are stale,
+        // update our value
+        if (sources.all { !it.isStale } && hasStaleObserver && isStale) {
             update()
         }
+    }
+
+    private fun hasStaleObserver(): Boolean {
+        return staleObservers.isNotEmpty() || children.any { it.third }
+    }
+
+    override fun onActive() {
+        timeWentInactive = null
         super.onActive()
     }
 
     override fun onInactive() {
         timeWentInactive = System.nanoTime()
-        if (!isStaticVal) {
-            isStale = true
-        }
+        isStale = true
         super.onInactive()
     }
 
@@ -245,11 +330,29 @@ abstract class SmartUpdateMediatorLiveData<T>(private val isStaticVal: Boolean =
     suspend fun getInitializedValue(staleOk: Boolean = false, forceUpdate: Boolean = false): T {
         return getInitializedValue(
             observe = { observer ->
-                observeForever(observer)
+                observeStale(ForeverActiveLifecycle, observer)
                 if (forceUpdate || (!staleOk && isStale)) {
                     update()
                 }
             },
             isInitialized = { isInitialized && (staleOk || !isStale) })
+    }
+
+    /**
+     * A [Lifecycle]/[LifecycleOwner] that is permanently [State.STARTED]
+     *
+     * Passing this to [LiveData.observe] is essentially equivalent to using
+     * [LiveData.observeForever], so you have to make sure you handle your own cleanup whenever
+     * using this.
+     */
+    private object ForeverActiveLifecycle : Lifecycle(), LifecycleOwner {
+
+        override fun getLifecycle(): Lifecycle = this
+
+        override fun addObserver(observer: LifecycleObserver) {}
+
+        override fun removeObserver(observer: LifecycleObserver) {}
+
+        override fun getCurrentState(): State = State.STARTED
     }
 }

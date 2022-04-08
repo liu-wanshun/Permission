@@ -9,7 +9,7 @@
             ]
         }
     ],
-    "presubmit-large": [
+    "presubmit-devicepolicy": [
         {
             "name": "CtsDevicePolicyManagerTestCases",
             "options": [

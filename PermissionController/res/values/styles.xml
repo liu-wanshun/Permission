@@ -39,14 +39,6 @@
         <item name="android:showDividers">middle</item>
     </style>
 
-    <style name="PermissionGrantDialogMaterial3">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">?android:attr/windowBackground</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:showDividers">middle</item>
-    </style>
-
     <style name="PermissionGrantContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -72,14 +64,6 @@
         <item name="android:scaleType">fitCenter</item>
     </style>
 
-    <style name="PermissionGrantTitleIconMaterial3">
-        <item name="android:layout_width">24dp</item>
-        <item name="android:layout_height">24dp</item>
-        <item name="android:layout_marginBottom">12dp</item>
-        <item name="android:tint">?android:attr/colorAccent</item>
-        <item name="android:scaleType">fitCenter</item>
-    </style>
-
     <style name="PermissionGrantTitleMessage"
            parent="@android:style/TextAppearance.DeviceDefault.WindowTitle">
         <item name="android:layout_width">match_parent</item>
@@ -95,55 +79,7 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="PermissionLocationAccuracyRadioGroup">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">24dp</item>
-        <item name="android:layout_marginBottom">24dp</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:orientation">horizontal</item>
-    </style>
-
-    <style name="PermissionLocationAccuracyRadioFine">
-        <item name="android:button">@null</item>
-        <item name="android:background">@null</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:drawablePadding">8dp</item>
-        <item name="android:gravity">center_horizontal</item>
-    </style>
-
-    <style name="PermissionLocationAccuracyRadioCoarse">
-        <item name="android:button">@null</item>
-        <item name="android:background">@null</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:drawablePadding">8dp</item>
-        <item name="android:gravity">center_horizontal</item>
-    </style>
-
-    <style name="PermissionLocationAccuracyFineImageView">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">24dp</item>
-        <item name="android:layout_marginBottom">24dp</item>
-    </style>
-
-    <style name="PermissionLocationAccuracyCoarseImageView">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">24dp</item>
-        <item name="android:layout_marginBottom">24dp</item>
-    </style>
-
     <style name="PermissionGrantButtonList">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:showDividers">middle</item>
-    </style>
-
-    <style name="PermissionGrantButtonListMaterial3">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
@@ -168,6 +104,8 @@
     <!-- for use in overlays -->
     <style name="PermissionGrantButtonAllow"
            parent="@style/PermissionGrantButton"></style>
+    <style name="PermissionGrantButtonAllowAlways"
+           parent="@style/PermissionGrantButton"></style>
     <style name="PermissionGrantButtonAllowForeground"
            parent="@style/PermissionGrantButton"></style>
     <style name="PermissionGrantButtonAllowOneTime"
@@ -175,17 +113,6 @@
     <style name="PermissionGrantButtonDeny"
            parent="@style/PermissionGrantButton"></style>
     <style name="PermissionGrantButtonNoUpgrade"
-           parent="@style/PermissionGrantButton"></style>
-
-    <style name="PermissionGrantButtonAllowMaterial3"
-           parent="@style/PermissionGrantButton"></style>
-    <style name="PermissionGrantButtonAllowForegroundMaterial3"
-           parent="@style/PermissionGrantButton"></style>
-    <style name="PermissionGrantButtonAllowOneTimeMaterial3"
-           parent="@style/PermissionGrantButton"></style>
-    <style name="PermissionGrantButtonDenyMaterial3"
-           parent="@style/PermissionGrantButton"></style>
-    <style name="PermissionGrantButtonNoUpgradeMaterial3"
            parent="@style/PermissionGrantButton"></style>
 
     <!-- END PERMISSION GRANT DIALOG -->
@@ -276,14 +203,6 @@
         <item name="android:gravity">center</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:layout_marginTop">32dp</item>
-    </style>
-
-    <style name="PermissionFrameExtendedFloatingActionButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">bottom|center_horizontal</item>
-        <item name="android:layout_marginBottom">16dp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
     <!-- END PERMISSIONS FRAME -->
@@ -377,7 +296,8 @@
            parent="@style/TextAppearance.CategoryTitle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">8dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginStart">56dp</item>
         <item name="android:textColor">?android:attr/colorAccent</item>
         <item name="android:textDirection">locale</item>
     </style>
@@ -397,7 +317,6 @@
     <style name="AppPermissionDetails">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center</item>
         <item name="android:layout_marginStart">48dp</item>
     </style>
 
@@ -415,47 +334,6 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:gravity">center</item>
         <item name="android:minWidth">64dp</item>
-    </style>
-
-    <style name="AppPermissionLocationAccuracy">
-        <item name="android:layout_marginTop">24dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:paddingStart">8dp</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-        <item name="android:background">?android:attr/selectableItemBackground</item>
-    </style>
-
-    <style name="AppPermissionLocationAccuracyText">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <style name="AppPermissionLocationAccuracyTitle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:textDirection">locale</item>
-    </style>
-
-    <style name="AppPermissionLocationAccuracySubtitle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textDirection">locale</item>
-    </style>
-
-    <style name="AppPermissionLocationAccuracySwitch">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:layout_gravity">right|center_vertical</item>
-        <item name="android:clickable">false</item>
-        <item name="android:focusable">false</item>
     </style>
 
     <style name="AppPermissionFooter">
@@ -477,15 +355,16 @@
     <style name="AppPermissionFooterText">
         <item name="android:paddingTop">16dp</item>
         <item name="android:paddingBottom">16dp</item>
+        <item name="android:layout_marginStart">48dp</item>
         <item name="android:layout_marginEnd">48dp</item>
-        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingStart">?android:attr/listPreferredItemPaddingStart</item>
         <item name="android:paddingEnd">?android:attr/listPreferredItemPaddingEnd</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
     <style name="AppPermissionFooterLink"
            parent="@style/AppPermissionFooterText">
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textColor">?android:attr/colorAccent</item>
     </style>
 
     <style name="AppPermissionFooterTextWithIcon">
@@ -731,7 +610,7 @@
 
     <style name="PermissionUsageDialogItemContainer">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">48dp</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginEnd">16dp</item>
         <item name="android:orientation">horizontal</item>
@@ -753,7 +632,7 @@
 
     <style name="PermissionUsageDialogAppAndPermissions">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">start|center_vertical</item>
@@ -773,8 +652,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">?android:textAppearanceListItemSecondary</item>
         <item name="android:textColor">?android:textColorSecondary</item>
-        <item name="android:maxLines">3</item>
-        <item name="android:ellipsize">end</item>
         <item name="android:layout_marginStart">16dp</item>
     </style>
 
@@ -812,36 +689,11 @@
         <item name="android:layout_marginStart">16dp</item>
     </style>
 
-    <style name="AccessTimeDialogTitle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:textSize">24sp</item>
-        <item name="android:layout_marginTop">16dp</item>
-    </style>
-
-    <style name="AccessTimeDialogSubtitle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textColor">?android:attr/textColorSecondary</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:layout_marginTop">16dp</item>
-    </style>
-
-    <style name="AccessTimeDialogLearnMore">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">?android:attr/colorAccent</item>
-    </style>
-
     <!-- END ONGOING USAGE DIALOG -->
 
     <!-- START REQUEST ROLE DIALOG TITLE -->
 
-    <style name="RequestRoleTitleBase">
+    <style name="RequestRoleTitle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingStart">?android:dialogPreferredPadding</item>
@@ -850,8 +702,6 @@
         <item name="android:gravity">center_horizontal</item>
         <item name="android:orientation">vertical</item>
     </style>
-
-    <style name="RequestRoleTitle" parent="@style/RequestRoleTitleBase" />
 
     <style name="RequestRoleTitleIcon">
         <item name="android:layout_width">32dp</item>
@@ -870,7 +720,7 @@
 
     <!-- START REQUEST ROLE DIALOG ITEM -->
 
-    <style name="RequestRoleItemBase">
+    <style name="RequestRoleItem">
         <item name="android:minHeight">?android:listPreferredItemHeight</item>
         <item name="android:paddingStart">?android:listPreferredItemPaddingStart</item>
         <item name="android:paddingEnd">?android:listPreferredItemPaddingEnd</item>
@@ -878,8 +728,6 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:orientation">horizontal</item>
     </style>
-
-    <style name="RequestRoleItem" parent="RequestRoleItemBase" />
 
     <style name="RequestRoleItemIcon">
         <item name="android:layout_width">32dp</item>
@@ -1081,17 +929,5 @@
     </style>
 
     <!-- END ACCESSIBILITY SERVICE DIALOG ITEM -->
-
-    <!-- START PRIVACY DASHBOARD -->
-
-    <style name="PrivacyDashboardGraphicLabel">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-        <item name="android:textSize">16sp</item>
-    </style>
-
-    <!-- END PRIVACY DASHBOARD -->
 
 </resources>

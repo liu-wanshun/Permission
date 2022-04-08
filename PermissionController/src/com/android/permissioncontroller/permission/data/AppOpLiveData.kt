@@ -30,8 +30,8 @@ import com.android.permissioncontroller.PermissionControllerApplication
  *
  * @see AppOpsManager
  */
-// TODO eugenesusla: observe appops
-// TODO eugenesusla: use for external storage
+//TODO eugenesusla: observe appops
+//TODO eugenesusla: use for external storage
 class AppOpLiveData private constructor(
     private val app: Application,
     private val packageName: String,
@@ -39,15 +39,10 @@ class AppOpLiveData private constructor(
     private val uid: Int
 ) : SmartUpdateMediatorLiveData<Int>() {
 
-    private val appOpsManager = app.getSystemService(AppOpsManager::class.java)!!
+    val appOpsManager = app.getSystemService(AppOpsManager::class.java)!!
 
     override fun onUpdate() {
         value = appOpsManager.unsafeCheckOpNoThrow(op, uid, packageName)
-    }
-
-    override fun onActive() {
-        super.onActive()
-        update()
     }
 
     /**

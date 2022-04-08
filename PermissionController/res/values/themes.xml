@@ -17,19 +17,10 @@
 
 <resources>
 
-    <!--
-      ~ This theme should have been named SettingsBase, but it is exposed as overlayable to OEMs and
-      ~ cannot be renamed now.
-      -->
-    <style name="Settings" parent="Theme.SubSettingsBase">
+    <style name="Settings"
+           parent="@android:style/Theme.DeviceDefault.Settings">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="preferenceCategoryTitleTextAppearance">@style/TextAppearance.CategoryTitle</item>
-    </style>
-
-    <!-- This theme should contain attributes that should always be set despite OEM overlays. -->
-    <style name="Theme.PermissionController.Settings" parent="Settings">
-        <!-- These two attributes are required when using Toolbar as ActionBar. -->
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
     </style>
 
     <style name="TextAppearance.CategoryTitle"
@@ -57,7 +48,6 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
-    <!-- Unused since R but exposed as overlayable. -->
     <style name="Header.Settings"
             parent="@android:style/Theme.DeviceDefault.Settings">
     </style>
@@ -88,7 +78,7 @@
     </style>
 
     <style name="CarSettings" parent="Theme.CarUi.WithToolbar">
-        <item name="carDividerColor">@color/car_divider_color</item>
+        <item name="carDividerColor">@*android:color/car_list_divider</item>
     </style>
 
     <style name="PreferenceDivider" parent="AutoRevokeDivider" />
@@ -106,7 +96,7 @@
         <item name="android:filterTouchesWhenObscured">true</item>
     </style>
 
-    <style name="Theme.PermissionController.Settings.FilterTouches">
+    <style name="Settings.FilterTouches">
         <item name="android:filterTouchesWhenObscured">true</item>
     </style>
 

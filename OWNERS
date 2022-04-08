@@ -1,3 +1,6 @@
-include platform/frameworks/base:/core/java/android/permission/OWNERS
-
-include platform/packages/modules/common:/MODULES_OWNERS  # see go/mainline-owners-policy
+svetoslavganov@google.com
+ewol@google.com
+eugenesusla@google.com
+zhanghai@google.com
+evanseverson@google.com
+ntmyren@google.com

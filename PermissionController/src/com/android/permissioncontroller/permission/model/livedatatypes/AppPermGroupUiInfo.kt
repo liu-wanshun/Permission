@@ -23,13 +23,11 @@ package com.android.permissioncontroller.permission.model.livedatatypes
  * @param shouldShow Whether or not this app perm group should be shown in the UI
  * @param permGrantState Whether this app perm group has granted permissions
  * @param isSystem Whether or not this app is a system app, which should be hidden by default
- * @param isUserSet Whether or not the user has set or fixed this app perm group
  */
 data class AppPermGroupUiInfo(
     val shouldShow: Boolean,
     val permGrantState: PermGrantState,
-    val isSystem: Boolean,
-    val isUserSet: Boolean
+    val isSystem: Boolean
 ) {
     enum class PermGrantState(private val grantState: Int) {
         PERMS_DENIED(0),

@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.text.BidiFormatter;
+import androidx.fragment.app.FragmentActivity;
 
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.utils.Utils;
@@ -45,7 +46,7 @@ import java.util.List;
 /**
  * A dialog listing the currently enabled accessibility services and their last access times.
  */
-public final class ReviewAccessibilityServicesActivity extends SettingsActivity {
+public final class ReviewAccessibilityServicesActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,7 @@ public final class ReviewAccessibilityServicesActivity extends SettingsActivity 
                         startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
                     }
                 })
-                .setOnDismissListener((dialog) -> finishAfterTransition())
+                .setOnDismissListener((dialog) -> finish())
                 .show();
     }
 

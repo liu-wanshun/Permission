@@ -17,9 +17,11 @@
 package com.android.permissioncontroller.role.ui;
 
 import android.os.Bundle;
+import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.android.permissioncontroller.DeviceUtils;
 import com.android.permissioncontroller.R;
@@ -29,7 +31,7 @@ import com.android.permissioncontroller.role.ui.handheld.HandheldDefaultAppListF
 /**
  * Activity for the list of default apps.
  */
-public class DefaultAppListActivity extends SettingsActivity {
+public class DefaultAppListActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,8 +40,10 @@ public class DefaultAppListActivity extends SettingsActivity {
             // fragments are restored properly on configuration changes.
             setTheme(R.style.CarSettings);
         }
-
         super.onCreate(savedInstanceState);
+
+        getWindow().addSystemFlags(
+                WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS);
 
         if (savedInstanceState == null) {
             Fragment fragment;

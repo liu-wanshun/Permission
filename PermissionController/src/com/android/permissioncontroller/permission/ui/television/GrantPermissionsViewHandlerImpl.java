@@ -1,32 +1,25 @@
 package com.android.permissioncontroller.permission.ui.television;
 
-import static com.android.permissioncontroller.permission.ui.GrantPermissionsActivity.ALLOW_ALWAYS_BUTTON;
 import static com.android.permissioncontroller.permission.ui.GrantPermissionsActivity.ALLOW_BUTTON;
+import static com.android.permissioncontroller.permission.ui.GrantPermissionsActivity.ALLOW_ALWAYS_BUTTON;
 import static com.android.permissioncontroller.permission.ui.GrantPermissionsActivity.ALLOW_FOREGROUND_BUTTON;
 import static com.android.permissioncontroller.permission.ui.GrantPermissionsActivity.ALLOW_ONE_TIME_BUTTON;
 import static com.android.permissioncontroller.permission.ui.GrantPermissionsActivity.DENY_AND_DONT_ASK_AGAIN_BUTTON;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
-
-import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.ui.GrantPermissionsViewHandler;
 
@@ -38,15 +31,12 @@ public final class GrantPermissionsViewHandlerImpl implements GrantPermissionsVi
     private static final String ARG_GROUP_NAME = "ARG_GROUP_NAME";
 
     private final Context mContext;
-    private final Drawable mBackgroundWithBlur;
-    private final Drawable mBackgroundNoBlur;
-    private final int mBackgroundBlurRadius;
 
     private ResultListener mResultListener;
 
     private String mGroupName;
 
-    private ViewGroup mRootView;
+    private LinearLayout mRootView;
     private TextView mMessageView;
     private ImageView mIconView;
     private TextView mCurrentGroupView;
@@ -59,11 +49,6 @@ public final class GrantPermissionsViewHandlerImpl implements GrantPermissionsVi
 
     public GrantPermissionsViewHandlerImpl(Context context, String appPackageName) {
         mContext = context;
-        mBackgroundWithBlur = context.getResources().getDrawable(
-                R.drawable.dialog_background_with_blur);
-        mBackgroundNoBlur = context.getResources().getDrawable(R.drawable.dialog_background);
-        mBackgroundBlurRadius = context.getResources().getDimensionPixelSize(
-                R.dimen.grant_permissions_dialog_background_blur_radius);
     }
 
     @Override
@@ -74,7 +59,7 @@ public final class GrantPermissionsViewHandlerImpl implements GrantPermissionsVi
 
     @Override
     public View createView() {
-        mRootView = (ViewGroup) LayoutInflater.from(mContext)
+        mRootView = (LinearLayout) LayoutInflater.from(mContext)
                 .inflate(R.layout.grant_permissions, null);
 
         mMessageView = (TextView) mRootView.findViewById(R.id.permission_message);
@@ -102,42 +87,17 @@ public final class GrantPermissionsViewHandlerImpl implements GrantPermissionsVi
 
     @Override
     public void updateWindowAttributes(WindowManager.LayoutParams outLayoutParams) {
-        DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
-        int screenWidth = metrics.widthPixels;
-        int screenHeight = metrics.heightPixels;
-        int marginBottomPx = mContext.getResources().getDimensionPixelSize(
-                R.dimen.grant_permissions_dialog_margin_bottom);
-        int marginSidePx = mContext.getResources().getDimensionPixelSize(
-                R.dimen.grant_permissions_dialog_side_margin);
-
-        outLayoutParams.width = screenWidth - marginSidePx * 2;
+        outLayoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         outLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        outLayoutParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-        outLayoutParams.verticalMargin = (float) marginBottomPx / screenHeight;
-        outLayoutParams.format = PixelFormat.TRANSPARENT;
+        outLayoutParams.format = PixelFormat.OPAQUE;
+        outLayoutParams.gravity = Gravity.BOTTOM;
         outLayoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
         outLayoutParams.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-        outLayoutParams.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
-
-        if (SdkLevel.isAtLeastS()
-                && mContext.getResources().getBoolean(R.bool.config_useWindowBlur)) {
-            outLayoutParams.flags |= WindowManager.LayoutParams.FLAG_BLUR_BEHIND;
-            outLayoutParams.setBlurBehindRadius(mContext.getResources().getDimensionPixelSize(
-                    R.dimen.grant_permissions_dialog_blur_behind_radius));
-        }
-    }
-
-    @Override
-    @RequiresApi(Build.VERSION_CODES.S)
-    public void onBlurEnabledChanged(Window window, boolean enabled) {
-        window.setBackgroundDrawable(enabled ? mBackgroundWithBlur : mBackgroundNoBlur);
-        window.setBackgroundBlurRadius(enabled ? mBackgroundBlurRadius : 0);
     }
 
     @Override
     public void updateUi(String groupName, int groupCount, int groupIndex, Icon icon,
-            CharSequence message, CharSequence detailMessage, boolean[] buttonVisibilities,
-            boolean[] locationVisibilities) {
+            CharSequence message, CharSequence detailMessage, boolean[] buttonVisibilities) {
         // TODO: Handle detailMessage
 
         mGroupName = groupName;
@@ -158,14 +118,12 @@ public final class GrantPermissionsViewHandlerImpl implements GrantPermissionsVi
                 buttonVisibilities[ALLOW_ONE_TIME_BUTTON] ? View.VISIBLE : View.GONE);
         mHardDenyButton.setVisibility(
                 buttonVisibilities[DENY_AND_DONT_ASK_AGAIN_BUTTON] ? View.VISIBLE : View.GONE);
-        mRootView.requestFocus();
-
         if (groupCount > 1) {
             mCurrentGroupView.setVisibility(View.VISIBLE);
             mCurrentGroupView.setText(mContext.getString(R.string.current_permission_template,
                     groupIndex + 1, groupCount));
         } else {
-            mCurrentGroupView.setVisibility(View.GONE);
+            mCurrentGroupView.setVisibility(View.INVISIBLE);
         }
     }
 

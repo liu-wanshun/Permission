@@ -68,6 +68,11 @@ class UsageStatsLiveData private constructor(
         postValue(userMap)
     }
 
+    override fun onActive() {
+        super.onActive()
+        update()
+    }
+
     companion object : DataRepository<Pair<Long, Int>, UsageStatsLiveData>() {
         override fun newValue(key: Pair<Long, Int>): UsageStatsLiveData {
             return UsageStatsLiveData(PermissionControllerApplication.get(), key.first, key.second)

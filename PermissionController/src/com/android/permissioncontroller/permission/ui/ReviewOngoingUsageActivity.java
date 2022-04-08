@@ -23,15 +23,16 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
 import com.android.permissioncontroller.DeviceUtils;
-import com.android.permissioncontroller.permission.ui.handheld.ReviewOngoingUsageWrapperFragment;
-import com.android.permissioncontroller.permission.ui.handheld.dashboard.UtilsKt;
+import com.android.permissioncontroller.permission.ui.handheld.ReviewOngoingUsageFragment;
+import com.android.permissioncontroller.permission.debug.UtilsKt;
 
 /**
  * A dialog listing the currently uses of camera, microphone, and location.
  */
-public final class ReviewOngoingUsageActivity extends SettingsActivity {
+public final class ReviewOngoingUsageActivity extends FragmentActivity {
 
     // Number of milliseconds in the past to look for accesses if nothing was specified.
     private static final long DEFAULT_MILLIS = 5000;
@@ -40,8 +41,8 @@ public final class ReviewOngoingUsageActivity extends SettingsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!UtilsKt.shouldShowCameraMicIndicators() && !UtilsKt.shouldShowLocationIndicators()) {
-            finishAfterTransition();
+        if (!UtilsKt.shouldShowCameraMicIndicators()) {
+            finish();
             return;
         }
 
@@ -49,7 +50,7 @@ public final class ReviewOngoingUsageActivity extends SettingsActivity {
 
         long numMillis = getIntent().getLongExtra(Intent.EXTRA_DURATION_MILLIS, DEFAULT_MILLIS);
         getSupportFragmentManager().beginTransaction().replace(android.R.id.content,
-                ReviewOngoingUsageWrapperFragment.newInstance(numMillis)).commit();
+                ReviewOngoingUsageFragment.newInstance(numMillis)).commit();
     }
 
 
@@ -61,7 +62,7 @@ public final class ReviewOngoingUsageActivity extends SettingsActivity {
                 if (DeviceUtils.isAuto(this)) {
                     onBackPressed();
                 } else {
-                    finishAfterTransition();
+                    finish();
                 }
                 return true;
             default:

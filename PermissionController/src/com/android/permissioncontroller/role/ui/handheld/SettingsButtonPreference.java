@@ -28,58 +28,45 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import com.android.permissioncontroller.R;
-import com.android.permissioncontroller.role.ui.TwoTargetPreference;
 
 /**
  * {@link Preference} with a settings button.
  *
  * @see com.android.settings.widget.GearPreference
  */
-// Made public for com.android.permissioncontroller.role.ui.specialappaccess.handheld
-public class SettingsButtonPreference extends com.android.settingslib.widget.TwoTargetPreference
-        implements TwoTargetPreference {
+class SettingsButtonPreference extends HandHeldTwoTargetPreference {
 
     @Nullable
     private OnSecondTargetClickListener mOnSecondTargetClickListener;
 
-    public SettingsButtonPreference(@NonNull Context context, @Nullable AttributeSet attrs,
+    SettingsButtonPreference(@NonNull Context context, @Nullable AttributeSet attrs,
             @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
         init();
     }
 
-    public SettingsButtonPreference(@NonNull Context context, @Nullable AttributeSet attrs,
+    SettingsButtonPreference(@NonNull Context context, @Nullable AttributeSet attrs,
             @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         init();
     }
 
-    public SettingsButtonPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
+    SettingsButtonPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         init();
     }
 
-    public SettingsButtonPreference(@NonNull Context context) {
+    SettingsButtonPreference(@NonNull Context context) {
         super(context);
 
         init();
     }
 
     private void init() {
-        setIconSize(ICON_SIZE_MEDIUM);
-    }
-
-    @Override
-    protected int getSecondTargetResId() {
-        return R.layout.settings_button_preference_widget;
-    }
-
-    @Override
-    protected boolean shouldHideSecondTarget() {
-        return mOnSecondTargetClickListener == null;
+        setWidgetLayoutResource(R.layout.settings_button_preference_widget);
     }
 
     @Override
@@ -92,13 +79,15 @@ public class SettingsButtonPreference extends com.android.settingslib.widget.Two
     public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
+        View widgetFrame = holder.findViewById(android.R.id.widget_frame);
+        widgetFrame.setPadding(0, 0, 0, 0);
         View settingsButton = holder.findViewById(R.id.settings_button);
         if (mOnSecondTargetClickListener != null) {
-            settingsButton.setVisibility(View.VISIBLE);
+            widgetFrame.setVisibility(View.VISIBLE);
             settingsButton.setOnClickListener(view ->
                     mOnSecondTargetClickListener.onSecondTargetClick(this));
         } else {
-            settingsButton.setVisibility(View.GONE);
+            widgetFrame.setVisibility(View.GONE);
             settingsButton.setOnClickListener(null);
         }
         // Make the settings button enabled even if the preference itself is disabled.

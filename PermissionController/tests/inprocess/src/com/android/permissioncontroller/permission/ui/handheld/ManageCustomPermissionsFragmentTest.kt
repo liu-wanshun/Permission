@@ -25,14 +25,18 @@ import androidx.navigation.Navigation.findNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.android.compatibility.common.util.SystemUtil.eventually
+import com.android.permissioncontroller.DisableAnimationsRule
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.getUsageCountsFromUi
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity
 import com.android.permissioncontroller.scrollToPreference
 import com.android.permissioncontroller.wakeUpScreen
+import com.android.permissioncontroller.workAroundAppCompatCheckVectorDrawableSetup
 import com.google.common.truth.Truth.assertThat
 import org.junit.After
 import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -40,10 +44,9 @@ import org.junit.runner.RunWith
  * Simple tests for {@link ManageCustomPermissionsFragment}
  */
 @RunWith(AndroidJUnit4::class)
-class ManageCustomPermissionsFragmentTest : HandheldUiBaseTest() {
+class ManageCustomPermissionsFragmentTest {
     private val ONE_PERMISSION_DEFINER_APK =
-            "/data/local/tmp/permissioncontroller/tests/inprocess/" +
-                "AppThatDefinesAdditionalPermission.apk"
+            "/data/local/tmp/permissioncontroller/tests/inprocess/AppThatDefinesAdditionalPermission.apk"
     private val PERMISSION_USER_APK =
             "/data/local/tmp/permissioncontroller/tests/inprocess/" +
                     "AppThatUsesAdditionalPermission.apk"
@@ -53,7 +56,11 @@ class ManageCustomPermissionsFragmentTest : HandheldUiBaseTest() {
     private val PERM_LABEL = "Permission A"
     private val PERM = "com.android.permissioncontroller.tests.A"
 
-    override fun provideActivityRule() = object : ActivityTestRule<ManagePermissionsActivity>(
+    @get:Rule
+    val disableAnimations = DisableAnimationsRule()
+
+    @get:Rule
+    val managePermissionsActivity = object : ActivityTestRule<ManagePermissionsActivity>(
             ManagePermissionsActivity::class.java) {
         override fun getActivityIntent() = Intent(Intent.ACTION_MANAGE_PERMISSIONS)
 
@@ -110,5 +117,13 @@ class ManageCustomPermissionsFragmentTest : HandheldUiBaseTest() {
     fun uninstallTestApp() {
         uninstallApp(DEFINER_PKG)
         uninstallApp(USER_PKG)
+    }
+
+    companion object {
+        @BeforeClass
+        @JvmStatic
+        fun workAroundVectorDrawable() {
+            workAroundAppCompatCheckVectorDrawableSetup()
+        }
     }
 }

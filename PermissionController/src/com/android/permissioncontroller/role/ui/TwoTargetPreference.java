@@ -16,31 +16,52 @@
 
 package com.android.permissioncontroller.role.ui;
 
+import android.content.Context;
+import android.util.AttributeSet;
+
+import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
+import androidx.preference.Preference;
 
 /**
- * {@link androidx.preference.Preference} with the widget layout as a separate target.
+ * {@link Preference} with the widget layout as a separate target.
  *
- * This has to be an interface because we may need to extend from either the SettingsLib
- * {@link com.android.settingslib.widget.TwoTargetPreference} or the AndroidX
- * {@link androidx.preference.Preference}.
- *
- * @see com.android.settingslib.widget.TwoTargetPreference
+ * @see com.android.settingslib.TwoTargetPreference
  */
-public interface TwoTargetPreference {
+public abstract class TwoTargetPreference extends Preference {
+
+    public TwoTargetPreference(@NonNull Context context, @Nullable AttributeSet attrs,
+            @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    public TwoTargetPreference(@NonNull Context context, @Nullable AttributeSet attrs,
+            @AttrRes int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    public TwoTargetPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public TwoTargetPreference(@NonNull Context context) {
+        super(context);
+    }
 
     /**
      * Set the listener for second target click.
      *
      * @param listener the listener
      */
-    void setOnSecondTargetClickListener(@Nullable OnSecondTargetClickListener listener);
+    public abstract void setOnSecondTargetClickListener(
+            @Nullable OnSecondTargetClickListener listener);
 
     /**
      * Listener for second target click.
      */
-    interface OnSecondTargetClickListener {
+    public interface OnSecondTargetClickListener {
 
         /**
          * Callback when the second target is clicked.

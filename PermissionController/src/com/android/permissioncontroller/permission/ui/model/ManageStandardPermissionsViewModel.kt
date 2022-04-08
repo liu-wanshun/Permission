@@ -21,13 +21,15 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.permission.data.PermGroupsPackagesLiveData
 import com.android.permissioncontroller.permission.data.PermGroupsPackagesUiInfoLiveData
 import com.android.permissioncontroller.permission.data.SmartUpdateMediatorLiveData
 import com.android.permissioncontroller.permission.data.StandardPermGroupNamesLiveData
-import com.android.permissioncontroller.permission.data.unusedAutoRevokePackagesLiveData
+import com.android.permissioncontroller.permission.data.UnusedAutoRevokedPackagesLiveData
 import com.android.permissioncontroller.permission.utils.navigateSafe
 
 /**
@@ -44,7 +46,7 @@ class ManageStandardPermissionsViewModel(
     val uiDataLiveData = PermGroupsPackagesUiInfoLiveData(app,
         StandardPermGroupNamesLiveData)
     val numCustomPermGroups = NumCustomPermGroupsWithPackagesLiveData()
-    val numAutoRevoked = Transformations.map(unusedAutoRevokePackagesLiveData) {
+    val numAutoRevoked = Transformations.map(UnusedAutoRevokedPackagesLiveData) {
         it?.size ?: 0
     }
 
@@ -70,6 +72,20 @@ class ManageStandardPermissionsViewModel(
 
     fun showAutoRevoke(fragment: Fragment, args: Bundle) {
         fragment.findNavController().navigateSafe(R.id.manage_to_auto_revoke, args)
+    }
+}
+
+/**
+ * Factory for a ManageStandardPermissionsViewModel
+ *
+ * @param app The current application of the fragment
+ */
+class ManageStandardPermissionsViewModelFactory(
+    private val app: Application
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        @Suppress("UNCHECKED_CAST")
+        return ManageStandardPermissionsViewModel(app) as T
     }
 }
 

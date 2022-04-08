@@ -40,10 +40,8 @@ import com.android.permissioncontroller.role.ui.TwoTargetPreference;
 import java.util.List;
 
 /**
- * Child fragment for the list of special app accesses.
- * <p>
- * Must be added as a child fragment and its parent fragment must be a
- * {@link PreferenceFragmentCompat} that implements {@link Parent}.
+ * Child fragment for the list of special app accesses. Must be added as a child fragment and its
+ * parent fragment must be a {@link PreferenceFragmentCompat} which implements {@link Parent}.
  *
  * @param <PF> type of the parent fragment
  */
@@ -51,7 +49,6 @@ public class SpecialAppAccessListChildFragment<PF extends PreferenceFragmentComp
         & SpecialAppAccessListChildFragment.Parent> extends Fragment
         implements Preference.OnPreferenceClickListener {
 
-    @NonNull
     private SpecialAppAccessListViewModel mViewModel;
 
     /**
@@ -101,9 +98,10 @@ public class SpecialAppAccessListChildFragment<PF extends PreferenceFragmentComp
             RoleItem roleItem = roleItems.get(i);
 
             Role role = roleItem.getRole();
-            Preference preference = oldPreferences.get(role.getName());
+            TwoTargetPreference preference = (TwoTargetPreference) oldPreferences.get(
+                    role.getName());
             if (preference == null) {
-                preference = (Preference) preferenceFragment.createPreference(context);
+                preference = preferenceFragment.createPreference(context);
                 preference.setKey(role.getName());
                 preference.setIconSpaceReserved(true);
                 preference.setTitle(role.getShortLabelResource());
@@ -111,8 +109,7 @@ public class SpecialAppAccessListChildFragment<PF extends PreferenceFragmentComp
                 preference.setOnPreferenceClickListener(this);
             }
 
-            role.preparePreferenceAsUser((TwoTargetPreference) preference, Process.myUserHandle(),
-                    context);
+            role.preparePreferenceAsUser(preference, Process.myUserHandle(), context);
 
             preferenceScreen.addPreference(preference);
         }

@@ -64,7 +64,6 @@ class PermissionControllerServiceModel(private val service: PermissionController
      */
     fun <T> observeAndCheckForLifecycleState(
         liveData: LiveData<T>,
-        forceUpdate: Boolean = false,
         onChangedFun: (t: T?) -> Unit
     ) {
         GlobalScope.launch(Main.immediate) {
@@ -76,10 +75,6 @@ class PermissionControllerServiceModel(private val service: PermissionController
             if (!liveData.hasActiveObservers()) {
                 observedLiveDatas.add(liveData)
                 liveData.observe(service, Observer { })
-            }
-
-            if (forceUpdate && liveData is SmartUpdateMediatorLiveData<T>) {
-                liveData.update()
             }
 
             var updated = false
@@ -97,7 +92,11 @@ class PermissionControllerServiceModel(private val service: PermissionController
                 }
             }
 
-            liveData.observe(service, observer)
+            if (liveData is SmartUpdateMediatorLiveData<T>) {
+                liveData.observeStale(service, observer)
+            } else {
+                liveData.observe(service, observer)
+            }
         }
     }
 
@@ -258,7 +257,7 @@ class PermissionControllerServiceModel(private val service: PermissionController
                 // acceptable
                 val uiInfoLiveData = AppPermGroupUiInfoLiveData[packageName, groupName,
                     Process.myUserHandle()]
-                observeAndCheckForLifecycleState(uiInfoLiveData, forceUpdate = true) { uiInfo ->
+                observeAndCheckForLifecycleState(uiInfoLiveData) { uiInfo ->
                     numLiveDatasUpdated++
 
                     uiInfo?.let {
@@ -283,9 +282,11 @@ class PermissionControllerServiceModel(private val service: PermissionController
     suspend fun onDump(): PermissionControllerDumpProto {
         // Timeout is less than the timeout used by dumping (10 s)
         return withTimeout(9000) {
+            val autoRevokeDump = GlobalScope.async(IPC) { dumpAutoRevokePermissions(service) }
             val dumpedLogs = GlobalScope.async(IO) { DumpableLog.get() }
 
             PermissionControllerDumpProto.newBuilder()
+                    .setAutoRevoke(autoRevokeDump.await())
                     .addAllLogs(dumpedLogs.await())
                     .build()
         }

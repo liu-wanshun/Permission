@@ -28,6 +28,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executor
 
 /**
  * LiveData that loads the last usage of each of a list of app ops for every package.
@@ -120,12 +121,12 @@ class OpUsageLiveData(
         GlobalScope.launch {
             while (hasActiveObservers()) {
                 delay(1000)
-                update()
+                onUpdate()
             }
         }
 
         try {
-            appOpsManager.startWatchingActive(opNames.toTypedArray(), { it.run() }, this)
+            appOpsManager.startWatchingActive(opNames.toTypedArray(), Executor { it.run() }, this)
         } catch (ignored: IllegalArgumentException) {
             // older builds might not support all the app-ops requested
         }
@@ -138,7 +139,7 @@ class OpUsageLiveData(
     }
 
     override fun onOpActiveChanged(op: String, uid: Int, packageName: String, active: Boolean) {
-        update()
+        onUpdate()
     }
 
     companion object : DataRepository<Pair<List<String>, Long>, OpUsageLiveData>() {
@@ -166,9 +167,6 @@ data class OpAccess(
         parcel.writeString(attributionTag)
         parcel.writeParcelable(user, flags)
         parcel.writeLong(lastAccessTime)
-        parcel.writeString(proxyAccess?.packageName)
-        parcel.writeString(proxyAccess?.attributionTag)
-        parcel.writeParcelable(proxyAccess?.user, flags)
     }
 
     override fun describeContents(): Int {
@@ -181,19 +179,10 @@ data class OpAccess(
         @JvmField
         val CREATOR = object : Parcelable.Creator<OpAccess> {
             override fun createFromParcel(parcel: Parcel): OpAccess {
-                val packageName = parcel.readString()!!
-                val attributionTag = parcel.readString()
-                val user: UserHandle = parcel.readParcelable(UserHandle::class.java.classLoader)!!
-                val lastAccessTime = parcel.readLong()
-                var proxyAccess: OpAccess? = null
-                val proxyPackageName = parcel.readString()
-                if (proxyPackageName != null) {
-                    proxyAccess = OpAccess(proxyPackageName,
+                return OpAccess(parcel.readString()!!,
                         parcel.readString(),
                         parcel.readParcelable(UserHandle::class.java.classLoader)!!,
-                        lastAccessTime)
-                }
-                return OpAccess(packageName, attributionTag, user, lastAccessTime, proxyAccess)
+                        parcel.readLong())
             }
 
             override fun newArray(size: Int): Array<OpAccess?> {

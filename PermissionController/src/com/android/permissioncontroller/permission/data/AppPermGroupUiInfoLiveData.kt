@@ -129,11 +129,9 @@ class AppPermGroupUiInfoLiveData private constructor(
 
         val isSystemApp = !isUserSensitive(permissionState)
 
-        val isUserSet = isUserSet(permissionState)
-
         val isGranted = getGrantedIncludingBackground(permissionState, allPermInfos, packageInfo)
 
-        return AppPermGroupUiInfo(shouldShow, isGranted, isSystemApp, isUserSet)
+        return AppPermGroupUiInfo(shouldShow, isGranted, isSystemApp)
     }
 
     /**
@@ -153,31 +151,26 @@ class AppPermGroupUiInfoLiveData private constructor(
         groupInfo: LightPermGroupInfo,
         permissionInfos: Collection<LightPermInfo>
     ): Boolean {
-        if (groupInfo.packageName == Utils.OS_PKG &&
-            !isModernPermissionGroup(groupInfo.name)) {
-            return false
-        }
-
-        var hasInstantPerm = false
         var hasPreRuntime = false
 
         for (permissionInfo in permissionInfos) {
             if (permissionInfo.protectionFlags and
                 PermissionInfo.PROTECTION_FLAG_RUNTIME_ONLY == 0) {
                 hasPreRuntime = true
-            }
-
-            if (permissionInfo.protectionFlags and PermissionInfo.PROTECTION_FLAG_INSTANT != 0) {
-                hasInstantPerm = true
+                break
             }
         }
 
-        val isGrantingAllowed = (!packageInfo.isInstantApp || hasInstantPerm) &&
+        val isGrantingAllowed = !packageInfo.isInstantApp &&
             (packageInfo.targetSdkVersion >= Build.VERSION_CODES.M || hasPreRuntime)
         if (!isGrantingAllowed) {
             return false
         }
 
+        if (groupInfo.packageName == Utils.OS_PKG &&
+            !isModernPermissionGroup(groupInfo.name)) {
+            return false
+        }
         return true
     }
 
@@ -210,21 +203,6 @@ class AppPermGroupUiInfoLiveData private constructor(
     }
 
     /**
-     * Determines if the app permission group is user set
-     *
-     * @param permissionState The permission flags and grant state corresponding to the permissions
-     * in this group requested by a given app
-     *
-     * @return Whether or not any of the permissions in this group have been set or fixed by the
-     * user
-     */
-    private fun isUserSet(permissionState: Map<String, PermState>): Boolean {
-        val flagMask = PackageManager.FLAG_PERMISSION_USER_SET or
-                PackageManager.FLAG_PERMISSION_USER_FIXED
-        return permissionState.any { (it.value.permFlags and flagMask) != 0 }
-    }
-
-    /**
      * Determines if this app permission group is granted, granted in foreground only, or denied.
      * It is granted if it either requests no background permissions, and has at least one requested
      * permission that is granted, or has granted at least one requested background permission.
@@ -252,6 +230,7 @@ class AppPermGroupUiInfoLiveData private constructor(
 
         var hasPermWithBackground = false
         var isUserFixed = false
+        var isOneTime = false
         for ((permName, permState) in permissionState) {
             val permInfo = allPermInfos[permName] ?: continue
             permInfo.backgroundPermission?.let { backgroundPerm ->
@@ -263,27 +242,28 @@ class AppPermGroupUiInfoLiveData private constructor(
             }
             isUserFixed = isUserFixed ||
                     permState.permFlags and PackageManager.FLAG_PERMISSION_USER_FIXED != 0
+            isOneTime = isOneTime ||
+                    permState.permFlags and PackageManager.FLAG_PERMISSION_ONE_TIME != 0
         }
-        // isOneTime indicates whether permission states contain any one-time permission and
-        // none of the permissions are granted (not one-time)
-        val isOneTime = permissionState.any {
-            it.value.permFlags and PackageManager.FLAG_PERMISSION_ONE_TIME != 0 } &&
-                !permissionState.any {
-                    it.value.permFlags and PackageManager.FLAG_PERMISSION_ONE_TIME == 0 &&
-                            it.value.granted }
 
         val anyAllowed = specialLocationState ?: permissionState.any { it.value.granted }
         if (anyAllowed && (hasPermWithBackground || shouldShowAsForegroundGroup())) {
-            return if (isOneTime) {
-                PermGrantState.PERMS_ASK
+            if (isOneTime) {
+                return PermGrantState.PERMS_ASK
             } else {
-                PermGrantState.PERMS_ALLOWED_FOREGROUND_ONLY
+                if (Utils.couldHaveForegroundCapabilities(
+                                Utils.getUserContext(app, user), packageName) ||
+                        Utils.isEmergencyApp(Utils.getUserContext(app, user), packageName)) {
+                    return PermGrantState.PERMS_ALLOWED_ALWAYS
+                } else {
+                    return PermGrantState.PERMS_ALLOWED_FOREGROUND_ONLY
+                }
             }
         } else if (anyAllowed) {
-            return if (isOneTime) {
-                PermGrantState.PERMS_ASK
+            if (isOneTime) {
+                return PermGrantState.PERMS_ASK
             } else {
-                PermGrantState.PERMS_ALLOWED
+                return PermGrantState.PERMS_ALLOWED
             }
         }
         if (isUserFixed) {

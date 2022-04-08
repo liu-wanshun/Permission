@@ -36,7 +36,8 @@
 
         <TextView
             android:id="@+id/permissionsList"
-            style="@style/PermissionUsageDialogItemPermissionsList"/>
+            style="@style/PermissionUsageDialogItemPermissionsList"
+            android:visibility="gone" />
 
     </LinearLayout>
 

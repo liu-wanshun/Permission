@@ -16,7 +16,6 @@
 
 package com.android.permissioncontroller.permission.ui.model
 
-import android.Manifest
 import android.Manifest.permission_group.CAMERA
 import android.Manifest.permission_group.LOCATION
 import android.Manifest.permission_group.MICROPHONE
@@ -24,6 +23,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.media.AudioManager
 import android.media.AudioManager.MODE_IN_COMMUNICATION
 import android.os.Bundle
@@ -39,6 +39,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
 import com.android.permissioncontroller.PermissionControllerApplication
+import com.android.permissioncontroller.permission.data.AppPermGroupUiInfoLiveData
 import com.android.permissioncontroller.permission.data.AttributionLabelLiveData
 import com.android.permissioncontroller.permission.data.LoadAndFreezeLifeData
 import com.android.permissioncontroller.permission.data.OpAccess
@@ -46,14 +47,17 @@ import com.android.permissioncontroller.permission.data.OpUsageLiveData
 import com.android.permissioncontroller.permission.data.PermGroupUsageLiveData
 import com.android.permissioncontroller.permission.data.SmartAsyncMediatorLiveData
 import com.android.permissioncontroller.permission.data.SmartUpdateMediatorLiveData
+import com.android.permissioncontroller.permission.data.get
 import com.android.permissioncontroller.permission.data.micMutedLiveData
-import com.android.permissioncontroller.permission.ui.handheld.dashboard.shouldShowLocationIndicators
-import com.android.permissioncontroller.permission.ui.handheld.dashboard.shouldShowPermissionsDashboard
+import com.android.permissioncontroller.permission.debug.shouldShowPermissionsDashboard
 import com.android.permissioncontroller.permission.ui.handheld.ReviewOngoingUsageFragment.PHONE_CALL
 import com.android.permissioncontroller.permission.ui.handheld.ReviewOngoingUsageFragment.VIDEO_CALL
 import com.android.permissioncontroller.permission.utils.KotlinUtils
 import com.android.permissioncontroller.permission.utils.Utils
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.time.Instant
 import kotlin.math.max
 
@@ -103,7 +107,7 @@ class ReviewOngoingUsageViewModel(
      */
     private val permGroupUsages = LoadAndFreezeLifeData(state, USAGES_KEY,
             PermGroupUsageLiveData(PermissionControllerApplication.get(),
-                    if (shouldShowPermissionsDashboard() || shouldShowLocationIndicators()) {
+                    if (shouldShowPermissionsDashboard()) {
                         listOf(CAMERA, LOCATION, MICROPHONE)
                     } else {
                         listOf(CAMERA, MICROPHONE)
@@ -163,13 +167,6 @@ class ReviewOngoingUsageViewModel(
             }
 
             value = filteredUsages
-        }
-
-        // TODO ntmyren: Replace this with better check if this moves beyond teamfood
-        private fun isAppPredictor(usage: OpAccess): Boolean {
-            return Utils.getUserContext(app, usage.user).packageManager.checkPermission(
-                    Manifest.permission.MANAGE_APP_PREDICTIONS, usage.packageName) ==
-                    PackageManager.PERMISSION_GRANTED
         }
     }
 
@@ -384,8 +381,8 @@ class ReviewOngoingUsageViewModel(
     private val callOpUsageLiveData =
         object : SmartUpdateMediatorLiveData<Collection<String>>() {
             private val rawOps = LoadAndFreezeLifeData(state, CALL_OP_USAGE_KEY,
-                OpUsageLiveData[listOf(PHONE_CALL, VIDEO_CALL),
-                    System.currentTimeMillis() - startTime])
+                OpUsageLiveData(PermissionControllerApplication.get(),
+                        listOf(PHONE_CALL, VIDEO_CALL), System.currentTimeMillis() - startTime))
 
             init {
                 addSource(rawOps) {

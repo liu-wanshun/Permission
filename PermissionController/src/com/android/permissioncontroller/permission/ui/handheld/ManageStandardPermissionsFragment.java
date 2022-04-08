@@ -15,14 +15,11 @@
  */
 package com.android.permissioncontroller.permission.ui.handheld;
 
-import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory;
-
 import static com.android.permissioncontroller.Constants.EXTRA_SESSION_ID;
 import static com.android.permissioncontroller.Constants.INVALID_SESSION_ID;
+import static com.android.permissioncontroller.permission.debug.UtilsKt.shouldShowPermissionsDashboard;
 import static com.android.permissioncontroller.permission.ui.handheld.UtilsKt.pressBack;
-import static com.android.permissioncontroller.permission.ui.handheld.dashboard.UtilsKt.shouldShowPermissionsDashboard;
 
-import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,13 +31,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
-import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity;
-import com.android.permissioncontroller.permission.ui.UnusedAppsFragment;
 import com.android.permissioncontroller.permission.ui.model.ManageStandardPermissionsViewModel;
+import com.android.permissioncontroller.permission.ui.model.ManageStandardPermissionsViewModelFactory;
 import com.android.permissioncontroller.permission.utils.Utils;
-import com.android.settingslib.widget.FooterPreference;
 
 /**
  * Fragment that allows the user to manage standard permissions.
@@ -70,8 +65,9 @@ public final class ManageStandardPermissionsFragment extends ManagePermissionsFr
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        final Application application = getActivity().getApplication();
-        mViewModel = new ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))
+        ManageStandardPermissionsViewModelFactory factory =
+                new ManageStandardPermissionsViewModelFactory(getActivity().getApplication());
+        mViewModel = new ViewModelProvider(this, factory)
                 .get(ManageStandardPermissionsViewModel.class);
         mPermissionGroups = mViewModel.getUiDataLiveData().getValue();
 
@@ -81,7 +77,7 @@ public final class ManageStandardPermissionsFragment extends ManagePermissionsFr
                 updatePermissionsUi();
             } else {
                 Log.e(LOG_TAG, "ViewModel returned null data, exiting");
-                getActivity().finishAfterTransition();
+                getActivity().finish();
             }
         });
 
@@ -166,12 +162,22 @@ public final class ManageStandardPermissionsFragment extends ManagePermissionsFr
         Preference autoRevokePreference = screen.findPreference(AUTO_REVOKE_KEY);
         if (numAutoRevoked != null && numAutoRevoked != 0) {
             if (autoRevokePreference == null) {
-                if (SdkLevel.isAtLeastS()) {
-                    autoRevokePreference = createAutoRevokeFooterPreferenceForSPlus();
-                } else {
-                    autoRevokePreference = createAutoRevokeFooterPreferenceForR();
-                }
+                autoRevokePreference = new FixedSizeIconPreference(
+                        getPreferenceManager().getContext(), true, true);
+                autoRevokePreference.setOrder(-1);
                 autoRevokePreference.setKey(AUTO_REVOKE_KEY);
+                autoRevokePreference.setSingleLineTitle(false);
+                autoRevokePreference.setIcon(R.drawable.ic_info_outline_accent);
+                autoRevokePreference.setTitle(
+                            R.string.auto_revoke_permission_notification_title);
+                autoRevokePreference.setSummary(
+                        R.string.auto_revoke_setting_subtitle);
+                autoRevokePreference.setOnPreferenceClickListener(preference -> {
+                    mViewModel.showAutoRevoke(this, AutoRevokeFragment.createArgs(
+                            getArguments().getLong(EXTRA_SESSION_ID, INVALID_SESSION_ID)));
+                    return true;
+                });
+
                 screen.addPreference(autoRevokePreference);
             }
         } else if (numAutoRevoked != null && autoRevokePreference != null) {
@@ -179,32 +185,6 @@ public final class ManageStandardPermissionsFragment extends ManagePermissionsFr
         }
 
         return screen;
-    }
-
-    private FooterPreference createAutoRevokeFooterPreferenceForSPlus() {
-        FooterPreference autoRevokePreference = new FooterPreference(getContext());
-        autoRevokePreference.setSummary(R.string.auto_revoked_apps_page_summary);
-        autoRevokePreference.setLearnMoreAction(view -> {
-            mViewModel.showAutoRevoke(this, UnusedAppsFragment.createArgs(
-                            getArguments().getLong(EXTRA_SESSION_ID, INVALID_SESSION_ID)));
-            });
-        return autoRevokePreference;
-    }
-
-    private Preference createAutoRevokeFooterPreferenceForR() {
-        Preference autoRevokePreference = new FixedSizeIconPreference(
-                getPreferenceManager().getContext(), true, true);
-        autoRevokePreference.setOrder(-1);
-        autoRevokePreference.setSingleLineTitle(false);
-        autoRevokePreference.setIcon(R.drawable.ic_info_outline_accent);
-        autoRevokePreference.setTitle(R.string.auto_revoke_permission_notification_title);
-        autoRevokePreference.setSummary(R.string.auto_revoke_setting_subtitle);
-        autoRevokePreference.setOnPreferenceClickListener(preference -> {
-            mViewModel.showAutoRevoke(this, UnusedAppsFragment.createArgs(
-                    getArguments().getLong(EXTRA_SESSION_ID, INVALID_SESSION_ID)));
-            return true;
-        });
-        return autoRevokePreference;
     }
 
     @Override

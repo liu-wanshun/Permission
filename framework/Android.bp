@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package {
-    default_applicable_licenses: ["Android-Apache-2.0"],
-}
-
 filegroup {
     name: "framework-permission-sources",
     srcs: [
@@ -31,10 +27,7 @@ java_sdk_library {
     defaults: ["framework-module-defaults"],
 
     // Restrict access to implementation library.
-    impl_library_visibility: [
-        "//frameworks/base/apex/permission:__subpackages__",
-        "//packages/modules/Permission:__subpackages__",
-    ],
+    impl_library_visibility: ["//frameworks/base/apex/permission:__subpackages__"],
 
     srcs: [
         ":framework-permission-sources",
@@ -44,10 +37,6 @@ java_sdk_library {
         "com.android.permission",
         "test_com.android.permission",
     ],
-    lint: {
-        strict_updatability_linting: true,
-    },
-    min_sdk_version: "30",
     permitted_packages: [
         "android.permission",
         "android.app.role",

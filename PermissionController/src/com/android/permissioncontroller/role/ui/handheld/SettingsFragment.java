@@ -24,35 +24,31 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
 
-import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.utils.Utils;
 import com.android.permissioncontroller.role.utils.UiUtils;
 import com.android.settingslib.HelpUtils;
-import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseFragment;
-
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 /**
  * Base class for settings fragments.
  */
 // Made public for com.android.permissioncontroller.role.ui.specialappaccess.handheld
-public abstract class SettingsFragment extends CollapsingToolbarBaseFragment {
+public abstract class SettingsFragment extends PreferenceFragmentCompat {
 
-    @NonNull
+    private FrameLayout mContentLayout;
+    private LinearLayout mPreferenceLayout;
     private View mLoadingView;
-    @NonNull
     private TextView mEmptyText;
-
-    @NonNull
-    private PreferenceFragmentCompat mPreferenceFragment;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,17 +60,24 @@ public abstract class SettingsFragment extends CollapsingToolbarBaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-        inflater.inflate(R.layout.settings_fragment_include, getContentFrameLayout());
-        return view;
+        mContentLayout = (FrameLayout) inflater.inflate(R.layout.settings, container, false);
+        mPreferenceLayout = (LinearLayout) super.onCreateView(inflater, container,
+                savedInstanceState);
+        mContentLayout.addView(mPreferenceLayout);
+        return mContentLayout;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mLoadingView = view.findViewById(R.id.loading);
-        mEmptyText = view.findViewById(R.id.empty);
+        mLoadingView = mContentLayout.findViewById(R.id.loading);
+        mEmptyText = mContentLayout.findViewById(R.id.empty);
+    }
+
+    @Override
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
+        // We'll manually add preferences later.
     }
 
     @Override
@@ -86,21 +89,10 @@ public abstract class SettingsFragment extends CollapsingToolbarBaseFragment {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        if (savedInstanceState == null) {
-            mPreferenceFragment = onCreatePreferenceFragment();
-            getChildFragmentManager().beginTransaction()
-                    .add(R.id.preference_fragment_container, mPreferenceFragment)
-                    .commit();
-        } else {
-            mPreferenceFragment = (PreferenceFragmentCompat) getChildFragmentManager()
-                    .findFragmentById(R.id.preference_fragment_container);
-        }
         mEmptyText.setText(getEmptyTextResource());
-        updateStateViews();
-    }
 
-    @NonNull
-    protected abstract PreferenceFragmentCompat onCreatePreferenceFragment();
+        updateState();
+    }
 
     @StringRes
     protected abstract int getEmptyTextResource();
@@ -109,13 +101,11 @@ public abstract class SettingsFragment extends CollapsingToolbarBaseFragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        if (!SdkLevel.isAtLeastS()) {
-            Utils.prepareSearchMenuItem(menu, requireContext());
-            int helpUriResource = getHelpUriResource();
-            if (helpUriResource != 0) {
-                HelpUtils.prepareHelpMenuItem(requireActivity(), menu, helpUriResource,
-                        getClass().getName());
-            }
+        Utils.prepareSearchMenuItem(menu, requireContext());
+        int helpUriResource = getHelpUriResource();
+        if (helpUriResource != 0) {
+            HelpUtils.prepareHelpMenuItem(requireActivity(), menu, helpUriResource,
+                    getClass().getName());
         }
     }
 
@@ -128,40 +118,18 @@ public abstract class SettingsFragment extends CollapsingToolbarBaseFragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                requireActivity().finishAfterTransition();
+                requireActivity().finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    /**
-     * Set the title of the current settings page.
-     *
-     * @param title the title of the current settings page
-     */
-    public void setTitle(@NonNull CharSequence title) {
-        requireActivity().setTitle(title);
-        CollapsingToolbarLayout collapsingToolbarLayout = getCollapsingToolbarLayout();
-        if (collapsingToolbarLayout != null) {
-            collapsingToolbarLayout.setTitle(title);
-        }
-    }
-
-    /**
-     * Callback when changes have been made to the {@link androidx.preference.PreferenceScreen}
-     * of this {@link PreferenceFragmentCompat}.
-     */
-    public void onPreferenceScreenChanged() {
-        updateStateViews();
-    }
-
-    private void updateStateViews() {
-        boolean isLoading = mPreferenceFragment.getPreferenceManager() == null
-                || mPreferenceFragment.getPreferenceScreen() == null;
+    protected void updateState() {
+        PreferenceScreen preferenceScreen = getPreferenceScreen();
+        boolean isLoading = preferenceScreen == null;
         UiUtils.setViewShown(mLoadingView, isLoading);
-        boolean isEmpty = !isLoading
-                && mPreferenceFragment.getPreferenceScreen().getPreferenceCount() == 0;
+        boolean isEmpty = preferenceScreen != null && preferenceScreen.getPreferenceCount() == 0;
         UiUtils.setViewShown(mEmptyText, isEmpty);
     }
 }

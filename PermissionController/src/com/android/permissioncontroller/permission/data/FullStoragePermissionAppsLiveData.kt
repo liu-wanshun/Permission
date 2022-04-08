@@ -79,6 +79,11 @@ object FullStoragePermissionAppsLiveData :
         postValue(fullStoragePackages)
     }
 
+    override fun onActive() {
+        super.onActive()
+        updateAsync()
+    }
+
     /**
      * Gets the full storage package information for a given package
      *

@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package {
-    default_applicable_licenses: ["Android-Apache-2.0"],
-}
-
 apex {
     name: "com.android.permission",
     defaults: ["com.android.permission-defaults"],
@@ -26,15 +22,13 @@ apex_defaults {
     name: "com.android.permission-defaults",
     updatable: true,
     min_sdk_version: "30",
-    bootclasspath_fragments: ["com.android.permission-bootclasspath-fragment"],
-    systemserverclasspath_fragments: ["com.android.permission-systemserverclasspath-fragment"],
-    prebuilts: ["current_sdkinfo"],
     key: "com.android.permission.key",
     certificate: ":com.android.permission.certificate",
+    java_libs: [
+        "framework-permission",
+        "service-permission",
+    ],
     apps: ["PermissionController"],
-    // Indicates that pre-installed version of this apex can be compressed.
-    // Whether it actually will be compressed is controlled on per-device basis.
-    compressible: true,
 }
 
 apex_key {
@@ -46,46 +40,4 @@ apex_key {
 android_app_certificate {
     name: "com.android.permission.certificate",
     certificate: "com.android.permission",
-}
-
-filegroup {
-    name: "permission-jarjar-rules",
-    srcs: ["jarjar-rules.txt"],
-}
-
-sdk {
-    name: "permission-module-sdk",
-    bootclasspath_fragments: ["com.android.permission-bootclasspath-fragment"],
-    java_sdk_libs: ["service-permission"],
-}
-
-// Encapsulate the contributions made by the com.android.permission to the bootclasspath.
-bootclasspath_fragment {
-    name: "com.android.permission-bootclasspath-fragment",
-    contents: [
-      "framework-permission",
-      "framework-permission-s",
-    ],
-    apex_available: ["com.android.permission"],
-
-    // The bootclasspath_fragments that provide APIs on which this depends.
-    fragments: [
-        {
-            apex: "com.android.art",
-            module: "art-bootclasspath-fragment",
-        },
-    ],
-
-    // Additional stubs libraries that this fragment's contents use which are
-    // not provided by another bootclasspath_fragment.
-    additional_stubs: [
-        "android-non-updatable",
-    ],
-}
-
-// Encapsulate the contributions made by the com.android.permission to the systemserverclasspath.
-systemserverclasspath_fragment {
-    name: "com.android.permission-systemserverclasspath-fragment",
-    contents: ["service-permission"],
-    apex_available: ["com.android.permission"],
 }

@@ -123,14 +123,13 @@ public class RoleControllerServiceImpl extends RoleControllerService {
                 }
             }
 
-            // If there is no holder for a role now, or the role is static, we need to add default
-            // or fallback holders, if any.
+            // If there is no holder for a role now, we need to add default or fallback holders, if
+            // any.
             currentPackageNames = mRoleManager.getRoleHolders(roleName);
             currentPackageNamesSize = currentPackageNames.size();
-            boolean isStaticRole = role.isStatic();
-            if (currentPackageNamesSize == 0 || isStaticRole) {
+            if (currentPackageNamesSize == 0) {
                 List<String> packageNamesToAdd = null;
-                if (addedRoleNames.contains(roleName) || isStaticRole) {
+                if (addedRoleNames.contains(roleName)) {
                     packageNamesToAdd = role.getDefaultHolders(this);
                 }
                 if (packageNamesToAdd == null || packageNamesToAdd.isEmpty()) {
@@ -143,11 +142,6 @@ public class RoleControllerServiceImpl extends RoleControllerService {
                         packageNamesToAddIndex++) {
                     String packageName = packageNamesToAdd.get(packageNamesToAddIndex);
 
-                    if (currentPackageNames.contains(packageName)) {
-                        // This may happen when we are ensuring all default holders are added for
-                        // static roles.
-                        continue;
-                    }
                     if (!role.isPackageQualified(packageName, this)) {
                         Log.e(LOG_TAG, "Default/fallback role holder package doesn't qualify for"
                                 + " the role, package: " + packageName + ", role: " + roleName);
@@ -159,7 +153,7 @@ public class RoleControllerServiceImpl extends RoleControllerService {
                     // phone calls or SMS, so we just keep the old behavior. But overriding user
                     // choice about permission without explicit user action is bad, so maybe we
                     // should at least show a notification?
-                    addRoleHolderInternal(role, packageName, role.shouldOverrideUserWhenGranting());
+                    addRoleHolderInternal(role, packageName, true);
                 }
             }
 
@@ -232,8 +226,7 @@ public class RoleControllerServiceImpl extends RoleControllerService {
         }
 
         boolean dontKillApp = hasFlag(flags, RoleManager.MANAGE_HOLDERS_FLAG_DONT_KILL_APP);
-        added = addRoleHolderInternal(role, packageName, dontKillApp,
-                role.shouldOverrideUserWhenGranting(), added);
+        added = addRoleHolderInternal(role, packageName, dontKillApp, true, added);
         if (!added) {
             return false;
         }
@@ -403,8 +396,7 @@ public class RoleControllerServiceImpl extends RoleControllerService {
         // phone calls or SMS, so we just keep the old behavior. But overriding user
         // choice about permission without explicit user action is bad, so maybe we
         // should at least show a notification?
-        return addRoleHolderInternal(role, fallbackPackageName,
-                role.shouldOverrideUserWhenGranting());
+        return addRoleHolderInternal(role, fallbackPackageName, true);
     }
 
     @Override

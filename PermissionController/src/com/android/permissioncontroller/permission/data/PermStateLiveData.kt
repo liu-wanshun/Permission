@@ -132,6 +132,7 @@ class PermStateLiveData private constructor(
             PermissionListenerMultiplexer.addCallback(it, this)
             registeredUid = uid
         }
+        updateAsync()
     }
 
     /**

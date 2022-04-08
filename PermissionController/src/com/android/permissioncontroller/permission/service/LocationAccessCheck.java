@@ -498,7 +498,7 @@ public class LocationAccessCheck {
                 // notify for accesses before the feature was turned on.
                 long featureEnabledTime = getLocationAccessCheckEnabledTime();
                 if (featureEnabledTime >= 0 && entry.getLastAccessBackgroundTime(
-                        AppOpsManager.OP_FLAGS_ALL_TRUSTED) >= featureEnabledTime) {
+                        AppOpsManager.OP_FLAGS_ALL_TRUSTED) > featureEnabledTime) {
                     pkgsWithLocationAccess.add(userPkg);
                     break;
                 }
@@ -591,7 +591,6 @@ public class LocationAccessCheck {
 
         Notification.Builder b = (new Notification.Builder(mContext,
                 PERMISSION_REMINDER_CHANNEL_ID))
-                .setLocalOnly(true)
                 .setContentTitle(mContext.getString(
                         R.string.background_location_access_reminder_notification_title, pkgLabel))
                 .setContentText(mContext.getString(
@@ -753,9 +752,6 @@ public class LocationAccessCheck {
                 // Profile parent handles child profiles too.
                 return;
             }
-
-            // Init LocationAccessCheckEnabledTime if needed
-            locationAccessCheck.checkLocationAccessCheckEnabledAndUpdateEnabledTime();
 
             if (jobScheduler.getPendingJob(PERIODIC_LOCATION_ACCESS_CHECK_JOB_ID) == null) {
                 JobInfo.Builder b = (new JobInfo.Builder(PERIODIC_LOCATION_ACCESS_CHECK_JOB_ID,
