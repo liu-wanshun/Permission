@@ -457,7 +457,7 @@
     <string name="permgroupbackgroundrequest_location" msgid="1085680897265734809">"Да се дозволи &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; да пристапува до локацијата на уредов?"</string>
     <string name="permgroupbackgroundrequestdetail_location" msgid="8021219324989662957">"Апликацијава можеби ќе сака да пристапува до вашата локација цело време, дури и кога не ја користите. "<annotation id="link">"Дозволете во поставките."</annotation></string>
     <string name="permgroupupgraderequest_location" msgid="8328408946822691636">"Да се промени пристапот до локацијата за &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;?"</string>
-    <string name="permgroupupgraderequestdetail_location" msgid="1550899076845189165">"Апликцијава сака да пристапува до вашата локација цело време, дури и кога не ја користите. "<annotation id="link">"Дозволете во поставките."</annotation></string>
+    <string name="permgroupupgraderequestdetail_location" msgid="1550899076845189165">"Апликацијава сака да пристапува до вашата локација цело време, дури и кога не ја користите. "<annotation id="link">"Дозволете во поставките."</annotation></string>
     <string name="permgrouprequest_nearby_devices" msgid="2272829282660436700">"Да се дозволи &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; да наоѓа и да се поврзува со уреди во близина и да ја утврдува нивната релативна положба?"</string>
     <string name="permgroupupgraderequestdetail_nearby_devices" msgid="6877531270654738614">"Да се дозволи &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; да наоѓа и да се поврзува со уреди во близина и да ја утврдува нивната релативна положба? "<annotation id="link">"Дозволете во „Поставки“."</annotation></string>
     <string name="permgrouprequest_fineupgrade" msgid="2334242928821697672">"Да се промени пристапот до локацијата на <xliff:g id="APP_NAME">&lt;b&gt;%1$s&lt;/b&gt;</xliff:g> од приближна на прецизна?"</string>
@@ -496,7 +496,7 @@
     <string name="privdash_label_location" msgid="6882400763866489291">"Локација"</string>
     <string name="privdash_label_other" msgid="3710394147423236033">"Друго"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Ништо"</string>
-    <string name="privdash_label_24h" msgid="1512532123865375319">"Изминативе\n24 часа"</string>
+    <string name="privdash_label_24h" msgid="1512532123865375319">"Минативе\n24 часа"</string>
     <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> е заштитена од Android. Бидејќи вашите податоци се обработуваат на уредов, користењето на дозволата на апликацијава не е прикажано на лентата за статус или вашата контролна табла за приватност."</string>
     <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> е заштитена од Android. Бидејќи вашите податоци се обработуваат на уредов, користењето на дозволата на апликацијава не е прикажано на вашата контролна табла за приватност."</string>
     <string name="blocked_camera_title" msgid="1128510551791284384">"Камерата на уредот е блокирана"</string>
