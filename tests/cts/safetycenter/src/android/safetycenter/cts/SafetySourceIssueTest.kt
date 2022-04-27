@@ -21,14 +21,16 @@ import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Context
 import android.content.Intent
 import android.os.Build.VERSION_CODES.TIRAMISU
+import android.safetycenter.SafetySourceData.SEVERITY_LEVEL_CRITICAL_WARNING
+import android.safetycenter.SafetySourceData.SEVERITY_LEVEL_INFORMATION
+import android.safetycenter.SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED
 import android.safetycenter.SafetySourceIssue
 import android.safetycenter.SafetySourceIssue.Action
 import android.safetycenter.SafetySourceIssue.ISSUE_CATEGORY_ACCOUNT
 import android.safetycenter.SafetySourceIssue.ISSUE_CATEGORY_DEVICE
 import android.safetycenter.SafetySourceIssue.ISSUE_CATEGORY_GENERAL
-import android.safetycenter.SafetySourceSeverity.LEVEL_CRITICAL_WARNING
-import android.safetycenter.SafetySourceSeverity.LEVEL_INFORMATION
 import android.safetycenter.cts.testing.EqualsHashCodeToStringTester
+import android.safetycenter.cts.testing.Generic
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.os.ParcelableSubject.assertThat
@@ -51,6 +53,8 @@ class SafetySourceIssueTest {
         PendingIntent.getActivity(context, 0, Intent("PendingIntent 2"), FLAG_IMMUTABLE)
     private val action2 = Action.Builder("action_id_2", "Action label 2", pendingIntent2).build()
     private val action3 = Action.Builder("action_id_3", "Action label 3", pendingIntent1).build()
+    private val pendingIntentService =
+        PendingIntent.getService(context, 0, Intent("PendingIntent service"), FLAG_IMMUTABLE)
 
     @Test
     fun action_getId_returnsId() {
@@ -106,6 +110,27 @@ class SafetySourceIssueTest {
     }
 
     @Test
+    fun action_build_withNullId_throwsNullPointerException() {
+        assertFailsWith(NullPointerException::class) {
+            Action.Builder(Generic.asNull(), "Action label", pendingIntent1)
+        }
+    }
+
+    @Test
+    fun action_build_withNullLabel_throwsNullPointerException() {
+        assertFailsWith(NullPointerException::class) {
+            Action.Builder("action_id", Generic.asNull(), pendingIntent1)
+        }
+    }
+
+    @Test
+    fun action_build_withNullPendingIntent_throwsNullPointerException() {
+        assertFailsWith(NullPointerException::class) {
+            Action.Builder("action_id", "Action label", Generic.asNull())
+        }
+    }
+
+    @Test
     fun action_describeContents_returns0() {
         val action = Action.Builder("action_id", "Action label", pendingIntent1).build()
 
@@ -127,39 +152,33 @@ class SafetySourceIssueTest {
         EqualsHashCodeToStringTester()
             .addEqualityGroup(
                 Action.Builder("action_id", "Action label", pendingIntent1).build(),
-                Action.Builder("action_id", "Action label", pendingIntent1).build()
-            )
+                Action.Builder("action_id", "Action label", pendingIntent1).build(),
+                Action.Builder("action_id", "Action label", pendingIntent1)
+                    .setWillResolve(false)
+                    .build())
             .addEqualityGroup(
                 Action.Builder("action_id", "Action label", pendingIntent1)
                     .setSuccessMessage("Action successfully completed")
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 Action.Builder("action_id", "Other action label", pendingIntent1).build())
             .addEqualityGroup(
                 Action.Builder("other_action_id", "Action label", pendingIntent1).build())
             .addEqualityGroup(
-                Action.Builder("action_id", "Action label", pendingIntent1).setWillResolve(true)
-                    .build()
-            )
+                Action.Builder("action_id", "Action label", pendingIntent1)
+                    .setWillResolve(true)
+                    .build())
             .addEqualityGroup(
                 Action.Builder(
-                    "action_id",
-                    "Action label",
-                    PendingIntent.getActivity(
-                        context,
-                        0,
-                        Intent("Other action PendingIntent"),
-                        FLAG_IMMUTABLE
-                    )
-                )
-                    .build()
-            )
+                        "action_id",
+                        "Action label",
+                        PendingIntent.getActivity(
+                            context, 0, Intent("Other action PendingIntent"), FLAG_IMMUTABLE))
+                    .build())
             .addEqualityGroup(
                 Action.Builder("action_id", "Action label", pendingIntent1)
                     .setSuccessMessage("Other action successfully completed")
-                    .build()
-            )
+                    .build())
             .test()
     }
 
@@ -167,12 +186,11 @@ class SafetySourceIssueTest {
     fun getId_returnsId() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
                 .build()
 
@@ -183,12 +201,11 @@ class SafetySourceIssueTest {
     fun getTitle_returnsTitle() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
                 .build()
 
@@ -199,12 +216,11 @@ class SafetySourceIssueTest {
     fun getSubtitle_withDefaultBuilder_returnsNull() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
                 .build()
 
@@ -215,12 +231,11 @@ class SafetySourceIssueTest {
     fun getSubtitle_whenSetExplicitly_returnsSubtitle() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .setSubtitle("Issue subtitle")
                 .addAction(action1)
                 .build()
@@ -232,12 +247,11 @@ class SafetySourceIssueTest {
     fun getSummary_returnsSummary() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
                 .build()
 
@@ -248,28 +262,26 @@ class SafetySourceIssueTest {
     fun getSeverityLevel_returnsSeverityLevel() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
                 .build()
 
-        assertThat(safetySourceIssue.severityLevel).isEqualTo(LEVEL_INFORMATION)
+        assertThat(safetySourceIssue.severityLevel).isEqualTo(SEVERITY_LEVEL_INFORMATION)
     }
 
     @Test
     fun getIssueCategory_withDefaultBuilder_returnsGeneralCategory() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
                 .build()
 
@@ -280,12 +292,11 @@ class SafetySourceIssueTest {
     fun getIssueCategory_whenSetExplicitly_returnsIssueCategory() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
                 .setIssueCategory(ISSUE_CATEGORY_DEVICE)
                 .build()
@@ -297,12 +308,11 @@ class SafetySourceIssueTest {
     fun getActions_returnsActions() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
                 .addAction(action2)
                 .build()
@@ -314,12 +324,11 @@ class SafetySourceIssueTest {
     fun clearActions_removesAllActions() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
                 .addAction(action2)
                 .clearActions()
@@ -333,12 +342,11 @@ class SafetySourceIssueTest {
     fun getOnDismissPendingIntent_withDefaultBuilder_returnsNull() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
                 .build()
 
@@ -349,33 +357,146 @@ class SafetySourceIssueTest {
     fun getOnDismissPendingIntent_whenSetExplicitly_returnsOnDismissPendingIntent() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
-                .setOnDismissPendingIntent(pendingIntent1)
+                .setOnDismissPendingIntent(pendingIntentService)
                 .build()
 
-        assertThat(safetySourceIssue.onDismissPendingIntent).isEqualTo(pendingIntent1)
+        assertThat(safetySourceIssue.onDismissPendingIntent).isEqualTo(pendingIntentService)
     }
 
     @Test
     fun getIssueTypeId_returnsIssueTypeId() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
                 .build()
 
         assertThat(safetySourceIssue.issueTypeId).isEqualTo("issue_type_id")
+    }
+
+    @Test
+    fun build_withNullId_throwsNullPointerException() {
+        assertFailsWith(NullPointerException::class) {
+            SafetySourceIssue.Builder(
+                Generic.asNull(),
+                "Issue title",
+                "Issue summary",
+                SEVERITY_LEVEL_INFORMATION,
+                "issue_type_id")
+        }
+    }
+
+    @Test
+    fun build_withNullTitle_throwsNullPointerException() {
+        assertFailsWith(NullPointerException::class) {
+            SafetySourceIssue.Builder(
+                "Issue id",
+                Generic.asNull(),
+                "Issue summary",
+                SEVERITY_LEVEL_INFORMATION,
+                "issue_type_id")
+        }
+    }
+
+    @Test
+    fun build_withNullSummary_throwsNullPointerException() {
+        assertFailsWith(NullPointerException::class) {
+            SafetySourceIssue.Builder(
+                "Issue id",
+                "Issue title",
+                Generic.asNull(),
+                SEVERITY_LEVEL_INFORMATION,
+                "issue_type_id")
+        }
+    }
+
+    @Test
+    fun build_withUnspecifiedSeverityLevel_throwsIllegalArgumentException() {
+        val exception =
+            assertFailsWith(IllegalArgumentException::class) {
+                SafetySourceIssue.Builder(
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_UNSPECIFIED,
+                    "issue_type_id")
+            }
+        assertThat(exception)
+            .hasMessageThat()
+            .isEqualTo("SeverityLevel for SafetySourceIssue must not be SEVERITY_LEVEL_UNSPECIFIED")
+    }
+
+    @Test
+    fun build_withInvalidSeverityLevel_throwsIllegalArgumentException() {
+        val exception =
+            assertFailsWith(IllegalArgumentException::class) {
+                SafetySourceIssue.Builder(
+                    "Issue id", "Issue title", "Issue summary", -1, "issue_type_id")
+            }
+        assertThat(exception)
+            .hasMessageThat()
+            .isEqualTo("Unexpected SeverityLevel for SafetySourceIssue: -1")
+    }
+
+    @Test
+    fun build_withNullIssueTypeId_throwsNullPointerException() {
+        assertFailsWith(NullPointerException::class) {
+            SafetySourceIssue.Builder(
+                "Issue id",
+                "Issue title",
+                "Issue summary",
+                SEVERITY_LEVEL_INFORMATION,
+                Generic.asNull())
+        }
+    }
+
+    @Test
+    fun build_withInvalidIssueCategory_throwsIllegalArgumentException() {
+        val builder =
+            SafetySourceIssue.Builder(
+                "Issue id",
+                "Issue title",
+                "Issue summary",
+                SEVERITY_LEVEL_INFORMATION,
+                "issue_type_id")
+        val exception =
+            assertFailsWith(IllegalArgumentException::class) { builder.setIssueCategory(-1) }
+        assertThat(exception)
+            .hasMessageThat()
+            .isEqualTo("Unexpected IssueCategory for SafetySourceIssue: -1")
+    }
+
+    @Test
+    fun build_withInvalidOnDismissPendingIntent_throwsIllegalArgumentException() {
+        val builder =
+            SafetySourceIssue.Builder(
+                "Issue id",
+                "Issue title",
+                "Issue summary",
+                SEVERITY_LEVEL_INFORMATION,
+                "issue_type_id")
+        val exception =
+            assertFailsWith(IllegalArgumentException::class) {
+                builder.setOnDismissPendingIntent(
+                    PendingIntent.getActivity(
+                        context,
+                        /* requestCode = */ 0,
+                        Intent("PendingIntent activity"),
+                        FLAG_IMMUTABLE))
+            }
+        assertThat(exception)
+            .hasMessageThat()
+            .isEqualTo("Safety source issue on dismiss pending intent must not start an activity")
     }
 
     @Test
@@ -385,9 +506,8 @@ class SafetySourceIssueTest {
                 "Issue id",
                 "Issue title",
                 "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                SEVERITY_LEVEL_INFORMATION,
+                "issue_type_id")
 
         val exception =
             assertFailsWith(IllegalArgumentException::class) { safetySourceIssueBuilder.build() }
@@ -400,12 +520,11 @@ class SafetySourceIssueTest {
     fun build_withMoreThanTwoActions_throwsIllegalArgumentException() {
         val safetySourceIssueBuilder =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .addAction(action1)
                 .addAction(action2)
                 .addAction(action1)
@@ -421,17 +540,16 @@ class SafetySourceIssueTest {
     fun describeContents_returns0() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .setSubtitle("Issue subtitle")
                 .setIssueCategory(ISSUE_CATEGORY_ACCOUNT)
                 .addAction(action1)
                 .addAction(action2)
-                .setOnDismissPendingIntent(pendingIntent1)
+                .setOnDismissPendingIntent(pendingIntentService)
                 .build()
 
         assertThat(safetySourceIssue.describeContents()).isEqualTo(0)
@@ -441,17 +559,16 @@ class SafetySourceIssueTest {
     fun parcelRoundTrip_recreatesEqual() {
         val safetySourceIssue =
             SafetySourceIssue.Builder(
-                "Issue id",
-                "Issue title",
-                "Issue summary",
-                LEVEL_INFORMATION,
-                "issue_type_id"
-            )
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
                 .setSubtitle("Issue subtitle")
                 .setIssueCategory(ISSUE_CATEGORY_ACCOUNT)
                 .addAction(action1)
                 .addAction(action2)
-                .setOnDismissPendingIntent(pendingIntent1)
+                .setOnDismissPendingIntent(pendingIntentService)
                 .build()
 
         assertThat(safetySourceIssue).recreatesEqual(SafetySourceIssue.CREATOR)
@@ -462,204 +579,146 @@ class SafetySourceIssueTest {
         EqualsHashCodeToStringTester()
             .addEqualityGroup(
                 SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
+                        "Issue id",
+                        "Issue title",
+                        "Issue summary",
+                        SEVERITY_LEVEL_INFORMATION,
+                        "issue_type_id")
                     .setSubtitle("Issue subtitle")
                     .setIssueCategory(ISSUE_CATEGORY_ACCOUNT)
                     .addAction(action1)
                     .addAction(action2)
-                    .setOnDismissPendingIntent(pendingIntent1)
-                    .build()
-            )
-            .addEqualityGroup(
-                SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
-                    .setSubtitle("Issue subtitle")
-                    .setIssueCategory(ISSUE_CATEGORY_ACCOUNT)
-                    .addAction(
-                        Action.Builder("action_id", "Action label", pendingIntent1)
-                            .setWillResolve(false)
-                            .build()
-                    )
-                    .setOnDismissPendingIntent(pendingIntent1)
+                    .setOnDismissPendingIntent(pendingIntentService)
                     .build(),
                 SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
+                        "Issue id",
+                        "Issue title",
+                        "Issue summary",
+                        SEVERITY_LEVEL_INFORMATION,
+                        "issue_type_id")
                     .setSubtitle("Issue subtitle")
                     .setIssueCategory(ISSUE_CATEGORY_ACCOUNT)
-                    .addAction(Action.Builder("action_id", "Action label", pendingIntent1).build())
-                    .setOnDismissPendingIntent(pendingIntent1)
-                    .build()
-            )
-            .addEqualityGroup(
-                SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
-                    .setSubtitle("Issue subtitle")
-                    .setIssueCategory(ISSUE_CATEGORY_ACCOUNT)
-                    .addAction(
-                        Action.Builder("action_id", "Action label", pendingIntent1)
-                            .setWillResolve(true).build()
-                    )
-                    .setOnDismissPendingIntent(pendingIntent1)
-                    .build()
-            )
-            .addEqualityGroup(
-                SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
                     .addAction(action1)
-                    .build()
-            )
+                    .addAction(action2)
+                    .setOnDismissPendingIntent(pendingIntentService)
+                    .build())
             .addEqualityGroup(
                 SafetySourceIssue.Builder(
-                    "Other issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
+                        "Issue id",
+                        "Issue title",
+                        "Issue summary",
+                        SEVERITY_LEVEL_INFORMATION,
+                        "issue_type_id")
                     .addAction(action1)
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Other issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
+                        "Other issue id",
+                        "Issue title",
+                        "Issue summary",
+                        SEVERITY_LEVEL_INFORMATION,
+                        "issue_type_id")
                     .addAction(action1)
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Other issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
+                        "Issue id",
+                        "Other issue title",
+                        "Issue summary",
+                        SEVERITY_LEVEL_INFORMATION,
+                        "issue_type_id")
                     .addAction(action1)
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_CRITICAL_WARNING,
-                    "issue_type_id"
-                )
+                        "Issue id",
+                        "Issue title",
+                        "Other issue summary",
+                        SEVERITY_LEVEL_INFORMATION,
+                        "issue_type_id")
                     .addAction(action1)
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "other_issue_type_id"
-                )
+                        "Issue id",
+                        "Issue title",
+                        "Issue summary",
+                        SEVERITY_LEVEL_CRITICAL_WARNING,
+                        "issue_type_id")
                     .addAction(action1)
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
+                        "Issue id",
+                        "Issue title",
+                        "Issue summary",
+                        SEVERITY_LEVEL_INFORMATION,
+                        "other_issue_type_id")
+                    .addAction(action1)
+                    .build())
+            .addEqualityGroup(
+                SafetySourceIssue.Builder(
+                        "Issue id",
+                        "Issue title",
+                        "Issue summary",
+                        SEVERITY_LEVEL_INFORMATION,
+                        "issue_type_id")
+                    .addAction(action2)
+                    .build())
+            .addEqualityGroup(
+                SafetySourceIssue.Builder(
+                        "Issue id",
+                        "Issue title",
+                        "Issue summary",
+                        SEVERITY_LEVEL_INFORMATION,
+                        "issue_type_id")
                     .setSubtitle("Other issue subtitle")
+                    .setIssueCategory(ISSUE_CATEGORY_ACCOUNT)
                     .addAction(action1)
-                    .build()
-            )
+                    .addAction(action2)
+                    .setOnDismissPendingIntent(pendingIntentService)
+                    .build())
             .addEqualityGroup(
                 SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
-                    .addAction(action1)
+                        "Issue id",
+                        "Issue title",
+                        "Issue summary",
+                        SEVERITY_LEVEL_INFORMATION,
+                        "issue_type_id")
+                    .setSubtitle("Other issue subtitle")
                     .setIssueCategory(ISSUE_CATEGORY_DEVICE)
-                    .build()
-            )
-            .addEqualityGroup(
-                SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
-                    .addAction(action2)
-                    .addAction(action1)
-                    .build()
-            )
-            .addEqualityGroup(
-                SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
                     .addAction(action1)
                     .addAction(action2)
-                    .build()
-            )
+                    .setOnDismissPendingIntent(pendingIntentService)
+                    .build())
             .addEqualityGroup(
                 SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
+                        "Issue id",
+                        "Issue title",
+                        "Issue summary",
+                        SEVERITY_LEVEL_INFORMATION,
+                        "issue_type_id")
+                    .setSubtitle("Other issue subtitle")
+                    .setIssueCategory(ISSUE_CATEGORY_DEVICE)
+                    .addAction(action2)
                     .addAction(action1)
-                    .setOnDismissPendingIntent(pendingIntent2)
-                    .build()
-            )
+                    .setOnDismissPendingIntent(pendingIntentService)
+                    .build())
             .addEqualityGroup(
                 SafetySourceIssue.Builder(
-                    "Issue id",
-                    "Issue title",
-                    "Issue summary",
-                    LEVEL_INFORMATION,
-                    "issue_type_id"
-                )
+                        "Issue id",
+                        "Issue title",
+                        "Issue summary",
+                        SEVERITY_LEVEL_INFORMATION,
+                        "issue_type_id")
+                    .setSubtitle("Other issue subtitle")
+                    .setIssueCategory(ISSUE_CATEGORY_DEVICE)
+                    .addAction(action2)
                     .addAction(action1)
-                    .setOnDismissPendingIntent(pendingIntent1)
-                    .build()
-            )
+                    .setOnDismissPendingIntent(
+                        PendingIntent.getService(
+                            context, 0, Intent("Other PendingIntent service"), FLAG_IMMUTABLE))
+                    .build())
             .test()
     }
 }

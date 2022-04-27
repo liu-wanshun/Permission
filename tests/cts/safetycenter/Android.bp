@@ -23,7 +23,9 @@ android_test {
     defaults: ["mts-target-sdk-version-current"],
     sdk_version: "test_current",
     min_sdk_version: "30",
+    target_sdk_version: "32",
     srcs: [
+        "src/**/*.java",
         "src/**/*.kt",
     ],
     static_libs: [
@@ -37,6 +39,7 @@ android_test {
         "kotlin-stdlib",
         "kotlinx-coroutines-android",
         "kotlin-test",
+        "safety-center-config",
         "safety-center-resources-lib",
         "truth-prebuilt",
     ],

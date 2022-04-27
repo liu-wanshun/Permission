@@ -196,8 +196,11 @@
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"<xliff:g id="APP">%1$s</xliff:g> 권한 모두 보기"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"이 권한이 있는 앱 모두 보기"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"어시스턴트 마이크 사용 표시"</string>
+    <string name="unused_apps_category_title" msgid="2988455616845243901">"사용하지 않는 앱 설정"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"앱이 사용되지 않는 경우 권한 삭제"</string>
     <string name="unused_apps_label" msgid="2595428768404901064">"권한을 삭제하고 여유 공간 확보"</string>
+    <string name="unused_apps_label_v2" msgid="7058776770056517980">"사용하지 않을 때 앱 활동 일시중지"</string>
+    <string name="unused_apps_summary" msgid="8839466950318403115">"권한 제거, 임시 파일 삭제, 알림 중지"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"데이터 보호를 위해 몇 개월 동안 앱을 사용하지 않으면 앱의 권한이 삭제됩니다."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"데이터 보호를 위해 몇 개월 동안 앱을 사용하지 않으면 다음 권한이 삭제됩니다. <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"데이터 보호를 위해 몇 개월 동안 사용하지 않은 앱에서 권한이 삭제되었습니다."</string>
@@ -214,6 +217,7 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> 외 <xliff:g id="NUMBER">%2$s</xliff:g>개 권한 삭제됨"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"사용하지 않는 앱"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"앱을 몇 개월간 사용하지 않는 경우 다음 사항이 적용됩니다.\n\n• 데이터 보호를 위해 권한이 삭제됨\n• 배터리를 절약하기 위해 알림이 중단됨\n• 여유 공간 확보를 위해 임시 파일이 삭제됨\n\n권한과 알림을 다시 허용하려면 앱을 여세요."</string>
+    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"앱을 몇 개월간 사용하지 않는 경우 다음 사항이 적용됩니다.\n\n• 데이터 보호를 위해 권한이 삭제됨\n• 여유 공간 확보를 위해 임시 파일이 삭제됨\n\n권한을 다시 부여하려면 앱을 여세요."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"마지막으로 실행한 지 <xliff:g id="NUMBER">%s</xliff:g>개월 이상 경과함"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"마지막 앱 실행 날짜: <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"마지막 실행 날짜: <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -467,10 +471,10 @@
     <string name="permgrouprequest_calllog" msgid="2065327180175371397">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;에서 통화 기록에 액세스하도록 허용하시겠습니까?"</string>
     <string name="permgrouprequest_phone" msgid="1829234136997316752">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;에서 전화를 걸고 관리하도록 허용하시겠습니까?"</string>
     <string name="permgrouprequest_sensors" msgid="4397358316850652235">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;에서 생체 신호에 관한 센서 데이터에 액세스하도록 허용하시겠습니까?"</string>
-    <string name="permgroupupgraderequestdetail_sensors" msgid="3851603883489664284">"앱을 사용하고 있지 않을 때도 앱이 항상 생체 신호 센서 데이터에 액세스하고자 합니다. 이를 허용하려면 "<annotation id="link">"설정으로 이동"</annotation>"하세요. 앱이 사용 중에만 생체 신호 센서 데이터에 액세스하는 설정을 유지해도 됩니다"</string>
+    <string name="permgroupupgraderequestdetail_sensors" msgid="6651914048792092835">"앱이 사용되고 있지 않을 때도 항상 생체 신호 센서 데이터에 액세스하고자 합니다. 권한을 변경하려면 "<annotation id="link">"설정으로 이동"</annotation>"하세요."</string>
     <string name="permgroupbackgroundrequest_sensors" msgid="5661924322018503886">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;에서 생체 신호에 관한 센서 데이터에 액세스하도록 허용하시겠습니까?"</string>
-    <string name="permgroupbackgroundrequestdetail_sensors" msgid="7649389834182449783">"앱을 사용하지 않을 때도 앱이 항상 생체 신호 센서 데이터에 액세스하도록 허용하려면 "<annotation id="link">"설정으로 이동"</annotation>"하세요"</string>
-    <string name="permgroupupgraderequest_sensors" msgid="7576527638411370468">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; 앱이 사용 중에 생체 신호 센서 데이터에 액세스하는 설정을 유지하시겠습니까?"</string>
+    <string name="permgroupbackgroundrequestdetail_sensors" msgid="7726767635834043501">"앱을 사용하지 않을 때도 앱이 항상 생체 신호 센서 데이터에 액세스하도록 허용하려면 "<annotation id="link">"설정으로 이동"</annotation>"하세요"</string>
+    <string name="permgroupupgraderequest_sensors" msgid="7576527638411370468">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; 앱을 사용하는 중에만 생체 신호 센서 데이터에 액세스하도록 허용하는 설정을 유지하시겠습니까?"</string>
     <string name="permgrouprequest_notifications" msgid="6396739062335106181">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;에서 알림을 보내도록 허용하시겠습니까?"</string>
     <string name="permgrouprequestcontinue_notifications" msgid="3895098107355024027">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;에서 계속 알림을 보내도록 허용하시겠습니까?"</string>
     <string name="auto_granted_permissions" msgid="6009452264824455892">"관리 대상 권한"</string>
@@ -508,6 +512,7 @@
     <string name="remove_camera_qs" msgid="8209716677879809162">"카메라 권한 삭제"</string>
     <string name="remove_microphone_qs" msgid="2893536836641560183">"마이크 권한 삭제"</string>
     <string name="manage_service_qs" msgid="7862555549364153805">"서비스 관리"</string>
+    <string name="manage_permissions_qs" msgid="3780541819763475434">"권한 관리"</string>
     <string name="active_call_usage_qs" msgid="8559974395932523391">"전화 통화에서 사용 중"</string>
     <string name="recent_call_usage_qs" msgid="743044899599410935">"최근 전화 통화에서 사용됨"</string>
     <string name="active_app_usage_qs" msgid="4063912870936464727">"<xliff:g id="APP_NAME">%1$s</xliff:g>에서 사용 중"</string>

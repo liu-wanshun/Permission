@@ -16,9 +16,9 @@
 
 package com.android.permissioncontroller.permission.ui.handheld;
 
-import static android.app.admin.DevicePolicyResources.Strings.PermissionController.BACKGROUND_ACCESS_DISABLED_BY_ADMIN_MESSAGE;
-import static android.app.admin.DevicePolicyResources.Strings.PermissionController.BACKGROUND_ACCESS_ENABLED_BY_ADMIN_MESSAGE;
-import static android.app.admin.DevicePolicyResources.Strings.PermissionController.FOREGROUND_ACCESS_ENABLED_BY_ADMIN_MESSAGE;
+import static android.app.admin.DevicePolicyResources.Strings.PermissionSettings.BACKGROUND_ACCESS_DISABLED_BY_ADMIN_MESSAGE;
+import static android.app.admin.DevicePolicyResources.Strings.PermissionSettings.BACKGROUND_ACCESS_ENABLED_BY_ADMIN_MESSAGE;
+import static android.app.admin.DevicePolicyResources.Strings.PermissionSettings.FOREGROUND_ACCESS_ENABLED_BY_ADMIN_MESSAGE;
 
 import static com.android.permissioncontroller.permission.utils.Utils.getRequestMessage;
 
@@ -36,10 +36,10 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup;
-import com.android.permissioncontroller.permission.ui.model.ReviewPermissionsViewModel;
-import com.android.permissioncontroller.permission.ui.model.ReviewPermissionsViewModel.PermissionSummary;
-import com.android.permissioncontroller.permission.ui.model.ReviewPermissionsViewModel.PermissionTarget;
-import com.android.permissioncontroller.permission.ui.model.ReviewPermissionsViewModel.SummaryMessage;
+import com.android.permissioncontroller.permission.ui.model.v33.ReviewPermissionsViewModel;
+import com.android.permissioncontroller.permission.ui.model.v33.ReviewPermissionsViewModel.PermissionSummary;
+import com.android.permissioncontroller.permission.ui.model.v33.ReviewPermissionsViewModel.PermissionTarget;
+import com.android.permissioncontroller.permission.ui.model.v33.ReviewPermissionsViewModel.SummaryMessage;
 import com.android.permissioncontroller.permission.utils.LocationUtils;
 import com.android.permissioncontroller.permission.utils.Utils;
 import com.android.settingslib.RestrictedLockUtils;
