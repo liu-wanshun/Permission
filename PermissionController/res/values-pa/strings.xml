@@ -126,8 +126,8 @@
     <string name="perm_usage_adv_info_title" msgid="3357831829538873708">"ਹੋਰ ਇਜਾਜ਼ਤਾਂ ਦੇਖੋ"</string>
     <string name="perm_usage_adv_info_summary_2_items" msgid="3702175198750127822">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g>"</string>
     <string name="perm_usage_adv_info_summary_more_items" msgid="949055326299562218">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g> ਅਤੇ <xliff:g id="NUM">%3$s</xliff:g> ਹੋਰ"</string>
-    <string name="permission_group_usage_subtitle_24h" msgid="5120155996322114181">"ਪਿਛਲੇ 24 ਘੰਟਿਆਂ ਵਿੱਚ ਐਪਾਂ ਵੱਲੋਂ ਤੁਹਾਡੇ <xliff:g id="PERMGROUP">%1$s</xliff:g> ਨੂੰ ਵਰਤੇ ਜਾਣ ਦੀ ਸਮਾਂਰੇਖਾ"</string>
-    <string name="permission_group_usage_subtitle_7d" msgid="1465828402260324654">"ਪਿਛਲੇ 7 ਦਿਨਾਂ ਵਿੱਚ ਐਪਾਂ ਵੱਲੋਂ ਤੁਹਾਡੇ <xliff:g id="PERMGROUP">%1$s</xliff:g> ਨੂੰ ਵਰਤੇ ਜਾਣ ਦੀ ਸਮਾਂਰੇਖਾ"</string>
+    <string name="permission_group_usage_subtitle_24h" msgid="5120155996322114181">"ਪਿਛਲੇ 24 ਘੰਟਿਆਂ ਵਿੱਚ ਐਪਾਂ ਵੱਲੋਂ ਤੁਹਾਡਾ <xliff:g id="PERMGROUP">%1$s</xliff:g> ਵਰਤੇ ਜਾਣ ਦੀ ਸਮਾਂਰੇਖਾ"</string>
+    <string name="permission_group_usage_subtitle_7d" msgid="1465828402260324654">"ਪਿਛਲੇ 7 ਦਿਨਾਂ ਵਿੱਚ ਐਪਾਂ ਵੱਲੋਂ ਤੁਹਾਡਾ <xliff:g id="PERMGROUP">%1$s</xliff:g> ਵਰਤੇ ਜਾਣ ਦੀ ਸਮਾਂਰੇਖਾ"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"ਇਸ ਐਪ ਵੱਲੋਂ ਤੁਹਾਡੀ <xliff:g id="PERMGROUP">%1$s</xliff:g> ਇਜਾਜ਼ਤ ਵਰਤੇ ਜਾਣ \'ਤੇ"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"ਹੋਰ ਜਾਣੋ"</string>
     <string name="manage_permission_summary" msgid="4117555482684114317">"ਆਪਣੇ <xliff:g id="PERMGROUP">%1$s</xliff:g> ਤੱਕ ਐਪ ਦੀ ਪਹੁੰਚ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ"</string>
@@ -196,8 +196,11 @@
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"<xliff:g id="APP">%1$s</xliff:g> ਦੀਆਂ ਸਾਰੀਆਂ ਇਜਾਜ਼ਤਾਂ ਦੇਖੋ"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"ਇਸ ਇਜਾਜ਼ਤ ਵਾਲੀਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਦੇਖੋ"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Assistant ਦੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਦਿਖਾਓ"</string>
+    <string name="unused_apps_category_title" msgid="2988455616845243901">"ਅਣਵਰਤੀ ਐਪ ਦੀਆਂ ਸੈਟਿੰਗਾਂ"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"ਐਪ ਨੂੰ ਨਾ ਵਰਤੇ ਜਾਣ \'ਤੇ ਇਸ ਲਈ ਦਿੱਤੀਆਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿਓ"</string>
     <string name="unused_apps_label" msgid="2595428768404901064">"ਇਜਾਜ਼ਤਾਂ ਹਟਾਓ ਅਤੇ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰੋ"</string>
+    <string name="unused_apps_label_v2" msgid="7058776770056517980">"ਵਰਤੋਂ ਵਿੱਚ ਨਾ ਹੋਣ \'ਤੇ, ਐਪ ਸਰਗਰਮੀ ਰੋਕੋ"</string>
+    <string name="unused_apps_summary" msgid="8839466950318403115">"ਇਜਾਜ਼ਤਾਂ ਹਟਾਓ, ਅਸਥਾਈ ਫ਼ਾਈਲਾਂ ਮਿਟਾਓ ਅਤੇ ਸੂਚਨਾਵਾਂ ਬੰਦ ਕਰੋ"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"ਤੁਹਾਡੀ ਡਾਟਾ ਸੁਰੱਖਿਆ ਲਈ, ਜੇ ਇਹ ਐਪ ਕੁਝ ਮਹੀਨਿਆਂ ਲਈ ਵਰਤੀ ਨਹੀਂ ਗਈ, ਤਾਂ ਇਸ ਐਪ ਲਈ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।"</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"ਤੁਹਾਡੀ ਡਾਟਾ ਸੁਰੱਖਿਆ ਲਈ, ਜੇ ਇਹ ਐਪ ਕੁਝ ਮਹੀਨਿਆਂ ਲਈ ਵਰਤੀ ਨਹੀਂ ਗਈ, ਤਾਂ ਅੱਗੇ ਦਿੱਤੀਆਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"ਤੁਹਾਡੀ ਡਾਟਾ ਸੁਰੱਖਿਆ ਲਈ, ਜੋ ਐਪਾਂ ਤੁਸੀਂ ਕੁਝ ਮਹੀਨਿਆਂ ਤੋਂ ਨਹੀਂ ਵਰਤੀਆਂ ਉਹਨਾਂ ਐਪਾਂ ਤੋਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।"</string>
@@ -214,6 +217,7 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> ਅਤੇ <xliff:g id="NUMBER">%2$s</xliff:g> ਹੋਰ ਇਜਾਜ਼ਤਾਂ ਹਟਾਈਆਂ ਗਈਆਂ"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"ਅਣਵਰਤੀਆਂ ਐਪਾਂ"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"ਜੇ ਕਿਸੇ ਐਪ ਨੂੰ ਕੁਝ ਮਹੀਨਿਆਂ ਤੱਕ ਵਰਤਿਆ ਨਹੀਂ ਜਾਂਦਾ ਹੈ, ਤਾਂ:\n\n• ਤੁਹਾਡੇ ਡਾਟੇ ਦੀ ਸੁਰੱਖਿਆ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ\n• ਬੈਟਰੀ ਬਚਾਉਣ ਲਈ ਸੂਚਨਾਵਾਂ ਬੰਦ ਕਰ ਦਿੱਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ\n• ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਨ ਲਈ ਅਸਥਾਈ ਫ਼ਾਈਲਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ\n\nਦੁਬਾਰਾ ਇਜਾਜ਼ਤਾਂ ਦੇਣ ਅਤੇ ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਐਪ ਖੋਲ੍ਹੋ।"</string>
+    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"ਜੇ ਕਿਸੇ ਐਪ ਨੂੰ ਕੁਝ ਮਹੀਨਿਆਂ ਤੱਕ ਵਰਤਿਆ ਨਹੀਂ ਜਾਂਦਾ ਹੈ, ਤਾਂ:\n\n• ਤੁਹਾਡੇ ਡਾਟੇ ਦੀ ਸੁਰੱਖਿਆ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ\n• ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਨ ਲਈ ਅਸਥਾਈ ਫ਼ਾਈਲਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਂਦਾ ਹੈ\n\nਦੁਬਾਰਾ ਇਜਾਜ਼ਤਾਂ ਦੇਣ ਲਈ, ਐਪ ਖੋਲ੍ਹੋ।"</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"ਪਿਛਲੀ ਵਾਰ <xliff:g id="NUMBER">%s</xliff:g> ਤੋਂ ਵੱਧ ਮਹੀਨੇ ਪਹਿਲਾਂ ਖੋਲ੍ਹੀਆਂ ਗਈਆਂ"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"ਐਪ ਨੂੰ ਆਖਰੀ ਵਾਰ <xliff:g id="DATE">%s</xliff:g> ਨੂੰ ਖੋਲ੍ਹਿਆ ਗਿਆ"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"ਆਖਰੀ ਵਾਰ <xliff:g id="DATE">%s</xliff:g> ਨੂੰ ਖੋਲ੍ਹਿਆ ਗਿਆ"</string>
@@ -264,8 +268,7 @@
     <string name="post_drive_permission_decision_reminder_summary_1_app_2_permissions" msgid="671791184670801301">"ਗੱਡੀ ਚਲਾਉਂਦੇ ਸਮੇਂ, ਤੁਸੀਂ <xliff:g id="APP">%1$s</xliff:g> ਨੂੰ <xliff:g id="PERMISSION_1">%2$s</xliff:g> ਅਤੇ <xliff:g id="PERMISSION_2">%3$s</xliff:g> ਤੱਕ ਪਹੁੰਚ ਦਿੱਤੀ ਹੈ"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_multi_permission" msgid="4080701771111456927">"ਗੱਡੀ ਚਲਾਉਂਦੇ ਸਮੇਂ, ਤੁਸੀਂ <xliff:g id="APP">%2$s</xliff:g> ਨੂੰ <xliff:g id="COUNT">%1$d</xliff:g> ਇਜਾਜ਼ਤਾਂ ਦਿੱਤੀਆਂ ਹਨ"</string>
     <string name="post_drive_permission_decision_reminder_summary_multi_apps" msgid="5253882771252863902">"{count,plural, =1{ਗੱਡੀ ਚਲਾਉਂਦੇ ਸਮੇਂ, ਤੁਸੀਂ <xliff:g id="APP_0">%1$s</xliff:g> ਅਤੇ # ਹੋਰ ਐਪ ਨੂੰ ਪਹੁੰਚ ਦਿੱਤੀ ਹੈ}one{ਗੱਡੀ ਚਲਾਉਂਦੇ ਸਮੇਂ, ਤੁਸੀਂ <xliff:g id="APP_1">%1$s</xliff:g> ਅਤੇ # ਹੋਰ ਐਪ ਨੂੰ ਪਹੁੰਚ ਦਿੱਤੀ ਹੈ}other{ਗੱਡੀ ਚਲਾਉਂਦੇ ਸਮੇਂ, ਤੁਸੀਂ <xliff:g id="APP_1">%1$s</xliff:g> ਅਤੇ # ਹੋਰ ਐਪਾਂ ਨੂੰ ਪਹੁੰਚ ਦਿੱਤੀ ਹੈ}}"</string>
-    <!-- no translation found for go_to_settings (1053735612211228335) -->
-    <skip />
+    <string name="go_to_settings" msgid="1053735612211228335">"ਸੈਟਿੰਗਾਂ \'ਤੇ ਜਾਓ"</string>
     <string name="auto_revoke_setting_subtitle" msgid="8631720570723050460">"ਕੁਝ ਐਪਾਂ ਨੂੰ ਕਈ ਮਹੀਨਿਆਂ ਤੋਂ ਵਰਤਿਆ ਨਹੀਂ ਗਿਆ"</string>
     <string name="permissions_removed_category_title" msgid="1064754271178447643">"ਹਟਾਈਆਂ ਗਈਆਂ ਇਜਾਜ਼ਤਾਂ"</string>
     <string name="permission_removed_page_title" msgid="2627436155091001209">"ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾਇਆ ਗਿਆ"</string>
@@ -424,8 +427,8 @@
     <string name="incident_report_error_dialog_text" msgid="4189647113387092272">"<xliff:g id="APP_NAME">%1$s</xliff:g> ਦੀ ਬੱਗ ਰਿਪੋਰਟ \'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਵੇਲੇ ਗੜਬੜ ਹੋ ਗਈ। ਇਸ ਕਰਕੇ ਵੇਰਵੇ-ਸਹਿਤ ਡੀਬੱਗ ਡਾਟੇ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਤੋਂ ਮਨ੍ਹਾ ਕੀਤਾ ਗਿਆ। ਰੁਕਾਵਟ ਲਈ ਮਾਫ਼ੀ।"</string>
     <string name="incident_report_dialog_allow_label" msgid="2970242967721155239">"ਕਰਨ ਦਿਓ"</string>
     <string name="incident_report_dialog_deny_label" msgid="3535314290677579383">"ਨਾ ਕਰਨ ਦਿਓ"</string>
-    <string name="adjust_user_sensitive_title" msgid="4196724451314280527">"ਉੱਨਤ ਸੈਟਿੰਗਾਂ"</string>
-    <string name="menu_adjust_user_sensitive" msgid="6497923610654425780">"ਉੱਨਤ ਸੈਟਿੰਗਾਂ"</string>
+    <string name="adjust_user_sensitive_title" msgid="4196724451314280527">"ਅਡਵਾਂਸ ਸੈਟਿੰਗਾਂ"</string>
+    <string name="menu_adjust_user_sensitive" msgid="6497923610654425780">"ਅਡਵਾਂਸ ਸੈਟਿੰਗਾਂ"</string>
     <string name="adjust_user_sensitive_globally_title" msgid="8649190949066029174">"ਸਿਸਟਮ ਐਪ ਵਰਤੋਂ ਦਿਖਾਓ"</string>
     <string name="adjust_user_sensitive_globally_summary" msgid="129467818433773912">"ਸਥਿਤੀ ਪੱਟੀ, ਡੈਸ਼ਬੋਰਡ ਅਤੇ ਹੋਰ ਥਾਂਵਾਂ \'ਤੇ ਸਿਸਟਮ ਐਪ ਵੱਲੋਂ ਇਜਾਜ਼ਤਾਂ ਦੀ ਵਰਤੋਂ ਦਿਖਾਓ"</string>
     <string name="adjust_user_sensitive_per_app_header" msgid="4543506440989005648">"ਹੇਠਾਂ ਦਿੱਤੇ ਲਈ ਵਰਤੋਂ ਨੂੰ ਉਜਾਗਰ ਕਰੋ"</string>
@@ -466,12 +469,12 @@
     <string name="permgroupupgraderequest_camera" msgid="640758449200241582">"ਕੀ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ਲਈ ਕੈਮਰਾ ਪਹੁੰਚ ਨੂੰ ਬਦਲਣਾ ਹੈ?"</string>
     <string name="permgroupupgraderequestdetail_camera" msgid="6642747548010962597">"ਇਹ ਐਪ ਹਰ ਵੇਲੇ ਤਸਵੀਰਾਂ ਖਿੱਚਣ ਅਤੇ ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਮੰਗਦੀ ਹੈ, ਉਦੋਂ ਵੀ ਜਦੋਂ ਤੁਸੀਂ ਐਪ ਦੀ ਵਰਤੋਂ ਨਾ ਕਰ ਰਹੇ ਹੋਵੋ। "<annotation id="link">"ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਜਾਜ਼ਤ ਦਿਓ।"</annotation></string>
     <string name="permgrouprequest_calllog" msgid="2065327180175371397">"ਕੀ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ਨੂੰ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦੇ ਕਾਲ ਲੌਗਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੇਣੀ ਹੈ?"</string>
-    <string name="permgrouprequest_phone" msgid="1829234136997316752">"ਕੀ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ਨੂੰ ਫ਼ੋਨ ਕਾਲਾਂ ਕਰਨ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦੇਣਾ ਹੈ?"</string>
+    <string name="permgrouprequest_phone" msgid="1829234136997316752">"ਕੀ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ਨੂੰ ਫ਼ੋਨ ਕਾਲਾਂ ਕਰਨ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦੇਣਾ ਹੈ?"</string>
     <string name="permgrouprequest_sensors" msgid="4397358316850652235">"ਕੀ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ਨੂੰ ਤੁਹਾਡੇ ਸਰੀਰ ਦੇ ਅਹਿਮ ਲੱਛਣਾਂ ਸੰਬੰਧੀ ਸੈਂਸਰ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੇਣੀ ਹੈ?"</string>
-    <string name="permgroupupgraderequestdetail_sensors" msgid="5239219356063824373">"ਇਸ ਐਪ ਨੂੰ ਹਰ ਵੇਲੇ ਤੁਹਾਡੇ ਸਰੀਰ ਦੇ ਅਹਿਮ ਲੱਛਣਾਂ ਸੰਬੰਧੀ ਸੈਂਸਰ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਚਾਹੀਦੀ ਹੈ, ਭਾਵੇਂ ਤੁਸੀਂ ਐਪ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ ਜਾਂ ਨਾ। "<annotation id="link">"ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਗਿਆ ਦਿਓ।"</annotation></string>
+    <string name="permgroupupgraderequestdetail_sensors" msgid="6651914048792092835">"ਇਸ ਐਪ ਨੂੰ ਹਰ ਵੇਲੇ ਤੁਹਾਡੇ ਸਰੀਰ ਦੇ ਅਹਿਮ ਲੱਛਣਾਂ ਸੰਬੰਧੀ ਸੈਂਸਰ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਚਾਹੀਦੀ ਹੈ, ਭਾਵੇਂ ਤੁਸੀਂ ਐਪ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ ਜਾਂ ਨਹੀਂ। ਇਹ ਤਬਦੀਲੀ ਕਰਨ ਲਈ, "<annotation id="link">"ਸੈਟਿੰਗਾਂ \'ਤੇ ਜਾਓ।"</annotation></string>
     <string name="permgroupbackgroundrequest_sensors" msgid="5661924322018503886">"ਕੀ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ਨੂੰ ਤੁਹਾਡੇ ਸਰੀਰ ਦੇ ਅਹਿਮ ਲੱਛਣਾਂ ਸੰਬੰਧੀ ਸੈਂਸਰ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੇਣੀ ਹੈ?"</string>
-    <string name="permgroupbackgroundrequestdetail_sensors" msgid="4853242818919117016">"ਸ਼ਾਇਦ ਇਸ ਐਪ ਨੂੰ ਹਰ ਵੇਲੇ ਤੁਹਾਡੇ ਸਰੀਰ ਦੇ ਅਹਿਮ ਲੱਛਣਾਂ ਸੰਬੰਧੀ ਸੈਂਸਰ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਹੋਵੇ, ਭਾਵੇਂ ਤੁਸੀਂ ਐਪ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੇ ਹੋ ਜਾਂ ਨਾ। "<annotation id="link">"ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਗਿਆ ਦਿਓ।"</annotation></string>
-    <string name="permgroupupgraderequest_sensors" msgid="3346259833500506859">"ਕੀ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ਦੇ ਲਈ ਤੁਹਾਡੇ ਸਰੀਰ ਦੇ ਅਹਿਮ ਲੱਛਣਾਂ ਸੰਬੰਧੀ ਸੈਂਸਰ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਬਦਲਣੀ ਹੈ?"</string>
+    <string name="permgroupbackgroundrequestdetail_sensors" msgid="7726767635834043501">"ਐਪ ਦੀ ਵਰਤੋਂ ਨਾ ਕਰਨ ਵੇਲੇ ਵੀ, ਇਸ ਐਪ ਨੂੰ ਹਰ ਸਮੇਂ ਸਰੀਰ ਸੰਬੰਧੀ ਸੈਂਸਰ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੇਣ ਲਈ, "<annotation id="link">"ਸੈਟਿੰਗਾਂ \'ਤੇ ਜਾਓ।"</annotation></string>
+    <string name="permgroupupgraderequest_sensors" msgid="7576527638411370468">"ਕੀ ਐਪ ਦੇ ਵਰਤੋਂ ਵਿੱਚ ਹੋਣ ਵੇਲੇ ਸਰੀਰ ਸੰਬੰਧੀ ਸੈਂਸਰ ਦੇ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੇਣ ਲਈ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ਨੂੰ ਆਗਿਆ ਦੇਣਾ ਜਾਰੀ ਰੱਖਣੀ ਹੈ?"</string>
     <string name="permgrouprequest_notifications" msgid="6396739062335106181">"ਕੀ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ਨੂੰ ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?"</string>
     <string name="permgrouprequestcontinue_notifications" msgid="3895098107355024027">"ਕੀ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ਨੂੰ ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣਾ ਜਾਰੀ ਰੱਖਣ ਦੇਣਾ ਹੈ?"</string>
     <string name="auto_granted_permissions" msgid="6009452264824455892">"ਨਿਯੰਤਰਿਤ ਇਜਾਜ਼ਤਾਂ"</string>
@@ -509,6 +512,7 @@
     <string name="remove_camera_qs" msgid="8209716677879809162">"ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹਟਾਓ"</string>
     <string name="remove_microphone_qs" msgid="2893536836641560183">"ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤ ਹਟਾਓ"</string>
     <string name="manage_service_qs" msgid="7862555549364153805">"ਸੇਵਾ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ"</string>
+    <string name="manage_permissions_qs" msgid="3780541819763475434">"ਇਜਾਜ਼ਤਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ"</string>
     <string name="active_call_usage_qs" msgid="8559974395932523391">"ਫ਼ੋਨ ਕਾਲ ਦੁਆਰਾ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ"</string>
     <string name="recent_call_usage_qs" msgid="743044899599410935">"ਹਾਲ ਹੀ ਵਿੱਚ ਫ਼ੋਨ ਕਾਲ ਵਿੱਚ ਵਰਤਿਆ ਗਿਆ"</string>
     <string name="active_app_usage_qs" msgid="4063912870936464727">"<xliff:g id="APP_NAME">%1$s</xliff:g> ਵੱਲੋਂ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ"</string>

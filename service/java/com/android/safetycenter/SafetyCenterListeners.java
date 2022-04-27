@@ -21,11 +21,11 @@ import static android.os.Build.VERSION_CODES.TIRAMISU;
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.annotation.UserIdInt;
-import android.os.Binder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.safetycenter.IOnSafetyCenterDataChangedListener;
 import android.safetycenter.SafetyCenterData;
+import android.safetycenter.SafetyCenterErrorDetails;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -46,23 +46,19 @@ final class SafetyCenterListeners {
             mSafetyCenterDataChangedListeners = new SparseArray<>();
 
     /** Creates a {@link SafetyCenterListeners}. */
-    SafetyCenterListeners() {
-    }
+    SafetyCenterListeners() {}
 
     /**
-     * Delivers a {@link SafetyCenterData} update to a single
-     * {@link IOnSafetyCenterDataChangedListener}.
+     * Delivers a {@link SafetyCenterData} update to a single {@link
+     * IOnSafetyCenterDataChangedListener}.
      */
     static void deliverUpdate(
             @NonNull IOnSafetyCenterDataChangedListener listener,
             @NonNull SafetyCenterData safetyCenterData) {
-        final long identity = Binder.clearCallingIdentity();
         try {
             listener.onSafetyCenterDataChanged(safetyCenterData);
         } catch (RemoteException e) {
-            Log.e(TAG, "Error delivering SafetyCenterData update to listener", e);
-        } finally {
-            Binder.restoreCallingIdentity(identity);
+            Log.e(TAG, "Error delivering SafetyCenterData to listener", e);
         }
     }
 
@@ -85,10 +81,41 @@ final class SafetyCenterListeners {
         listeners.finishBroadcast();
     }
 
-    /** Adds a {@link IOnSafetyCenterDataChangedListener} for the given {@code userId}. */
-    void addListener(
+    /**
+     * Delivers a {@link SafetyCenterErrorDetails} update to a single {@link
+     * IOnSafetyCenterDataChangedListener}.
+     */
+    private static void deliverError(
             @NonNull IOnSafetyCenterDataChangedListener listener,
-            @UserIdInt int userId) {
+            @NonNull SafetyCenterErrorDetails safetyCenterErrorDetails) {
+        try {
+            listener.onError(safetyCenterErrorDetails);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error delivering SafetyCenterErrorDetails to listener", e);
+        }
+    }
+
+    /**
+     * Delivers a {@link SafetyCenterErrorDetails} update to a {@link RemoteCallbackList} of {@link
+     * IOnSafetyCenterDataChangedListener}.
+     *
+     * <p>Registering or unregistering {@link IOnSafetyCenterDataChangedListener} on the underlying
+     * {@link RemoteCallbackList} on another thread while an update is happening is safe as this is
+     * handled by the {@link RemoteCallbackList} already (as well as listeners death).
+     */
+    static void deliverError(
+            @NonNull RemoteCallbackList<IOnSafetyCenterDataChangedListener> listeners,
+            @NonNull SafetyCenterErrorDetails safetyCenterErrorDetails) {
+        int i = listeners.beginBroadcast();
+        while (i > 0) {
+            i--;
+            deliverError(listeners.getBroadcastItem(i), safetyCenterErrorDetails);
+        }
+        listeners.finishBroadcast();
+    }
+
+    /** Adds a {@link IOnSafetyCenterDataChangedListener} for the given {@code userId}. */
+    void addListener(@NonNull IOnSafetyCenterDataChangedListener listener, @UserIdInt int userId) {
         RemoteCallbackList<IOnSafetyCenterDataChangedListener> listeners =
                 mSafetyCenterDataChangedListeners.get(userId);
         if (listeners == null) {
@@ -100,8 +127,7 @@ final class SafetyCenterListeners {
 
     /** Removes a {@link IOnSafetyCenterDataChangedListener} for the given {@code userId}. */
     void removeListener(
-            @NonNull IOnSafetyCenterDataChangedListener listener,
-            @UserIdInt int userId) {
+            @NonNull IOnSafetyCenterDataChangedListener listener, @UserIdInt int userId) {
         RemoteCallbackList<IOnSafetyCenterDataChangedListener> listeners =
                 mSafetyCenterDataChangedListeners.get(userId);
         if (listeners == null) {

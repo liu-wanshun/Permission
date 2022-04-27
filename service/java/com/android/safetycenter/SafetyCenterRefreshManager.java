@@ -31,7 +31,6 @@ import static android.safetycenter.config.SafetySource.SAFETY_SOURCE_TYPE_STATIC
 
 import android.annotation.NonNull;
 import android.app.BroadcastOptions;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.UserHandle;
@@ -65,42 +64,37 @@ final class SafetyCenterRefreshManager {
     //  easily adjusted.
     private static final Duration ALLOWLIST_DURATION = Duration.ofSeconds(20);
 
-    @NonNull
-    private final List<ComponentName> mAdditionalSafetySourceBroadcastReceiverComponents =
-            new ArrayList<>();
-    @NonNull
-    private final Context mContext;
-    @NonNull
-    private final SafetyCenterConfigReader mSafetyCenterConfigReader;
+    @NonNull private final List<String> mAdditionalSafetySourcePackageNames = new ArrayList<>();
+    @NonNull private final Context mContext;
+    @NonNull private final SafetyCenterConfigReader mSafetyCenterConfigReader;
 
     /**
      * Creates a {@link SafetyCenterRefreshManager} using the given {@link Context} and {@link
      * SafetyCenterConfigReader}.
      */
     SafetyCenterRefreshManager(
-            @NonNull Context context,
-            @NonNull SafetyCenterConfigReader safetyCenterConfigReader) {
+            @NonNull Context context, @NonNull SafetyCenterConfigReader safetyCenterConfigReader) {
         mContext = context;
         mSafetyCenterConfigReader = safetyCenterConfigReader;
     }
 
-    /** Adds a broadcast receiver component representing a source to refresh. */
+    /** Adds a package name representing a source to refresh. */
     // TODO(b/218157907): Remove this method and use a SafetyCenterConfigReader field in
     //  SafetyCenterRefreshManager instead once ag/16834483 is submitted.
-    void addAdditionalSafetySourceBroadcastReceiverComponent(@NonNull ComponentName componentName) {
-        mAdditionalSafetySourceBroadcastReceiverComponents.add(componentName);
+    void addAdditionalSafetySourcePackageNames(@NonNull String packageName) {
+        mAdditionalSafetySourcePackageNames.add(packageName);
     }
 
-    /** Removes all additional broadcast receiver components representing sources to refresh. */
+    /** Removes all additional package names representing sources to refresh. */
     // TODO(b/218157907): Remove this method and use a SafetyCenterConfigReader field in
     //  SafetyCenterRefreshManager instead once ag/16834483 is submitted.
-    void clearAdditionalSafetySourceBroadcastReceiverComponents() {
-        mAdditionalSafetySourceBroadcastReceiverComponents.clear();
+    void clearAdditionalSafetySourcePackageNames() {
+        mAdditionalSafetySourcePackageNames.clear();
     }
 
     /**
-     * Triggers a refresh of safety sources by sending them broadcasts with action
-     * {@link android.safetycenter.SafetyCenterManager#ACTION_REFRESH_SAFETY_SOURCES}.
+     * Triggers a refresh of safety sources by sending them broadcasts with action {@link
+     * android.safetycenter.SafetyCenterManager#ACTION_REFRESH_SAFETY_SOURCES}.
      */
     void refreshSafetySources(@RefreshReason int refreshReason) {
         int requestType;
@@ -121,45 +115,43 @@ final class SafetyCenterRefreshManager {
             return;
         }
 
-        // TODO(b/219702252): Use a more efficient data structure for this (and map broadcast
-        //  receiver to source ids).
+        // TODO(b/219702252): Use a more efficient data structure for this.
         List<SafetySource> safetySourcesToRefresh =
-                safetyCenterConfig.getSafetySourcesGroups()
-                        .stream()
+                safetyCenterConfig.getSafetySourcesGroups().stream()
                         .flatMap(group -> group.getSafetySources().stream())
                         .filter(
-                                // Only send broadcasts to dynamic safety sources that have
-                                // specified a broadcast receiver component.
-                                source -> source.getType() != SAFETY_SOURCE_TYPE_STATIC
-                                        && source.getBroadcastReceiverClassName() != null)
+                                // Only send broadcasts to dynamic safety sources.
+                                source -> source.getType() != SAFETY_SOURCE_TYPE_STATIC)
                         .collect(Collectors.toList());
 
         sendRefreshBroadcastToSafetySources(safetySourcesToRefresh, requestType);
         sendRefreshBroadcastToAdditionalSafetySourceReceivers(requestType);
     }
 
-    private void sendRefreshBroadcastToSafetySources(List<SafetySource> safetySources,
-            int requestType) {
-        Intent broadcastIntent = new Intent(ACTION_REFRESH_SAFETY_SOURCES)
-                .putExtra(EXTRA_REFRESH_SAFETY_SOURCES_REQUEST_TYPE, requestType)
-                .setFlags(FLAG_RECEIVER_FOREGROUND);
+    private void sendRefreshBroadcastToSafetySources(
+            List<SafetySource> safetySources, int requestType) {
+        Intent broadcastIntent =
+                new Intent(ACTION_REFRESH_SAFETY_SOURCES)
+                        .putExtra(EXTRA_REFRESH_SAFETY_SOURCES_REQUEST_TYPE, requestType)
+                        .setFlags(FLAG_RECEIVER_FOREGROUND);
         BroadcastOptions broadcastOptions = BroadcastOptions.makeBasic();
         // The following operation requires START_FOREGROUND_SERVICES_FROM_BACKGROUND
         // permission.
-        broadcastOptions.setTemporaryAppAllowlist(ALLOWLIST_DURATION.toMillis(),
+        broadcastOptions.setTemporaryAppAllowlist(
+                ALLOWLIST_DURATION.toMillis(),
                 TEMPORARY_ALLOW_LIST_TYPE_FOREGROUND_SERVICE_ALLOWED,
                 REASON_REFRESH_SAFETY_SOURCES,
                 "Safety Center is requesting data from safety sources");
 
         for (SafetySource source : safetySources) {
-            Intent broadcastIntentForSource = new Intent(broadcastIntent).setComponent(
-                    new ComponentName(source.getPackageName(),
-                            source.getBroadcastReceiverClassName()));
+            Intent broadcastIntentForSource =
+                    new Intent(broadcastIntent).setPackage(source.getPackageName());
             // TODO(b/215144069): Add cross profile support for safety sources which support
             //  both personal and work profile. This implementation invokes
             //  `sendBroadcastAsUser` in order to invoke the permission.
             // The following operation requires INTERACT_ACROSS_USERS permission.
-            mContext.sendBroadcastAsUser(broadcastIntentForSource,
+            mContext.sendBroadcastAsUser(
+                    broadcastIntentForSource,
                     UserHandle.CURRENT,
                     SEND_SAFETY_CENTER_UPDATE,
                     broadcastOptions.toBundle());
@@ -167,20 +159,23 @@ final class SafetyCenterRefreshManager {
     }
 
     private void sendRefreshBroadcastToAdditionalSafetySourceReceivers(int requestType) {
-        Intent broadcastIntent = new Intent(ACTION_REFRESH_SAFETY_SOURCES)
-                .putExtra(EXTRA_REFRESH_SAFETY_SOURCES_REQUEST_TYPE, requestType)
-                .setFlags(FLAG_RECEIVER_FOREGROUND);
+        Intent broadcastIntent =
+                new Intent(ACTION_REFRESH_SAFETY_SOURCES)
+                        .putExtra(EXTRA_REFRESH_SAFETY_SOURCES_REQUEST_TYPE, requestType)
+                        .setFlags(FLAG_RECEIVER_FOREGROUND);
         BroadcastOptions broadcastOptions = BroadcastOptions.makeBasic();
         // The following operation requires START_FOREGROUND_SERVICES_FROM_BACKGROUND
         // permission.
-        broadcastOptions.setTemporaryAppAllowlist(ALLOWLIST_DURATION.toMillis(),
+        broadcastOptions.setTemporaryAppAllowlist(
+                ALLOWLIST_DURATION.toMillis(),
                 TEMPORARY_ALLOW_LIST_TYPE_FOREGROUND_SERVICE_ALLOWED,
                 REASON_REFRESH_SAFETY_SOURCES,
                 "Safety Center is requesting data from safety sources");
 
-        for (ComponentName componentName : mAdditionalSafetySourceBroadcastReceiverComponents) {
+        for (String packageName : mAdditionalSafetySourcePackageNames) {
             // The following operation requires INTERACT_ACROSS_USERS permission.
-            mContext.sendBroadcastAsUser(new Intent(broadcastIntent).setComponent(componentName),
+            mContext.sendBroadcastAsUser(
+                    new Intent(broadcastIntent).setPackage(packageName),
                     UserHandle.CURRENT,
                     SEND_SAFETY_CENTER_UPDATE,
                     broadcastOptions.toBundle());

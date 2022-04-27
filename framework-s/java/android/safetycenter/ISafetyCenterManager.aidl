@@ -18,10 +18,9 @@ package android.safetycenter;
 
 import android.safetycenter.IOnSafetyCenterDataChangedListener;
 import android.safetycenter.SafetyCenterData;
-import android.safetycenter.SafetyCenterError;
 import android.safetycenter.SafetyEvent;
 import android.safetycenter.SafetySourceData;
-import android.safetycenter.SafetySourceError;
+import android.safetycenter.SafetySourceErrorDetails;
 import android.safetycenter.config.SafetyCenterConfig;
 
 /**
@@ -64,13 +63,17 @@ interface ISafetyCenterManager {
      * <p>Safety sources should use this API to notify SafetyCenter when SafetyCenter requested or
      * expected them to perform an action or provide data, but they were unable to do so.
      */
-    void reportSafetySourceError(String safetySourceId,
-            in SafetySourceError safetySourceError,
+    void reportSafetySourceError(
+            String safetySourceId,
+            in SafetySourceErrorDetails safetySourceErrorDetails,
             String packageName,
             int userId);
 
     /** Requests safety sources to set their latest SafetySourceData for Safety Center. */
     void refreshSafetySources(int refreshReason, int userId);
+
+    /** Returns the current SafetyCenterConfig, if available. */
+    SafetyCenterConfig getSafetyCenterConfig();
 
     /**
      * Returns the current SafetyCenterData, assembled from the SafetySourceData from all sources.
@@ -86,39 +89,43 @@ interface ISafetyCenterManager {
             int userId);
 
     /**
-     * Dismisses the issue corresponding to the given issue ID.
+     * Dismiss a Safety Center issue and prevent it from appearing in the Safety Center or affecting
+     * the overall safety status.
      */
-    void dismissSafetyIssue(String issueId, int userId);
+    void dismissSafetyCenterIssue(String issueId, int userId);
 
-    /** Executes the specified action on the specified issue. */
-    void executeAction(String safetyCenterIssueId, String safetyCenterIssueActionId, int userId);
+    /** Executes the specified Safety Center issue action on the specified Safety Center issue. */
+    void executeSafetyCenterIssueAction(
+            String safetyCenterIssueId,
+            String safetyCenterIssueActionId,
+            int userId);
 
     /**
-     * Clears all SafetySourceData set by safety sources using setSafetySourceData.
+     * Clears all SafetySourceData (set by safety sources using setSafetySourceData) for testing.
      *
      * <p>Note: This API serves to facilitate CTS testing and should not be used for other purposes.
      */
-    void clearAllSafetySourceData();
+    void clearAllSafetySourceDataForTests();
 
     /**
-     * Sets an override of the SafetyCenterConfig set through XML.
+     * Overrides the SafetyCenterConfig for testing.
      *
-     * When set, the override SafetyCenterConfig will be used instead of the
+     * <p>When set, the overridden SafetyCenterConfig will be used instead of the
      * SafetyCenterConfig parsed from the XML file to read configured safety sources.
      *
      * <p>Note: This API serves to facilitate CTS testing and should not be used to configure safety
      * sources dynamically for production. Once used for testing, the override should be cleared.
      *
-     * See clearSafetyCenterConfigOverride.
+     * See clearSafetyCenterConfigForTests.
      */
-    void setSafetyCenterConfigOverride(in SafetyCenterConfig safetyCenterConfig);
+    void setSafetyCenterConfigForTests(in SafetyCenterConfig safetyCenterConfig);
 
     /**
-     * Clears the override of the SafetyCenterConfig set through XML.
+     * Clears the override of the SafetyCenterConfig set for testing.
      *
      * <p>Note: This API serves to facilitate CTS testing and should not be used for other purposes.
      *
-     * See setSafetyCenterConfigOverride(SafetyCenterConfig).
+     * See setSafetyCenterConfigForTests(SafetyCenterConfig).
      */
-    void clearSafetyCenterConfigOverride();
+    void clearSafetyCenterConfigForTests();
 }

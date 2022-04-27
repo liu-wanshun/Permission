@@ -29,7 +29,6 @@ import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.annotation.UserIdInt;
 import android.app.AppOpsManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -39,12 +38,14 @@ import android.provider.DeviceConfig;
 import android.safetycenter.IOnSafetyCenterDataChangedListener;
 import android.safetycenter.ISafetyCenterManager;
 import android.safetycenter.SafetyCenterData;
+import android.safetycenter.SafetyCenterErrorDetails;
 import android.safetycenter.SafetyEvent;
 import android.safetycenter.SafetySourceData;
-import android.safetycenter.SafetySourceError;
+import android.safetycenter.SafetySourceErrorDetails;
 import android.safetycenter.config.SafetyCenterConfig;
 import android.safetycenter.config.SafetySource;
 import android.safetycenter.config.SafetySourcesGroup;
+import android.util.Log;
 
 import androidx.annotation.Keep;
 import androidx.annotation.RequiresApi;
@@ -73,25 +74,28 @@ public final class SafetyCenterService extends SystemService {
     // Refresh/rescan is guarded by another lock: sending broadcasts can be a lengthy operation and
     // the APIs that will be exercised by the receivers are already protected by `mApiLock`.
     private final Object mRefreshLock = new Object();
+
     @GuardedBy("mApiLock")
     private final SafetyCenterListeners mSafetyCenterListeners = new SafetyCenterListeners();
-    @NonNull
-    private final SafetyCenterConfigReader mSafetyCenterConfigReader;
+
+    @NonNull private final SafetyCenterConfigReader mSafetyCenterConfigReader;
+
     @GuardedBy("mApiLock")
     @NonNull
     private final SafetyCenterDataTracker mSafetyCenterDataTracker;
+
     @GuardedBy("mRefreshLock")
     @NonNull
     private final SafetyCenterRefreshManager mSafetyCenterRefreshManager;
-    @NonNull
-    private final AppOpsManager mAppOpsManager;
+
+    @NonNull private final AppOpsManager mAppOpsManager;
 
     public SafetyCenterService(@NonNull Context context) {
         super(context);
         mSafetyCenterConfigReader = new SafetyCenterConfigReader(context);
         mSafetyCenterDataTracker = new SafetyCenterDataTracker(context, mSafetyCenterConfigReader);
-        mSafetyCenterRefreshManager = new SafetyCenterRefreshManager(context,
-                mSafetyCenterConfigReader);
+        mSafetyCenterRefreshManager =
+                new SafetyCenterRefreshManager(context, mSafetyCenterConfigReader);
         mAppOpsManager = requireNonNull(context.getSystemService(AppOpsManager.class));
     }
 
@@ -105,23 +109,12 @@ public final class SafetyCenterService extends SystemService {
     private final class Stub extends ISafetyCenterManager.Stub {
         @Override
         public boolean isSafetyCenterEnabled() {
-            enforceAnyCallingOrSelfPermissions("isSafetyCenterEnabled",
-                    READ_SAFETY_CENTER_STATUS,
-                    SEND_SAFETY_CENTER_UPDATE);
+            enforceAnyCallingOrSelfPermissions(
+                    "isSafetyCenterEnabled", READ_SAFETY_CENTER_STATUS, SEND_SAFETY_CENTER_UPDATE);
             // TODO(b/214568975): Decide if we should disable safety center if there is a problem
             //  reading the config.
 
-            // We don't require the caller to have READ_DEVICE_CONFIG permission.
-            final long callingId = Binder.clearCallingIdentity();
-            try {
-                return DeviceConfig.getBoolean(
-                        DeviceConfig.NAMESPACE_PRIVACY,
-                        PROPERTY_SAFETY_CENTER_ENABLED,
-                        /* defaultValue = */ false)
-                        && getSafetyCenterConfigValue();
-            } finally {
-                Binder.restoreCallingIdentity(callingId);
-            }
+            return isApiEnabled();
         }
 
         @Override
@@ -136,18 +129,20 @@ public final class SafetyCenterService extends SystemService {
             PermissionUtils.enforceCrossUserPermission(
                     userId, false, "setSafetySourceData", getContext());
             // TODO(b/205706756): Security: check certs?
-            getContext().enforceCallingOrSelfPermission(SEND_SAFETY_CENTER_UPDATE,
-                    "setSafetySourceData");
+            getContext()
+                    .enforceCallingOrSelfPermission(
+                            SEND_SAFETY_CENTER_UPDATE, "setSafetySourceData");
+            if (!checkApiEnabled("setSafetySourceData")) {
+                return;
+            }
             // TODO(b/218812582): Validate the SafetySourceData.
 
             SafetyCenterData safetyCenterData;
             RemoteCallbackList<IOnSafetyCenterDataChangedListener> listeners;
             synchronized (mApiLock) {
-                safetyCenterData = mSafetyCenterDataTracker.setSafetySourceData(
-                        safetySourceId,
-                        safetySourceData,
-                        packageName,
-                        userId);
+                safetyCenterData =
+                        mSafetyCenterDataTracker.setSafetySourceData(
+                                safetySourceId, safetySourceData, packageName, userId);
                 listeners = mSafetyCenterListeners.getListeners(userId);
             }
             // This doesn't need to be done while holding the lock, as RemoteCallbackList already
@@ -173,39 +168,54 @@ public final class SafetyCenterService extends SystemService {
             PermissionUtils.enforceCrossUserPermission(
                     userId, false, "getSafetySourceData", getContext());
             // TODO(b/205706756): Security: check certs?
-            getContext().enforceCallingOrSelfPermission(
-                    SEND_SAFETY_CENTER_UPDATE, "getSafetySourceData");
+            getContext()
+                    .enforceCallingOrSelfPermission(
+                            SEND_SAFETY_CENTER_UPDATE, "getSafetySourceData");
+            if (!checkApiEnabled("getSafetySourceData")) {
+                return null;
+            }
 
             synchronized (mApiLock) {
-                return mSafetyCenterDataTracker.getSafetySourceData(safetySourceId, packageName,
-                        userId);
+                return mSafetyCenterDataTracker.getSafetySourceData(
+                        safetySourceId, packageName, userId);
             }
         }
 
         @Override
         public void reportSafetySourceError(
                 @NonNull String safetySourceId,
-                @NonNull SafetySourceError error,
+                @NonNull SafetySourceErrorDetails errorDetails,
                 @NonNull String packageName,
                 @UserIdInt int userId) {
             mAppOpsManager.checkPackage(Binder.getCallingUid(), packageName);
             // TODO(b/217235899): Finalize cross-user behavior.
             PermissionUtils.enforceCrossUserPermission(
                     userId, false, "reportSafetySourceError", getContext());
-            getContext().enforceCallingOrSelfPermission(
-                    SEND_SAFETY_CENTER_UPDATE, "reportSafetySourceError");
+            getContext()
+                    .enforceCallingOrSelfPermission(
+                            SEND_SAFETY_CENTER_UPDATE, "reportSafetySourceError");
+            if (!checkApiEnabled("reportSafetySourceError")) {
+                return;
+            }
+
             // TODO(b/218379298): Add implementation
+            RemoteCallbackList<IOnSafetyCenterDataChangedListener> listeners;
+            synchronized (mApiLock) {
+                listeners = mSafetyCenterListeners.getListeners(userId);
+            }
+
+            SafetyCenterListeners.deliverError(listeners, new SafetyCenterErrorDetails("Error"));
         }
 
         @Override
-        public void refreshSafetySources(
-                @RefreshReason int refreshReason,
-                @UserIdInt int userId) {
+        public void refreshSafetySources(@RefreshReason int refreshReason, @UserIdInt int userId) {
             // TODO(b/217235899): Finalize cross-user behavior.
             PermissionUtils.enforceCrossUserPermission(
                     userId, false, "refreshSafetySources", getContext());
-            getContext().enforceCallingPermission(
-                    MANAGE_SAFETY_CENTER, "refreshSafetySources");
+            getContext().enforceCallingPermission(MANAGE_SAFETY_CENTER, "refreshSafetySources");
+            if (!checkApiEnabled("refreshSafetySources")) {
+                return;
+            }
 
             // We don't require the caller to have INTERACT_ACROSS_USERS and
             // START_FOREGROUND_SERVICES_FROM_BACKGROUND permissions.
@@ -220,13 +230,27 @@ public final class SafetyCenterService extends SystemService {
         }
 
         @Override
+        @Nullable
+        public SafetyCenterConfig getSafetyCenterConfig() {
+            getContext()
+                    .enforceCallingOrSelfPermission(MANAGE_SAFETY_CENTER, "getSafetyCenterConfig");
+
+            synchronized (mApiLock) {
+                return mSafetyCenterConfigReader.getSafetyCenterConfig();
+            }
+        }
+
+        @Override
         @NonNull
         public SafetyCenterData getSafetyCenterData(@UserIdInt int userId) {
             // TODO(b/217235899): Finalize cross-user behavior.
             PermissionUtils.enforceCrossUserPermission(
                     userId, false, "getSafetyCenterData", getContext());
-            getContext().enforceCallingOrSelfPermission(
-                    MANAGE_SAFETY_CENTER, "getSafetyCenterData");
+            getContext()
+                    .enforceCallingOrSelfPermission(MANAGE_SAFETY_CENTER, "getSafetyCenterData");
+            if (!checkApiEnabled("getSafetyCenterData")) {
+                return SafetyCenterDataTracker.getDefaultSafetyCenterData();
+            }
 
             synchronized (mApiLock) {
                 return mSafetyCenterDataTracker.getSafetyCenterData(userId);
@@ -235,13 +259,16 @@ public final class SafetyCenterService extends SystemService {
 
         @Override
         public void addOnSafetyCenterDataChangedListener(
-                @NonNull IOnSafetyCenterDataChangedListener listener,
-                @UserIdInt int userId) {
+                @NonNull IOnSafetyCenterDataChangedListener listener, @UserIdInt int userId) {
             // TODO(b/217235899): Finalize cross-user behavior.
             PermissionUtils.enforceCrossUserPermission(
                     userId, false, "addOnSafetyCenterDataChangedListener", getContext());
-            getContext().enforceCallingOrSelfPermission(
-                    MANAGE_SAFETY_CENTER, "addOnSafetyCenterDataChangedListener");
+            getContext()
+                    .enforceCallingOrSelfPermission(
+                            MANAGE_SAFETY_CENTER, "addOnSafetyCenterDataChangedListener");
+            if (!checkApiEnabled("addOnSafetyCenterDataChangedListener")) {
+                return;
+            }
 
             SafetyCenterData safetyCenterData;
             synchronized (mApiLock) {
@@ -256,13 +283,16 @@ public final class SafetyCenterService extends SystemService {
 
         @Override
         public void removeOnSafetyCenterDataChangedListener(
-                @NonNull IOnSafetyCenterDataChangedListener listener,
-                @UserIdInt int userId) {
+                @NonNull IOnSafetyCenterDataChangedListener listener, @UserIdInt int userId) {
             // TODO(b/217235899): Finalize cross-user behavior.
             PermissionUtils.enforceCrossUserPermission(
                     userId, false, "removeOnSafetyCenterDataChangedListener", getContext());
-            getContext().enforceCallingOrSelfPermission(
-                    MANAGE_SAFETY_CENTER, "removeOnSafetyCenterDataChangedListener");
+            getContext()
+                    .enforceCallingOrSelfPermission(
+                            MANAGE_SAFETY_CENTER, "removeOnSafetyCenterDataChangedListener");
+            if (!checkApiEnabled("removeOnSafetyCenterDataChangedListener")) {
+                return;
+            }
 
             synchronized (mApiLock) {
                 mSafetyCenterListeners.removeListener(listener, userId);
@@ -270,33 +300,45 @@ public final class SafetyCenterService extends SystemService {
         }
 
         @Override
-        public void dismissSafetyIssue(String issueId, @UserIdInt int userId) {
+        public void dismissSafetyCenterIssue(String issueId, @UserIdInt int userId) {
             // TODO(b/217235899): Finalize cross-user behavior.
             PermissionUtils.enforceCrossUserPermission(
-                    userId, false, "dismissSafetyIssue", getContext());
-            getContext().enforceCallingOrSelfPermission(
-                    MANAGE_SAFETY_CENTER, "dismissSafetyIssue");
+                    userId, false, "dismissSafetyCenterIssue", getContext());
+            getContext()
+                    .enforceCallingOrSelfPermission(
+                            MANAGE_SAFETY_CENTER, "dismissSafetyCenterIssue");
+            if (!checkApiEnabled("dismissSafetyCenterIssue")) {
+                return;
+            }
             // TODO(b/202387059): Implement issue dismissal.
 
         }
 
         @Override
-        public void executeAction(
+        public void executeSafetyCenterIssueAction(
                 @NonNull String safetyCenterIssueId,
                 @NonNull String safetyCenterActionId,
                 @UserIdInt int userId) {
             // TODO(b/217235899): Finalize cross-user behavior.
             PermissionUtils.enforceCrossUserPermission(
-                    userId, false, "executeAction", getContext());
-            getContext().enforceCallingOrSelfPermission(MANAGE_SAFETY_CENTER,
-                    "executeAction");
+                    userId, false, "executeSafetyCenterIssueAction", getContext());
+            getContext()
+                    .enforceCallingOrSelfPermission(
+                            MANAGE_SAFETY_CENTER, "executeSafetyCenterIssueAction");
+            if (!checkApiEnabled("executeSafetyCenterIssueAction")) {
+                return;
+            }
             // TODO(b/218379298): Add implementation
         }
 
         @Override
-        public void clearAllSafetySourceData() {
-            getContext().enforceCallingOrSelfPermission(
-                    MANAGE_SAFETY_CENTER, "clearAllSafetySourceData");
+        public void clearAllSafetySourceDataForTests() {
+            getContext()
+                    .enforceCallingOrSelfPermission(
+                            MANAGE_SAFETY_CENTER, "clearAllSafetySourceDataForTests");
+            if (!checkApiEnabled("clearAllSafetySourceDataForTests")) {
+                return;
+            }
 
             synchronized (mApiLock) {
                 mSafetyCenterDataTracker.clear();
@@ -304,10 +346,13 @@ public final class SafetyCenterService extends SystemService {
         }
 
         @Override
-        public void setSafetyCenterConfigOverride(
-                @NonNull SafetyCenterConfig safetyCenterConfig) {
-            getContext().enforceCallingOrSelfPermission(MANAGE_SAFETY_CENTER,
-                    "setSafetyCenterConfigOverride");
+        public void setSafetyCenterConfigForTests(@NonNull SafetyCenterConfig safetyCenterConfig) {
+            getContext()
+                    .enforceCallingOrSelfPermission(
+                            MANAGE_SAFETY_CENTER, "setSafetyCenterConfigForTests");
+            if (!checkApiEnabled("setSafetyCenterConfigForTests")) {
+                return;
+            }
 
             synchronized (mRefreshLock) {
                 // TODO(b/217944317): Implement properly by overriding config in
@@ -317,14 +362,9 @@ public final class SafetyCenterService extends SystemService {
                     SafetySourcesGroup group = safetyCenterConfig.getSafetySourcesGroups().get(i);
                     for (int j = 0; j < group.getSafetySources().size(); j++) {
                         SafetySource safetySource = group.getSafetySources().get(j);
-                        if (safetySource.getType() != SAFETY_SOURCE_TYPE_STATIC
-                                && safetySource.getBroadcastReceiverClassName() != null) {
-                            mSafetyCenterRefreshManager
-                                    .addAdditionalSafetySourceBroadcastReceiverComponent(
-                                            new ComponentName(
-                                                    safetySource.getPackageName(),
-                                                    safetySource.getBroadcastReceiverClassName()
-                                            ));
+                        if (safetySource.getType() != SAFETY_SOURCE_TYPE_STATIC) {
+                            mSafetyCenterRefreshManager.addAdditionalSafetySourcePackageNames(
+                                    safetySource.getPackageName());
                         }
                     }
                 }
@@ -332,25 +372,46 @@ public final class SafetyCenterService extends SystemService {
         }
 
         @Override
-        public void clearSafetyCenterConfigOverride() {
-            getContext().enforceCallingOrSelfPermission(
-                    MANAGE_SAFETY_CENTER, "clearSafetyCenterConfigOverride");
+        public void clearSafetyCenterConfigForTests() {
+            getContext()
+                    .enforceCallingOrSelfPermission(
+                            MANAGE_SAFETY_CENTER, "clearSafetyCenterConfigForTests");
+            if (!checkApiEnabled("clearSafetyCenterConfigForTests")) {
+                return;
+            }
 
             synchronized (mRefreshLock) {
-                mSafetyCenterRefreshManager
-                        .clearAdditionalSafetySourceBroadcastReceiverComponents();
+                mSafetyCenterRefreshManager.clearAdditionalSafetySourcePackageNames();
+            }
+        }
+
+        private boolean isApiEnabled() {
+            return getSafetyCenterConfigValue() && getDeviceConfigSafetyCenterEnabledProperty();
+        }
+
+        private boolean getDeviceConfigSafetyCenterEnabledProperty() {
+            // This call requires the READ_DEVICE_CONFIG permission.
+            final long callingId = Binder.clearCallingIdentity();
+            try {
+                return DeviceConfig.getBoolean(
+                        DeviceConfig.NAMESPACE_PRIVACY,
+                        PROPERTY_SAFETY_CENTER_ENABLED,
+                        /* defaultValue = */ false);
+            } finally {
+                Binder.restoreCallingIdentity(callingId);
             }
         }
 
         private boolean getSafetyCenterConfigValue() {
-            return getContext().getResources().getBoolean(Resources.getSystem().getIdentifier(
-                    "config_enableSafetyCenter",
-                    "bool",
-                    "android"));
+            return getContext()
+                    .getResources()
+                    .getBoolean(
+                            Resources.getSystem()
+                                    .getIdentifier("config_enableSafetyCenter", "bool", "android"));
         }
 
-        private void enforceAnyCallingOrSelfPermissions(@NonNull String message,
-                String... permissions) {
+        private void enforceAnyCallingOrSelfPermissions(
+                @NonNull String message, String... permissions) {
             if (permissions.length == 0) {
                 throw new IllegalArgumentException("Must check at least one permission");
             }
@@ -360,8 +421,19 @@ public final class SafetyCenterService extends SystemService {
                     return;
                 }
             }
-            throw new SecurityException(message + " requires any of: "
-                    + Arrays.toString(permissions) + ", but none were granted");
+            throw new SecurityException(
+                    message
+                            + " requires any of: "
+                            + Arrays.toString(permissions)
+                            + ", but none were granted");
+        }
+
+        private boolean checkApiEnabled(@NonNull String message) {
+            if (!isApiEnabled()) {
+                Log.w(TAG, String.format("Called %s, but Safety Center is disabled", message));
+                return false;
+            }
+            return true;
         }
     }
 }
