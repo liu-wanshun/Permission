@@ -2,17 +2,16 @@
     <safety-sources-config>
         <safety-sources-group
             id="id"
-            title="@string/reference"
-            summary="@string/reference">
-            <safety-source
-                type="2"
+            title="@com.android.safetycenter.config.tests:string/reference"
+            summary="@com.android.safetycenter.config.tests:string/reference">
+            <dynamic-safety-source
                 id="id"
                 packageName="package"
-                title="@string/reference"
-                summary="@string/reference"
+                title="@com.android.safetycenter.config.tests:string/reference"
+                summary="@com.android.safetycenter.config.tests:string/reference"
                 intentAction="intent"
-                profile="2"
-                initialDisplayState="1"/>
+                profile="all_profiles"
+                initialDisplayState="disabled"/>
         </safety-sources-group>
     </safety-sources-config>
 </safety-center-config>

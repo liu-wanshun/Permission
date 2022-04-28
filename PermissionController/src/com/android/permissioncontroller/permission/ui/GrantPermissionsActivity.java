@@ -46,6 +46,7 @@ import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
@@ -55,9 +56,9 @@ import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.DeviceUtils;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.ui.auto.GrantPermissionsAutoViewHandler;
-import com.android.permissioncontroller.permission.ui.model.GrantPermissionsViewModel;
-import com.android.permissioncontroller.permission.ui.model.GrantPermissionsViewModel.RequestInfo;
-import com.android.permissioncontroller.permission.ui.model.GrantPermissionsViewModelFactory;
+import com.android.permissioncontroller.permission.ui.model.v31.GrantPermissionsViewModel;
+import com.android.permissioncontroller.permission.ui.model.v31.GrantPermissionsViewModel.RequestInfo;
+import com.android.permissioncontroller.permission.ui.model.v31.GrantPermissionsViewModelFactory;
 import com.android.permissioncontroller.permission.ui.wear.GrantPermissionsWearViewHandler;
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
 import com.android.permissioncontroller.permission.utils.Utils;
@@ -170,19 +171,8 @@ public class GrantPermissionsActivity extends SettingsActivity
 
         getWindow().addSystemFlags(SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS);
 
-        mRequestedPermissions = getIntent().getStringArrayExtra(
-                PackageManager.EXTRA_REQUEST_PERMISSIONS_NAMES);
-        if (mRequestedPermissions == null || mRequestedPermissions.length == 0) {
-            setResultAndFinish();
-            return;
-        }
-        mOriginalRequestedPermissions = mRequestedPermissions;
-
-        mLegacyAccessPermissions = getIntent().getStringArrayExtra(
-                PackageManager.EXTRA_REQUEST_PERMISSIONS_LEGACY_ACCESS_PERMISSION_NAMES);
-        if (mLegacyAccessPermissions == null) {
-            mLegacyAccessPermissions = new String[0];
-        }
+        mRequestedPermissions = getIntent()
+                .getStringArrayExtra(PackageManager.EXTRA_REQUEST_PERMISSIONS_NAMES);
 
         if (PackageManager.ACTION_REQUEST_PERMISSIONS_FOR_OTHER.equals(getIntent().getAction())) {
             mTargetPackage = getIntent().getStringExtra(Intent.EXTRA_PACKAGE_NAME);
@@ -200,6 +190,25 @@ public class GrantPermissionsActivity extends SettingsActivity
         } else {
             // Cache this as this can only read on onCreate, not later.
             mTargetPackage = getCallingPackage();
+
+            // If this app is below the android T targetSdk, filter out the POST_NOTIFICATIONS
+            // permission, if present
+            mRequestedPermissions = GrantPermissionsViewModel.Companion
+                    .filterNotificationPermissionIfNeededSync(
+                            mTargetPackage, mRequestedPermissions);
+        }
+
+
+        if (mRequestedPermissions == null || mRequestedPermissions.length == 0) {
+            setResultAndFinish();
+            return;
+        }
+        mOriginalRequestedPermissions = mRequestedPermissions;
+
+        mLegacyAccessPermissions = getIntent().getStringArrayExtra(
+                PackageManager.EXTRA_REQUEST_PERMISSIONS_LEGACY_ACCESS_PERMISSION_NAMES);
+        if (mLegacyAccessPermissions == null) {
+            mLegacyAccessPermissions = new String[0];
         }
 
         synchronized (sCurrentGrantRequests) {
@@ -385,6 +394,7 @@ public class GrantPermissionsActivity extends SettingsActivity
         CharSequence appLabel = KotlinUtils.INSTANCE.getPackageLabel(getApplication(),
                 mTargetPackage, Process.myUserHandle());
 
+        Icon icon = null;
         int messageId = 0;
         switch(info.getMessage()) {
             case FG_MESSAGE:
@@ -406,9 +416,11 @@ public class GrantPermissionsActivity extends SettingsActivity
                 messageId = Utils.getContinueRequest(info.getGroupName());
                 break;
             case STORAGE_SUPERGROUP_MESSAGE_Q_TO_S:
+                icon = Icon.createWithResource(getPackageName(), R.drawable.perm_group_storage);
                 messageId = R.string.permgrouprequest_storage_q_to_s;
                 break;
             case STORAGE_SUPERGROUP_MESSAGE_PRE_Q:
+                icon = Icon.createWithResource(getPackageName(), R.drawable.perm_group_storage);
                 messageId = R.string.permgrouprequest_storage_pre_q;
                 break;
         }
@@ -450,9 +462,9 @@ public class GrantPermissionsActivity extends SettingsActivity
             }
         }
 
-        Icon icon = null;
         try {
-            icon = Icon.createWithResource(info.getGroupInfo().getPackageName(),
+            icon = icon != null ? icon : Icon.createWithResource(
+                    info.getGroupInfo().getPackageName(),
                     info.getGroupInfo().getIcon());
         } catch (Resources.NotFoundException e) {
             Log.e(LOG_TAG, "Cannot load icon for group" + info.getGroupName(), e);
@@ -488,7 +500,11 @@ public class GrantPermissionsActivity extends SettingsActivity
         }
 
         getWindow().setDimAmount(mOriginalDimAmount);
-        mRootView.setVisibility(View.VISIBLE);
+        if (mRootView.getVisibility() == View.GONE) {
+            InputMethodManager manager = getSystemService(InputMethodManager.class);
+            manager.hideSoftInputFromWindow(mRootView.getWindowToken(), 0);
+            mRootView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
