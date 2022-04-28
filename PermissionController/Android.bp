@@ -80,6 +80,7 @@ android_app {
     privileged: true,
     certificate: "platform",
     rename_resources_package: false,
+    required: ["privapp_allowlist_com.android.permissioncontroller.xml"],
 
     srcs: [":permissioncontroller-sources"],
 
@@ -148,4 +149,6 @@ android_app {
     },
 
     plugins: ["java_api_finder"],
+
+    kotlincflags: ["-Xjvm-default=enable"],
 }

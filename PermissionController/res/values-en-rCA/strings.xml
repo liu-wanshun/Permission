@@ -217,6 +217,7 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> and <xliff:g id="NUMBER">%2$s</xliff:g> other permissions removed"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Unused apps"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"If an app is unused for a few months:\n\n• Permissions are removed to protect your data\n• Notifications are stopped to save battery\n• Temporary files are removed to free up space\n\nTo allow permissions and notifications again, open the app."</string>
+    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"If an app is unused for a few months:\n\n• Permissions are removed to protect your data\n• Temporary files are removed to free up space\n\nTo allow permissions again, open the app."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Last opened more than <xliff:g id="NUMBER">%s</xliff:g> months ago"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"App last opened on <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Last opened <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -472,7 +473,7 @@
     <string name="permgrouprequest_sensors" msgid="4397358316850652235">"Allow &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; to access sensor data about your vital signs?"</string>
     <string name="permgroupupgraderequestdetail_sensors" msgid="6651914048792092835">"This app wants to access sensor data about your vital signs all the time, even when you’re not using the app. To make this change, "<annotation id="link">"go to Settings."</annotation></string>
     <string name="permgroupbackgroundrequest_sensors" msgid="5661924322018503886">"Allow &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; to access the sensor data about your vital signs?"</string>
-    <string name="permgroupbackgroundrequestdetail_sensors" msgid="7649389834182449783">"To let this app access body sensor data all the time, even when you\'re not using the app, "<annotation id="link">"go to settings."</annotation></string>
+    <string name="permgroupbackgroundrequestdetail_sensors" msgid="7726767635834043501">"To let this app access body sensor data all the time, even when you’re not using the app, "<annotation id="link">"go to settings."</annotation></string>
     <string name="permgroupupgraderequest_sensors" msgid="7576527638411370468">"Keep allowing &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; to access body sensor data while the app is in use?"</string>
     <string name="permgrouprequest_notifications" msgid="6396739062335106181">"Allow &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; to send you notifications?"</string>
     <string name="permgrouprequestcontinue_notifications" msgid="3895098107355024027">"Allow &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; to continue sending you notifications?"</string>

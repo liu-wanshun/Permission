@@ -35,7 +35,7 @@
     <string name="current_permission_template" msgid="7452035392573329375">"<xliff:g id="PERMISSION_COUNT">%2$s</xliff:g>ৰ ভিতৰত <xliff:g id="CURRENT_PERMISSION_INDEX">%1$s</xliff:g>টা"</string>
     <string name="permission_warning_template" msgid="2247087781222679458">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;ক <xliff:g id="ACTION">%2$s</xliff:g>ৰ বাবে অনুমতি দিবনে?"</string>
     <string name="permission_add_background_warning_template" msgid="1812914855915092273">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;ক সদায় <xliff:g id="ACTION">%2$s</xliff:g> কৰাৰ অনুমতি দিবনে?"</string>
-    <string name="allow_permission_foreground_only" msgid="116465816039675404">"এপ্ ব্য়ৱহাৰ কৰি থাকোঁতে মাত্ৰ"</string>
+    <string name="allow_permission_foreground_only" msgid="116465816039675404">"এপ্ ব্যৱহাৰ কৰি থাকোঁতে মাত্ৰ"</string>
     <string name="allow_permission_always" msgid="5194342531206054051">"সদায়"</string>
     <string name="deny_permission_deny_and_dont_ask_again" msgid="6106035221490102341">"অনুমতি নিদিব আৰু পুনৰ নুসুধিব"</string>
     <string name="permission_revoked_count" msgid="4785082705441547086">"<xliff:g id="COUNT">%1$d</xliff:g>টা অক্ষম কৰা হ’ল"</string>
@@ -68,7 +68,7 @@
     <string name="never_ask_again" msgid="4728762438198560329">"পুনৰাই নুসুধিব"</string>
     <string name="no_permissions" msgid="3881676756371148563">"কোনো অনুমতি নাই"</string>
     <string name="additional_permissions" msgid="5801285469338873430">"অতিৰিক্ত অনুমতি"</string>
-    <string name="app_permissions_info_button_label" msgid="7633312050729974623">"এপৰ তথ্য় খোলক"</string>
+    <string name="app_permissions_info_button_label" msgid="7633312050729974623">"এপৰ তথ্য খোলক"</string>
     <string name="additional_permissions_more" msgid="5681220714755304407">"{count,plural, =1{আৰু # টা}one{আৰু # টা}other{আৰু # টা}}"</string>
     <string name="old_sdk_deny_warning" msgid="2382236998845153919">"এই এপটো Androidৰ এটা পুৰণা সংস্কৰণৰ বাবে প্ৰস্তুত কৰা হৈছিল। অনুমতি নিদিলে ই বিচৰা ধৰণে কাম নকৰিবও পাৰে।"</string>
     <string name="storage_supergroup_warning_allow" msgid="103093462784523190">"এই এপ্‌টো Androidৰ এটা পুৰণা সংস্কৰণৰ বাবে ডিজাইন কৰা হৈছিল। যদি আপুনি এই অনুমতিটো দিয়ে, তেন্তে আটাইবোৰ ষ্ট’ৰেজলৈ (ফট’, ভিডিঅ’, সংগীত, অডিঅ’ আৰু অন্য ফাইলসমূহকে ধৰি) এক্সেছৰ অনুমতি দিয়া হ’ব।"</string>
@@ -199,10 +199,8 @@
     <string name="unused_apps_category_title" msgid="2988455616845243901">"ব্যৱহাৰ নকৰা এপৰ ছেটিং"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"যদি এপ্‌টো ব্যৱহাৰ কৰা নাই অনুমতিসমূহ আঁতৰাওক"</string>
     <string name="unused_apps_label" msgid="2595428768404901064">"অনুমতি আঁতৰাওক আৰু ঠাই খালী কৰক"</string>
-    <!-- no translation found for unused_apps_label_v2 (7058776770056517980) -->
-    <skip />
-    <!-- no translation found for unused_apps_summary (8839466950318403115) -->
-    <skip />
+    <string name="unused_apps_label_v2" msgid="7058776770056517980">"অব্যৱহৃত হৈ থাকিলে এপৰ কাৰ্যকলাপ পজ কৰক"</string>
+    <string name="unused_apps_summary" msgid="8839466950318403115">"অনুমতি আঁতৰাওক, অস্থায়ী ফাইল মচক আৰু জাননী বন্ধ কৰক"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"আপোনাৰ ডেটা সুৰক্ষিত কৰিবলৈ এই এপ্‌টো কেইমাহমান ব্যৱহাৰ নকৰিলে এইটোৰ বাবে থকা অনুমতিসমূহ আঁতৰোৱা হ\'ব।"</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"আপোনাৰ ডেটা সুৰক্ষিত কৰিবলৈ এই এপ্‌টো কেইমাহমান ব্যৱহাৰ নকৰিলে তলত উল্লেখ কৰা অনুমতিসমূহ আঁতৰোৱা হ\'ব: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"আপোনাৰ ডেটা সুৰক্ষিত কৰিবলৈ আপুনি কেইমাহমান ব্যৱহাৰ নকৰা এপ্‌সমূহৰ পৰা অনুমতিসমূহ আঁতৰোৱা হ\'ব।"</string>
@@ -219,6 +217,7 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g>ৰ আৰু <xliff:g id="NUMBER">%2$s</xliff:g> টা অন্য অনুমতি আঁতৰোৱা হ\'ল"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"অব্যৱহৃত এপ্‌"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"কোনো এপ্‌ কেইমাহমানৰ বাবে ব্যৱহাৰ নকৰাকৈ থাকিলে:\n\n• আপোনাৰ ডেটা সুৰক্ষিত কৰিবলৈ অনুমতিসমূহ আঁতৰোৱা হয়\n• বেটাৰী ৰাহি কৰিবলৈ জাননী বন্ধ কৰা হয়\n• ঠাই খালী কৰিবলৈ অস্থায়ী ফাইল আঁতৰোৱা হয়\n\nঅনুমতি আৰু জাননীত পুনৰ অনুমতি দিবলৈ, এপ্‌টো খোলক।"</string>
+    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"কোনো এপ্‌ কেইমাহমানৰ বাবে ব্যৱহাৰ নকৰাকৈ থাকিলে:\n\n• আপোনাৰ ডেটা সুৰক্ষিত কৰিবলৈ অনুমতিসমূহ আঁতৰোৱা হয়\n• ঠাই খালী কৰিবলৈ অস্থায়ী ফাইলসমূহ আঁতৰোৱা হয়\n\nপুনৰ অনুমতি দিবলৈ এপ্‌টো খোলক।"</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"<xliff:g id="NUMBER">%s</xliff:g> মাহ পূর্বে অন্তিমবাৰ খোলা হৈছিল"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"এপ্‌টো অন্তিমবাৰ <xliff:g id="DATE">%s</xliff:g>ত খোলা হৈছিল"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"অন্তিমবাৰ <xliff:g id="DATE">%s</xliff:g>ত খোলা হৈছিল"</string>
@@ -474,7 +473,7 @@
     <string name="permgrouprequest_sensors" msgid="4397358316850652235">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;ক আপোনাৰ দেহৰ গুৰুত্বপূৰ্ণ অংগসমূহৰ অৱস্থাৰ বিষয়ে ছেন্সৰৰ ডেটা লাভ কৰিবলৈ অনুমতি দিবনে?"</string>
     <string name="permgroupupgraderequestdetail_sensors" msgid="6651914048792092835">"এই এপ্‌টোৱে সকলো সময়তে আপোনাৰ দেহৰ গুৰুত্বপূৰ্ণ অংগৰ বিষয়ে ছেন্সৰৰ ডেটাৰ এক্সেছ বিচাৰে, আনকি আপুনি এপ্‌টো ব্যৱহাৰ কৰি নথকাৰ সময়তো। এই সালসলনিটো কৰিবলৈ, "<annotation id="link">"ছেটিঙলৈ যাওক।"</annotation></string>
     <string name="permgroupbackgroundrequest_sensors" msgid="5661924322018503886">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;ক আপোনাৰ দেহৰ গুৰুত্বপূৰ্ণ অংগসমূহৰ অৱস্থাৰ বিষয়ে ছেন্সৰৰ ডেটাৰ এক্সেছ পাবলৈ অনুমতি দিবনে?"</string>
-    <string name="permgroupbackgroundrequestdetail_sensors" msgid="7649389834182449783">"এই এপ্‌টোক আপুনি ইয়াক ব্যৱহাৰ কৰি নথকাৰ সময়কে ধৰি সকলো সময়তে শৰীৰৰ ছেন্সৰৰ ডেটা এক্সেছ কৰিবলৈ দিবলৈ, "<annotation id="link">"ছেটিঙলৈ যাওক।"</annotation></string>
+    <string name="permgroupbackgroundrequestdetail_sensors" msgid="7726767635834043501">"এই এপ্‌টোক আপুনি এইটো ব্যৱহাৰ কৰি নথকা সময়কো ধৰি সকলো সময়তে শৰীৰৰ ছেন্সৰৰ ডেটা এক্সেছ কৰিবলৈ দিবলৈ, "<annotation id="link">"ছেটিঙলৈ যাওক।"</annotation></string>
     <string name="permgroupupgraderequest_sensors" msgid="7576527638411370468">"এপ্‌টো ব্যৱহাৰ কৰি থকাৰ সময়ত &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;ক শৰীৰৰ ছেন্সৰৰ ডেটা এক্সেছ কৰিবলৈ অনুমতি দি থাকিবনে?"</string>
     <string name="permgrouprequest_notifications" msgid="6396739062335106181">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;ক আপোনালৈ জাননী পঠিয়াবলৈ অনুমতি দিবনে?"</string>
     <string name="permgrouprequestcontinue_notifications" msgid="3895098107355024027">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;ক আপোনালৈ জাননী পঠিয়াই থাকিবলৈ অনুমতি দিবনে?"</string>

@@ -23,7 +23,6 @@ import static java.util.Objects.requireNonNull;
 
 import android.annotation.NonNull;
 import android.annotation.SystemApi;
-import android.content.res.XmlResourceParser;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -52,7 +51,6 @@ public final class SafetyCenterConfig implements Parcelable {
                     List<SafetySourcesGroup> safetySourcesGroups =
                             requireNonNull(in.createTypedArrayList(SafetySourcesGroup.CREATOR));
                     Builder builder = new Builder();
-                    // TODO(b/224513050): Consider simplifying by adding a new API to the builder.
                     for (int i = 0; i < safetySourcesGroups.size(); i++) {
                         builder.addSafetySourcesGroup(safetySourcesGroups.get(i));
                     }
@@ -65,25 +63,10 @@ public final class SafetyCenterConfig implements Parcelable {
                 }
             };
 
-    @NonNull
-    private final List<SafetySourcesGroup> mSafetySourcesGroups;
+    @NonNull private final List<SafetySourcesGroup> mSafetySourcesGroups;
 
     private SafetyCenterConfig(@NonNull List<SafetySourcesGroup> safetySourcesGroups) {
         mSafetySourcesGroups = safetySourcesGroups;
-    }
-
-    /**
-     * Parses and validates the given XML resource into a {@link SafetyCenterConfig} object.
-     *
-     * <p>It throws a {@link ParseException} if the given XML resource does not comply with the
-     * safety_center_config.xsd schema.
-     *
-     * @param parser the XML resource parsing interface
-     */
-    @NonNull
-    public static SafetyCenterConfig fromXml(@NonNull XmlResourceParser parser)
-            throws ParseException {
-        return SafetyCenterConfigParser.parseXmlResource(parser);
     }
 
     /** Returns the list of {@link SafetySourcesGroup}s in the configuration. */
@@ -107,10 +90,7 @@ public final class SafetyCenterConfig implements Parcelable {
 
     @Override
     public String toString() {
-        return "SafetyCenterConfig{"
-                + "mSafetySourcesGroups="
-                + mSafetySourcesGroups
-                + '}';
+        return "SafetyCenterConfig{" + "mSafetySourcesGroups=" + mSafetySourcesGroups + '}';
     }
 
     @Override
@@ -129,8 +109,7 @@ public final class SafetyCenterConfig implements Parcelable {
         private final List<SafetySourcesGroup> mSafetySourcesGroups = new ArrayList<>();
 
         /** Creates a {@link Builder} for a {@link SafetyCenterConfig}. */
-        public Builder() {
-        }
+        public Builder() {}
 
         /** Adds a {@link SafetySourcesGroup} to the configuration. */
         @NonNull
@@ -142,8 +121,8 @@ public final class SafetyCenterConfig implements Parcelable {
         /** Creates the {@link SafetyCenterConfig} defined by this {@link Builder}. */
         @NonNull
         public SafetyCenterConfig build() {
-            List<SafetySourcesGroup> safetySourcesGroups = unmodifiableList(
-                    new ArrayList<>(mSafetySourcesGroups));
+            List<SafetySourcesGroup> safetySourcesGroups =
+                    unmodifiableList(new ArrayList<>(mSafetySourcesGroups));
             if (safetySourcesGroups.isEmpty()) {
                 throw new IllegalStateException("No safety sources groups present");
             }
