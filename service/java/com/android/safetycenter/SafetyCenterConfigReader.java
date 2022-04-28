@@ -23,14 +23,16 @@ import android.annotation.Nullable;
 import android.annotation.StringRes;
 import android.content.Context;
 import android.content.res.Resources;
-import android.content.res.XmlResourceParser;
-import android.safetycenter.config.ParseException;
 import android.safetycenter.config.SafetyCenterConfig;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.android.safetycenter.config.ParseException;
+import com.android.safetycenter.config.SafetyCenterConfigParser;
 import com.android.safetycenter.resources.SafetyCenterResourcesContext;
+
+import java.io.InputStream;
 
 /**
  * A class that reads the {@link SafetyCenterConfig} from the associated {@link
@@ -42,11 +44,9 @@ final class SafetyCenterConfigReader {
     private static final String TAG = "SafetyCenterConfigReade";
 
     private final Object mSafetyCenterConfigLock = new Object();
-    @NonNull
-    private final SafetyCenterResourcesContext mSafetyCenterResourcesContext;
+    @NonNull private final SafetyCenterResourcesContext mSafetyCenterResourcesContext;
 
-    @Nullable
-    private SafetyCenterConfig mSafetyCenterConfig;
+    @Nullable private SafetyCenterConfig mSafetyCenterConfig;
 
     /**
      * Creates a {@link SafetyCenterConfigReader} from a {@link Context} object by wrapping it into
@@ -76,10 +76,16 @@ final class SafetyCenterConfigReader {
      * Returns a {@link String} resource from the given {@code stringId}, using the {@link
      * SafetyCenterResourcesContext}.
      *
-     * <p>Returns {@code null} if the resource cannot be accessed.
+     * <p>Returns {@code null} if the resources cannot be accessed or if {@code stringId} is equal
+     * to {@link Resources#ID_NULL}. Otherwise, throws a {@link Resources.NotFoundException} if the
+     * {@code stringId} is invalid.
      */
     @Nullable
     String readStringResource(@StringRes int stringId) {
+        if (stringId == Resources.ID_NULL) {
+            return null;
+        }
+
         Resources resources = mSafetyCenterResourcesContext.getResources();
         if (resources == null) {
             return null;
@@ -100,14 +106,21 @@ final class SafetyCenterConfigReader {
 
     @Nullable
     private SafetyCenterConfig readSafetyCenterConfig() {
-        XmlResourceParser parser = mSafetyCenterResourcesContext.getSafetyCenterConfig();
-        if (parser == null) {
+        InputStream in = mSafetyCenterResourcesContext.getSafetyCenterConfig();
+        if (in == null) {
             Log.e(TAG, "Cannot get safety center config file");
             return null;
         }
 
+        Resources resources = mSafetyCenterResourcesContext.getResources();
+        if (resources == null) {
+            Log.e(TAG, "Cannot get safety center resources");
+            return null;
+        }
+
         try {
-            SafetyCenterConfig safetyCenterConfig = SafetyCenterConfig.fromXml(parser);
+            SafetyCenterConfig safetyCenterConfig =
+                    SafetyCenterConfigParser.parseXmlResource(in, resources);
             Log.i(TAG, "SafetyCenterConfig read successfully");
             return safetyCenterConfig;
         } catch (ParseException e) {
@@ -115,5 +128,4 @@ final class SafetyCenterConfigReader {
             return null;
         }
     }
-
 }

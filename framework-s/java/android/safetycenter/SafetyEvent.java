@@ -39,22 +39,7 @@ import java.util.Objects;
 @SystemApi
 @RequiresApi(TIRAMISU)
 public final class SafetyEvent implements Parcelable {
-    /**
-     * Types of safety events that may trigger a set of a safety source's {@link SafetySourceData}.
-     *
-     * @hide
-     */
-    @IntDef(prefix = {"SAFETY_EVENT_TYPE_"}, value = {
-            SAFETY_EVENT_TYPE_SOURCE_STATE_CHANGED,
-            SAFETY_EVENT_TYPE_REFRESH_REQUESTED,
-            SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED,
-            SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED,
-            SAFETY_EVENT_TYPE_DEVICE_LOCALE_CHANGED,
-            SAFETY_EVENT_TYPE_DEVICE_REBOOTED
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Type {
-    }
+
     /**
      * Indicates that there has been a change of state for safety source, which may be independent
      * of Safety Center interactions.
@@ -68,52 +53,67 @@ public final class SafetyEvent implements Parcelable {
     public static final int SAFETY_EVENT_TYPE_REFRESH_REQUESTED = 200;
 
     /**
-     * Indicates that the safety source successfully completed a resolving
-     * {@link SafetySourceIssue.Action}.
+     * Indicates that the safety source successfully completed a resolving {@link
+     * SafetySourceIssue.Action}.
      */
     public static final int SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED = 300;
 
     /**
-     * Indicates that the safety source failed to complete a resolving
-     * {@link SafetySourceIssue.Action}.
+     * Indicates that the safety source failed to complete a resolving {@link
+     * SafetySourceIssue.Action}.
      */
     public static final int SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED = 400;
 
-    /**
-     * Indicates that the device's locale changed.
-     */
+    /** Indicates that the device's locale changed. */
     public static final int SAFETY_EVENT_TYPE_DEVICE_LOCALE_CHANGED = 500;
 
-    /**
-     * Indicates that the device was rebooted.
-     */
+    /** Indicates that the device was rebooted. */
     public static final int SAFETY_EVENT_TYPE_DEVICE_REBOOTED = 600;
+
+    /**
+     * Types of safety events that may trigger a set of a safety source's {@link SafetySourceData}.
+     *
+     * @hide
+     */
+    @IntDef(
+            prefix = {"SAFETY_EVENT_TYPE_"},
+            value = {
+                SAFETY_EVENT_TYPE_SOURCE_STATE_CHANGED,
+                SAFETY_EVENT_TYPE_REFRESH_REQUESTED,
+                SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED,
+                SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED,
+                SAFETY_EVENT_TYPE_DEVICE_LOCALE_CHANGED,
+                SAFETY_EVENT_TYPE_DEVICE_REBOOTED
+            })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Type {}
 
     @NonNull
     public static final Creator<SafetyEvent> CREATOR =
             new Creator<SafetyEvent>() {
-        @Override
-        public SafetyEvent createFromParcel(Parcel in) {
-            return new SafetyEvent(in.readInt(), in.readString(),
-                    in.readString(), in.readString());
-        }
+                @Override
+                public SafetyEvent createFromParcel(Parcel in) {
+                    int type = in.readInt();
+                    return new SafetyEvent.Builder(type)
+                            .setRefreshBroadcastId(in.readString())
+                            .setSafetySourceIssueId(in.readString())
+                            .setSafetySourceIssueActionId(in.readString())
+                            .build();
+                }
 
-        @Override
-        public SafetyEvent[] newArray(int size) {
-            return new SafetyEvent[size];
-        }
-    };
+                @Override
+                public SafetyEvent[] newArray(int size) {
+                    return new SafetyEvent[size];
+                }
+            };
 
-    @Type
-    private final int mType;
-    @Nullable
-    private final String mRefreshBroadcastId;
-    @Nullable
-    private final String mSafetySourceIssueId;
-    @Nullable
-    private final String mSafetySourceIssueActionId;
+    @Type private final int mType;
+    @Nullable private final String mRefreshBroadcastId;
+    @Nullable private final String mSafetySourceIssueId;
+    @Nullable private final String mSafetySourceIssueActionId;
 
-    private SafetyEvent(@Type int type,
+    private SafetyEvent(
+            @Type int type,
             @Nullable String refreshBroadcastId,
             @Nullable String safetySourceIssueId,
             @Nullable String safetySourceIssueActionId) {
@@ -130,11 +130,11 @@ public final class SafetyEvent implements Parcelable {
     }
 
     /**
-     * Returns an optional id provided by Safety Center when requesting a refresh, through
-     * {@link SafetyCenterManager#EXTRA_REFRESH_SAFETY_SOURCES_BROADCAST_ID}.
+     * Returns an optional id provided by Safety Center when requesting a refresh, through {@link
+     * SafetyCenterManager#EXTRA_REFRESH_SAFETY_SOURCES_BROADCAST_ID}.
      *
-     * <p>This will only be relevant for events of type
-     * {@link #SAFETY_EVENT_TYPE_REFRESH_REQUESTED}.
+     * <p>This will only be relevant for events of type {@link
+     * #SAFETY_EVENT_TYPE_REFRESH_REQUESTED}.
      *
      * @see #getType()
      */
@@ -146,9 +146,9 @@ public final class SafetyEvent implements Parcelable {
     /**
      * Returns the id of the {@link SafetySourceIssue} this event is associated with (if any).
      *
-     * <p>This will only be relevant for events of type
-     * {@link #SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED} or
-     * {@link #SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED}.
+     * <p>This will only be relevant for events of type {@link
+     * #SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED} or {@link
+     * #SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED}.
      *
      * @see #getType()
      * @see SafetySourceIssue#getId()
@@ -162,9 +162,9 @@ public final class SafetyEvent implements Parcelable {
      * Returns the id of the {@link SafetySourceIssue.Action} this event is associated with (if
      * any).
      *
-     * <p>This will only be relevant for events of type
-     * {@link #SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED} or
-     * {@link #SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED}.
+     * <p>This will only be relevant for events of type {@link
+     * #SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED} or {@link
+     * #SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED}.
      *
      * @see #getType()
      * @see SafetySourceIssue.Action#getId()
@@ -200,8 +200,8 @@ public final class SafetyEvent implements Parcelable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mType, mRefreshBroadcastId, mSafetySourceIssueId,
-                mSafetySourceIssueActionId);
+        return Objects.hash(
+                mType, mRefreshBroadcastId, mSafetySourceIssueId, mSafetySourceIssueActionId);
     }
 
     @Override
@@ -223,26 +223,23 @@ public final class SafetyEvent implements Parcelable {
 
     /** Builder class for {@link SafetyEvent}. */
     public static final class Builder {
-        @Type
-        private final int mType;
-        @Nullable
-        private String mRefreshBroadcastId;
-        @Nullable
-        private String mSafetySourceIssueId;
-        @Nullable
-        private String mSafetySourceIssueActionId;
+
+        @Type private final int mType;
+        @Nullable private String mRefreshBroadcastId;
+        @Nullable private String mSafetySourceIssueId;
+        @Nullable private String mSafetySourceIssueActionId;
 
         /** Creates a {@link Builder} for {@link SafetyEvent}. */
         public Builder(@Type int type) {
-            mType = type;
+            mType = validateType(type);
         }
 
         /**
          * Sets an optional broadcast id provided by Safety Center when requesting a refresh,
          * through {@link SafetyCenterManager#EXTRA_REFRESH_SAFETY_SOURCES_BROADCAST_ID}.
          *
-         * <p>This will only be relevant for events of type
-         * {@link #SAFETY_EVENT_TYPE_REFRESH_REQUESTED}.
+         * <p>This will only be relevant for events of type {@link
+         * #SAFETY_EVENT_TYPE_REFRESH_REQUESTED}.
          *
          * @see #getType()
          */
@@ -255,9 +252,9 @@ public final class SafetyEvent implements Parcelable {
         /**
          * Sets the id of the {@link SafetySourceIssue} this event is associated with (if any).
          *
-         * <p>This will only be relevant for events of type
-         * {@link #SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED} or
-         * {@link #SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED}.
+         * <p>This will only be relevant for events of type {@link
+         * #SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED} or {@link
+         * #SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED}.
          *
          * @see #getType()
          * @see SafetySourceIssue#getId()
@@ -272,9 +269,9 @@ public final class SafetyEvent implements Parcelable {
          * Sets the id of the {@link SafetySourceIssue.Action} this event is associated with (if
          * any).
          *
-         * <p>This will only be relevant for events of type
-         * {@link #SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED} or
-         * {@link #SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED}.
+         * <p>This will only be relevant for events of type {@link
+         * #SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED} or {@link
+         * #SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED}.
          *
          * @see #getType()
          * @see SafetySourceIssue.Action#getId()
@@ -285,13 +282,27 @@ public final class SafetyEvent implements Parcelable {
             return this;
         }
 
-        /**
-         * Creates the {@link SafetyEvent} represented by this {@link Builder}.
-         */
+        /** Creates the {@link SafetyEvent} represented by this {@link Builder}. */
         @NonNull
         public SafetyEvent build() {
-            return new SafetyEvent(mType, mRefreshBroadcastId, mSafetySourceIssueId,
-                    mSafetySourceIssueActionId);
+            return new SafetyEvent(
+                    mType, mRefreshBroadcastId, mSafetySourceIssueId, mSafetySourceIssueActionId);
         }
+    }
+
+    @Type
+    private static int validateType(int value) {
+        switch (value) {
+            case SAFETY_EVENT_TYPE_SOURCE_STATE_CHANGED:
+            case SAFETY_EVENT_TYPE_REFRESH_REQUESTED:
+            case SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED:
+            case SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED:
+            case SAFETY_EVENT_TYPE_DEVICE_LOCALE_CHANGED:
+            case SAFETY_EVENT_TYPE_DEVICE_REBOOTED:
+                return value;
+            default:
+        }
+        throw new IllegalArgumentException(
+                String.format("Unexpected Type for SafetyEvent: %s", value));
     }
 }
