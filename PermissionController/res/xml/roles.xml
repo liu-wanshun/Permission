@@ -131,6 +131,8 @@
             <permission name="android.permission.ACCESS_BLOBS_ACROSS_USERS" minSdkVersion="31" />
             <permission name="android.permission.READ_ASSISTANT_APP_SEARCH_DATA"
                 minSdkVersion="33"/>
+            <permission name="android.permission.SUBSCRIBE_TO_KEYGUARD_LOCKED_STATE"
+                minSdkVersion="33" />
         </permissions>
         <app-op-permissions>
             <app-op-permission name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -548,6 +550,7 @@
             <permission-set name="microphone" />
             <permission-set name="location" />
             <permission-set name="nearby_devices" />
+            <permission-set name="notifications" />
             <permission name="android.permission.ADD_ALWAYS_UNLOCKED_DISPLAY" minSdkVersion="33" />
             <permission name="android.permission.CALL_PHONE" />
             <permission name="android.permission.CREATE_VIRTUAL_DEVICE" minSdkVersion="33" />
@@ -575,6 +578,7 @@
             <!-- Used for CTS testing -->
             <permission name="android.permission.CREATE_VIRTUAL_DEVICE" minSdkVersion="33" />
             <permission name="android.permission.ACCESS_RCS_USER_CAPABILITY_EXCHANGE" />
+            <permission name="android.permission.ACCESS_AMBIENT_CONTEXT_EVENT" minSdkVersion="33"/>
             <permission name="android.permission.PERFORM_IMS_SINGLE_REGISTRATION" />
             <permission name="android.permission.BACKGROUND_CAMERA" />
             <permission name="android.permission.RECORD_BACKGROUND_AUDIO" />
@@ -591,6 +595,8 @@
                 minSdkVersion="33" />
             <permission name="android.permission.ADD_TRUSTED_DISPLAY" minSdkVersion="33" />
             <permission name="android.permission.ADD_ALWAYS_UNLOCKED_DISPLAY" minSdkVersion="33" />
+            <permission name="android.permission.SUBSCRIBE_TO_KEYGUARD_LOCKED_STATE"
+                minSdkVersion="33" />
         </permissions>
     </role>
 
@@ -654,6 +660,7 @@
         systemOnly="true"
         visible="false" >
         <permissions>
+            <permission-set name="notifications" />
             <permission name="android.permission.ACCESS_AMBIENT_CONTEXT_EVENT" minSdkVersion="33"/>
             <permission name="android.permission.ACCESS_INSTANT_APPS"/>
             <permission name="android.permission.START_CROSS_PROFILE_ACTIVITIES" minSdkVersion="33"/>
@@ -679,6 +686,7 @@
         visible="false">
         <permissions>
             <permission name="android.permission.SYSTEM_APPLICATION_OVERLAY" />
+            <permission name="android.permission.OBSERVE_SENSOR_PRIVACY" />
         </permissions>
     </role>
 
@@ -731,13 +739,18 @@
         visible="false">
         <permissions>
             <permission name="android.permission.ACCESS_SHORTCUTS" />
+            <permission name="android.permission.ACCESS_BACKGROUND_LOCATION" minSdkVersion="33" />
+            <permission name="android.permission.ACCESS_COARSE_LOCATION" minSdkVersion="33" />
+            <permission name="android.permission.ACCESS_FINE_LOCATION" minSdkVersion="33" />
             <permission name="android.permission.BLUETOOTH_CONNECT" />
             <permission name="android.permission.BLUETOOTH_SCAN" />
             <permission name="android.permission.MANAGE_APP_PREDICTIONS" />
             <permission name="android.permission.UNLIMITED_SHORTCUTS_API_CALLS" />
             <permission name="android.permission.MANAGE_SEARCH_UI" />
-            <permission name="android.permission.MANAGE_WALLPAPER_EFFECTS_GENERATION" minSdkVersion="33" />
+            <permission name="android.permission.READ_CALL_LOG" minSdkVersion="33" />
+            <permission name="android.permission.READ_CONTACTS" minSdkVersion="33" />
             <permission name="android.permission.READ_EXTERNAL_STORAGE" />
+            <permission name="android.permission.READ_SMS" minSdkVersion="33" />
             <permission name="android.permission.READ_PEOPLE_DATA" />
             <permission name="android.permission.READ_GLOBAL_APP_SEARCH_DATA" />
         </permissions>
@@ -785,6 +798,7 @@
             <permission name="android.permission.LOCATION_HARDWARE" />
             <permission name="android.permission.MANAGE_MUSIC_RECOGNITION" />
             <permission name="android.permission.OBSERVE_SENSOR_PRIVACY" />
+            <permission name="android.permission.READ_PHONE_STATE" minSdkVersion="33" />
         </permissions>
     </role>
 
@@ -818,12 +832,15 @@
         systemOnly="true"
         visible="false">
         <permissions>
+            <permission-set name="notifications" />
             <permission name="android.permission.CAPTURE_AUDIO_OUTPUT" />
             <permission name="android.permission.CAPTURE_MEDIA_OUTPUT" />
             <permission name="android.permission.CAPTURE_VOICE_COMMUNICATION_OUTPUT" />
             <permission name="android.permission.CONTROL_INCALL_EXPERIENCE" />
             <permission name="android.permission.MODIFY_AUDIO_ROUTING" />
             <permission name="android.permission.MODIFY_PHONE_STATE" />
+            <permission name="android.permission.READ_CALL_LOG" minSdkVersion="33" />
+            <permission name="android.permission.READ_PHONE_STATE" minSdkVersion="33" />
             <permission name="android.permission.RECORD_AUDIO" />
             <permission name="android.permission.SYSTEM_APPLICATION_OVERLAY" />
             <permission name="android.permission.SET_SYSTEM_AUDIO_CAPTION" minSdkVersion="33" />
@@ -896,8 +913,11 @@
         systemOnly="true"
         visible="false">
         <permissions>
+            <permission name="android.permission.ACCESS_BACKGROUND_LOCATION" minSdkVersion="33" />
+            <permission name="android.permission.ACCESS_COARSE_LOCATION" minSdkVersion="33" />
             <permission name="android.permission.MANAGE_UI_TRANSLATION" />
             <permission name="android.permission.SYSTEM_APPLICATION_OVERLAY" />
+            <permission name="android.permission.READ_CLIPBOARD_IN_BACKGROUND" minSdkVersion="33" />
         </permissions>
     </role>
 
@@ -1095,13 +1115,31 @@
       ~ including during provisioning.
       -->
     <role
-        name="android.app.role.DEVICE_MANAGER"
-        defaultHolders="config_deviceManager"
+        name="android.app.role.DEVICE_POLICY_MANAGEMENT"
+        behavior="DevicePolicyManagementRoleBehavior"
+        defaultHolders="config_devicePolicyManagement"
         exclusive="true"
         minSdkVersion="33"
         static="true"
         systemOnly="false"
         visible="false">
+        <required-components>
+            <activity permission="android.permission.LAUNCH_DEVICE_MANAGER_SETUP">
+                <intent-filter>
+                    <action name="android.app.action.ROLE_HOLDER_PROVISION_MANAGED_DEVICE_FROM_TRUSTED_SOURCE" />
+                </intent-filter>
+            </activity>
+            <activity permission="android.permission.LAUNCH_DEVICE_MANAGER_SETUP">
+                <intent-filter>
+                    <action name="android.app.action.ROLE_HOLDER_PROVISION_MANAGED_PROFILE" />
+                </intent-filter>
+            </activity>
+            <activity permission="android.permission.LAUNCH_DEVICE_MANAGER_SETUP">
+                <intent-filter>
+                    <action name="android.app.action.ROLE_HOLDER_PROVISION_FINALIZATION" />
+                </intent-filter>
+            </activity>
+        </required-components>
         <permissions>
             <permission-set name="notifications" />
             <permission name="android.permission.BIND_DEVICE_ADMIN" />
@@ -1148,6 +1186,7 @@
         systemOnly="true"
         visible="false">
         <permissions>
+            <permission-set name="notifications" />
             <permission name="android.permission.GET_HISTORICAL_APP_OPS_STATS" />
         </permissions>
     </role>
@@ -1246,5 +1285,46 @@
                 </intent-filter>
             </preferred-activity>
         </preferred-activities>
+    </role>
+
+    <!---
+      ~ A role for the package that handles AI features for the settings app
+      -->
+    <role
+        name="android.app.role.SYSTEM_SETTINGS_INTELLIGENCE"
+        defaultHolders="config_systemSettingsIntelligence"
+        exclusive="true"
+        minSdkVersion="33"
+        static="true"
+        systemOnly="true"
+        visible="false">
+        <permissions>
+            <permission-set name="notifications" />
+        </permissions>
+    </role>
+
+    <!---
+      ~ A role for the package that handles Bluetooth for the device
+      -->
+    <role
+        name="android.app.role.SYSTEM_BLUETOOTH_STACK"
+        defaultHolders="config_systemBluetoothStack"
+        exclusive="true"
+        minSdkVersion="33"
+        static="true"
+        systemOnly="true"
+        visible="false">
+        <permissions>
+            <permission name="android.permission.NETWORK_FACTORY" />
+            <permission name="android.permission.BLUETOOTH_MAP" />
+            <permission name="android.permission.BLUETOOTH_STACK" />
+            <permission name="android.permission.NET_ADMIN" />
+            <permission name="android.permission.LISTEN_ALWAYS_REPORTED_SIGNAL_STRENGTH" />
+            <permission name="android.permission.MANAGE_APP_OPS_MODES" />
+            <permission name="android.permission.MANAGE_COMPANION_DEVICES" />
+            <permission name="android.permission.QUERY_AUDIO_STATE" />
+            <permission name="android.permission.DEVICE_POWER" />
+            <permission name="android.permission.NET_TUNNELING" />
+        </permissions>
     </role>
 </roles>

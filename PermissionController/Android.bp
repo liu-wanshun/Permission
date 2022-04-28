@@ -74,16 +74,22 @@ android_app {
     // boundaries, which may be unsafe because PermissionController is also shipped as a standalone
     // artifact. See also b/209458854.
     sdk_version: "system_current",
-    target_sdk_version: "system_current",
     min_sdk_version: "30",
+    target_sdk_version: "32",
     updatable: true,
     privileged: true,
     certificate: "platform",
     rename_resources_package: false,
+    required: ["privapp_allowlist_com.android.permissioncontroller.xml"],
 
     srcs: [":permissioncontroller-sources"],
 
-    libs: ["android.car-stubs"],
+    libs: [
+        "android.car-stubs",
+        // Soong fails to automatically add this dependency because all the
+        // *.kt sources are inside a filegroup.
+        "kotlin-annotations",
+    ],
 
     static_libs: [
         "iconloader",
@@ -143,4 +149,6 @@ android_app {
     },
 
     plugins: ["java_api_finder"],
+
+    kotlincflags: ["-Xjvm-default=enable"],
 }
