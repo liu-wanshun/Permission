@@ -18,366 +18,114 @@ package com.android.safetycenter;
 
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 
-import static java.util.Objects.requireNonNull;
-
 import android.annotation.NonNull;
 import android.annotation.Nullable;
-import android.content.res.XmlResourceParser;
-import android.safetycenter.config.ParseException;
+import android.annotation.StringRes;
+import android.content.Context;
+import android.content.res.Resources;
 import android.safetycenter.config.SafetyCenterConfig;
-import android.safetycenter.config.SafetySource;
-import android.safetycenter.config.SafetySourcesGroup;
-import android.util.ArrayMap;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.android.safetycenter.config.ParseException;
+import com.android.safetycenter.config.SafetyCenterConfigParser;
 import com.android.safetycenter.resources.SafetyCenterResourcesContext;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.io.InputStream;
 
 /**
- * A class that reads the {@link Config} from the associated {@link
+ * A class that reads the {@link SafetyCenterConfig} from the associated {@link
  * SafetyCenterResourcesContext}.
- *
- * <p>This class isn't thread safe. Thread safety must be handled by the caller.
  */
 @RequiresApi(TIRAMISU)
 final class SafetyCenterConfigReader {
 
     private static final String TAG = "SafetyCenterConfigReade";
 
-    @NonNull
-    private final SafetyCenterResourcesContext mSafetyCenterResourcesContext;
+    private final Object mSafetyCenterConfigLock = new Object();
+    @NonNull private final SafetyCenterResourcesContext mSafetyCenterResourcesContext;
 
-    @Nullable
-    private Config mConfigFromXml;
+    @Nullable private SafetyCenterConfig mSafetyCenterConfig;
 
-    @Nullable
-    private Config mConfigOverride;
-
-    // TODO(b/225173694): move SafetyCenterConfig field into Config class to avoid duplicate fields.
-    @Nullable
-    private SafetyCenterConfig mSafetyCenterConfigFromXml;
-
-    @Nullable
-    private SafetyCenterConfig mSafetyCenterConfigOverride;
-
-    /** Creates a {@link SafetyCenterConfigReader} from a {@link SafetyCenterResourcesContext}. */
-    SafetyCenterConfigReader(@NonNull SafetyCenterResourcesContext safetyCenterResourcesContext) {
-        mSafetyCenterResourcesContext = safetyCenterResourcesContext;
+    /**
+     * Creates a {@link SafetyCenterConfigReader} from a {@link Context} object by wrapping it into
+     * a {@link SafetyCenterResourcesContext}.
+     */
+    SafetyCenterConfigReader(@NonNull Context context) {
+        mSafetyCenterResourcesContext = new SafetyCenterResourcesContext(context);
     }
 
     /**
-     * Returns the {@link SafetyCenterConfig} currently active for configuring safety sources for
-     * the {@link android.safetycenter.SafetyCenterManager} APIs.
+     * Returns the {@link SafetyCenterConfig} read by {@link #loadSafetyCenterConfig()}.
+     *
+     * <p>Returns {@code null} if {@link #loadSafetyCenterConfig()} was never called or if there was
+     * an issue when reading the {@link SafetyCenterConfig}.
      */
     @Nullable
     SafetyCenterConfig getSafetyCenterConfig() {
-        if (mSafetyCenterConfigFromXml == null) {
+        if (mSafetyCenterConfig == null) {
+            synchronized (mSafetyCenterConfigLock) {
+                return mSafetyCenterConfig;
+            }
+        }
+        return mSafetyCenterConfig;
+    }
+
+    /**
+     * Returns a {@link String} resource from the given {@code stringId}, using the {@link
+     * SafetyCenterResourcesContext}.
+     *
+     * <p>Returns {@code null} if the resources cannot be accessed or if {@code stringId} is equal
+     * to {@link Resources#ID_NULL}. Otherwise, throws a {@link Resources.NotFoundException} if the
+     * {@code stringId} is invalid.
+     */
+    @Nullable
+    String readStringResource(@StringRes int stringId) {
+        if (stringId == Resources.ID_NULL) {
             return null;
         }
 
-        if (mSafetyCenterConfigOverride != null) {
-            return mSafetyCenterConfigOverride;
+        Resources resources = mSafetyCenterResourcesContext.getResources();
+        if (resources == null) {
+            return null;
         }
 
-        return mSafetyCenterConfigFromXml;
+        return resources.getString(stringId);
     }
 
     /**
-     * Returns the {@link Config} currently active for configuring safety sources for the
-     * {@link android.safetycenter.SafetyCenterManager} APIs.
-     *
-     * <p>Note: Only call this method if {@link #loadConfig()} has successfully parsed the XML
-     * {@link SafetyCenterConfig} and returned {@code true}. If called before the config has been
-     * loaded successfully, this method will throw a {@link NullPointerException}.
+     * Loads the {@link SafetyCenterConfig} for it to be available when calling {@link
+     * #getSafetyCenterConfig()}.
      */
-    @NonNull
-    Config getCurrentConfig() {
-        // We require the XML config must be loaded successfully for SafetyCenterManager APIs to
-        // function, regardless of whether the config is subsequently overridden.
-        requireNonNull(mConfigFromXml);
-
-        if (mConfigOverride == null) {
-            return mConfigFromXml;
+    void loadSafetyCenterConfig() {
+        synchronized (mSafetyCenterConfigLock) {
+            mSafetyCenterConfig = readSafetyCenterConfig();
         }
-
-        return mConfigOverride;
-    }
-
-    /**
-     * Loads the {@link Config} for it to be available when calling {@link #getCurrentConfig()} and
-     * returns whether the loading was successful.
-     */
-    boolean loadConfig() {
-        SafetyCenterConfig safetyCenterConfig = readSafetyCenterConfig();
-        if (safetyCenterConfig == null) {
-            return false;
-        }
-        mSafetyCenterConfigFromXml = safetyCenterConfig;
-        mConfigFromXml = Config.from(safetyCenterConfig);
-        return true;
-    }
-
-    /**
-     * Sets an override of the {@link SafetyCenterConfig} used for
-     * {@link android.safetycenter.SafetyCenterManager} APIs.
-     *
-     * <p>When set, {@link #getCurrentConfig()} will return a {@link Config} created using the
-     * override {@link SafetyCenterConfig}.
-     *
-     * <p>To return to using the {@link SafetyCenterConfig} parsed through XML, clear the override
-     * using {@link #clearConfigOverride()}.
-     */
-    void setConfigOverride(@NonNull SafetyCenterConfig safetyCenterConfig) {
-        mSafetyCenterConfigOverride = safetyCenterConfig;
-        mConfigOverride = Config.from(safetyCenterConfig);
-    }
-
-    /**
-     * Clears the override of the {@link SafetyCenterConfig} used for
-     * {@link android.safetycenter.SafetyCenterManager} APIs.
-     *
-     * @see #setConfigOverride
-     */
-    void clearConfigOverride() {
-        mSafetyCenterConfigOverride = null;
-        mConfigOverride = null;
     }
 
     @Nullable
     private SafetyCenterConfig readSafetyCenterConfig() {
-        XmlResourceParser parser = mSafetyCenterResourcesContext.getSafetyCenterConfig();
-        if (parser == null) {
+        InputStream in = mSafetyCenterResourcesContext.getSafetyCenterConfig();
+        if (in == null) {
             Log.e(TAG, "Cannot get safety center config file");
             return null;
         }
 
+        Resources resources = mSafetyCenterResourcesContext.getResources();
+        if (resources == null) {
+            Log.e(TAG, "Cannot get safety center resources");
+            return null;
+        }
+
         try {
-            SafetyCenterConfig safetyCenterConfig = SafetyCenterConfig.fromXml(parser);
+            SafetyCenterConfig safetyCenterConfig =
+                    SafetyCenterConfigParser.parseXmlResource(in, resources);
             Log.i(TAG, "SafetyCenterConfig read successfully");
             return safetyCenterConfig;
         } catch (ParseException e) {
             Log.e(TAG, "Cannot read SafetyCenterConfig", e);
             return null;
-        }
-    }
-
-    // TODO(b/225173694): Rename to SafetyCenterConfigInternal or ConfigInternal?
-    /** A wrapper class around the parsed XML config. */
-    static final class Config {
-
-        @NonNull
-        private final List<SafetySourcesGroup> mSafetySourcesGroups;
-        @NonNull
-        private final ArrayMap<String, SafetySource> mExternalSafetySources;
-        @NonNull
-        private final List<Broadcast> mBroadcasts;
-
-        private Config(
-                @NonNull List<SafetySourcesGroup> safetySourcesGroups,
-                @NonNull ArrayMap<String, SafetySource> externalSafetySources,
-                @NonNull List<Broadcast> broadcasts) {
-            mSafetySourcesGroups = safetySourcesGroups;
-            mExternalSafetySources = externalSafetySources;
-            mBroadcasts = broadcasts;
-        }
-
-        /**
-         * Returns the groups of safety sources, in the order defined in XML and expected by the
-         * UI.
-         */
-        List<SafetySourcesGroup> getSafetySourcesGroups() {
-            return mSafetySourcesGroups;
-        }
-
-        /** Returns the map of safety source IDs that can provide data externally. */
-        ArrayMap<String, SafetySource> getExternalSafetySources() {
-            return mExternalSafetySources;
-        }
-
-        /**
-         * Returns the broadcasts defined in the XML config, with all the sources that they should
-         * handle and the profile on which they should be dispatched.
-         */
-        // TODO(b/221018937): Should we move this logic to `SafetyCenterRefreshManager`?
-        List<Broadcast> getBroadcasts() {
-            return mBroadcasts;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Config)) return false;
-            Config config = (Config) o;
-            return mSafetySourcesGroups.equals(config.mSafetySourcesGroups)
-                    && mExternalSafetySources.equals(
-                    config.mExternalSafetySources) && mBroadcasts.equals(
-                    config.mBroadcasts);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(mSafetySourcesGroups, mExternalSafetySources, mBroadcasts);
-        }
-
-        @Override
-        public String toString() {
-            return "Config{"
-                    + "mSafetySourcesGroups="
-                    + mSafetySourcesGroups
-                    + ", mExternalSafetySources="
-                    + mExternalSafetySources
-                    + ", mBroadcastReceivers="
-                    + mBroadcasts
-                    + '}';
-        }
-
-        @NonNull
-        private static Config from(@NonNull SafetyCenterConfig safetyCenterConfig) {
-            return new Config(
-                    safetyCenterConfig.getSafetySourcesGroups(),
-                    extractExternalSafetySources(safetyCenterConfig),
-                    extractBroadcasts(safetyCenterConfig));
-        }
-
-        @NonNull
-        private static ArrayMap<String, SafetySource> extractExternalSafetySources(
-                @NonNull SafetyCenterConfig safetyCenterConfig) {
-            ArrayMap<String, SafetySource> externalSafetySources = new ArrayMap<>();
-            List<SafetySourcesGroup> safetySourcesGroups =
-                    safetyCenterConfig.getSafetySourcesGroups();
-            for (int i = 0; i < safetySourcesGroups.size(); i++) {
-                SafetySourcesGroup safetySourcesGroup = safetySourcesGroups.get(i);
-
-                List<SafetySource> safetySources = safetySourcesGroup.getSafetySources();
-                for (int j = 0; j < safetySources.size(); j++) {
-                    SafetySource safetySource = safetySources.get(j);
-
-                    if (!SafetySources.isExternal(safetySource)) {
-                        continue;
-                    }
-
-                    externalSafetySources.put(safetySource.getId(), safetySource);
-                }
-            }
-
-            return externalSafetySources;
-        }
-
-        @NonNull
-        private static List<Broadcast> extractBroadcasts(
-                @NonNull SafetyCenterConfig safetyCenterConfig) {
-            ArrayMap<String, Broadcast> packageNameToBroadcast = new ArrayMap<>();
-            List<Broadcast> broadcasts = new ArrayList<>();
-            List<SafetySourcesGroup> safetySourcesGroups =
-                    safetyCenterConfig.getSafetySourcesGroups();
-            for (int i = 0; i < safetySourcesGroups.size(); i++) {
-                SafetySourcesGroup safetySourcesGroup = safetySourcesGroups.get(i);
-
-                List<SafetySource> safetySources = safetySourcesGroup.getSafetySources();
-                for (int j = 0; j < safetySources.size(); j++) {
-                    SafetySource safetySource = safetySources.get(j);
-
-                    if (!SafetySources.isExternal(safetySource)) {
-                        continue;
-                    }
-
-                    Broadcast broadcast = packageNameToBroadcast.get(safetySource.getPackageName());
-                    if (broadcast == null) {
-                        broadcast = new Broadcast(safetySource.getPackageName(), new ArrayList<>(),
-                                new ArrayList<>());
-                        packageNameToBroadcast.put(safetySource.getPackageName(), broadcast);
-                        broadcasts.add(broadcast);
-                    }
-                    broadcast.getSourceIdsForProfileOwner().add(safetySource.getId());
-                    // TODO(b/217688797): This might also be handled by the source directly.
-                    boolean needsManagedProfilesBroadcast = SafetySources.supportsManagedProfiles(
-                            safetySource);
-                    if (needsManagedProfilesBroadcast) {
-                        broadcast.getSourceIdsForManagedProfiles().add(safetySource.getId());
-                    }
-                }
-            }
-
-            return broadcasts;
-        }
-    }
-
-    /** A class that represents a broadcast to be sent to safety sources. */
-    static final class Broadcast {
-
-        @NonNull
-        private final String mPackageName;
-
-        @NonNull
-        private final List<String> mSourceIdsForProfileOwner;
-
-        @NonNull
-        private final List<String> mSourceIdsForManagedProfiles;
-
-
-        private Broadcast(
-                @NonNull String packageName,
-                @NonNull List<String> sourceIdsForProfileOwner,
-                @NonNull List<String> sourceIdsForManagedProfiles) {
-            mPackageName = packageName;
-            mSourceIdsForProfileOwner = sourceIdsForProfileOwner;
-            mSourceIdsForManagedProfiles = sourceIdsForManagedProfiles;
-        }
-
-        /** Returns the package name to dispatch the broadcast to. */
-        public String getPackageName() {
-            return mPackageName;
-        }
-
-        /**
-         * Returns the safety source ids associated with this broadcast in the profile owner.
-         *
-         * <p>If this list is empty, there are no sources to dispatch to in the profile owner.
-         */
-        public List<String> getSourceIdsForProfileOwner() {
-            return mSourceIdsForProfileOwner;
-        }
-
-        /**
-         * Returns the safety source ids associated with this broadcast in the managed profile(s).
-         *
-         * <p>If this list is empty, there are no sources to dispatch to in the managed profile(s).
-         */
-        public List<String> getSourceIdsForManagedProfiles() {
-            return mSourceIdsForManagedProfiles;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Broadcast)) return false;
-            Broadcast that = (Broadcast) o;
-            return mPackageName.equals(that.mPackageName) && mSourceIdsForProfileOwner.equals(
-                    that.mSourceIdsForProfileOwner) && mSourceIdsForManagedProfiles.equals(
-                    that.mSourceIdsForManagedProfiles);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(mPackageName, mSourceIdsForProfileOwner,
-                    mSourceIdsForManagedProfiles);
-        }
-
-        @Override
-        public String toString() {
-            return "Broadcast{"
-                    + "mPackageName="
-                    + mPackageName
-                    + ", mSourceIdsForProfileOwner="
-                    + mSourceIdsForProfileOwner
-                    + ", mSourceIdsForManagedProfiles="
-                    + mSourceIdsForManagedProfiles
-                    + '}';
         }
     }
 }

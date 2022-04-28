@@ -196,14 +196,11 @@
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"Näytä kaikki luvat, jotka <xliff:g id="APP">%1$s</xliff:g> on saanut"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Näytä kaikki sovellukset, joilla on tämä lupa"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Näytä Assistantin mikrofonin käyttö"</string>
-    <!-- no translation found for unused_apps_category_title (2988455616845243901) -->
-    <skip />
+    <string name="unused_apps_category_title" msgid="2988455616845243901">"Käyttämättömät sovellusasetukset"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Poista luvat, jos sovellusta ei käytetä"</string>
     <string name="unused_apps_label" msgid="2595428768404901064">"Poista lupia ja vapauta tilaa"</string>
-    <!-- no translation found for unused_apps_label_v2 (2443239537162119403) -->
-    <skip />
-    <!-- no translation found for unused_apps_summary (4416065734063612849) -->
-    <skip />
+    <string name="unused_apps_label_v2" msgid="7058776770056517980">"Keskeytä sovellustoim. jos ei käytössä"</string>
+    <string name="unused_apps_summary" msgid="8839466950318403115">"Poista käyttämättömät luvat ja väliaikaiset tiedostot ja pysäytä ilmoitukset"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Datasi suojaamiseksi tämän sovelluksen luvat poistetaan, jos sovellusta ei käytetä muutamaan kuukauteen."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Jos sovellusta ei käytetä muutamaan kuukauteen, seuraavat luvat poistetaan datasi suojaamiseksi: <xliff:g id="PERMS">%1$s</xliff:g>."</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Datasi suojaamiseksi luvat on poistettu sovelluksilta, joita et ole käyttänyt muutamaan kuukauteen."</string>
@@ -220,6 +217,7 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> ja <xliff:g id="NUMBER">%2$s</xliff:g> muuta käyttöoikeutta poistettiin"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Käyttämättömät sovellukset"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"Jos sovellusta ei käytetä muutamaan kuukauteen:\n\n• Luvat poistetaan datasi suojaamiseksi\n• Ilmoitukset lopetetaan akun säästämiseksi\n• Väliaikaiset tiedostot poistetaan tilan vapauttamiseksi\n\nJos haluat sallia luvat ja ilmoitukset uudelleen, avaa sovellus."</string>
+    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"Jos sovellusta ei käytetä muutamaan kuukauteen:\n\n• Luvat poistetaan datasi suojaamiseksi\n• Väliaikaiset tiedostot poistetaan tilan vapauttamiseksi\n\nJos haluat sallia luvat uudelleen, avaa sovellus."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Avattu viimeksi <xliff:g id="NUMBER">%s</xliff:g> kuukautta sitten"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Sovellus avattiin viimeksi <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Avattu viimeksi <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -475,7 +473,7 @@
     <string name="permgrouprequest_sensors" msgid="4397358316850652235">"Saako &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; käyttää anturitietoja elintoiminnoistasi?"</string>
     <string name="permgroupupgraderequestdetail_sensors" msgid="6651914048792092835">"Sovellus haluaa pääsyn elintoimintojasi koskevaan anturidataan aina, myös silloin, kun et käytä sovellusta. Voit myöntää luvan "<annotation id="link">"asetuksista"</annotation>"."</string>
     <string name="permgroupbackgroundrequest_sensors" msgid="5661924322018503886">"Saako &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; käyttää anturidataa elintoiminnoistasi?"</string>
-    <string name="permgroupbackgroundrequestdetail_sensors" msgid="7649389834182449783">"Jos haluat myöntää sovellukselle pääsyn kehoanturidataan aina, myös silloin, kun et käytä sovellusta, siirry "<annotation id="link">"asetuksiin"</annotation>"."</string>
+    <string name="permgroupbackgroundrequestdetail_sensors" msgid="7726767635834043501">"Jos haluat myöntää sovellukselle pääsyn kehoanturidataan aina, myös silloin, kun et käytä sovellusta, "<annotation id="link">"siirry asetuksiin."</annotation></string>
     <string name="permgroupupgraderequest_sensors" msgid="7576527638411370468">"Haluatko edelleen sallia pääsyn kehoanturidataan, kun &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; on käytössä?"</string>
     <string name="permgrouprequest_notifications" msgid="6396739062335106181">"Saako &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; lähettää sinulle ilmoituksia?"</string>
     <string name="permgrouprequestcontinue_notifications" msgid="3895098107355024027">"Saako &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; jatkaa ilmoitusten lähettämistä?"</string>

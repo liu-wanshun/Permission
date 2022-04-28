@@ -22,7 +22,7 @@ import static com.android.permissioncontroller.permission.ui.Category.ALLOWED_FO
 import static com.android.permissioncontroller.permission.ui.Category.ASK;
 import static com.android.permissioncontroller.permission.ui.Category.DENIED;
 import static com.android.permissioncontroller.permission.ui.handheld.UtilsKt.pressBack;
-import static com.android.permissioncontroller.permission.ui.handheld.dashboard.DashboardUtilsKt.shouldShowPermissionsDashboard;
+import static com.android.permissioncontroller.permission.ui.handheld.v31.DashboardUtilsKt.shouldShowPermissionsDashboard;
 
 import android.Manifest;
 import android.app.ActionBar;
@@ -35,9 +35,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.UserHandle;
 import android.provider.Settings;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.style.ClickableSpan;
 import android.util.ArrayMap;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -53,8 +50,8 @@ import androidx.preference.PreferenceScreen;
 
 import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.R;
-import com.android.permissioncontroller.permission.model.AppPermissionUsage;
-import com.android.permissioncontroller.permission.model.PermissionUsages;
+import com.android.permissioncontroller.permission.model.v31.AppPermissionUsage;
+import com.android.permissioncontroller.permission.model.v31.PermissionUsages;
 import com.android.permissioncontroller.permission.ui.Category;
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity;
 import com.android.permissioncontroller.permission.ui.model.PermissionAppsViewModel;
@@ -303,20 +300,6 @@ public final class PermissionAppsFragment extends SettingsWithLargeHeader implem
         return sensorCard;
     }
 
-    private SpannableString getLinkToAllFilesAccess(Context context) {
-        ClickableSpan clickableSpan = new ClickableSpan() {
-            @Override
-            public void onClick(View widget) {
-                context.startActivity(
-                        new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
-            }
-        };
-        SpannableString spannableString =
-                new SpannableString(getString(R.string.storage_footer_hyperlink_text));
-        spannableString.setSpan(clickableSpan, 0, spannableString.length(), 0);
-        return spannableString;
-    }
-
     private void addStorageFooterSeeAllFilesAccess() {
         PreferenceScreen screen = getPreferenceScreen();
         Context context = screen.getPreferenceManager().getContext();
@@ -331,10 +314,12 @@ public final class PermissionAppsFragment extends SettingsWithLargeHeader implem
         preference.setKey(STORAGE_FOOTER_PREFERENCE_KEY);
         preference.setIcon(Utils.applyTint(getActivity(), R.drawable.ic_info_outline,
                 android.R.attr.colorControlNormal));
-        preference.setSummary(new SpannableStringBuilder(
-                getString(R.string.storage_footer_warning_text))
-                .append("\n\n")
-                .append(getLinkToAllFilesAccess(context)));
+        preference.setLearnMoreText(getString(R.string.storage_footer_hyperlink_text));
+        preference.setLearnMoreAction(v -> {
+            context.startActivity(
+                    new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
+        });
+
         preferenceCategory.addPreference(preference);
     }
 
