@@ -46,6 +46,7 @@ import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
@@ -55,9 +56,9 @@ import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.DeviceUtils;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.ui.auto.GrantPermissionsAutoViewHandler;
-import com.android.permissioncontroller.permission.ui.model.GrantPermissionsViewModel;
-import com.android.permissioncontroller.permission.ui.model.GrantPermissionsViewModel.RequestInfo;
-import com.android.permissioncontroller.permission.ui.model.GrantPermissionsViewModelFactory;
+import com.android.permissioncontroller.permission.ui.model.v31.GrantPermissionsViewModel;
+import com.android.permissioncontroller.permission.ui.model.v31.GrantPermissionsViewModel.RequestInfo;
+import com.android.permissioncontroller.permission.ui.model.v31.GrantPermissionsViewModelFactory;
 import com.android.permissioncontroller.permission.ui.wear.GrantPermissionsWearViewHandler;
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
 import com.android.permissioncontroller.permission.utils.Utils;
@@ -130,6 +131,10 @@ public class GrantPermissionsActivity extends SettingsActivity
     private String[] mRequestedPermissions;
     /** The list of permissions requested in the intent to this activity*/
     private String[] mOriginalRequestedPermissions;
+    /** The list of permissions that this app has or had legacy access to, that might need to
+     * show a different message
+     */
+    private String[] mLegacyAccessPermissions;
     private boolean[] mButtonVisibilities;
     private boolean[] mLocationVisibilities;
     private List<RequestInfo> mRequestInfos = new ArrayList<>();
@@ -166,13 +171,8 @@ public class GrantPermissionsActivity extends SettingsActivity
 
         getWindow().addSystemFlags(SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS);
 
-        mRequestedPermissions = getIntent().getStringArrayExtra(
-                PackageManager.EXTRA_REQUEST_PERMISSIONS_NAMES);
-        if (mRequestedPermissions == null || mRequestedPermissions.length == 0) {
-            setResultAndFinish();
-            return;
-        }
-        mOriginalRequestedPermissions = mRequestedPermissions;
+        mRequestedPermissions = getIntent()
+                .getStringArrayExtra(PackageManager.EXTRA_REQUEST_PERMISSIONS_NAMES);
 
         if (PackageManager.ACTION_REQUEST_PERMISSIONS_FOR_OTHER.equals(getIntent().getAction())) {
             mTargetPackage = getIntent().getStringExtra(Intent.EXTRA_PACKAGE_NAME);
@@ -190,6 +190,25 @@ public class GrantPermissionsActivity extends SettingsActivity
         } else {
             // Cache this as this can only read on onCreate, not later.
             mTargetPackage = getCallingPackage();
+
+            // If this app is below the android T targetSdk, filter out the POST_NOTIFICATIONS
+            // permission, if present
+            mRequestedPermissions = GrantPermissionsViewModel.Companion
+                    .filterNotificationPermissionIfNeededSync(
+                            mTargetPackage, mRequestedPermissions);
+        }
+
+
+        if (mRequestedPermissions == null || mRequestedPermissions.length == 0) {
+            setResultAndFinish();
+            return;
+        }
+        mOriginalRequestedPermissions = mRequestedPermissions;
+
+        mLegacyAccessPermissions = getIntent().getStringArrayExtra(
+                PackageManager.EXTRA_REQUEST_PERMISSIONS_LEGACY_ACCESS_PERMISSION_NAMES);
+        if (mLegacyAccessPermissions == null) {
+            mLegacyAccessPermissions = new String[0];
         }
 
         synchronized (sCurrentGrantRequests) {
@@ -198,12 +217,13 @@ public class GrantPermissionsActivity extends SettingsActivity
             } else if (getCallingPackage() == null) {
                 // The trampoline doesn't require results. Delegate, and finish.
                 sCurrentGrantRequests.get(mTargetPackage).onNewFollowerActivity(null,
-                        mRequestedPermissions);
+                        mRequestedPermissions, mLegacyAccessPermissions);
                 finishAfterTransition();
+                return;
             } else {
                 mDelegated = true;
                 sCurrentGrantRequests.get(mTargetPackage).onNewFollowerActivity(this,
-                        mRequestedPermissions);
+                        mRequestedPermissions, mLegacyAccessPermissions);
                 return;
             }
         }
@@ -228,7 +248,8 @@ public class GrantPermissionsActivity extends SettingsActivity
         }
 
         GrantPermissionsViewModelFactory factory = new GrantPermissionsViewModelFactory(
-                getApplication(), mTargetPackage, mRequestedPermissions, mSessionId, icicle);
+                getApplication(), mTargetPackage, mRequestedPermissions, mLegacyAccessPermissions,
+                mSessionId, icicle);
         mViewModel = factory.create(GrantPermissionsViewModel.class);
         mViewModel.getRequestInfosLiveData().observe(this, this::onRequestInfoLoad);
 
@@ -276,7 +297,8 @@ public class GrantPermissionsActivity extends SettingsActivity
      *                 activity finishing
      * @param newPermissions The new permissions requested in the activity
      */
-    private void onNewFollowerActivity(GrantPermissionsActivity follower, String[] newPermissions) {
+    private void onNewFollowerActivity(GrantPermissionsActivity follower, String[] newPermissions,
+            String[] newLegacyPermissions) {
         if (follower != null) {
             // Ensure the list of follower activities is a stack
             mFollowerActivities.add(0, follower);
@@ -288,19 +310,37 @@ public class GrantPermissionsActivity extends SettingsActivity
                 && currentGroups != null && !currentGroups.isEmpty()) {
             mPreMergeShownGroupName = currentGroups.get(0).getGroupName();
         }
+        boolean newPermission = false;
         ArrayList<String> currentPermissions =
                 new ArrayList<>(Arrays.asList(mRequestedPermissions));
         for (String newPerm: newPermissions) {
             if (!currentPermissions.contains(newPerm)) {
                 currentPermissions.add(newPerm);
+                newPermission = true;
             }
         }
+
+        ArrayList<String> currentLegacyPermissions =
+                new ArrayList<>(Arrays.asList(mLegacyAccessPermissions));
+        for (String newLegacyPerm: newLegacyPermissions) {
+            if (!currentLegacyPermissions.contains(newLegacyPerm)) {
+                currentLegacyPermissions.add(newLegacyPerm);
+            }
+            newPermission = true;
+        }
+
+        if (!newPermission) {
+            return;
+        }
+
         mRequestedPermissions = currentPermissions.toArray(new String[0]);
+        mLegacyAccessPermissions = currentLegacyPermissions.toArray(new String[0]);
         Bundle oldState = new Bundle();
         mViewModel.getRequestInfosLiveData().removeObservers(this);
         mViewModel.saveInstanceState(oldState);
         GrantPermissionsViewModelFactory factory = new GrantPermissionsViewModelFactory(
-                getApplication(), mTargetPackage, mRequestedPermissions, mSessionId, oldState);
+                getApplication(), mTargetPackage, mRequestedPermissions, mLegacyAccessPermissions,
+                mSessionId, oldState);
         mViewModel = factory.create(GrantPermissionsViewModel.class);
         mViewModel.getRequestInfosLiveData().observe(this, this::onRequestInfoLoad);
     }
@@ -354,6 +394,7 @@ public class GrantPermissionsActivity extends SettingsActivity
         CharSequence appLabel = KotlinUtils.INSTANCE.getPackageLabel(getApplication(),
                 mTargetPackage, Process.myUserHandle());
 
+        Icon icon = null;
         int messageId = 0;
         switch(info.getMessage()) {
             case FG_MESSAGE:
@@ -375,9 +416,11 @@ public class GrantPermissionsActivity extends SettingsActivity
                 messageId = Utils.getContinueRequest(info.getGroupName());
                 break;
             case STORAGE_SUPERGROUP_MESSAGE_Q_TO_S:
+                icon = Icon.createWithResource(getPackageName(), R.drawable.perm_group_storage);
                 messageId = R.string.permgrouprequest_storage_q_to_s;
                 break;
             case STORAGE_SUPERGROUP_MESSAGE_PRE_Q:
+                icon = Icon.createWithResource(getPackageName(), R.drawable.perm_group_storage);
                 messageId = R.string.permgrouprequest_storage_pre_q;
                 break;
         }
@@ -419,9 +462,9 @@ public class GrantPermissionsActivity extends SettingsActivity
             }
         }
 
-        Icon icon = null;
         try {
-            icon = Icon.createWithResource(info.getGroupInfo().getPackageName(),
+            icon = icon != null ? icon : Icon.createWithResource(
+                    info.getGroupInfo().getPackageName(),
                     info.getGroupInfo().getIcon());
         } catch (Resources.NotFoundException e) {
             Log.e(LOG_TAG, "Cannot load icon for group" + info.getGroupName(), e);
@@ -457,7 +500,11 @@ public class GrantPermissionsActivity extends SettingsActivity
         }
 
         getWindow().setDimAmount(mOriginalDimAmount);
-        mRootView.setVisibility(View.VISIBLE);
+        if (mRootView.getVisibility() == View.GONE) {
+            InputMethodManager manager = getSystemService(InputMethodManager.class);
+            manager.hideSoftInputFromWindow(mRootView.getWindowToken(), 0);
+            mRootView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

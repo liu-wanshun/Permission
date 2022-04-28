@@ -18,6 +18,7 @@ package android.safetycenter;
 
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 
+import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
 
 import android.annotation.NonNull;
@@ -43,31 +44,46 @@ import java.util.Objects;
 public final class SafetyCenterEntryGroup implements Parcelable {
 
     @NonNull
-    private final String mId;
-    @NonNull
-    private final CharSequence mTitle;
-    @Nullable
-    private final CharSequence mSummary;
-    @SafetyCenterEntry.EntrySeverityLevel
-    private final int mSeverityLevel;
-    @SafetyCenterEntry.StatelessIconType
-    private final int mStatelessIconType;
-    @NonNull
-    private final List<SafetyCenterEntry> mEntries;
+    public static final Creator<SafetyCenterEntryGroup> CREATOR =
+            new Creator<SafetyCenterEntryGroup>() {
+                @Override
+                public SafetyCenterEntryGroup createFromParcel(Parcel in) {
+                    String id = in.readString();
+                    CharSequence title = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in);
+                    return new Builder(id, title)
+                            .setSummary(TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in))
+                            .setSeverityLevel(in.readInt())
+                            .setSeverityUnspecifiedIconType(in.readInt())
+                            .setEntries(in.createTypedArrayList(SafetyCenterEntry.CREATOR))
+                            .build();
+                }
+
+                @Override
+                public SafetyCenterEntryGroup[] newArray(int size) {
+                    return new SafetyCenterEntryGroup[size];
+                }
+            };
+
+    @NonNull private final String mId;
+    @NonNull private final CharSequence mTitle;
+    @Nullable private final CharSequence mSummary;
+    @SafetyCenterEntry.EntrySeverityLevel private final int mSeverityLevel;
+    @SafetyCenterEntry.SeverityUnspecifiedIconType private final int mSeverityUnspecifiedIconType;
+    @NonNull private final List<SafetyCenterEntry> mEntries;
 
     private SafetyCenterEntryGroup(
             @NonNull String id,
             @NonNull CharSequence title,
             @Nullable CharSequence summary,
             @SafetyCenterEntry.EntrySeverityLevel int severityLevel,
-            @SafetyCenterEntry.StatelessIconType int statelessIconType,
+            @SafetyCenterEntry.SeverityUnspecifiedIconType int severityUnspecifiedIconType,
             @NonNull List<SafetyCenterEntry> entries) {
-        mId = requireNonNull(id);
-        mTitle = requireNonNull(title);
+        mId = id;
+        mTitle = title;
         mSummary = summary;
         mSeverityLevel = severityLevel;
-        mStatelessIconType = statelessIconType;
-        mEntries = new ArrayList<>(entries);
+        mSeverityUnspecifiedIconType = severityUnspecifiedIconType;
+        mEntries = entries;
     }
 
     /**
@@ -99,24 +115,25 @@ public final class SafetyCenterEntryGroup implements Parcelable {
         return mSeverityLevel;
     }
 
-    /** Returns the {@link SafetyCenterEntry.StatelessIconType} for this entry group. */
-    public int getStatelessIconType() {
-        return mStatelessIconType;
+    /** Returns the {@link SafetyCenterEntry.SeverityUnspecifiedIconType} for this entry group. */
+    @SafetyCenterEntry.SeverityUnspecifiedIconType
+    public int getSeverityUnspecifiedIconType() {
+        return mSeverityUnspecifiedIconType;
     }
 
     /** Returns the entries that comprise this entry group. */
     @NonNull
     public List<SafetyCenterEntry> getEntries() {
-        return new ArrayList<>(mEntries);
+        return mEntries;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof SafetyCenterEntryGroup)) return false;
         SafetyCenterEntryGroup that = (SafetyCenterEntryGroup) o;
         return mSeverityLevel == that.mSeverityLevel
-                && mStatelessIconType == that.mStatelessIconType
+                && mSeverityUnspecifiedIconType == that.mSeverityUnspecifiedIconType
                 && Objects.equals(mId, that.mId)
                 && TextUtils.equals(mTitle, that.mTitle)
                 && TextUtils.equals(mSummary, that.mSummary)
@@ -125,18 +142,26 @@ public final class SafetyCenterEntryGroup implements Parcelable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mTitle, mSummary, mSeverityLevel, mStatelessIconType, mEntries);
+        return Objects.hash(
+                mId, mTitle, mSummary, mSeverityLevel, mSeverityUnspecifiedIconType, mEntries);
     }
 
     @Override
     public String toString() {
         return "SafetyCenterEntryGroup{"
-                + "mId='" + mId + '\''
-                + ", mTitle=" + mTitle
-                + ", mSummary=" + mSummary
-                + ", mSeverityLevel=" + mSeverityLevel
-                + ", mStatelessIconType=" + mStatelessIconType
-                + ", mEntries=" + mEntries
+                + "mId='"
+                + mId
+                + '\''
+                + ", mTitle="
+                + mTitle
+                + ", mSummary="
+                + mSummary
+                + ", mSeverityLevel="
+                + mSeverityLevel
+                + ", mSeverityUnspecifiedIconType="
+                + mSeverityUnspecifiedIconType
+                + ", mEntries="
+                + mEntries
                 + '}';
     }
 
@@ -151,62 +176,46 @@ public final class SafetyCenterEntryGroup implements Parcelable {
         TextUtils.writeToParcel(mTitle, dest, flags);
         TextUtils.writeToParcel(mSummary, dest, flags);
         dest.writeInt(mSeverityLevel);
-        dest.writeInt(mStatelessIconType);
+        dest.writeInt(mSeverityUnspecifiedIconType);
         dest.writeTypedList(mEntries);
     }
 
-    @NonNull
-    public static final Creator<SafetyCenterEntryGroup> CREATOR =
-            new Creator<SafetyCenterEntryGroup>() {
-                @Override
-                public SafetyCenterEntryGroup createFromParcel(Parcel in) {
-                    return new SafetyCenterEntryGroup.Builder(in.readString())
-                            .setTitle(TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in))
-                            .setSummary(TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in))
-                            .setSeverityLevel(in.readInt())
-                            .setStatelessIconType(in.readInt())
-                            .setEntries(in.createTypedArrayList(SafetyCenterEntry.CREATOR))
-                            .build();
-                }
-
-                @Override
-                public SafetyCenterEntryGroup[] newArray(int size) {
-                    return new SafetyCenterEntryGroup[size];
-                }
-            };
-
     /** Builder class for {@link SafetyCenterEntryGroup} */
     public static final class Builder {
-        private String mId;
-        private CharSequence mTitle;
-        private CharSequence mSummary;
+
+        @NonNull private String mId;
+        @NonNull private CharSequence mTitle;
+        @Nullable private CharSequence mSummary;
+
         @SafetyCenterEntry.EntrySeverityLevel
         private int mSeverityLevel = SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNKNOWN;
-        @SafetyCenterEntry.StatelessIconType
-        private int mStatelessIconType = SafetyCenterEntry.STATELESS_ICON_TYPE_NONE;
-        private List<SafetyCenterEntry> mEntries;
+
+        @SafetyCenterEntry.SeverityUnspecifiedIconType
+        private int mSeverityUnspecifiedIconType =
+                SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_ICON;
+
+        @NonNull private List<SafetyCenterEntry> mEntries = new ArrayList<>();
 
         /**
          * Creates a {@link Builder} for a {@link SafetyCenterEntryGroup}.
          *
-         * @param id An encoded string ID that uniquely identifies this
-         *           {@link SafetyCenterEntryGroup} among all other entry groups in a given Safety
-         *           Center.
+         * @param id a unique encoded string ID, see {@link #getId} for details
+         * @param title a title for this group of entries
          */
-        public Builder(@NonNull String id) {
+        public Builder(@NonNull String id, @NonNull CharSequence title) {
             mId = requireNonNull(id);
+            mTitle = requireNonNull(title);
         }
 
         /**
-         * Creates a pre-populated {@link Builder} with the values from the given {@link
-         * SafetyCenterEntryGroup}.
+         * Creates a {@link Builder} with the values from the given {@link SafetyCenterEntryGroup}.
          */
         public Builder(@NonNull SafetyCenterEntryGroup safetyCenterEntryGroup) {
             mId = safetyCenterEntryGroup.mId;
             mTitle = safetyCenterEntryGroup.mTitle;
             mSummary = safetyCenterEntryGroup.mSummary;
             mSeverityLevel = safetyCenterEntryGroup.mSeverityLevel;
-            mStatelessIconType = safetyCenterEntryGroup.mStatelessIconType;
+            mSeverityUnspecifiedIconType = safetyCenterEntryGroup.mSeverityUnspecifiedIconType;
             mEntries = new ArrayList<>(safetyCenterEntryGroup.mEntries);
         }
 
@@ -224,29 +233,39 @@ public final class SafetyCenterEntryGroup implements Parcelable {
             return this;
         }
 
-        /** Sets the summary text for this entry group. */
+        /** Sets the optional summary text for this entry group. */
         @NonNull
         public Builder setSummary(@Nullable CharSequence summary) {
             mSummary = summary;
             return this;
         }
 
-        /** Sets the {@link SafetyCenterEntry.EntrySeverityLevel} of this entry group. */
+        /**
+         * Sets the {@link SafetyCenterEntry.EntrySeverityLevel} of this entry group. Defaults to
+         * {@link SafetyCenterEntry#ENTRY_SEVERITY_LEVEL_UNKNOWN}.
+         */
         @NonNull
         public Builder setSeverityLevel(@SafetyCenterEntry.EntrySeverityLevel int severityLevel) {
-            mSeverityLevel = severityLevel;
+            mSeverityLevel = validateEntrySeverityLevel(severityLevel);
             return this;
         }
 
-        /** Sets the {@link SafetyCenterEntry.StatelessIconType} of this entry group. */
+        /**
+         * Sets the {@link SafetyCenterEntry.SeverityUnspecifiedIconType} of this entry group.
+         * Defaults to {@link SafetyCenterEntry#SEVERITY_UNSPECIFIED_ICON_TYPE_NO_ICON}.
+         */
         @NonNull
-        public Builder setStatelessIconType(
-                @SafetyCenterEntry.StatelessIconType int statelessIconType) {
-            mStatelessIconType = statelessIconType;
+        public Builder setSeverityUnspecifiedIconType(
+                @SafetyCenterEntry.SeverityUnspecifiedIconType int severityUnspecifiedIconType) {
+            mSeverityUnspecifiedIconType =
+                    validateSeverityUnspecifiedIconType(severityUnspecifiedIconType);
             return this;
         }
 
-        /** Sets the list of {@link SafetyCenterEntry} contained by this entry group. */
+        /**
+         * Sets the list of {@link SafetyCenterEntry} contained by this entry group. Defaults to an
+         * empty list.
+         */
         @NonNull
         public Builder setEntries(@NonNull List<SafetyCenterEntry> entries) {
             mEntries = requireNonNull(entries);
@@ -257,7 +276,43 @@ public final class SafetyCenterEntryGroup implements Parcelable {
         @NonNull
         public SafetyCenterEntryGroup build() {
             return new SafetyCenterEntryGroup(
-                    mId, mTitle, mSummary, mSeverityLevel, mStatelessIconType, mEntries);
+                    mId,
+                    mTitle,
+                    mSummary,
+                    mSeverityLevel,
+                    mSeverityUnspecifiedIconType,
+                    unmodifiableList(new ArrayList<>(mEntries)));
         }
+    }
+
+    @SafetyCenterEntry.EntrySeverityLevel
+    private static int validateEntrySeverityLevel(int value) {
+        switch (value) {
+            case SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNKNOWN:
+            case SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNSPECIFIED:
+            case SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_OK:
+            case SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_RECOMMENDATION:
+            case SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_CRITICAL_WARNING:
+                return value;
+            default:
+        }
+        throw new IllegalArgumentException(
+                String.format(
+                        "Unexpected EntrySeverityLevel for SafetyCenterEntryGroup: %s", value));
+    }
+
+    @SafetyCenterEntry.SeverityUnspecifiedIconType
+    private static int validateSeverityUnspecifiedIconType(int value) {
+        switch (value) {
+            case SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_ICON:
+            case SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_PRIVACY:
+            case SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_RECOMMENDATION:
+                return value;
+            default:
+        }
+        throw new IllegalArgumentException(
+                String.format(
+                        "Unexpected SeverityUnspecifiedIconType for SafetyCenterEntryGroup: %s",
+                        value));
     }
 }

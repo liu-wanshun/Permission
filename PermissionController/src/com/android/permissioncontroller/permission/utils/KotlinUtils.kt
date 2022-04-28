@@ -43,6 +43,8 @@ import android.content.pm.PackageManager.MATCH_DIRECT_BOOT_AWARE
 import android.content.pm.PackageManager.MATCH_DIRECT_BOOT_UNAWARE
 import android.content.pm.PermissionGroupInfo
 import android.content.pm.PermissionInfo
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
@@ -54,6 +56,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
+import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.permission.data.LightPackageInfoLiveData
 import com.android.permissioncontroller.permission.data.get
@@ -336,6 +339,16 @@ object KotlinUtils {
         }
     }
 
+    fun convertToBitmap(pkgIcon: Drawable): Bitmap {
+        val pkgIconBmp = Bitmap.createBitmap(pkgIcon.intrinsicWidth, pkgIcon.intrinsicHeight,
+            Bitmap.Config.ARGB_8888)
+        // Draw the icon so it can be displayed.
+        val canvas = Canvas(pkgIconBmp)
+        pkgIcon.setBounds(0, 0, pkgIcon.intrinsicWidth, pkgIcon.intrinsicHeight)
+        pkgIcon.draw(canvas)
+        return pkgIconBmp
+    }
+
     /**
      * Gets a package's uid, using a cached liveData value, if the liveData is currently being
      * observed (and thus has an up-to-date value).
@@ -537,11 +550,18 @@ object KotlinUtils {
             group.hasInstallToRuntimeSplit, group.specialLocationGrant)
         // If any permission in the group is one time granted, start one time permission session.
         if (newGroup.permissions.any { it.value.isOneTime && it.value.isGrantedIncludingAppOp }) {
-            app.getSystemService(PermissionManager::class.java)!!.startOneTimePermissionSession(
-                group.packageName, Utils.getOneTimePermissionsTimeout(),
-                Utils.getOneTimePermissionsKilledDelay(false),
-                ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_RESET_TIMER,
-                ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_KEEP_SESSION_ALIVE)
+            if (SdkLevel.isAtLeastT()) {
+                app.getSystemService(PermissionManager::class.java)!!.startOneTimePermissionSession(
+                        group.packageName, Utils.getOneTimePermissionsTimeout(),
+                        Utils.getOneTimePermissionsKilledDelay(false),
+                        ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_RESET_TIMER,
+                        ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_KEEP_SESSION_ALIVE)
+            } else {
+                app.getSystemService(PermissionManager::class.java)!!.startOneTimePermissionSession(
+                        group.packageName, Utils.getOneTimePermissionsTimeout(),
+                        ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_RESET_TIMER,
+                        ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_KEEP_SESSION_ALIVE)
+            }
         }
         return newGroup
     }
@@ -834,6 +854,7 @@ object KotlinUtils {
         newFlags = if (oneTime) newFlags.setFlag(PackageManager.FLAG_PERMISSION_ONE_TIME)
         else newFlags.clearFlag(PackageManager.FLAG_PERMISSION_ONE_TIME)
         newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_AUTO_REVOKED)
+        newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_REVIEW_REQUIRED)
 
         if (perm.flags != newFlags) {
             app.packageManager.updatePermissionFlags(perm.name, group.packageInfo.packageName,

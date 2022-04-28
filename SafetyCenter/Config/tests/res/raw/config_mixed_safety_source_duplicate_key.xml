@@ -2,22 +2,25 @@
     <safety-sources-config>
         <safety-sources-group
             id="id1"
-            title="@string/reference"
-            summary="@string/reference">
-            <safety-source
-                type="3"
-                id="id"/>
-        </safety-sources-group>
-        <static-safety-sources-group
-            id="id2"
-            title="@string/reference">
+            title="@com.android.safetycenter.config.tests:string/reference"
+            summary="@com.android.safetycenter.config.tests:string/reference">
             <static-safety-source
-                type="1"
                 id="id"
-                title="@string/reference"
-                summary="@string/reference"
+                title="@com.android.safetycenter.config.tests:string/reference"
+                summary="@com.android.safetycenter.config.tests:string/reference"
                 intentAction="intent"
-                profile="1"/>
-        </static-safety-sources-group>
+                profile="primary_profile_only"/>
+        </safety-sources-group>
+        <safety-sources-group
+            id="id2"
+            title="@com.android.safetycenter.config.tests:string/reference">
+            <dynamic-safety-source
+                id="id"
+                packageName="package"
+                title="@com.android.safetycenter.config.tests:string/reference"
+                summary="@com.android.safetycenter.config.tests:string/reference"
+                intentAction="intent"
+                profile="primary_profile_only"/>
+        </safety-sources-group>
     </safety-sources-config>
 </safety-center-config>
