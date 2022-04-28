@@ -17,6 +17,7 @@
 package com.android.permissioncontroller;
 
 import com.android.permissioncontroller.hibernation.HibernationJobService;
+import com.android.permissioncontroller.permission.service.v33.PermissionEventCleanupJobService;
 
 /**
  * App-global constants
@@ -43,19 +44,19 @@ public class Constants {
 
     /**
      * ID of the periodic job
-     * {@link com.android.permissioncontroller.permission.service.RecentPermissionDecisionsStorageImpl}
+     * {@link PermissionEventCleanupJobService}
      */
-    public static final int OLD_PERMISSION_DECISION_CLEANUP_JOB_ID = 3;
+    public static final int OLD_PERMISSION_EVENT_CLEANUP_JOB_ID = 3;
 
     /**
      * ID for the periodic job in
-     * {@link com.android.permissioncontroller.permission.service.v33.NotificationListenerCheck}.
+     * {@link com.android.permissioncontroller.privacysources.NotificationListenerCheck}.
      */
     public static final int PERIODIC_NOTIFICATION_LISTENER_CHECK_JOB_ID = 4;
 
     /**
      * ID for the on-demand, but delayed job in
-     * {@link com.android.permissioncontroller.permission.service.v33.NotificationListenerCheck}.
+     * {@link com.android.permissioncontroller.privacysources.NotificationListenerCheck}.
      */
     public static final int NOTIFICATION_LISTENER_CHECK_JOB_ID = 5;
 
@@ -70,7 +71,7 @@ public class Constants {
     /**
      * Name of file to containing the packages we already showed a notification for.
      *
-     * @see com.android.permissioncontroller.permission.service.v33.NotificationListenerCheck
+     * @see com.android.permissioncontroller.privacysources.NotificationListenerCheck
      */
     public static final String NOTIFICATION_LISTENER_CHECK_ALREADY_NOTIFIED_FILE =
             "packages_already_notified_notification_listener";
@@ -95,7 +96,7 @@ public class Constants {
 
     /**
      * ID for notification shown by
-     * {@link com.android.permissioncontroller.permission.service.v33.NotificationListenerCheck}.
+     * {@link com.android.permissioncontroller.privacysources.NotificationListenerCheck}.
      */
     public static final int NOTIFICATION_LISTENER_CHECK_NOTIFICATION_ID = 3;
 
@@ -122,7 +123,7 @@ public class Constants {
     /**
      * Channel of the notifications shown by
      * {@link com.android.permissioncontroller.permission.service.LocationAccessCheck},
-     * {@link com.android.permissioncontroller.permission.service.v33.NotificationListenerCheck},
+     * {@link com.android.permissioncontroller.privacysources.NotificationListenerCheck},
      * {@link com.android.permissioncontroller.hibernation.HibernationPolicyKt}, and
      * {@link com.android.permissioncontroller.auto.DrivingDecisionReminderService}
      */
@@ -149,7 +150,7 @@ public class Constants {
 
     /**
      * Key in the generic shared preferences that stores when the last notification was shown by
-     * {@link com.android.permissioncontroller.permission.service.v33.NotificationListenerCheck}
+     * {@link com.android.permissioncontroller.privacysources.NotificationListenerCheck}
      */
     public static final String KEY_LAST_NOTIFICATION_LISTENER_NOTIFICATION_SHOWN =
             "last_notification_listener_notification_shown";

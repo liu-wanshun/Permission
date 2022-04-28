@@ -41,6 +41,7 @@ import java.util.Objects;
 @SystemApi
 @RequiresApi(TIRAMISU)
 public final class SafetySource implements Parcelable {
+
     /** Static safety source. */
     public static final int SAFETY_SOURCE_TYPE_STATIC = 1;
 
@@ -55,14 +56,15 @@ public final class SafetySource implements Parcelable {
      *
      * @hide
      */
-    @IntDef(prefix = {"SAFETY_SOURCE_TYPE_"}, value = {
-            SAFETY_SOURCE_TYPE_STATIC,
-            SAFETY_SOURCE_TYPE_DYNAMIC,
-            SAFETY_SOURCE_TYPE_ISSUE_ONLY
-    })
+    @IntDef(
+            prefix = {"SAFETY_SOURCE_TYPE_"},
+            value = {
+                SAFETY_SOURCE_TYPE_STATIC,
+                SAFETY_SOURCE_TYPE_DYNAMIC,
+                SAFETY_SOURCE_TYPE_ISSUE_ONLY
+            })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface SafetySourceType {
-    }
+    public @interface SafetySourceType {}
 
     /** Profile property unspecified. */
     public static final int PROFILE_NONE = 0;
@@ -84,14 +86,11 @@ public final class SafetySource implements Parcelable {
      *
      * @hide
      */
-    @IntDef(prefix = {"PROFILE_"}, value = {
-            PROFILE_NONE,
-            PROFILE_PRIMARY,
-            PROFILE_ALL
-    })
+    @IntDef(
+            prefix = {"PROFILE_"},
+            value = {PROFILE_NONE, PROFILE_PRIMARY, PROFILE_ALL})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface Profile {
-    }
+    public @interface Profile {}
 
     /** This dynamic source will create an enabled entry in the UI until an update is received. */
     public static final int INITIAL_DISPLAY_STATE_ENABLED = 0;
@@ -107,40 +106,58 @@ public final class SafetySource implements Parcelable {
      *
      * @hide
      */
-    @IntDef(prefix = {"INITIAL_DISPLAY_STATE_"}, value = {
-            INITIAL_DISPLAY_STATE_ENABLED,
-            INITIAL_DISPLAY_STATE_DISABLED,
-            INITIAL_DISPLAY_STATE_HIDDEN
-    })
+    @IntDef(
+            prefix = {"INITIAL_DISPLAY_STATE_"},
+            value = {
+                INITIAL_DISPLAY_STATE_ENABLED,
+                INITIAL_DISPLAY_STATE_DISABLED,
+                INITIAL_DISPLAY_STATE_HIDDEN
+            })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface InitialDisplayState {
-    }
+    public @interface InitialDisplayState {}
 
-    @SafetySourceType
-    private final int mType;
     @NonNull
-    private final String mId;
-    @Nullable
-    private final String mPackageName;
-    @StringRes
-    private final int mTitleResId;
-    @StringRes
-    private final int mTitleForWorkResId;
-    @StringRes
-    private final int mSummaryResId;
-    @Nullable
-    private final String mIntentAction;
-    @Profile
-    private final int mProfile;
-    @InitialDisplayState
-    private final int mInitialDisplayState;
+    public static final Creator<SafetySource> CREATOR =
+            new Creator<SafetySource>() {
+                @Override
+                public SafetySource createFromParcel(Parcel in) {
+                    int type = in.readInt();
+                    return new Builder(type)
+                            .setId(in.readString())
+                            .setPackageName(in.readString())
+                            .setTitleResId(in.readInt())
+                            .setTitleForWorkResId(in.readInt())
+                            .setSummaryResId(in.readInt())
+                            .setIntentAction(in.readString())
+                            .setProfile(in.readInt())
+                            .setInitialDisplayState(in.readInt())
+                            .setMaxSeverityLevel(in.readInt())
+                            .setSearchTermsResId(in.readInt())
+                            .setLoggingAllowed(in.readBoolean())
+                            .setRefreshOnPageOpenAllowed(in.readBoolean())
+                            .build();
+                }
+
+                @Override
+                public SafetySource[] newArray(int size) {
+                    return new SafetySource[size];
+                }
+            };
+
+    @SafetySourceType private final int mType;
+    @NonNull private final String mId;
+    @Nullable private final String mPackageName;
+    @StringRes private final int mTitleResId;
+    @StringRes private final int mTitleForWorkResId;
+    @StringRes private final int mSummaryResId;
+    @Nullable private final String mIntentAction;
+    @Profile private final int mProfile;
+    @InitialDisplayState private final int mInitialDisplayState;
     private final int mMaxSeverityLevel;
-    @StringRes
-    private final int mSearchTermsResId;
+    @StringRes private final int mSearchTermsResId;
     private final boolean mLoggingAllowed;
     private final boolean mRefreshOnPageOpenAllowed;
 
-    /** Returns the id of this safety source. */
     private SafetySource(
             @SafetySourceType int type,
             @NonNull String id,
@@ -266,8 +283,8 @@ public final class SafetySource implements Parcelable {
     }
 
     /**
-     * Returns the resource id of the search terms of this safety source if set; otherwise
-     * {@link Resources#ID_NULL}.
+     * Returns the resource id of the search terms of this safety source if set; otherwise {@link
+     * Resources#ID_NULL}.
      */
     @StringRes
     public int getSearchTermsResId() {
@@ -318,27 +335,54 @@ public final class SafetySource implements Parcelable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mType, mId, mPackageName, mTitleResId, mTitleForWorkResId,
-                mSummaryResId, mIntentAction, mProfile, mInitialDisplayState, mMaxSeverityLevel,
-                mSearchTermsResId, mLoggingAllowed, mRefreshOnPageOpenAllowed);
+        return Objects.hash(
+                mType,
+                mId,
+                mPackageName,
+                mTitleResId,
+                mTitleForWorkResId,
+                mSummaryResId,
+                mIntentAction,
+                mProfile,
+                mInitialDisplayState,
+                mMaxSeverityLevel,
+                mSearchTermsResId,
+                mLoggingAllowed,
+                mRefreshOnPageOpenAllowed);
     }
 
     @Override
     public String toString() {
         return "SafetySource{"
-                + "mType=" + mType
-                + ", mId='" + mId + '\''
-                + ", mPackageName='" + mPackageName + '\''
-                + ", mTitleResId=" + mTitleResId
-                + ", mTitleForWorkResId=" + mTitleForWorkResId
-                + ", mSummaryResId=" + mSummaryResId
-                + ", mIntentAction='" + mIntentAction + '\''
-                + ", mProfile=" + mProfile
-                + ", mInitialDisplayState=" + mInitialDisplayState
-                + ", mMaxSeverityLevel=" + mMaxSeverityLevel
-                + ", mSearchTermsResId=" + mSearchTermsResId
-                + ", mLoggingAllowed=" + mLoggingAllowed
-                + ", mRefreshOnPageOpenAllowed=" + mRefreshOnPageOpenAllowed
+                + "mType="
+                + mType
+                + ", mId='"
+                + mId
+                + '\''
+                + ", mPackageName='"
+                + mPackageName
+                + '\''
+                + ", mTitleResId="
+                + mTitleResId
+                + ", mTitleForWorkResId="
+                + mTitleForWorkResId
+                + ", mSummaryResId="
+                + mSummaryResId
+                + ", mIntentAction='"
+                + mIntentAction
+                + '\''
+                + ", mProfile="
+                + mProfile
+                + ", mInitialDisplayState="
+                + mInitialDisplayState
+                + ", mMaxSeverityLevel="
+                + mMaxSeverityLevel
+                + ", mSearchTermsResId="
+                + mSearchTermsResId
+                + ", mLoggingAllowed="
+                + mLoggingAllowed
+                + ", mRefreshOnPageOpenAllowed="
+                + mRefreshOnPageOpenAllowed
                 + '}';
     }
 
@@ -364,67 +408,22 @@ public final class SafetySource implements Parcelable {
         dest.writeBoolean(mRefreshOnPageOpenAllowed);
     }
 
-    @NonNull
-    public static final Parcelable.Creator<SafetySource> CREATOR =
-            new Parcelable.Creator<SafetySource>() {
-                @Override
-                public SafetySource createFromParcel(Parcel in) {
-                    return new Builder(in.readInt())
-                            .setId(in.readString())
-                            .setPackageName(in.readString())
-                            .setTitleResId(in.readInt())
-                            .setTitleForWorkResId(in.readInt())
-                            .setSummaryResId(in.readInt())
-                            .setIntentAction(in.readString())
-                            .setProfile(in.readInt())
-                            .setInitialDisplayState(in.readInt())
-                            .setMaxSeverityLevel(in.readInt())
-                            .setSearchTermsResId(in.readInt())
-                            .setLoggingAllowed(in.readBoolean())
-                            .setRefreshOnPageOpenAllowed(in.readBoolean())
-                            .build();
-                }
-
-                @Override
-                public SafetySource[] newArray(int size) {
-                    return new SafetySource[size];
-                }
-            };
-
     /** Builder class for {@link SafetySource}. */
     public static final class Builder {
-        @SafetySourceType
-        private final int mType;
-        @Nullable
-        private String mId;
-        @Nullable
-        private String mPackageName;
-        @Nullable
-        @StringRes
-        private Integer mTitleResId;
-        @Nullable
-        @StringRes
-        private Integer mTitleForWorkResId;
-        @Nullable
-        @StringRes
-        private Integer mSummaryResId;
-        @Nullable
-        private String mIntentAction;
-        @Nullable
-        @Profile
-        private Integer mProfile;
-        @Nullable
-        @InitialDisplayState
-        private Integer mInitialDisplayState;
-        @Nullable
-        private Integer mMaxSeverityLevel;
-        @Nullable
-        @StringRes
-        private Integer mSearchTermsResId;
-        @Nullable
-        private Boolean mLoggingAllowed;
-        @Nullable
-        private Boolean mRefreshOnPageOpenAllowed;
+
+        @SafetySourceType private final int mType;
+        @Nullable private String mId;
+        @Nullable private String mPackageName;
+        @Nullable @StringRes private Integer mTitleResId;
+        @Nullable @StringRes private Integer mTitleForWorkResId;
+        @Nullable @StringRes private Integer mSummaryResId;
+        @Nullable private String mIntentAction;
+        @Nullable @Profile private Integer mProfile;
+        @Nullable @InitialDisplayState private Integer mInitialDisplayState;
+        @Nullable private Integer mMaxSeverityLevel;
+        @Nullable @StringRes private Integer mSearchTermsResId;
+        @Nullable private Boolean mLoggingAllowed;
+        @Nullable private Boolean mRefreshOnPageOpenAllowed;
 
         /** Creates a {@link Builder} for a {@link SafetySource}. */
         public Builder(@SafetySourceType int type) {
@@ -526,38 +525,98 @@ public final class SafetySource implements Parcelable {
             boolean isStatic = mType == SAFETY_SOURCE_TYPE_STATIC;
             boolean isDynamic = mType == SAFETY_SOURCE_TYPE_DYNAMIC;
             boolean isIssueOnly = mType == SAFETY_SOURCE_TYPE_ISSUE_ONLY;
+
             BuilderUtils.validateAttribute(mId, "id", true, false);
-            BuilderUtils.validateAttribute(mPackageName, "packageName", isDynamic || isIssueOnly,
-                    isStatic);
-            int initialDisplayState = BuilderUtils.validateIntDef(mInitialDisplayState,
-                    "initialDisplayState", false, isStatic || isIssueOnly,
-                    INITIAL_DISPLAY_STATE_ENABLED, INITIAL_DISPLAY_STATE_ENABLED,
-                    INITIAL_DISPLAY_STATE_DISABLED, INITIAL_DISPLAY_STATE_HIDDEN);
+
+            BuilderUtils.validateAttribute(
+                    mPackageName, "packageName", isDynamic || isIssueOnly, isStatic);
+
+            int initialDisplayState =
+                    BuilderUtils.validateIntDef(
+                            mInitialDisplayState,
+                            "initialDisplayState",
+                            false,
+                            isStatic || isIssueOnly,
+                            INITIAL_DISPLAY_STATE_ENABLED,
+                            INITIAL_DISPLAY_STATE_ENABLED,
+                            INITIAL_DISPLAY_STATE_DISABLED,
+                            INITIAL_DISPLAY_STATE_HIDDEN);
             boolean isEnabled = initialDisplayState == INITIAL_DISPLAY_STATE_ENABLED;
             boolean isHidden = initialDisplayState == INITIAL_DISPLAY_STATE_HIDDEN;
-            int titleResId = BuilderUtils.validateResId(mTitleResId, "title",
-                    (isDynamic && !isHidden) || isStatic, isIssueOnly || isHidden);
-            int summaryResId = BuilderUtils.validateResId(mSummaryResId, "summary",
-                    (isDynamic && !isHidden) || isStatic, isIssueOnly || isHidden);
-            BuilderUtils.validateAttribute(mIntentAction, "intentAction",
-                    (isDynamic && isEnabled) || isStatic, isIssueOnly || isHidden);
-            int profile = BuilderUtils.validateIntDef(mProfile, "profile", true, false,
-                    PROFILE_NONE, PROFILE_PRIMARY, PROFILE_ALL);
-            int titleForWorkResId = BuilderUtils.validateResId(mTitleForWorkResId, "titleForWork",
-                    ((isDynamic && !isHidden) || isStatic) && profile == PROFILE_ALL,
-                    isIssueOnly || isHidden || profile == PROFILE_PRIMARY);
-            int maxSeverityLevel = BuilderUtils.validateInteger(mMaxSeverityLevel,
-                    "maxSeverityLevel", false, isStatic, Integer.MAX_VALUE);
-            int searchTermsResId = BuilderUtils.validateResId(mSearchTermsResId, "searchTerms",
-                    false, isIssueOnly);
-            boolean loggingAllowed = BuilderUtils.validateBoolean(mLoggingAllowed, "loggingAllowed",
-                    false, isStatic, true);
-            boolean refreshOnPageOpenAllowed = BuilderUtils.validateBoolean(
-                    mRefreshOnPageOpenAllowed, "refreshOnPageOpenAllowed", false, isStatic, false);
-            return new SafetySource(mType, mId, mPackageName, titleResId, titleForWorkResId,
-                    summaryResId, mIntentAction, profile, initialDisplayState, maxSeverityLevel,
-                    searchTermsResId, loggingAllowed, refreshOnPageOpenAllowed);
+            boolean isDynamicNotHidden = isDynamic && !isHidden;
+
+            int profile =
+                    BuilderUtils.validateIntDef(
+                            mProfile,
+                            "profile",
+                            true,
+                            false,
+                            PROFILE_NONE,
+                            PROFILE_PRIMARY,
+                            PROFILE_ALL);
+            boolean hasWork = profile == PROFILE_ALL;
+
+            int searchTermsResId =
+                    BuilderUtils.validateResId(
+                            mSearchTermsResId, "searchTerms", false, isIssueOnly);
+            boolean isDynamicHiddenWithSearch =
+                    isDynamic && isHidden && searchTermsResId != Resources.ID_NULL;
+
+            boolean titleRequired = isDynamicNotHidden || isDynamicHiddenWithSearch || isStatic;
+            int titleResId =
+                    BuilderUtils.validateResId(mTitleResId, "title", titleRequired, isIssueOnly);
+
+            int titleForWorkResId =
+                    BuilderUtils.validateResId(
+                            mTitleForWorkResId,
+                            "titleForWork",
+                            hasWork && titleRequired,
+                            !hasWork || isIssueOnly);
+
+            int summaryResId =
+                    BuilderUtils.validateResId(
+                            mSummaryResId, "summary", isDynamicNotHidden, isIssueOnly);
+
+            BuilderUtils.validateAttribute(
+                    mIntentAction,
+                    "intentAction",
+                    (isDynamic && isEnabled) || isStatic,
+                    isIssueOnly);
+
+            int maxSeverityLevel =
+                    BuilderUtils.validateInteger(
+                            mMaxSeverityLevel,
+                            "maxSeverityLevel",
+                            false,
+                            isStatic,
+                            Integer.MAX_VALUE);
+
+            boolean loggingAllowed =
+                    BuilderUtils.validateBoolean(
+                            mLoggingAllowed, "loggingAllowed", false, isStatic, true);
+
+            boolean refreshOnPageOpenAllowed =
+                    BuilderUtils.validateBoolean(
+                            mRefreshOnPageOpenAllowed,
+                            "refreshOnPageOpenAllowed",
+                            false,
+                            isStatic,
+                            false);
+
+            return new SafetySource(
+                    mType,
+                    mId,
+                    mPackageName,
+                    titleResId,
+                    titleForWorkResId,
+                    summaryResId,
+                    mIntentAction,
+                    profile,
+                    initialDisplayState,
+                    maxSeverityLevel,
+                    searchTermsResId,
+                    loggingAllowed,
+                    refreshOnPageOpenAllowed);
         }
     }
-
 }

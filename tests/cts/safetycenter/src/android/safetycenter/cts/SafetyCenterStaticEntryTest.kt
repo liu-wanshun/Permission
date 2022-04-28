@@ -39,11 +39,7 @@ class SafetyCenterStaticEntryTest {
         PendingIntent.getActivity(context, 0, Intent("Fake Data"), PendingIntent.FLAG_IMMUTABLE)
     private val pendingIntent2 =
         PendingIntent.getActivity(
-            context,
-            0,
-            Intent("Fake Different Data"),
-            PendingIntent.FLAG_IMMUTABLE
-        )
+            context, 0, Intent("Fake Different Data"), PendingIntent.FLAG_IMMUTABLE)
 
     private val title1 = "a title"
     private val title2 = "another title"
@@ -52,18 +48,16 @@ class SafetyCenterStaticEntryTest {
     private val summary2 = "another summary"
 
     private val staticEntry1 =
-        SafetyCenterStaticEntry.Builder()
-            .setTitle(title1)
+        SafetyCenterStaticEntry.Builder(title1)
             .setSummary(summary1)
             .setPendingIntent(pendingIntent1)
             .build()
     private val staticEntry2 =
-        SafetyCenterStaticEntry.Builder()
-            .setTitle(title2)
+        SafetyCenterStaticEntry.Builder(title2)
             .setSummary(summary2)
             .setPendingIntent(pendingIntent2)
             .build()
-    private val staticEntryMinimal = SafetyCenterStaticEntry.Builder().setTitle("").build()
+    private val staticEntryMinimal = SafetyCenterStaticEntry.Builder("").build()
 
     @Test
     fun getTitle_returnsTitle() {
@@ -104,48 +98,37 @@ class SafetyCenterStaticEntryTest {
         EqualsHashCodeToStringTester()
             .addEqualityGroup(
                 staticEntry1,
-                SafetyCenterStaticEntry.Builder()
-                    .setTitle("a title")
+                SafetyCenterStaticEntry.Builder("a title")
                     .setSummary("a summary")
                     .setPendingIntent(pendingIntent1)
-                    .build()
-            )
+                    .build(),
+                SafetyCenterStaticEntry.Builder(staticEntry1).build())
             .addEqualityGroup(staticEntry2)
-            .addEqualityGroup(staticEntryMinimal,
-                SafetyCenterStaticEntry.Builder().setTitle("").build())
+            .addEqualityGroup(staticEntryMinimal, SafetyCenterStaticEntry.Builder("").build())
             .addEqualityGroup(
-                SafetyCenterStaticEntry.Builder()
-                    .setTitle("titlee")
+                SafetyCenterStaticEntry.Builder("titlee")
                     .setSummary("sumaree")
                     .setPendingIntent(pendingIntent1)
                     .build(),
-                SafetyCenterStaticEntry.Builder()
-                    .setTitle("titlee")
+                SafetyCenterStaticEntry.Builder("titlee")
                     .setSummary("sumaree")
                     .setPendingIntent(pendingIntent1)
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
-                SafetyCenterStaticEntry.Builder()
-                    .setTitle("a different title")
+                SafetyCenterStaticEntry.Builder("a different title")
                     .setSummary("a summary")
                     .setPendingIntent(pendingIntent1)
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
-                SafetyCenterStaticEntry.Builder()
-                    .setTitle("a title")
+                SafetyCenterStaticEntry.Builder("a title")
                     .setSummary("a different summary")
                     .setPendingIntent(pendingIntent1)
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
-                SafetyCenterStaticEntry.Builder()
-                    .setTitle("a title")
+                SafetyCenterStaticEntry.Builder("a title")
                     .setSummary("a summary")
                     .setPendingIntent(pendingIntent2)
-                    .build()
-            )
+                    .build())
             .test()
     }
 }
