@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2021 The Android Open Source Project
+// Copyright (C) 2022 The Android Open Source Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,27 +17,29 @@ package {
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
-xsd_config {
-    name: "safety-center-config-parser",
-    srcs: ["safety_center_config.xsd"],
-    package_name: "com.android.safetycenter.config.parser",
-    boolean_getter: true,
+filegroup {
+    name: "safetycenter-config-parser-sources",
+    srcs: ["java/**/*.java"],
+    path: "java",
+    visibility: ["//packages/modules/Permission/SafetyCenter/ConfigLintChecker"],
 }
 
 java_library {
     name: "safety-center-config",
+    sdk_version: "module_current",
+    min_sdk_version: "30",
+    target_sdk_version: "32",
     srcs: [
-        "java/**/*.java",
-        ":safety-center-config-parser",
+        ":safetycenter-config-parser-sources",
     ],
     libs: [
+        "androidx.annotation_annotation",
         "framework-annotations-lib",
+        "framework-permission-s",
     ],
     apex_available: [
         "com.android.permission",
         "test_com.android.permission",
     ],
     installable: false,
-    min_sdk_version: "30",
-    sdk_version: "module_current",
 }
