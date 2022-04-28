@@ -17,12 +17,18 @@
 package android.safetycenter;
 
 import android.safetycenter.SafetyCenterData;
+import android.safetycenter.SafetyCenterErrorDetails;
 
 /**
  * Listener for changes to {@link SafetyCenterData}.
  *
  * @hide
  */
- oneway interface IOnSafetyCenterDataChangedListener {
-   void onSafetyCenterDataChanged(in SafetyCenterData data);
+oneway interface IOnSafetyCenterDataChangedListener {
+
+    /** Called when SafetyCenterData tracked by the SafetyCenter manager changes. */
+    void onSafetyCenterDataChanged(in SafetyCenterData data);
+
+    /** Called when SafetyCenter should display an error related to changes in its data. */
+    void onError(in SafetyCenterErrorDetails safetyCenterErrorDetails);
  }

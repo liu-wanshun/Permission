@@ -108,6 +108,7 @@ android_test {
         "androidx.test.rules",
         "androidx.test.ext.truth",
         "androidx.test.ext.junit",
+        "kotlinx_coroutines_test",
         "mockito-target-extended-minus-junit4",
     ],
 
@@ -123,4 +124,6 @@ android_test {
         "device-tests",
         "mts-permission",
     ],
+
+    kotlincflags: ["-Xjvm-default=enable"],
 }

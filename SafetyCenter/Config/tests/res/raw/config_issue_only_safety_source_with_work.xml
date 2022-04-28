@@ -2,12 +2,11 @@
     <safety-sources-config>
         <safety-sources-group
             id="id">
-            <safety-source
-                type="3"
+            <issue-only-safety-source
                 id="id"
                 packageName="package"
-                profile="2"
-                titleForWork="@string/reference"/>
+                profile="all_profiles"
+                titleForWork="@com.android.safetycenter.config.tests:string/reference"/>
         </safety-sources-group>
     </safety-sources-config>
 </safety-center-config>
