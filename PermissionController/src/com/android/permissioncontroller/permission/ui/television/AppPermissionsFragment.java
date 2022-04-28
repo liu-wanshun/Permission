@@ -16,6 +16,8 @@
 
 package com.android.permissioncontroller.permission.ui.television;
 
+import static android.Manifest.permission_group.NOTIFICATIONS;
+
 import static com.android.permissioncontroller.Constants.INVALID_SESSION_ID;
 import static com.android.permissioncontroller.hibernation.HibernationPolicyKt.isHibernationEnabled;
 
@@ -220,7 +222,9 @@ public final class AppPermissionsFragment extends SettingsWithHeader
         extraPerms.setTitle(R.string.additional_permissions);
 
         for (AppPermissionGroup group : mAppPermissions.getPermissionGroups()) {
-            if (!Utils.shouldShowPermission(getContext(), group)) {
+            if (!Utils.shouldShowPermission(getContext(), group)
+                    || group.getName().equals(NOTIFICATIONS)) {
+                // Skip notification group on TV
                 continue;
             }
 
@@ -432,7 +436,7 @@ public final class AppPermissionsFragment extends SettingsWithHeader
         if (state == null || autoRevokeSwitch == null) {
             return;
         }
-        if (!state.isEnabledGlobal() || state.getRevocableGroupNames().isEmpty()) {
+        if (state.getRevocableGroupNames().isEmpty()) {
             if (isHibernationEnabled()) {
                 getPreferenceScreen().findPreference(UNUSED_APPS_KEY).setVisible(false);
             }
@@ -443,7 +447,7 @@ public final class AppPermissionsFragment extends SettingsWithHeader
             getPreferenceScreen().findPreference(UNUSED_APPS_KEY).setVisible(true);
         }
         autoRevokeSwitch.setVisible(true);
-        autoRevokeSwitch.setChecked(state.isEnabledForApp());
+        autoRevokeSwitch.setChecked(state.isEligibleForHibernation());
     }
 
     private static PackageInfo getPackageInfo(Activity activity, String packageName) {
