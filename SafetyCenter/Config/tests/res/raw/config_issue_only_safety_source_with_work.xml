@@ -6,7 +6,7 @@
                 id="id"
                 packageName="package"
                 profile="all_profiles"
-                titleForWork="@string/reference"/>
+                titleForWork="@com.android.safetycenter.config.tests:string/reference"/>
         </safety-sources-group>
     </safety-sources-config>
 </safety-center-config>
