@@ -34,6 +34,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.os.ParcelableSubject.assertThat
 import androidx.test.filters.SdkSuppress
 import com.google.common.truth.Truth.assertThat
+import kotlin.test.assertFailsWith
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -46,47 +47,36 @@ class SafetyCenterDataTest {
         PendingIntent.getActivity(context, 0, Intent("Fake Data"), PendingIntent.FLAG_IMMUTABLE)
 
     private val status1 =
-        SafetyCenterStatus.Builder()
-            .setTitle("This is my title")
-            .setSummary("This is my summary")
+        SafetyCenterStatus.Builder("This is my title", "This is my summary")
             .setSeverityLevel(SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_RECOMMENDATION)
             .build()
     private val status2 =
-        SafetyCenterStatus.Builder()
-            .setTitle("This is also my title")
-            .setSummary("This is also my summary")
+        SafetyCenterStatus.Builder("This is also my title", "This is also my summary")
             .setSeverityLevel(SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK)
             .build()
 
     private val issue1 =
-        SafetyCenterIssue.Builder("iSsUe_iD_oNe")
-            .setTitle("An issue title")
-            .setSummary("An issue summary")
+        SafetyCenterIssue.Builder("iSsUe_iD_oNe", "An issue title", "An issue summary")
             .setSeverityLevel(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_OK)
             .build()
     private val issue2 =
-        SafetyCenterIssue.Builder("iSsUe_iD_tWo")
-            .setTitle("Another issue title")
-            .setSummary("Another issue summary")
+        SafetyCenterIssue.Builder("iSsUe_iD_tWo", "Another issue title", "Another issue summary")
             .setSeverityLevel(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_RECOMMENDATION)
             .build()
 
     private val entry1 =
-        SafetyCenterEntry.Builder("eNtRy_iD_OnE")
-            .setTitle("An entry title")
+        SafetyCenterEntry.Builder("eNtRy_iD_OnE", "An entry title")
             .setPendingIntent(pendingIntent)
             .setSeverityLevel(SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_OK)
             .build()
     private val entry2 =
-        SafetyCenterEntry.Builder("eNtRy_iD_TwO")
-            .setTitle("Another entry title")
+        SafetyCenterEntry.Builder("eNtRy_iD_TwO", "Another entry title")
             .setPendingIntent(pendingIntent)
             .setSeverityLevel(SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_RECOMMENDATION)
             .build()
 
     private val entryGroup1 =
-        SafetyCenterEntryGroup.Builder("eNtRy_gRoUp_iD")
-            .setTitle("An entry group title")
+        SafetyCenterEntryGroup.Builder("eNtRy_gRoUp_iD", "An entry group title")
             .setSeverityLevel(SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_RECOMMENDATION)
             .setEntries(listOf(entry2))
             .build()
@@ -95,14 +85,12 @@ class SafetyCenterDataTest {
     private val entryOrGroup2 = SafetyCenterEntryOrGroup(entryGroup1)
 
     private val staticEntry1 =
-        SafetyCenterStaticEntry.Builder()
-            .setTitle("A static entry title")
+        SafetyCenterStaticEntry.Builder("A static entry title")
             .setSummary("A static entry summary")
             .setPendingIntent(pendingIntent)
             .build()
     private val staticEntry2 =
-        SafetyCenterStaticEntry.Builder()
-            .setTitle("Another static entry title")
+        SafetyCenterStaticEntry.Builder("Another static entry title")
             .setSummary("Another static entry summary")
             .setPendingIntent(pendingIntent)
             .build()
@@ -130,12 +118,10 @@ class SafetyCenterDataTest {
     }
 
     @Test
-    fun getIssues_mutationsAreNotReflected() {
+    fun getIssues_mutationsAreNotAllowed() {
         val mutatedIssues = data1.issues
-        mutatedIssues.add(issue2)
 
-        assertThat(mutatedIssues).containsExactly(issue1, issue2).inOrder()
-        assertThat(data1.issues).doesNotContain(issue2)
+        assertFailsWith(UnsupportedOperationException::class) { mutatedIssues.add(issue2) }
     }
 
     @Test
@@ -145,12 +131,12 @@ class SafetyCenterDataTest {
     }
 
     @Test
-    fun getEntriesOrGroups_mutationsAreNotReflected() {
+    fun getEntriesOrGroups_mutationsAreNotAllowed() {
         val mutatedEntriesOrGroups = data1.entriesOrGroups
-        mutatedEntriesOrGroups.add(entryOrGroup2)
 
-        assertThat(mutatedEntriesOrGroups).containsExactly(entryOrGroup1, entryOrGroup2).inOrder()
-        assertThat(data1.entriesOrGroups).doesNotContain(entryOrGroup2)
+        assertFailsWith(UnsupportedOperationException::class) {
+            mutatedEntriesOrGroups.add(entryOrGroup2)
+        }
     }
 
     @Test
@@ -160,14 +146,12 @@ class SafetyCenterDataTest {
     }
 
     @Test
-    fun getStaticEntryGroups_mutationsAreNotReflected() {
+    fun getStaticEntryGroups_mutationsAreNotAllowed() {
         val mutatedStaticEntryGroups = data1.staticEntryGroups
-        mutatedStaticEntryGroups.add(staticEntryGroup2)
 
-        assertThat(mutatedStaticEntryGroups)
-            .containsExactly(staticEntryGroup1, staticEntryGroup2)
-            .inOrder()
-        assertThat(data1.staticEntryGroups).doesNotContain(staticEntryGroup2)
+        assertFailsWith(UnsupportedOperationException::class) {
+            mutatedStaticEntryGroups.add(staticEntryGroup2)
+        }
     }
 
     @Test
@@ -187,34 +171,27 @@ class SafetyCenterDataTest {
         EqualsHashCodeToStringTester()
             .addEqualityGroup(
                 data1,
-                SafetyCenterData(status1, listOf(issue1), listOf(entryOrGroup1),
-                    listOf(staticEntryGroup1))
-            )
+                SafetyCenterData(
+                    status1, listOf(issue1), listOf(entryOrGroup1), listOf(staticEntryGroup1)))
             .addEqualityGroup(
                 data2,
-                SafetyCenterData(status2, listOf(issue2), listOf(entryOrGroup2),
-                    listOf(staticEntryGroup2))
-            )
+                SafetyCenterData(
+                    status2, listOf(issue2), listOf(entryOrGroup2), listOf(staticEntryGroup2)))
             .addEqualityGroup(
                 SafetyCenterData(status1, listOf(), listOf(), listOf()),
-                SafetyCenterData(status1, listOf(), listOf(), listOf())
-            )
+                SafetyCenterData(status1, listOf(), listOf(), listOf()))
             .addEqualityGroup(
-                SafetyCenterData(status2, listOf(issue1), listOf(entryOrGroup1),
-                    listOf(staticEntryGroup1))
-            )
+                SafetyCenterData(
+                    status2, listOf(issue1), listOf(entryOrGroup1), listOf(staticEntryGroup1)))
             .addEqualityGroup(
-                SafetyCenterData(status1, listOf(issue2), listOf(entryOrGroup1),
-                    listOf(staticEntryGroup1))
-            )
+                SafetyCenterData(
+                    status1, listOf(issue2), listOf(entryOrGroup1), listOf(staticEntryGroup1)))
             .addEqualityGroup(
-                SafetyCenterData(status1, listOf(issue1), listOf(entryOrGroup2),
-                    listOf(staticEntryGroup1))
-            )
+                SafetyCenterData(
+                    status1, listOf(issue1), listOf(entryOrGroup2), listOf(staticEntryGroup1)))
             .addEqualityGroup(
-                SafetyCenterData(status1, listOf(issue1), listOf(entryOrGroup1),
-                    listOf(staticEntryGroup2))
-            )
+                SafetyCenterData(
+                    status1, listOf(issue1), listOf(entryOrGroup1), listOf(staticEntryGroup2)))
             .test()
     }
 }
