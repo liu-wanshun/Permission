@@ -16,18 +16,50 @@
 
 <safety-center-config>
     <safety-sources-config>
-        <!-- TODO(b/214567659): Finalize base XML config -->
         <safety-sources-group
-            id="TODO"
-            title="@string/reference"
-            summary="@string/reference">
-            <safety-source
-                type="1"
-                id="TODO"
-                title="@string/reference"
-                summary="@string/reference"
-                intentAction="intent"
-                profile="1"/>
+            id="AndroidLockScreenSources"
+            title="@com.android.safetycenter.resources:string/lock_screen_sources_title"
+            summary="@com.android.safetycenter.resources:string/summary_placeholder">
+            <dynamic-safety-source
+                id="AndroidLockScreen"
+                packageName="com.android.settings"
+                profile="primary_profile_only"
+                title="@com.android.safetycenter.resources:string/lock_screen_title"
+                summary="@com.android.safetycenter.resources:string/lock_screen_summary_disabled"
+                initialDisplayState="disabled"/>
+            <dynamic-safety-source
+                id="AndroidBiometrics"
+                packageName="com.android.settings"
+                profile="primary_profile_only"
+                initialDisplayState="hidden"/>
+        </safety-sources-group>
+        <safety-sources-group
+            id="AndroidPrivacySources"
+            title="@com.android.safetycenter.resources:string/privacy_sources_title"
+            summary="@com.android.safetycenter.resources:string/privacy_sources_summary"
+            statelessIconType="privacy">
+            <static-safety-source
+                id="AndroidPermissionUsage"
+                profile="primary_profile_only"
+                intentAction="android.intent.action.REVIEW_PERMISSION_USAGE"
+                title="@com.android.safetycenter.resources:string/permission_usage_title"
+                summary="@com.android.safetycenter.resources:string/permission_usage_summary"/>
+            <static-safety-source
+                id="AndroidPermissionManager"
+                profile="primary_profile_only"
+                intentAction="android.intent.action.MANAGE_PERMISSIONS"
+                title="@com.android.safetycenter.resources:string/permission_manager_title"
+                summary="@com.android.safetycenter.resources:string/permission_manager_summary"/>
+        </safety-sources-group>
+        <safety-sources-group
+            id="AndroidAdvancedSources"
+            title="@com.android.safetycenter.resources:string/advanced_title">
+            <static-safety-source
+                id="AndroidAdvancedSecurity"
+                profile="primary_profile_only"
+                intentAction="com.android.settings.security.SECURITY_ADVANCED_SETTINGS"
+                title="@com.android.safetycenter.resources:string/advanced_security_title"
+                summary="@com.android.safetycenter.resources:string/advanced_security_summary"/>
         </safety-sources-group>
     </safety-sources-config>
 </safety-center-config>
