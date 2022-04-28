@@ -27,6 +27,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.os.ParcelableSubject.assertThat
 import androidx.test.filters.SdkSuppress
 import com.google.common.truth.Truth.assertThat
+import kotlin.test.assertFailsWith
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -39,11 +40,7 @@ class SafetyCenterIssueTest {
         PendingIntent.getActivity(context, 0, Intent("Fake Data"), PendingIntent.FLAG_IMMUTABLE)
     private val pendingIntent2 =
         PendingIntent.getActivity(
-            context,
-            0,
-            Intent("Fake Different Data"),
-            PendingIntent.FLAG_IMMUTABLE
-        )
+            context, 0, Intent("Fake Different Data"), PendingIntent.FLAG_IMMUTABLE)
 
     private val action1 =
         SafetyCenterIssue.Action.Builder("action_id_1", "an action", pendingIntent1)
@@ -91,7 +88,7 @@ class SafetyCenterIssueTest {
         assertThat(SafetyCenterIssue.Builder(issue1).setSubtitle("a subtitle").build().subtitle)
             .isEqualTo("a subtitle")
         assertThat(
-            SafetyCenterIssue.Builder(issue1).setSubtitle("another subtitle").build().subtitle)
+                SafetyCenterIssue.Builder(issue1).setSubtitle("another subtitle").build().subtitle)
             .isEqualTo("another subtitle")
     }
 
@@ -106,18 +103,16 @@ class SafetyCenterIssueTest {
     @Test
     fun getSeverityLevel_returnsSeverityLevel() {
         assertThat(
-            SafetyCenterIssue.Builder(issue1)
-                .setSeverityLevel(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_RECOMMENDATION)
-                .build()
-                .severityLevel
-        )
+                SafetyCenterIssue.Builder(issue1)
+                    .setSeverityLevel(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_RECOMMENDATION)
+                    .build()
+                    .severityLevel)
             .isEqualTo(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_RECOMMENDATION)
         assertThat(
-            SafetyCenterIssue.Builder(issue1)
-                .setSeverityLevel(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_CRITICAL_WARNING)
-                .build()
-                .severityLevel
-        )
+                SafetyCenterIssue.Builder(issue1)
+                    .setSeverityLevel(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_CRITICAL_WARNING)
+                    .build()
+                    .severityLevel)
             .isEqualTo(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_CRITICAL_WARNING)
     }
 
@@ -137,18 +132,16 @@ class SafetyCenterIssueTest {
     @Test
     fun shouldConfirmDismissal_returnsShouldConfirmDismissal() {
         assertThat(
-            SafetyCenterIssue.Builder(issue1)
-                .setShouldConfirmDismissal(true)
-                .build()
-                .shouldConfirmDismissal()
-        )
+                SafetyCenterIssue.Builder(issue1)
+                    .setShouldConfirmDismissal(true)
+                    .build()
+                    .shouldConfirmDismissal())
             .isTrue()
         assertThat(
-            SafetyCenterIssue.Builder(issue1)
-                .setShouldConfirmDismissal(false)
-                .build()
-                .shouldConfirmDismissal()
-        )
+                SafetyCenterIssue.Builder(issue1)
+                    .setShouldConfirmDismissal(false)
+                    .build()
+                    .shouldConfirmDismissal())
             .isFalse()
     }
 
@@ -160,8 +153,10 @@ class SafetyCenterIssueTest {
     @Test
     fun getActions_returnsActions() {
         assertThat(
-            SafetyCenterIssue.Builder(issue1).setActions(listOf(action1, action2)).build().actions
-        )
+                SafetyCenterIssue.Builder(issue1)
+                    .setActions(listOf(action1, action2))
+                    .build()
+                    .actions)
             .containsExactly(action1, action2)
             .inOrder()
         assertThat(SafetyCenterIssue.Builder(issue1).setActions(listOf(action2)).build().actions)
@@ -170,12 +165,22 @@ class SafetyCenterIssueTest {
     }
 
     @Test
-    fun getActions_mutationsAreNotReflected() {
+    fun getActions_mutationsAreNotAllowed() {
         val mutatedActions = issue1.actions
-        mutatedActions.add(action2)
 
-        assertThat(mutatedActions).containsExactly(action1, action2).inOrder()
-        assertThat(issue1.actions).doesNotContain(action2)
+        assertFailsWith(UnsupportedOperationException::class) { mutatedActions.add(action2) }
+    }
+
+    @Test
+    fun build_withInvalidIssueSeverityLevel_throwsIllegalArgumentException() {
+        val exception =
+            assertFailsWith(IllegalArgumentException::class) {
+                SafetyCenterIssue.Builder(issue1).setSeverityLevel(-1)
+            }
+
+        assertThat(exception)
+            .hasMessageThat()
+            .isEqualTo("Unexpected IssueSeverityLevel for SafetyCenterIssue: -1")
     }
 
     @Test
@@ -205,21 +210,18 @@ class SafetyCenterIssueTest {
                     .setSubtitle("In the neighborhood")
                     .setSeverityLevel(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_OK)
                     .setActions(listOf(action1))
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(SafetyCenterIssue.Builder(issue1).setId("a different id").build())
             .addEqualityGroup(
                 SafetyCenterIssue.Builder(issue1).setTitle("a different title").build())
             .addEqualityGroup(
-                SafetyCenterIssue.Builder(issue1).setSubtitle("a different subtitle").build()
-            )
+                SafetyCenterIssue.Builder(issue1).setSubtitle("a different subtitle").build())
             .addEqualityGroup(
                 SafetyCenterIssue.Builder(issue1).setSummary("a different summary").build())
             .addEqualityGroup(
                 SafetyCenterIssue.Builder(issue1)
                     .setSeverityLevel(SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_CRITICAL_WARNING)
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(SafetyCenterIssue.Builder(issue1).setDismissible(false).build())
             .addEqualityGroup(
                 SafetyCenterIssue.Builder(issue1).setShouldConfirmDismissal(false).build())
@@ -290,45 +292,43 @@ class SafetyCenterIssueTest {
                     .setWillResolve(true)
                     .setIsInFlight(true)
                     .setSuccessMessage("a success message")
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent1)
                     .setSuccessMessage("a success message")
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 SafetyCenterIssue.Action.Builder("a_different_id", "a label", pendingIntent1)
                     .setSuccessMessage("a success message")
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 SafetyCenterIssue.Action.Builder("an_id", "a different label", pendingIntent1)
                     .setSuccessMessage("a success message")
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent2)
                     .setSuccessMessage("a success message")
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent1)
                     .setWillResolve(true)
                     .setSuccessMessage("a success message")
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent1)
                     .setIsInFlight(true)
                     .setSuccessMessage("a success message")
-                    .build()
-            )
+                    .build())
             .addEqualityGroup(
                 SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent1)
                     .setSuccessMessage("a different success message")
-                    .build()
-            )
+                    .build())
+            .addEqualityGroup(
+                SafetyCenterIssue.Action.Builder("an_id", "a label", pendingIntent1)
+                    .setId("another_id")
+                    .setLabel("another_label")
+                    .setPendingIntent(pendingIntent2)
+                    .build())
             .test()
     }
 }

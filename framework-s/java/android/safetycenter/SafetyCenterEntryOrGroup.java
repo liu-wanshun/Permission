@@ -31,8 +31,8 @@ import androidx.annotation.RequiresApi;
 import java.util.Objects;
 
 /**
- * Contains either a single {@link SafetyCenterEntry} or a group of them in a
- * {@link SafetyCenterEntryGroup}.
+ * Contains either a single {@link SafetyCenterEntry} or a group of them in a {@link
+ * SafetyCenterEntryGroup}.
  *
  * @hide
  */
@@ -40,10 +40,27 @@ import java.util.Objects;
 @RequiresApi(TIRAMISU)
 public final class SafetyCenterEntryOrGroup implements Parcelable {
 
-    @Nullable
-    private final SafetyCenterEntry mEntry;
-    @Nullable
-    private final SafetyCenterEntryGroup mEntryGroup;
+    @NonNull
+    public static final Creator<SafetyCenterEntryOrGroup> CREATOR =
+            new Creator<SafetyCenterEntryOrGroup>() {
+                @Override
+                public SafetyCenterEntryOrGroup createFromParcel(Parcel in) {
+                    SafetyCenterEntry maybeEntry = in.readTypedObject(SafetyCenterEntry.CREATOR);
+                    SafetyCenterEntryGroup maybeEntryGroup =
+                            in.readTypedObject(SafetyCenterEntryGroup.CREATOR);
+                    return maybeEntry != null
+                            ? new SafetyCenterEntryOrGroup(maybeEntry)
+                            : new SafetyCenterEntryOrGroup(maybeEntryGroup);
+                }
+
+                @Override
+                public SafetyCenterEntryOrGroup[] newArray(int size) {
+                    return new SafetyCenterEntryOrGroup[size];
+                }
+            };
+
+    @Nullable private final SafetyCenterEntry mEntry;
+    @Nullable private final SafetyCenterEntryGroup mEntryGroup;
 
     /** Create for a {@link SafetyCenterEntry}. */
     public SafetyCenterEntryOrGroup(@NonNull SafetyCenterEntry entry) {
@@ -81,10 +98,9 @@ public final class SafetyCenterEntryOrGroup implements Parcelable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof SafetyCenterEntryOrGroup)) return false;
         SafetyCenterEntryOrGroup that = (SafetyCenterEntryOrGroup) o;
-        return Objects.equals(mEntry, that.mEntry)
-                && Objects.equals(mEntryGroup, that.mEntryGroup);
+        return Objects.equals(mEntry, that.mEntry) && Objects.equals(mEntryGroup, that.mEntryGroup);
     }
 
     @Override
@@ -95,8 +111,10 @@ public final class SafetyCenterEntryOrGroup implements Parcelable {
     @Override
     public String toString() {
         return "SafetyCenterEntryOrGroup{"
-                + "mEntry=" + mEntry
-                + ", mEntryGroup=" + mEntryGroup
+                + "mEntry="
+                + mEntry
+                + ", mEntryGroup="
+                + mEntryGroup
                 + '}';
     }
 
@@ -110,26 +128,4 @@ public final class SafetyCenterEntryOrGroup implements Parcelable {
         dest.writeTypedObject(mEntry, flags);
         dest.writeTypedObject(mEntryGroup, flags);
     }
-
-    @NonNull
-    public static final Creator<SafetyCenterEntryOrGroup> CREATOR =
-            new Creator<SafetyCenterEntryOrGroup>() {
-                @Override
-                public SafetyCenterEntryOrGroup createFromParcel(Parcel in) {
-                    SafetyCenterEntry maybeEntry =
-                            in.readTypedObject(SafetyCenterEntry.CREATOR);
-                    SafetyCenterEntryGroup maybeEntryGroup =
-                            in.readTypedObject(SafetyCenterEntryGroup.CREATOR);
-
-                    return maybeEntry != null
-                            ? new SafetyCenterEntryOrGroup(maybeEntry)
-                            : new SafetyCenterEntryOrGroup(maybeEntryGroup);
-                }
-
-                @Override
-                public SafetyCenterEntryOrGroup[] newArray(int size) {
-                    return new SafetyCenterEntryOrGroup[size];
-                }
-            };
-
 }
