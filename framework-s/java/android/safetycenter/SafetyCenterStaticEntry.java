@@ -45,20 +45,32 @@ import java.util.Objects;
 public final class SafetyCenterStaticEntry implements Parcelable {
 
     @NonNull
-    private final CharSequence mTitle;
-    @Nullable
-    private final CharSequence mSummary;
-    @Nullable
-    private final PendingIntent mPendingIntent;
+    public static final Creator<SafetyCenterStaticEntry> CREATOR =
+            new Creator<SafetyCenterStaticEntry>() {
+                @Override
+                public SafetyCenterStaticEntry createFromParcel(Parcel in) {
+                    CharSequence title = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in);
+                    return new SafetyCenterStaticEntry.Builder(title)
+                            .setSummary(TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in))
+                            .setPendingIntent(in.readTypedObject(PendingIntent.CREATOR))
+                            .build();
+                }
 
-    /**
-     * Creates a {@link SafetyCenterStaticEntry} with the given title, summary, and pendingIntent
-     */
+                @Override
+                public SafetyCenterStaticEntry[] newArray(int size) {
+                    return new SafetyCenterStaticEntry[size];
+                }
+            };
+
+    @NonNull private final CharSequence mTitle;
+    @Nullable private final CharSequence mSummary;
+    @Nullable private final PendingIntent mPendingIntent;
+
     private SafetyCenterStaticEntry(
             @NonNull CharSequence title,
             @Nullable CharSequence summary,
             @Nullable PendingIntent pendingIntent) {
-        mTitle = requireNonNull(title);
+        mTitle = title;
         mSummary = summary;
         mPendingIntent = pendingIntent;
     }
@@ -90,7 +102,7 @@ public final class SafetyCenterStaticEntry implements Parcelable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof SafetyCenterStaticEntry)) return false;
         SafetyCenterStaticEntry that = (SafetyCenterStaticEntry) o;
         return TextUtils.equals(mTitle, that.mTitle)
                 && TextUtils.equals(mSummary, that.mSummary)
@@ -105,9 +117,12 @@ public final class SafetyCenterStaticEntry implements Parcelable {
     @Override
     public String toString() {
         return "SafetyCenterStaticEntry{"
-                + "mTitle=" + mTitle
-                + ", mSummary=" + mSummary
-                + ", mPendingIntent=" + mPendingIntent
+                + "mTitle="
+                + mTitle
+                + ", mSummary="
+                + mSummary
+                + ", mPendingIntent="
+                + mPendingIntent
                 + '}';
     }
 
@@ -120,39 +135,27 @@ public final class SafetyCenterStaticEntry implements Parcelable {
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         TextUtils.writeToParcel(mTitle, dest, flags);
         TextUtils.writeToParcel(mSummary, dest, flags);
-        dest.writeParcelable(mPendingIntent, flags);
+        dest.writeTypedObject(mPendingIntent, flags);
     }
-
-    @NonNull
-    public static final Creator<SafetyCenterStaticEntry> CREATOR =
-            new Creator<SafetyCenterStaticEntry>() {
-        @Override
-        public SafetyCenterStaticEntry createFromParcel(Parcel source) {
-            return new SafetyCenterStaticEntry(
-                    /* title= */ TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source),
-                    /* summary= */ TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source),
-                    source.readParcelable(
-                            PendingIntent.class.getClassLoader(), PendingIntent.class));
-        }
-
-        @Override
-        public SafetyCenterStaticEntry[] newArray(int size) {
-            return new SafetyCenterStaticEntry[size];
-        }
-    };
 
     /** Builder class for {@link SafetyCenterStaticEntry}. */
     public static final class Builder {
-        private CharSequence mTitle;
-        private CharSequence mSummary;
-        private PendingIntent mPendingIntent;
 
-        /** Creates a {@link Builder} for a {@link SafetyCenterEntry}. */
-        public Builder() {}
+        @NonNull private CharSequence mTitle;
+        @Nullable private CharSequence mSummary;
+        @Nullable private PendingIntent mPendingIntent;
 
         /**
-         * Creates a pre-populated {@link Builder} with the values from the given {@link
-         * SafetyCenterStaticEntry}.
+         * Creates a {@link Builder} for a {@link SafetyCenterEntry}.
+         *
+         * @param title a title that describes this static entry
+         */
+        public Builder(@NonNull CharSequence title) {
+            mTitle = requireNonNull(title);
+        }
+
+        /**
+         * Creates a {@link Builder} with the values from the given {@link SafetyCenterStaticEntry}.
          */
         public Builder(@NonNull SafetyCenterStaticEntry safetyCenterStaticEntry) {
             mTitle = safetyCenterStaticEntry.mTitle;
@@ -160,7 +163,7 @@ public final class SafetyCenterStaticEntry implements Parcelable {
             mPendingIntent = safetyCenterStaticEntry.mPendingIntent;
         }
 
-        /** Sets the title for this entry. Required. */
+        /** Sets the title for this entry. */
         @NonNull
         public Builder setTitle(@NonNull CharSequence title) {
             mTitle = requireNonNull(title);
@@ -184,10 +187,7 @@ public final class SafetyCenterStaticEntry implements Parcelable {
         /** Creates the {@link SafetyCenterStaticEntry} defined by this {@link Builder}. */
         @NonNull
         public SafetyCenterStaticEntry build() {
-            return new SafetyCenterStaticEntry(
-                    mTitle,
-                    mSummary,
-                    mPendingIntent);
+            return new SafetyCenterStaticEntry(mTitle, mSummary, mPendingIntent);
         }
     }
 }
