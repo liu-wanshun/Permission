@@ -42,27 +42,6 @@ import java.util.Objects;
 @RequiresApi(TIRAMISU)
 public final class SafetyCenterStatus implements Parcelable {
 
-    /**
-     * All possible overall severity levels for the Safety Center.
-     *
-     * <p>The overall severity level is calculated from the severity level and statuses of all
-     * issues and entries in the Safety Center.
-     *
-     * @see #getSeverityLevel()
-     * @see Builder#setSeverityLevel(int)
-     *
-     * @hide
-     */
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef(prefix = "OVERALL_SEVERITY_LEVEL_", value = {
-            OVERALL_SEVERITY_LEVEL_UNKNOWN,
-            OVERALL_SEVERITY_LEVEL_OK,
-            OVERALL_SEVERITY_LEVEL_RECOMMENDATION,
-            OVERALL_SEVERITY_LEVEL_CRITICAL_WARNING,
-    })
-    public @interface OverallSeverityLevel {
-    }
-
     /** Indicates the overall severity level of the Safety Center is not currently known. */
     public static final int OVERALL_SEVERITY_LEVEL_UNKNOWN = 1000;
 
@@ -78,21 +57,25 @@ public final class SafetyCenterStatus implements Parcelable {
     public static final int OVERALL_SEVERITY_LEVEL_CRITICAL_WARNING = 1300;
 
     /**
-     * All possible refresh states for the Safety Center.
+     * All possible overall severity levels for the Safety Center.
      *
-     * @see #getRefreshStatus()
-     * @see Builder#setRefreshStatus(int)
+     * <p>The overall severity level is calculated from the severity level and statuses of all
+     * issues and entries in the Safety Center.
      *
      * @hide
+     * @see #getSeverityLevel()
+     * @see Builder#setSeverityLevel(int)
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef(prefix = "REFRESH_STATUS_", value = {
-            REFRESH_STATUS_NONE,
-            REFRESH_STATUS_DATA_FETCH_IN_PROGRESS,
-            REFRESH_STATUS_FULL_RESCAN_IN_PROGRESS,
-    })
-    public @interface RefreshStatus {
-    }
+    @IntDef(
+            prefix = "OVERALL_SEVERITY_LEVEL_",
+            value = {
+                OVERALL_SEVERITY_LEVEL_UNKNOWN,
+                OVERALL_SEVERITY_LEVEL_OK,
+                OVERALL_SEVERITY_LEVEL_RECOMMENDATION,
+                OVERALL_SEVERITY_LEVEL_CRITICAL_WARNING,
+            })
+    public @interface OverallSeverityLevel {}
 
     /** Indicates that no refresh is ongoing. */
     public static final int REFRESH_STATUS_NONE = 0;
@@ -116,22 +99,54 @@ public final class SafetyCenterStatus implements Parcelable {
      */
     public static final int REFRESH_STATUS_FULL_RESCAN_IN_PROGRESS = 10200;
 
+    /**
+     * All possible refresh states for the Safety Center.
+     *
+     * @hide
+     * @see #getRefreshStatus()
+     * @see Builder#setRefreshStatus(int)
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef(
+            prefix = "REFRESH_STATUS_",
+            value = {
+                REFRESH_STATUS_NONE,
+                REFRESH_STATUS_DATA_FETCH_IN_PROGRESS,
+                REFRESH_STATUS_FULL_RESCAN_IN_PROGRESS,
+            })
+    public @interface RefreshStatus {}
+
     @NonNull
-    private final CharSequence mTitle;
-    @NonNull
-    private final CharSequence mSummary;
-    @OverallSeverityLevel
-    private final int mSeverityLevel;
-    @RefreshStatus
-    private final int mRefreshStatus;
+    public static final Creator<SafetyCenterStatus> CREATOR =
+            new Creator<SafetyCenterStatus>() {
+                @Override
+                public SafetyCenterStatus createFromParcel(Parcel in) {
+                    CharSequence title = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in);
+                    CharSequence summary = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in);
+                    return new Builder(title, summary)
+                            .setSeverityLevel(in.readInt())
+                            .setRefreshStatus(in.readInt())
+                            .build();
+                }
+
+                @Override
+                public SafetyCenterStatus[] newArray(int size) {
+                    return new SafetyCenterStatus[size];
+                }
+            };
+
+    @NonNull private final CharSequence mTitle;
+    @NonNull private final CharSequence mSummary;
+    @OverallSeverityLevel private final int mSeverityLevel;
+    @RefreshStatus private final int mRefreshStatus;
 
     private SafetyCenterStatus(
             @NonNull CharSequence title,
             @NonNull CharSequence summary,
             @OverallSeverityLevel int severityLevel,
             @RefreshStatus int refreshStatus) {
-        mTitle = requireNonNull(title);
-        mSummary = requireNonNull(summary);
+        mTitle = title;
+        mSummary = summary;
         mSeverityLevel = severityLevel;
         mRefreshStatus = refreshStatus;
     }
@@ -163,7 +178,7 @@ public final class SafetyCenterStatus implements Parcelable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof SafetyCenterStatus)) return false;
         SafetyCenterStatus that = (SafetyCenterStatus) o;
         return mSeverityLevel == that.mSeverityLevel
                 && mRefreshStatus == that.mRefreshStatus
@@ -179,10 +194,14 @@ public final class SafetyCenterStatus implements Parcelable {
     @Override
     public String toString() {
         return "SafetyCenterStatus{"
-                + "mTitle=" + mTitle
-                + ", mSummary=" + mSummary
-                + ", mSeverityLevel=" + mSeverityLevel
-                + ", mRefreshStatus=" + mRefreshStatus
+                + "mTitle="
+                + mTitle
+                + ", mSummary="
+                + mSummary
+                + ", mSeverityLevel="
+                + mSeverityLevel
+                + ", mRefreshStatus="
+                + mRefreshStatus
                 + '}';
     }
 
@@ -199,40 +218,26 @@ public final class SafetyCenterStatus implements Parcelable {
         dest.writeInt(mRefreshStatus);
     }
 
-    @NonNull
-    public static final Creator<SafetyCenterStatus> CREATOR = new Creator<SafetyCenterStatus>() {
-        @Override
-        public SafetyCenterStatus createFromParcel(Parcel in) {
-            return new Builder()
-                    .setTitle(TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in))
-                    .setSummary(TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in))
-                    .setSeverityLevel(in.readInt())
-                    .setRefreshStatus(in.readInt())
-                    .build();
-        }
-
-        @Override
-        public SafetyCenterStatus[] newArray(int size) {
-            return new SafetyCenterStatus[size];
-        }
-    };
-
     /** Builder class for {@link SafetyCenterStatus}. */
     public static final class Builder {
-        private CharSequence mTitle;
-        private CharSequence mSummary;
-        @OverallSeverityLevel
-        private int mSeverityLevel = OVERALL_SEVERITY_LEVEL_UNKNOWN;
-        @RefreshStatus
-        private int mRefreshStatus = REFRESH_STATUS_NONE;
 
-        /** Creates an empty {@link Builder} for {@link SafetyCenterStatus}*/
-        public Builder() {}
+        @NonNull private CharSequence mTitle;
+        @NonNull private CharSequence mSummary;
+        @OverallSeverityLevel private int mSeverityLevel = OVERALL_SEVERITY_LEVEL_UNKNOWN;
+        @RefreshStatus private int mRefreshStatus = REFRESH_STATUS_NONE;
 
         /**
-         * Creates a pre-populated {@link Builder} with the values from the given {@link
-         * SafetyCenterStatus}.
+         * Creates a new {@link Builder} for a {@link SafetyCenterStatus}.
+         *
+         * @param title an overall title for the status
+         * @param summary a summary for the status
          */
+        public Builder(@NonNull CharSequence title, @NonNull CharSequence summary) {
+            mTitle = requireNonNull(title);
+            mSummary = requireNonNull(summary);
+        }
+
+        /** Creates a {@link Builder} with the values from the given {@link SafetyCenterStatus}. */
         public Builder(@NonNull SafetyCenterStatus safetyCenterStatus) {
             mTitle = safetyCenterStatus.mTitle;
             mSummary = safetyCenterStatus.mSummary;
@@ -240,14 +245,14 @@ public final class SafetyCenterStatus implements Parcelable {
             mRefreshStatus = safetyCenterStatus.mRefreshStatus;
         }
 
-        /** Sets the title for this status. Required. */
+        /** Sets the title for this status. */
         @NonNull
         public Builder setTitle(@NonNull CharSequence title) {
             mTitle = requireNonNull(title);
             return this;
         }
 
-        /** Sets the summary text for this status. Required. */
+        /** Sets the summary text for this status. */
         @NonNull
         public Builder setSummary(@NonNull CharSequence summary) {
             mSummary = requireNonNull(summary);
@@ -260,7 +265,7 @@ public final class SafetyCenterStatus implements Parcelable {
          */
         @NonNull
         public Builder setSeverityLevel(@OverallSeverityLevel int severityLevel) {
-            mSeverityLevel = severityLevel;
+            mSeverityLevel = validateOverallSeverityLevel(severityLevel);
             return this;
         }
 
@@ -269,7 +274,7 @@ public final class SafetyCenterStatus implements Parcelable {
          */
         @NonNull
         public Builder setRefreshStatus(@RefreshStatus int refreshStatus) {
-            mRefreshStatus = refreshStatus;
+            mRefreshStatus = validateRefreshStatus(refreshStatus);
             return this;
         }
 
@@ -278,5 +283,32 @@ public final class SafetyCenterStatus implements Parcelable {
         public SafetyCenterStatus build() {
             return new SafetyCenterStatus(mTitle, mSummary, mSeverityLevel, mRefreshStatus);
         }
+    }
+
+    @OverallSeverityLevel
+    private static int validateOverallSeverityLevel(int value) {
+        switch (value) {
+            case OVERALL_SEVERITY_LEVEL_UNKNOWN:
+            case OVERALL_SEVERITY_LEVEL_OK:
+            case OVERALL_SEVERITY_LEVEL_RECOMMENDATION:
+            case OVERALL_SEVERITY_LEVEL_CRITICAL_WARNING:
+                return value;
+            default:
+        }
+        throw new IllegalArgumentException(
+                String.format("Unexpected OverallSeverityLevel for SafetyCenterStatus: %s", value));
+    }
+
+    @RefreshStatus
+    private static int validateRefreshStatus(int value) {
+        switch (value) {
+            case REFRESH_STATUS_NONE:
+            case REFRESH_STATUS_DATA_FETCH_IN_PROGRESS:
+            case REFRESH_STATUS_FULL_RESCAN_IN_PROGRESS:
+                return value;
+            default:
+        }
+        throw new IllegalArgumentException(
+                String.format("Unexpected RefreshStatus for SafetyCenterStatus: %s", value));
     }
 }
