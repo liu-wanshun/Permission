@@ -18,7 +18,16 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="safetyCenterResourcesAppLabel" msgid="4043334186295695930">"Veiligheidsentrum-hulpbronne"</string>
-    <string name="lock_screen_sources_title" msgid="7706608329251423698">"Skermslot"</string>
+    <string name="lock_screen_sources_title" msgid="3317906280484627707">"Toestelslot"</string>
     <string name="lock_screen_title" msgid="4069104894527169877">"Skermslot"</string>
-    <string name="lock_screen_summary_disabled" msgid="6073123093607694871">"Bsonderhede sal binnekort beskikbaar wees"</string>
+    <string name="lock_screen_summary_disabled" msgid="354071230916616692">"Nog geen inligting nie"</string>
+    <string name="privacy_sources_title" msgid="4061110826457365957">"Privaatheid"</string>
+    <string name="privacy_sources_summary" msgid="4089719981155120864">"Kontroleskerm, toestemmings, kontroles"</string>
+    <string name="permission_usage_title" msgid="3633779688945350407">"Privaatheidkontroleskerm"</string>
+    <string name="permission_usage_summary" msgid="5323079206029964468">"Wys watter programme onlangs toestemmings gebruik het"</string>
+    <string name="permission_manager_title" msgid="5277347862821255015">"Toestemmingbestuurder"</string>
+    <string name="permission_manager_summary" msgid="8099852107340970790">"Beheer programtoegang tot jou data"</string>
+    <string name="advanced_title" msgid="8745436380690561172">"Meer instellings"</string>
+    <string name="advanced_security_title" msgid="1126833338772188155">"Meer sekuriteitinstellings"</string>
+    <string name="advanced_security_summary" msgid="6172253327022425123">"Enkripsie, eiebewyse, en meer"</string>
 </resources>

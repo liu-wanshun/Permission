@@ -31,34 +31,22 @@ object SafetyCenterFlags {
     /** Returns whether the device supports Safety Center. */
     fun Context.deviceSupportsSafetyCenter() =
         resources.getBoolean(
-            Resources.getSystem().getIdentifier("config_enableSafetyCenter", "bool", "android")
-        )
+            Resources.getSystem().getIdentifier("config_enableSafetyCenter", "bool", "android"))
 
     /** Sets the Safety Center device config flag to the given boolean [value]. */
     fun setSafetyCenterEnabled(value: Boolean) {
         callWithShellPermissionIdentity(
-            { setSafetyCenterEnabledWithoutPermission(value) },
-            WRITE_DEVICE_CONFIG
-        )
-    }
-
-    /**
-     * Sets the Safety Center device config flag to the given boolean [value], but without holding
-     * the [WRITE_DEVICE_CONFIG] permission.
-     *
-     * [callWithShellPermissionIdentity] mutates a global state, so it is not possible to call
-     * [setSafetyCenterEnabled] within another call to [callWithShellPermissionIdentity].
-     */
-    fun setSafetyCenterEnabledWithoutPermission(value: Boolean) {
-        val valueWasSet =
-            DeviceConfig.setProperty(
-                DeviceConfig.NAMESPACE_PRIVACY,
-                PROPERTY_SAFETY_CENTER_ENABLED,
-                /* value = */ value.toString(),
-                /* makeDefault = */ false
-            )
-        if (!valueWasSet) {
-            throw IllegalStateException("Could not set Safety Center flag value to: $value")
-        }
+            {
+                val valueWasSet =
+                    DeviceConfig.setProperty(
+                        DeviceConfig.NAMESPACE_PRIVACY,
+                        PROPERTY_SAFETY_CENTER_ENABLED,
+                        /* value = */ value.toString(),
+                        /* makeDefault = */ false)
+                if (!valueWasSet) {
+                    throw IllegalStateException("Could not set Safety Center flag value to: $value")
+                }
+            },
+            WRITE_DEVICE_CONFIG)
     }
 }

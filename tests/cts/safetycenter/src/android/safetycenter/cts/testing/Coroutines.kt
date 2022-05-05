@@ -30,8 +30,8 @@ object Coroutines {
         }
 
     /** A long timeout, to be used for actions that are expected to complete. */
-    val TIMEOUT_LONG: Duration = Duration.ofSeconds(10)
+    val TIMEOUT_LONG: Duration = Duration.ofSeconds(5)
 
     /** A short timeout, to be used for actions that are expected not to complete. */
-    val TIMEOUT_SHORT: Duration = Duration.ofMillis(500)
+    val TIMEOUT_SHORT: Duration = Duration.ofSeconds(1)
 }

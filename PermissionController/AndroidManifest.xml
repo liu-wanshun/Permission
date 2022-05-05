@@ -80,13 +80,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.android.permissioncontroller.privacysources.NotificationListenerCheck$SetupPeriodicNotificationListenerCheck"
-                  android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
         <receiver android:name="com.android.permissioncontroller.hibernation.HibernationOnBootReceiver"
                   android:exported="true">
             <intent-filter>
@@ -99,17 +92,6 @@
         <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$NotificationClickHandler" />
 
         <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$PackageResetHandler"
-                  android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED"/>
-                <action android:name="android.intent.action.PACKAGE_DATA_CLEARED" />
-                <data android:scheme="package" />
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name="com.android.permissioncontroller.privacysources.NotificationListenerCheck$NotificationDeleteHandler" />
-
-        <receiver android:name="com.android.permissioncontroller.privacysources.NotificationListenerCheck$PackageResetHandler"
                   android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED"/>
@@ -131,41 +113,11 @@
         <service android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$LocationAccessCheckJobService"
                  android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <service android:name="com.android.permissioncontroller.privacysources.NotificationListenerCheck$NotificationListenerCheckJobService"
-                 android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <service android:name="com.android.permissioncontroller.hibernation.HibernationJobService"
                  android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <service android:name="com.android.permissioncontroller.permission.service.DecisionCleanupJobService"
+        <service android:name="com.android.permissioncontroller.permission.service.v33.PermissionEventCleanupJobService"
                  android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <receiver
-            android:name="com.android.permissioncontroller.privacysources.AccessibilitySourceService$AccessibilityOnBootReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name="com.android.permissioncontroller.privacysources.AccessibilitySourceService$WarningCardDismissalReceiver" />
-
-        <receiver android:name="com.android.permissioncontroller.privacysources.AccessibilitySourceService$RemoveAccessHandler" />
-
-        <receiver android:name="com.android.permissioncontroller.privacysources.AccessibilitySourceService$NotificationDeleteHandler" />
-
-        <receiver android:name="com.android.permissioncontroller.privacysources.AccessibilitySourceService$PackageResetHandler"
-                  android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
-                <action android:name="android.intent.action.PACKAGE_DATA_CLEARED" />
-                <data android:scheme="package" />
-            </intent-filter>
-        </receiver>
-
-        <service
-            android:name="com.android.permissioncontroller.privacysources.AccessibilitySourceService$AccessibilityJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity android:name="com.android.permissioncontroller.permission.ui.GrantPermissionsActivity"
                   android:configChanges="keyboardHidden|screenSize"
@@ -399,16 +351,6 @@
             </intent-filter>
         </service>
 
-         <service android:name="com.android.permissioncontroller.permission.service.v33.SafetyCenterQsTileService"
-                  android:exported="true"
-                  android:label="@string/safety_privacy_qs_tile_title"
-                  android:icon ="@drawable/safety_shield"
-                  android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
-             <intent-filter>
-                 <action android:name="android.service.quicksettings.action.QS_TILE" />
-             </intent-filter>
-         </service>
-
         <service android:name="com.android.permissioncontroller.auto.DrivingDecisionReminderService" />
 
         <receiver android:name="com.android.permissioncontroller.role.service.ClearUserDeniedReceiver"
@@ -420,7 +362,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.android.permissioncontroller.permission.service.PersistedStoragePackageUninstalledReceiver"
+        <receiver android:name="com.android.permissioncontroller.permission.service.v33.PersistedStoragePackageUninstalledReceiver"
                   android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_DATA_CLEARED" />
@@ -429,7 +371,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.android.permissioncontroller.permission.service.RecentPermissionDecisionsTimeChangeReceiver"
+        <receiver android:name="com.android.permissioncontroller.permission.service.v33.PermissionStorageTimeChangeReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

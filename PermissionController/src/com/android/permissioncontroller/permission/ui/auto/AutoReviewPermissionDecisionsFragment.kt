@@ -15,6 +15,7 @@
  */
 package com.android.permissioncontroller.permission.ui.auto
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.UserHandle
@@ -32,15 +33,16 @@ import com.android.permissioncontroller.PermissionControllerStatsLog.RECENT_PERM
 import com.android.permissioncontroller.PermissionControllerStatsLog.RECENT_PERMISSION_DECISIONS_INTERACTED__ACTION__VIEW_ALL_CLICKED
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.auto.AutoSettingsFrameFragment
-import com.android.permissioncontroller.permission.data.PermissionDecision
+import com.android.permissioncontroller.permission.data.v33.PermissionDecision
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity
-import com.android.permissioncontroller.permission.ui.model.v31.ReviewPermissionDecisionsViewModel
-import com.android.permissioncontroller.permission.ui.model.v31.ReviewPermissionDecisionsViewModelFactory
+import com.android.permissioncontroller.permission.ui.model.v33.ReviewPermissionDecisionsViewModel
+import com.android.permissioncontroller.permission.ui.model.v33.ReviewPermissionDecisionsViewModelFactory
 import com.android.permissioncontroller.permission.utils.KotlinUtils.getPackageUid
 import com.android.permissioncontroller.permission.utils.Utils
 import kotlin.math.min
 
 /** Shows summary of recent permission decisions. */
+@SuppressLint("NewApi")
 class AutoReviewPermissionDecisionsFragment : AutoSettingsFrameFragment() {
 
     companion object {
@@ -103,7 +105,7 @@ class AutoReviewPermissionDecisionsFragment : AutoSettingsFrameFragment() {
         addPrivacyDashboardPreference()
         addPermissionManagerPreference()
         preferenceScreen.addPreference(AutoDividerPreference(context))
-        recentPermissionsGroup = PreferenceCategory(context).apply {
+        recentPermissionsGroup = PreferenceCategory(context!!).apply {
             title = getString(R.string.review_permission_decisions)
         }
         preferenceScreen.addPreference(recentPermissionsGroup)
@@ -117,7 +119,7 @@ class AutoReviewPermissionDecisionsFragment : AutoSettingsFrameFragment() {
     }
 
     override fun onCreatePreferences(bundle: Bundle?, s: String?) {
-        preferenceScreen = preferenceManager.createPreferenceScreen(context)
+        preferenceScreen = preferenceManager.createPreferenceScreen(context!!)
     }
 
     private fun onRecentDecisionsChanged(recentDecisions: List<PermissionDecision>) {

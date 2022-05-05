@@ -18,8 +18,6 @@ package com.android.safetycenter;
 
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 
-import static java.util.Collections.unmodifiableList;
-
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.annotation.UserIdInt;
@@ -32,9 +30,6 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import androidx.annotation.RequiresApi;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A class that keeps track of all the registered {@link IOnSafetyCenterDataChangedListener}
@@ -51,138 +46,105 @@ final class SafetyCenterListeners {
             mSafetyCenterDataChangedListeners = new SparseArray<>();
 
     /** Creates a {@link SafetyCenterListeners}. */
-    SafetyCenterListeners() {
-    }
+    SafetyCenterListeners() {}
 
     /**
-     * Delivers a {@link SafetyCenterData} or {@link SafetyCenterErrorDetails} update to a single
-     * {@link IOnSafetyCenterDataChangedListener}.
+     * Delivers a {@link SafetyCenterData} update to a single {@link
+     * IOnSafetyCenterDataChangedListener}.
      */
     static void deliverUpdate(
             @NonNull IOnSafetyCenterDataChangedListener listener,
-            @Nullable SafetyCenterData safetyCenterData,
-            @Nullable SafetyCenterErrorDetails safetyCenterErrorDetails) {
-        if (safetyCenterData != null) {
-            try {
-                listener.onSafetyCenterDataChanged(safetyCenterData);
-            } catch (RemoteException e) {
-                Log.e(TAG, "Error delivering SafetyCenterData to listener", e);
-            }
-        }
-        if (safetyCenterErrorDetails != null) {
-            try {
-                listener.onError(safetyCenterErrorDetails);
-            } catch (RemoteException e) {
-                Log.e(TAG, "Error delivering SafetyCenterErrorDetails to listener", e);
-            }
+            @NonNull SafetyCenterData safetyCenterData) {
+        try {
+            listener.onSafetyCenterDataChanged(safetyCenterData);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error delivering SafetyCenterData to listener", e);
         }
     }
 
     /**
-     * Delivers a {@link SafetyCenterData} or {@link SafetyCenterErrorDetails} update to all the
-     * {@link RemoteCallbackList} of {@link IOnSafetyCenterDataChangedListener}.
+     * Delivers a {@link SafetyCenterData} update to a {@link RemoteCallbackList} of {@link
+     * IOnSafetyCenterDataChangedListener}.
      *
-     * <p>Registering or unregistering {@link IOnSafetyCenterDataChangedListener} on any of the
-     * underlying {@link RemoteCallbackList} on another thread while an update is happening is safe
-     * as this is handled by the {@link RemoteCallbackList} already (as well as listeners death).
+     * <p>Registering or unregistering {@link IOnSafetyCenterDataChangedListener} on the underlying
+     * {@link RemoteCallbackList} on another thread while an update is happening is safe as this is
+     * handled by the {@link RemoteCallbackList} already (as well as listeners death).
      */
     static void deliverUpdate(
-            @NonNull List<RemoteCallbackList<IOnSafetyCenterDataChangedListener>> listeners,
-            @Nullable SafetyCenterData safetyCenterData,
-            @Nullable SafetyCenterErrorDetails safetyCenterErrorDetails) {
-        for (int i = 0; i < listeners.size(); i++) {
-            deliverUpdate(listeners.get(i), safetyCenterData, safetyCenterErrorDetails);
-        }
-    }
-
-    private static void deliverUpdate(
             @NonNull RemoteCallbackList<IOnSafetyCenterDataChangedListener> listeners,
-            @Nullable SafetyCenterData safetyCenterData,
-            @Nullable SafetyCenterErrorDetails safetyCenterErrorDetails) {
+            @NonNull SafetyCenterData safetyCenterData) {
         int i = listeners.beginBroadcast();
         while (i > 0) {
             i--;
-            deliverUpdate(listeners.getBroadcastItem(i), safetyCenterData,
-                    safetyCenterErrorDetails);
+            deliverUpdate(listeners.getBroadcastItem(i), safetyCenterData);
         }
         listeners.finishBroadcast();
     }
 
     /**
-     * Adds a {@link IOnSafetyCenterDataChangedListener} for the given {@code userId}.
-     *
-     * <p>Returns whether the callback was successfully registered. Returns {@code true} if
-     * the callback was already registered.
+     * Delivers a {@link SafetyCenterErrorDetails} update to a single {@link
+     * IOnSafetyCenterDataChangedListener}.
      */
-    boolean addListener(
+    private static void deliverError(
             @NonNull IOnSafetyCenterDataChangedListener listener,
-            @UserIdInt int userId) {
+            @NonNull SafetyCenterErrorDetails safetyCenterErrorDetails) {
+        try {
+            listener.onError(safetyCenterErrorDetails);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error delivering SafetyCenterErrorDetails to listener", e);
+        }
+    }
+
+    /**
+     * Delivers a {@link SafetyCenterErrorDetails} update to a {@link RemoteCallbackList} of {@link
+     * IOnSafetyCenterDataChangedListener}.
+     *
+     * <p>Registering or unregistering {@link IOnSafetyCenterDataChangedListener} on the underlying
+     * {@link RemoteCallbackList} on another thread while an update is happening is safe as this is
+     * handled by the {@link RemoteCallbackList} already (as well as listeners death).
+     */
+    static void deliverError(
+            @NonNull RemoteCallbackList<IOnSafetyCenterDataChangedListener> listeners,
+            @NonNull SafetyCenterErrorDetails safetyCenterErrorDetails) {
+        int i = listeners.beginBroadcast();
+        while (i > 0) {
+            i--;
+            deliverError(listeners.getBroadcastItem(i), safetyCenterErrorDetails);
+        }
+        listeners.finishBroadcast();
+    }
+
+    /** Adds a {@link IOnSafetyCenterDataChangedListener} for the given {@code userId}. */
+    void addListener(@NonNull IOnSafetyCenterDataChangedListener listener, @UserIdInt int userId) {
         RemoteCallbackList<IOnSafetyCenterDataChangedListener> listeners =
                 mSafetyCenterDataChangedListeners.get(userId);
         if (listeners == null) {
             listeners = new RemoteCallbackList<>();
             mSafetyCenterDataChangedListeners.put(userId, listeners);
         }
-        return listeners.register(listener);
+        listeners.register(listener);
     }
 
-    /**
-     * Removes a {@link IOnSafetyCenterDataChangedListener} for the given {@code userId}.
-     *
-     * <p>Returns whether the callback was unregistered. Returns {@code false} if the callback was
-     * never registered.
-     */
-    boolean removeListener(
-            @NonNull IOnSafetyCenterDataChangedListener listener,
-            @UserIdInt int userId) {
+    /** Removes a {@link IOnSafetyCenterDataChangedListener} for the given {@code userId}. */
+    void removeListener(
+            @NonNull IOnSafetyCenterDataChangedListener listener, @UserIdInt int userId) {
         RemoteCallbackList<IOnSafetyCenterDataChangedListener> listeners =
                 mSafetyCenterDataChangedListeners.get(userId);
         if (listeners == null) {
-            return false;
+            return;
         }
-        boolean unregistered = listeners.unregister(listener);
+        listeners.unregister(listener);
         if (listeners.getRegisteredCallbackCount() == 0) {
-            mSafetyCenterDataChangedListeners.remove(userId);
+            mSafetyCenterDataChangedListeners.put(userId, null);
         }
-        return unregistered;
-    }
-
-    /** Clears all {@link IOnSafetyCenterDataChangedListener}s, for all user ids. */
-    void clear() {
-        for (int i = 0; i < mSafetyCenterDataChangedListeners.size(); i++) {
-            RemoteCallbackList<IOnSafetyCenterDataChangedListener> listeners =
-                    mSafetyCenterDataChangedListeners.valueAt(i);
-            if (listeners == null) {
-                continue;
-            }
-            listeners.kill();
-        }
-        mSafetyCenterDataChangedListeners.clear();
     }
 
     /**
-     * Returns all the {@link RemoteCallbackList} of {@link IOnSafetyCenterDataChangedListener} for
-     * the given {@link UserProfileGroup}.
+     * Returns the {@link RemoteCallbackList} of {@link IOnSafetyCenterDataChangedListener} for the
+     * given {@code userId}.
      */
-    @NonNull
-    List<RemoteCallbackList<IOnSafetyCenterDataChangedListener>> getListeners(
-            @NonNull UserProfileGroup userProfileGroup) {
-        List<RemoteCallbackList<IOnSafetyCenterDataChangedListener>> listeners = new ArrayList<>();
-        addToListIfNotNull(listeners, userProfileGroup.getProfileOwnerUserId());
-        int[] managedProfilesUserIds = userProfileGroup.getManagedProfilesUserIds();
-        for (int i = 0; i < managedProfilesUserIds.length; i++) {
-            addToListIfNotNull(listeners, managedProfilesUserIds[i]);
-        }
-        return unmodifiableList(listeners);
-    }
-
-    private void addToListIfNotNull(
-            @NonNull List<RemoteCallbackList<IOnSafetyCenterDataChangedListener>> listeners,
-            @UserIdInt int userId) {
-        RemoteCallbackList<IOnSafetyCenterDataChangedListener> listenersForUserId =
-                mSafetyCenterDataChangedListeners.get(userId);
-        if (listenersForUserId != null) {
-            listeners.add(listenersForUserId);
-        }
+    @Nullable
+    RemoteCallbackList<IOnSafetyCenterDataChangedListener> getListeners(@UserIdInt int userId) {
+        return mSafetyCenterDataChangedListeners.get(userId);
     }
 }

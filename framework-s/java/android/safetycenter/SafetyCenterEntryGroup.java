@@ -64,18 +64,12 @@ public final class SafetyCenterEntryGroup implements Parcelable {
                 }
             };
 
-    @NonNull
-    private final String mId;
-    @NonNull
-    private final CharSequence mTitle;
-    @Nullable
-    private final CharSequence mSummary;
-    @SafetyCenterEntry.EntrySeverityLevel
-    private final int mSeverityLevel;
-    @SafetyCenterEntry.SeverityUnspecifiedIconType
-    private final int mSeverityUnspecifiedIconType;
-    @NonNull
-    private final List<SafetyCenterEntry> mEntries;
+    @NonNull private final String mId;
+    @NonNull private final CharSequence mTitle;
+    @Nullable private final CharSequence mSummary;
+    @SafetyCenterEntry.EntrySeverityLevel private final int mSeverityLevel;
+    @SafetyCenterEntry.SeverityUnspecifiedIconType private final int mSeverityUnspecifiedIconType;
+    @NonNull private final List<SafetyCenterEntry> mEntries;
 
     private SafetyCenterEntryGroup(
             @NonNull String id,
@@ -189,24 +183,23 @@ public final class SafetyCenterEntryGroup implements Parcelable {
     /** Builder class for {@link SafetyCenterEntryGroup} */
     public static final class Builder {
 
-        @NonNull
-        private String mId;
-        @NonNull
-        private CharSequence mTitle;
-        @Nullable
-        private CharSequence mSummary;
+        @NonNull private String mId;
+        @NonNull private CharSequence mTitle;
+        @Nullable private CharSequence mSummary;
+
         @SafetyCenterEntry.EntrySeverityLevel
         private int mSeverityLevel = SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNKNOWN;
+
         @SafetyCenterEntry.SeverityUnspecifiedIconType
         private int mSeverityUnspecifiedIconType =
                 SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_ICON;
-        @NonNull
-        private List<SafetyCenterEntry> mEntries = new ArrayList<>();
+
+        @NonNull private List<SafetyCenterEntry> mEntries = new ArrayList<>();
 
         /**
          * Creates a {@link Builder} for a {@link SafetyCenterEntryGroup}.
          *
-         * @param id    a unique encoded string ID, see {@link #getId} for details
+         * @param id a unique encoded string ID, see {@link #getId} for details
          * @param title a title for this group of entries
          */
         public Builder(@NonNull String id, @NonNull CharSequence title) {
@@ -253,7 +246,7 @@ public final class SafetyCenterEntryGroup implements Parcelable {
          */
         @NonNull
         public Builder setSeverityLevel(@SafetyCenterEntry.EntrySeverityLevel int severityLevel) {
-            mSeverityLevel = severityLevel;
+            mSeverityLevel = validateEntrySeverityLevel(severityLevel);
             return this;
         }
 
@@ -264,7 +257,8 @@ public final class SafetyCenterEntryGroup implements Parcelable {
         @NonNull
         public Builder setSeverityUnspecifiedIconType(
                 @SafetyCenterEntry.SeverityUnspecifiedIconType int severityUnspecifiedIconType) {
-            mSeverityUnspecifiedIconType = severityUnspecifiedIconType;
+            mSeverityUnspecifiedIconType =
+                    validateSeverityUnspecifiedIconType(severityUnspecifiedIconType);
             return this;
         }
 
@@ -282,8 +276,43 @@ public final class SafetyCenterEntryGroup implements Parcelable {
         @NonNull
         public SafetyCenterEntryGroup build() {
             return new SafetyCenterEntryGroup(
-                    mId, mTitle, mSummary, mSeverityLevel, mSeverityUnspecifiedIconType,
+                    mId,
+                    mTitle,
+                    mSummary,
+                    mSeverityLevel,
+                    mSeverityUnspecifiedIconType,
                     unmodifiableList(new ArrayList<>(mEntries)));
         }
+    }
+
+    @SafetyCenterEntry.EntrySeverityLevel
+    private static int validateEntrySeverityLevel(int value) {
+        switch (value) {
+            case SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNKNOWN:
+            case SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNSPECIFIED:
+            case SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_OK:
+            case SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_RECOMMENDATION:
+            case SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_CRITICAL_WARNING:
+                return value;
+            default:
+        }
+        throw new IllegalArgumentException(
+                String.format(
+                        "Unexpected EntrySeverityLevel for SafetyCenterEntryGroup: %s", value));
+    }
+
+    @SafetyCenterEntry.SeverityUnspecifiedIconType
+    private static int validateSeverityUnspecifiedIconType(int value) {
+        switch (value) {
+            case SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_ICON:
+            case SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_PRIVACY:
+            case SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_RECOMMENDATION:
+                return value;
+            default:
+        }
+        throw new IllegalArgumentException(
+                String.format(
+                        "Unexpected SeverityUnspecifiedIconType for SafetyCenterEntryGroup: %s",
+                        value));
     }
 }

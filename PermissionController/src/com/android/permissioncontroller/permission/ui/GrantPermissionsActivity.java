@@ -41,6 +41,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
@@ -112,11 +113,11 @@ public class GrantPermissionsActivity extends SettingsActivity
     private static final int APP_PERMISSION_REQUEST_CODE = 1;
 
     /**
-     * A map of the currently shown GrantPermissionsActivity for this user, per package.
+     * A map of the currently shown GrantPermissionsActivity for this user, per package and task ID
      */
     @GuardedBy("sCurrentGrantRequests")
-    private static final Map<String, GrantPermissionsActivity> sCurrentGrantRequests =
-            new HashMap<>();
+    private static final Map<Pair<String, Integer>, GrantPermissionsActivity>
+            sCurrentGrantRequests = new HashMap<>();
 
     /** Unique Id of a request */
     private long mSessionId;
@@ -151,6 +152,8 @@ public class GrantPermissionsActivity extends SettingsActivity
     private int mResultCode = Integer.MAX_VALUE;
     /** Package that shall have permissions granted */
     private String mTargetPackage;
+    /** A key representing this activity, defined by the target package and task ID */
+    private Pair<String, Integer> mKey;
     private int mTotalRequests = 0;
     private int mCurrentRequestIdx = 0;
     private float mOriginalDimAmount;
@@ -212,19 +215,20 @@ public class GrantPermissionsActivity extends SettingsActivity
         }
 
         synchronized (sCurrentGrantRequests) {
-            if (!sCurrentGrantRequests.containsKey(mTargetPackage)) {
-                sCurrentGrantRequests.put(mTargetPackage, this);
+            mKey = new Pair<>(mTargetPackage, getTaskId());
+            if (!sCurrentGrantRequests.containsKey(mKey)) {
+                sCurrentGrantRequests.put(mKey, this);
+                finishSystemStartedDialogsOnOtherTasksLocked();
             } else if (getCallingPackage() == null) {
                 // The trampoline doesn't require results. Delegate, and finish.
-                sCurrentGrantRequests.get(mTargetPackage).onNewFollowerActivity(null,
+                sCurrentGrantRequests.get(mKey).onNewFollowerActivity(null,
                         mRequestedPermissions, mLegacyAccessPermissions);
                 finishAfterTransition();
                 return;
             } else {
                 mDelegated = true;
-                sCurrentGrantRequests.get(mTargetPackage).onNewFollowerActivity(this,
+                sCurrentGrantRequests.get(mKey).onNewFollowerActivity(this,
                         mRequestedPermissions, mLegacyAccessPermissions);
-                return;
             }
         }
 
@@ -355,7 +359,7 @@ public class GrantPermissionsActivity extends SettingsActivity
     }
 
     private void onRequestInfoLoad(List<RequestInfo> requests) {
-        if (!mViewModel.getRequestInfosLiveData().isInitialized() || isResultSet()) {
+        if (!mViewModel.getRequestInfosLiveData().isInitialized() || isResultSet() || mDelegated) {
             return;
         } else if (requests == null) {
             finishAfterTransition();
@@ -394,6 +398,7 @@ public class GrantPermissionsActivity extends SettingsActivity
         CharSequence appLabel = KotlinUtils.INSTANCE.getPackageLabel(getApplication(),
                 mTargetPackage, Process.myUserHandle());
 
+        Icon icon = null;
         int messageId = 0;
         switch(info.getMessage()) {
             case FG_MESSAGE:
@@ -415,9 +420,11 @@ public class GrantPermissionsActivity extends SettingsActivity
                 messageId = Utils.getContinueRequest(info.getGroupName());
                 break;
             case STORAGE_SUPERGROUP_MESSAGE_Q_TO_S:
+                icon = Icon.createWithResource(getPackageName(), R.drawable.perm_group_storage);
                 messageId = R.string.permgrouprequest_storage_q_to_s;
                 break;
             case STORAGE_SUPERGROUP_MESSAGE_PRE_Q:
+                icon = Icon.createWithResource(getPackageName(), R.drawable.perm_group_storage);
                 messageId = R.string.permgrouprequest_storage_pre_q;
                 break;
         }
@@ -459,9 +466,9 @@ public class GrantPermissionsActivity extends SettingsActivity
             }
         }
 
-        Icon icon = null;
         try {
-            icon = Icon.createWithResource(info.getGroupInfo().getPackageName(),
+            icon = icon != null ? icon : Icon.createWithResource(
+                    info.getGroupInfo().getPackageName(),
                     info.getGroupInfo().getIcon());
         } catch (Resources.NotFoundException e) {
             Log.e(LOG_TAG, "Cannot load icon for group" + info.getGroupName(), e);
@@ -522,6 +529,10 @@ public class GrantPermissionsActivity extends SettingsActivity
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        if (mViewHandler == null || mViewModel == null) {
+            return;
+        }
 
         mViewHandler.saveInstanceState(outState);
         mViewModel.saveInstanceState(outState);
@@ -619,9 +630,9 @@ public class GrantPermissionsActivity extends SettingsActivity
      */
     private void removeActivityFromMap() {
         synchronized (sCurrentGrantRequests) {
-            GrantPermissionsActivity top = sCurrentGrantRequests.get(mTargetPackage);
+            GrantPermissionsActivity top = sCurrentGrantRequests.get(mKey);
             if (this.equals(top)) {
-                sCurrentGrantRequests.remove(mTargetPackage);
+                sCurrentGrantRequests.remove(mKey);
             } else if (top != null) {
                 top.mFollowerActivities.remove(this);
             }
@@ -781,5 +792,23 @@ public class GrantPermissionsActivity extends SettingsActivity
 
     private boolean isResultSet() {
         return mResultCode != Integer.MAX_VALUE;
+    }
+
+    /**
+     * If there is another system-shown dialog on another task, that is not being relied upon by an
+     * app-defined dialogs, these other dialogs should be finished.
+     */
+    @GuardedBy("sCurrentGrantRequests")
+    private void finishSystemStartedDialogsOnOtherTasksLocked() {
+        for (Pair<String, Integer> key : sCurrentGrantRequests.keySet()) {
+            if (key.first.equals(mTargetPackage) && key.second != getTaskId()) {
+                GrantPermissionsActivity other = sCurrentGrantRequests.get(key);
+                if (other.getIntent().getAction()
+                        .equals(PackageManager.ACTION_REQUEST_PERMISSIONS_FOR_OTHER)
+                        && other.mFollowerActivities.isEmpty()) {
+                    other.finish();
+                }
+            }
+        }
     }
 }

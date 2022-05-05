@@ -79,13 +79,12 @@ public final class SafetySourceIssue implements Parcelable {
     @IntDef(
             prefix = {"ISSUE_CATEGORY_"},
             value = {
-                    ISSUE_CATEGORY_DEVICE,
-                    ISSUE_CATEGORY_ACCOUNT,
-                    ISSUE_CATEGORY_GENERAL,
+                ISSUE_CATEGORY_DEVICE,
+                ISSUE_CATEGORY_ACCOUNT,
+                ISSUE_CATEGORY_GENERAL,
             })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface IssueCategory {
-    }
+    public @interface IssueCategory {}
 
     @NonNull
     public static final Creator<SafetySourceIssue> CREATOR =
@@ -99,8 +98,8 @@ public final class SafetySourceIssue implements Parcelable {
                     int severityLevel = in.readInt();
                     int issueCategory = in.readInt();
                     List<Action> actions = requireNonNull(in.createTypedArrayList(Action.CREATOR));
-                    PendingIntent onDismissPendingIntent = in.readTypedObject(
-                            PendingIntent.CREATOR);
+                    PendingIntent onDismissPendingIntent =
+                            in.readTypedObject(PendingIntent.CREATOR);
                     String issueTypeId = in.readString();
                     Builder builder =
                             new Builder(id, title, summary, severityLevel, issueTypeId)
@@ -119,23 +118,15 @@ public final class SafetySourceIssue implements Parcelable {
                 }
             };
 
-    @NonNull
-    private final String mId;
-    @NonNull
-    private final CharSequence mTitle;
-    @Nullable
-    private final CharSequence mSubtitle;
-    @NonNull
-    private final CharSequence mSummary;
-    @SafetySourceData.SeverityLevel
-    private final int mSeverityLevel;
+    @NonNull private final String mId;
+    @NonNull private final CharSequence mTitle;
+    @Nullable private final CharSequence mSubtitle;
+    @NonNull private final CharSequence mSummary;
+    @SafetySourceData.SeverityLevel private final int mSeverityLevel;
     private final List<Action> mActions;
-    @Nullable
-    private final PendingIntent mOnDismissPendingIntent;
-    @IssueCategory
-    private final int mIssueCategory;
-    @NonNull
-    private final String mIssueTypeId;
+    @Nullable private final PendingIntent mOnDismissPendingIntent;
+    @IssueCategory private final int mIssueCategory;
+    @NonNull private final String mIssueTypeId;
 
     private SafetySourceIssue(
             @NonNull String id,
@@ -322,17 +313,6 @@ public final class SafetySourceIssue implements Parcelable {
                 + '}';
     }
 
-    @IssueCategory
-    private static int validateIssueCategory(int value) {
-        switch (value) {
-            case ISSUE_CATEGORY_DEVICE:
-            case ISSUE_CATEGORY_ACCOUNT:
-            case ISSUE_CATEGORY_GENERAL:
-                return value;
-        }
-        throw new IllegalArgumentException(String.format("Unexpected IssueCategory: %s", value));
-    }
-
     /**
      * Data for an action supported from a safety issue {@link SafetySourceIssue} in the Safety
      * Center page.
@@ -370,15 +350,11 @@ public final class SafetySourceIssue implements Parcelable {
                     }
                 };
 
-        @NonNull
-        private final String mId;
-        @NonNull
-        private final CharSequence mLabel;
-        @NonNull
-        private final PendingIntent mPendingIntent;
+        @NonNull private final String mId;
+        @NonNull private final CharSequence mLabel;
+        @NonNull private final PendingIntent mPendingIntent;
         private final boolean mWillResolve;
-        @Nullable
-        private final CharSequence mSuccessMessage;
+        @Nullable private final CharSequence mSuccessMessage;
 
         private Action(
                 @NonNull String id,
@@ -490,19 +466,16 @@ public final class SafetySourceIssue implements Parcelable {
         /** Builder class for {@link Action}. */
         public static final class Builder {
 
-            @NonNull
-            private final String mId;
-            @NonNull
-            private final CharSequence mLabel;
-            @NonNull
-            private final PendingIntent mPendingIntent;
+            @NonNull private final String mId;
+            @NonNull private final CharSequence mLabel;
+            @NonNull private final PendingIntent mPendingIntent;
             private boolean mWillResolve = false;
-            @Nullable
-            private CharSequence mSuccessMessage;
+            @Nullable private CharSequence mSuccessMessage;
 
             /** Creates a {@link Builder} for an {@link Action}. */
             public Builder(
-                    @NonNull String id, @NonNull CharSequence label,
+                    @NonNull String id,
+                    @NonNull CharSequence label,
                     @NonNull PendingIntent pendingIntent) {
                 mId = requireNonNull(id);
                 mLabel = requireNonNull(label);
@@ -542,24 +515,16 @@ public final class SafetySourceIssue implements Parcelable {
     /** Builder class for {@link SafetySourceIssue}. */
     public static final class Builder {
 
-        @NonNull
-        private final String mId;
-        @NonNull
-        private final CharSequence mTitle;
-        @NonNull
-        private final CharSequence mSummary;
-        @SafetySourceData.SeverityLevel
-        private final int mSeverityLevel;
-        @NonNull
-        private final String mIssueTypeId;
+        @NonNull private final String mId;
+        @NonNull private final CharSequence mTitle;
+        @NonNull private final CharSequence mSummary;
+        @SafetySourceData.SeverityLevel private final int mSeverityLevel;
+        @NonNull private final String mIssueTypeId;
         private final List<Action> mActions = new ArrayList<>();
 
-        @Nullable
-        private CharSequence mSubtitle;
-        @IssueCategory
-        private int mIssueCategory = ISSUE_CATEGORY_GENERAL;
-        @Nullable
-        private PendingIntent mOnDismissPendingIntent;
+        @Nullable private CharSequence mSubtitle;
+        @IssueCategory private int mIssueCategory = ISSUE_CATEGORY_GENERAL;
+        @Nullable private PendingIntent mOnDismissPendingIntent;
 
         /** Creates a {@link Builder} for a {@link SafetySourceIssue}. */
         public Builder(
@@ -571,7 +536,7 @@ public final class SafetySourceIssue implements Parcelable {
             this.mId = requireNonNull(id);
             this.mTitle = requireNonNull(title);
             this.mSummary = requireNonNull(summary);
-            this.mSeverityLevel = SafetySourceData.validateSeverityLevelForIssue(severityLevel);
+            this.mSeverityLevel = validateSeverityLevel(severityLevel);
             this.mIssueTypeId = requireNonNull(issueTypeId);
         }
 
@@ -629,10 +594,8 @@ public final class SafetySourceIssue implements Parcelable {
         /** Creates the {@link SafetySourceIssue} defined by this {@link Builder}. */
         @NonNull
         public SafetySourceIssue build() {
-            List<SafetySourceIssue.Action> actions = unmodifiableList(
-                    new ArrayList<>(mActions));
-            checkArgument(!actions.isEmpty(),
-                    "Safety source issue must contain at least 1 action");
+            List<SafetySourceIssue.Action> actions = unmodifiableList(new ArrayList<>(mActions));
+            checkArgument(!actions.isEmpty(), "Safety source issue must contain at least 1 action");
             checkArgument(
                     actions.size() <= 2,
                     "Safety source issue must not contain more than 2 actions");
@@ -647,5 +610,35 @@ public final class SafetySourceIssue implements Parcelable {
                     mOnDismissPendingIntent,
                     mIssueTypeId);
         }
+    }
+
+    @SafetySourceData.SeverityLevel
+    private static int validateSeverityLevel(int value) {
+        switch (value) {
+            case SafetySourceData.SEVERITY_LEVEL_INFORMATION:
+            case SafetySourceData.SEVERITY_LEVEL_RECOMMENDATION:
+            case SafetySourceData.SEVERITY_LEVEL_CRITICAL_WARNING:
+                return value;
+            case SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED:
+                throw new IllegalArgumentException(
+                        "SeverityLevel for SafetySourceIssue must not be "
+                                + "SEVERITY_LEVEL_UNSPECIFIED");
+            default:
+        }
+        throw new IllegalArgumentException(
+                String.format("Unexpected SeverityLevel for SafetySourceIssue: %s", value));
+    }
+
+    @IssueCategory
+    private static int validateIssueCategory(int value) {
+        switch (value) {
+            case ISSUE_CATEGORY_DEVICE:
+            case ISSUE_CATEGORY_ACCOUNT:
+            case ISSUE_CATEGORY_GENERAL:
+                return value;
+            default:
+        }
+        throw new IllegalArgumentException(
+                String.format("Unexpected IssueCategory for SafetySourceIssue: %s", value));
     }
 }

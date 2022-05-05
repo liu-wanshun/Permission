@@ -21,112 +21,66 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import static java.util.Objects.requireNonNull;
 
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.safetycenter.SafetyCenterIssue;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.StyleRes;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import com.android.permissioncontroller.R;
-import com.android.permissioncontroller.safetycenter.ui.model.SafetyCenterViewModel;
 
 /** A preference that displays a card representing a {@link SafetyCenterIssue}. */
 public class IssueCardPreference extends Preference {
 
     public static final String TAG = IssueCardPreference.class.getSimpleName();
 
-    private final SafetyCenterViewModel mSafetyCenterViewModel;
     private final SafetyCenterIssue mIssue;
 
-    public IssueCardPreference(
-            Context context,
-            SafetyCenterViewModel safetyCenterViewModel,
-            SafetyCenterIssue issue) {
+    public IssueCardPreference(Context context, SafetyCenterIssue issue) {
         super(context);
         setLayoutResource(R.layout.preference_issue_card);
 
-        mSafetyCenterViewModel = requireNonNull(safetyCenterViewModel);
         mIssue = requireNonNull(issue);
     }
 
+    // TODO: Add real todos with bug numbers once UI bug breakdown is finished.
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        configureDismissButton(holder.findViewById(R.id.issue_card_dismiss_btn));
+        ((ImageView) holder.findViewById(R.id.issue_card_banner_icon)).setImageResource(
+                toSeverityLevel(mIssue.getSeverityLevel()).getWarningCardIconResId());
+
+        // TODO: Fire off real dismissal (to the API)
+        holder.findViewById(R.id.issue_card_dismiss_btn).setOnClickListener(
+                (view) -> this.getParent().removePreference(this));
 
         ((TextView) holder.findViewById(R.id.issue_card_title)).setText(mIssue.getTitle());
+        ((TextView) holder.findViewById(R.id.issue_card_subtitle)).setText(mIssue.getSubtitle());
         ((TextView) holder.findViewById(R.id.issue_card_summary)).setText(mIssue.getSummary());
-
-        CharSequence subtitle = mIssue.getSubtitle();
-        if (TextUtils.isEmpty(subtitle)) {
-            holder.findViewById(R.id.issue_card_subtitle).setVisibility(View.GONE);
-        } else {
-            ((TextView) holder.findViewById(R.id.issue_card_subtitle)).setText(subtitle);
-        }
 
         LinearLayout buttonList =
                 ((LinearLayout) holder.findViewById(R.id.issue_card_action_button_list));
         buttonList.removeAllViews(); // This view may be recycled from another issue
-        boolean isFirstButton = true;
         for (SafetyCenterIssue.Action action : mIssue.getActions()) {
-            buttonList.addView(buildActionButton(
-                    action, holder.itemView.getContext(), isFirstButton));
-            isFirstButton = false;
-        }
-    }
-
-    private void configureDismissButton(View dismissButton) {
-        if (mIssue.isDismissible()) {
-            dismissButton.setOnClickListener(
-                    mIssue.shouldConfirmDismissal()
-                            ? new ConfirmDismissalOnClickListener()
-                            : new DismissOnClickListener());
-            dismissButton.setVisibility(View.VISIBLE);
-        } else {
-            dismissButton.setVisibility(View.GONE);
-        }
-    }
-
-    private class DismissOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            mSafetyCenterViewModel.dismissIssue(mIssue);
-        }
-    }
-
-    private class ConfirmDismissalOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            new AlertDialog.Builder(getContext())
-                    .setTitle(R.string.safety_center_issue_card_dismiss_confirmation_title)
-                    .setPositiveButton(
-                            R.string.safety_center_issue_card_confirm_dismiss_button,
-                            (dialog, which) -> mSafetyCenterViewModel.dismissIssue(mIssue))
-                    .setNegativeButton(
-                            R.string.safety_center_issue_card_cancel_dismiss_button, null)
-                    .create()
-                    .show();
+            buttonList.addView(buildActionButton(action, holder.itemView.getContext()));
         }
     }
 
     private Button buildActionButton(
             SafetyCenterIssue.Action action,
-            Context context,
-            boolean isFirstButton) {
-        Button button = new Button(context, null,
-                0, getStyleFromSeverity(mIssue.getSeverityLevel(), isFirstButton));
+            Context context) {
+        Button button = new Button(
+                context, null, 0, R.style.SafetyCenter_IssueCard_ActionButton);
+
         button.setText(action.getLabel());
         button.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         button.setOnClickListener((view) -> {
@@ -141,23 +95,18 @@ public class IssueCardPreference extends Preference {
         return button;
     }
 
-    @StyleRes
-    private int getStyleFromSeverity(int issueSeverityLevel, boolean isFirstButton) {
-        if (!isFirstButton) {
-            return R.style.SafetyCenter_ActionButton;
-        }
-
+    private static SeverityLevel toSeverityLevel(int issueSeverityLevel) {
         switch (issueSeverityLevel) {
             case SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_OK:
-                return R.style.SafetyCenter_IssueCard_ActionButton_Info;
+                return SeverityLevel.INFORMATION;
             case SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_RECOMMENDATION:
-                return R.style.SafetyCenter_IssueCard_ActionButton_Recommendation;
+                return SeverityLevel.RECOMMENDATION;
             case SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_CRITICAL_WARNING:
-                return  R.style.SafetyCenter_IssueCard_ActionButton_Critical;
+                return SeverityLevel.CRITICAL_WARNING;
         }
         throw new IllegalArgumentException(
                 String.format("Unexpected SafetyCenterIssue.IssueSeverityLevel: %s",
                         issueSeverityLevel));
-
     }
+
 }

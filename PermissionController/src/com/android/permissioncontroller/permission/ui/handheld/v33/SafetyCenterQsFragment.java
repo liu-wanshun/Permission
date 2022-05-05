@@ -34,7 +34,6 @@ import android.os.UserHandle;
 import android.permission.PermissionGroupUsage;
 import android.permission.PermissionManager;
 import android.util.ArrayMap;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,12 +46,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.ColorInt;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceScreen;
 import androidx.transition.AutoTransition;
 import androidx.transition.TransitionManager;
 
@@ -81,8 +77,6 @@ public class SafetyCenterQsFragment extends Fragment {
     private List<PermissionGroupUsage> mPermGroupUsages;
     private SafetyCenterQsViewModel mViewModel;
     private View mRootView;
-    private PreferenceFragmentCompat mPrefsFrag;
-    private PreferenceScreen mPrefs;
 
     static {
         sToggleButtons.put(CAMERA, R.id.camera_toggle);
@@ -139,6 +133,8 @@ public class SafetyCenterQsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup) inflater.inflate(R.layout.safety_center_qs, container, false);
+        root.findViewById(R.id.security_settings_button).setOnClickListener(
+                (v) -> mViewModel.navigateToSecuritySettings(this));
         mRootView = root;
         if (mPermGroupUsages.isEmpty()) {
             mRootView.setVisibility(View.VISIBLE);
@@ -146,24 +142,6 @@ public class SafetyCenterQsFragment extends Fragment {
         } else {
             mRootView.setVisibility(View.GONE);
         }
-        root.setBackgroundColor(android.R.color.background_dark);
-        View securitySettings = root.findViewById(R.id.security_settings_button);
-        securitySettings.setOnClickListener((v) -> mViewModel.navigateToSecuritySettings(this));
-        ((TextView) securitySettings.findViewById(R.id.toggle_sensor_name))
-                .setText(R.string.settings);
-        securitySettings.findViewById(R.id.toggle_sensor_status).setVisibility(View.GONE);
-        ((ImageView) securitySettings.findViewById(R.id.toggle_sensor_icon)).setImageDrawable(
-                getContext().getDrawable(R.drawable.settings_gear));
-        securitySettings.findViewById(R.id.arrow_icon).setVisibility(View.VISIBLE);
-        ((ImageView) securitySettings.findViewById(R.id.arrow_icon)).setImageDrawable(
-                getContext().getDrawable(R.drawable.forward_arrow));
-        mPrefsFrag = (PreferenceFragmentCompat)
-                getChildFragmentManager().findFragmentById(R.id.safety_prefs);
-        mPrefsFrag.addPreferencesFromResource(R.xml.safety_center_qs_prefs);
-        mPrefs = mPrefsFrag.getPreferenceScreen();
-
-        setSensorToggleState(new ArrayMap<>(), root);
-        addPermissionUsageInformation(root);
         return root;
     }
 
@@ -507,35 +485,20 @@ public class SafetyCenterQsFragment extends Fragment {
                     !sensorState.containsKey(groupName) || sensorState.get(groupName);
 
             Drawable icon;
-            int colorPrimary = getTextColor(true, sensorEnabled);
-            int colorSecondary = getTextColor(false, sensorEnabled);
             if (sensorEnabled) {
                 blockedStatus.setText(R.string.available);
                 toggle.setBackgroundResource(R.drawable.safety_center_button_background);
-                icon = KotlinUtils.INSTANCE.getPermGroupIcon(getContext(), groupName, colorPrimary);
+                icon = KotlinUtils.INSTANCE.getPermGroupIcon(getContext(), groupName, Color.BLACK);
+                groupLabel.setTextColor(Color.BLACK);
             } else {
                 blockedStatus.setText(R.string.blocked);
                 toggle.setBackgroundResource(R.drawable.safety_center_button_background_dark);
                 icon = getContext().getDrawable(getBlockedIconResId(groupName));
-                icon.setTint(colorPrimary);
+                icon.setTint(Color.LTGRAY);
+                groupLabel.setTextColor(Color.LTGRAY);
             }
-            blockedStatus.setTextColor(colorSecondary);
-            groupLabel.setTextColor(colorPrimary);
             iconView.setImageDrawable(icon);
         }
-    }
-
-    @ColorInt
-    private Integer getTextColor(boolean primary, boolean inverse) {
-        int primaryAttribute = inverse ? android.R.attr.textColorPrimaryInverse
-                : android.R.attr.textColorPrimary;
-        int secondaryAttribute = inverse ? android.R.attr.textColorSecondaryInverse
-                : android.R.attr.textColorSecondary;
-        int attribute = primary ? primaryAttribute : secondaryAttribute;
-        TypedValue value = new TypedValue();
-        getContext().getTheme().resolveAttribute(attribute, value, true);
-        int colorRes = value.resourceId != 0 ? value.resourceId : value.data;
-        return getContext().getColor(colorRes);
     }
 
     private static int getRemovePermissionText(String permissionGroup) {
@@ -558,16 +521,5 @@ public class SafetyCenterQsFragment extends Fragment {
                 return R.drawable.ic_location_blocked;
         }
         return -1;
-    }
-
-    /**
-     * A PreferenceFragment to be nested inside the SafetyCenterQsFragment. Will hold Safety Center
-     * Preferences, similar to the full settings screen.
-     */
-    public static class SafetyPreferenceFragment extends PreferenceFragmentCompat {
-
-        @Override
-        public void onCreatePreferences(Bundle bundle, String s) {
-        }
     }
 }
