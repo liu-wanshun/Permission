@@ -277,6 +277,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Məxfiliyinizi qorumaq üçün icazələr silinib"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> arxa fonda məkanınıza daxil oldu"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Bu tətbiq daima məkana daxil ola bilər. Dəyişmək üçün klikləyin."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Bildiriş dinləmə girişi olan tətbiqi nəzərdən keçirin"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> bütün bildirişlərinizi oxuya bilər."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Bu tətbiq bütün bildirişlərinizi oxuya bilər."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Girişi silin"</string>
+    <!-- no translation found for notification_listener_review_app_button_label (4452381557379652037) -->
+    <skip />
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Giriş silindi"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"Əlçatanlıq girişi olan tətbiqi nəzərdən keçirin"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"<xliff:g id="APP_NAME">%s</xliff:g> ekrandakı bütün məzmunu oxuya, məzmunu digər tətbiqlər üzərində göstərə və qarşılıqlı əlaqələrinizi izləyə bilər."</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"Bu tətbiq ekrandakı bütün məzmunu oxuya, məzmunu digər tətbiqlər üzərində göstərə və qarşılıqlı əlaqələrinizi izləyə bilər."</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"Girişi silin"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"Əlçatanlıq girişi olan tətbiqlərə baxın"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"Giriş silindi"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Məxfiliyi qorumaq üçün tətbiq icazələri silindi"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> bir neçə aydır ki, istifadə edilməyib. Nəzərdən keçirmək üçün toxunun."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> və digər 1 tətbiq bir neçə aydır ki, istifadə edilməyib. Nəzərdən keçirmək üçün toxunun."</string>
@@ -503,6 +516,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Güvənlik və məxfilik"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"Skan edin"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Qapadın"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Bu siqnal qapadılsın?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Qapadın"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Ləğv edin"</string>
     <string name="security_settings" msgid="3808106921175271317">"Təhlükəsizlik Ayarları"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"Sensor İcazələri"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"Məxfilik Nizamlayıcıları"</string>

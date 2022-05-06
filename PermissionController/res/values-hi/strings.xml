@@ -277,6 +277,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"आपकी निजता की सुरक्षा के लिए अनुमतियां हटाई गई हैं"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> अब बैकग्राउंड में आपकी जगह की जानकारी ऐक्सेस कर सकता है"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"यह ऐप्लिकेशन हमेशा आपकी जगह की जानकारी ऐक्सेस कर सकता है. बदलने के लिए टैप करें."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"सूचना सुनने वाली सुविधा के ऐक्सेस के साथ ऐप की समीक्षा करें"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> आपकी सभी सूचनाओं को पढ़ सकता है."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"यह ऐप्लिकेशन आपकी सभी सूचनाओं को पढ़ सकता है."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"ऐक्सेस हटाएं"</string>
+    <!-- no translation found for notification_listener_review_app_button_label (4452381557379652037) -->
+    <skip />
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"ऐक्सेस हटाया गया"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"ऐसे ऐप्लिकेशन की समीक्षा करें जिसके पास सुलभता का ऐक्सेस है"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"<xliff:g id="APP_NAME">%s</xliff:g>, स्क्रीन पर मौजूद सभी कॉन्टेंट को पढ़ सकता है. इसके अलावा, यह दूसरे ऐप्लिकेशन पर कॉन्टेंट को दिखा सकता है और आपकी गतिविधि को ट्रैक कर सकता है."</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"यह ऐप्लिकेशन, स्क्रीन पर मौजूद सभी कॉन्टेंट को पढ़ सकता है. इसके अलावा, यह दूसरे ऐप्लिकेशन पर कॉन्टेंट को दिखा सकता है और आपकी गतिविधि को ट्रैक कर सकता है."</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"ऐक्सेस हटाएं"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"ऐसे ऐप्लिकेशन देखें जिनके पास सुलभता का ऐक्सेस है"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"ऐक्सेस हटाया गया"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"निजता की सुरक्षा के लिए ऐप्लिकेशन की अनुमतियां हटाई गई हैं"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> का कुछ महीनों से इस्तेमाल नहीं किया गया है. देखने के लिए टैप करें."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> और 1 दूसरी ऐप्लिकेशन का कुछ महीनों से इस्तेमाल नहीं किया गया है. देखने के लिए टैप करें."</string>
@@ -503,6 +516,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"सुरक्षा और निजता"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"स्कैन करें"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"खारिज करें"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"क्या इस चेतावनी को खारिज करना है?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"खारिज करें"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"रद्द करें"</string>
     <string name="security_settings" msgid="3808106921175271317">"सुरक्षा सेटिंग"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"सेंसर ऐक्सेस करने की अनुमति"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"निजता सेटिंग"</string>

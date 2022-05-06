@@ -277,6 +277,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"तुमच्या गोपनीयतेचे संरक्षण करण्यासाठी परवानग्या काढून टाकल्या आहेत"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> ने बॅकग्राउंडमध्ये तुमचे स्थान मिळवले"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"हे अ‍ॅप नेहमी तुमचे स्थान अ‍ॅक्सेस करू शकते. बदलण्यासाठी टॅप करा."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"सूचना श्रोता अ‍ॅक्सेस असलेल्या अ‍ॅपचे पुनरावलोकन करा"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> तुमच्या सर्व सूचना वाचू शकते."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"हे अ‍ॅप तुमच्या सर्व सूचना वाचू शकते."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"अ‍ॅक्सेस काढून टाका"</string>
+    <!-- no translation found for notification_listener_review_app_button_label (4452381557379652037) -->
+    <skip />
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"अ‍ॅक्सेस काढून टाकला"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"अ‍ॅक्सेसिबिलिटी अ‍ॅक्सेससह अ‍ॅपचे पुनरावलोकन करा"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"<xliff:g id="APP_NAME">%s</xliff:g> हे स्क्रीनवरील सर्व आशय वाचू शकते, इतर अ‍ॅप्सवर आशय प्रदर्शित करू शकते आणि तुमच्या संवादाचा मागोवा ठेवू शकते."</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"हे अ‍ॅप स्क्रीनवरील सर्व आशय वाचू शकते, इतर अ‍ॅप्सवर आशय प्रदर्शित करू शकते आणि तुमच्या संवादाचा मागोवा ठेवू शकते."</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"अ‍ॅक्सेस काढून टाका"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"अ‍ॅक्सेसिबिलिटी अ‍ॅक्सेस असलेली अ‍ॅप्स पहा"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"अ‍ॅक्सेस काढून टाकला"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"गोपनीयता संरक्षित करण्यासाठी अ‍ॅप परवानग्या काढून टाकल्या"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> काही महिन्यांपासून वापरलेले नाही. परीक्षण करण्यासाठी टॅप करा."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> आणि एक इतर ॲप काही महिन्यांपासून वापरलेले नाही. परीक्षण करण्यासाठी टॅप करा."</string>
@@ -503,6 +516,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"सुरक्षा आणि गोपनीयता"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"स्कॅन करा"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"डिसमिस करा"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"ही सूचना डिसमिस करायची का?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"डिसमिस करा"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"रद्द करा"</string>
     <string name="security_settings" msgid="3808106921175271317">"सुरक्षा सेटिंग्ज"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"सेन्सर परवानग्या"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"गोपनीयता नियंत्रणे"</string>

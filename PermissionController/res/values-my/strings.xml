@@ -277,6 +277,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"သင့်ပုဂ္ဂိုလ်ရေးလုံခြုံမှုကို ကာကွယ်ရန် ခွင့်ပြုချက်များ ဖယ်ရှားလိုက်သည်"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> သည် နောက်ခံတွင် သင့်တည်နေရာကို ရရှိထားသည်"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"ဤအက်ပ်က သင်၏တည်နေရာကို အမြဲဝင်ကြည့်နိုင်ပါသည်။ ပြောင်းရန် တို့ပါ။"</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"အကြောင်းကြားချက် နားထောင်ခွင့်ပါသော အက်ပ်ကို စိစစ်ရန်"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> က သင့်အကြောင်းကြားချက်အားလုံးကို ဖတ်နိုင်သည်။"</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"ဤအက်ပ်က သင်၏အကြောင်းကြားချက်အားလုံးကို ဖတ်နိုင်သည်။"</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"သုံးခွင့် ဖယ်ရှားရန်"</string>
+    <!-- no translation found for notification_listener_review_app_button_label (4452381557379652037) -->
+    <skip />
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"သုံးခွင့် ဖယ်ရှားလိုက်ပြီ"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"အများသုံးနိုင်ခွင့်ရှိသည့် အက်ပ်ကို ပြန်ကြည့်ခြင်း"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"<xliff:g id="APP_NAME">%s</xliff:g> သည် ဖန်သားပြင်ရှိ အကြောင်းအရာအားလုံးကို ဖတ်ခြင်း၊ အခြားအက်ပ်များပေါ်ရှိ အကြောင်းအရာများကို ပြခြင်းနှင့် သင်၏ပြန်လှန်တုံ့ပြန်မှုများကို ခြေရာခံခြင်းတို့ ပြုလုပ်နိုင်သည်။"</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"ဤအက်ပ်သည် ဖန်သားပြင်ပေါ်ရှိ အကြောင်းအရာအားလုံးကို ဖတ်ခြင်း၊ အခြားအက်ပ်များပေါ်ရှိ အကြောင်းအရာများကို ပြခြင်းနှင့် သင်၏ပြန်လှန်တုံ့ပြန်မှုများကို ခြေရာခံခြင်းတို့ ပြုလုပ်နိုင်သည်။"</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"သုံးခွင့်ကို ဖယ်ရှားရန်"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"အများသုံးနိုင်ခွင့်ရှိသည့် အက်ပ်များကို ကြည့်ရန်"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"သုံးခွင့်ကို ဖယ်ရှားလိုက်ပြီ"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"ပုဂ္ဂိုလ်ရေးလုံခြုံစေရန် အက်ပ်ခွင့်ပြုချက်များ ဖယ်လိုက်သည်"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> ကို အသုံးမပြုသည်မှာ လအနည်းငယ် ရှိပါပြီ။ ပြန်ကြည့်ရန် တို့ပါ။"</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> နှင့် အခြားအက်ပ် ၁ ခုကို အသုံးမပြုသည်မှာ လအနည်းငယ် ရှိပါပြီ။ ပြန်ကြည့်ရန် တို့ပါ။"</string>
@@ -503,6 +516,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"လုံခြုံရေးနှင့် အချက်အလက်လုံခြုံမှု"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"စကင်ဖတ်ရန်"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"ပယ်ရန်"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"ဤသတိပေးချက်ကို ပယ်မလား။"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"ပယ်ရန်"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"မလုပ်တော့"</string>
     <string name="security_settings" msgid="3808106921175271317">"လုံခြုံရေး ဆက်တင်များ"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"အာရုံခံကိရိယာ ခွင့်ပြုချက်များ"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"ကန့်သတ်ရန် ဆက်တင်များ"</string>

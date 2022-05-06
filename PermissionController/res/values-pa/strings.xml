@@ -277,6 +277,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਸੁਰੱਖਿਆ ਲਈ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾਇਆ ਗਿਆ"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> ਨੂੰ ਬੈਕਗ੍ਰਾਉਂਡ ਵਿੱਚ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਦੀ ਜਾਣਕਾਰੀ ਮਿਲੀ"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"ਇਹ ਐਪ ਹਮੇਸ਼ਾਂ ਤੁਹਾਡੀ ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ \'ਤੇ ਪਹੁੰਚ ਕਰ ਸਕਦੀ ਹੈ। ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ।"</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"ਸੂਚਨਾ ਸੁਣਨ ਦੀ ਪਹੁੰਚ ਨਾਲ ਐਪ ਦੀ ਸਮੀਖਿਆ ਕਰੋ"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> ਤੁਹਾਡੀਆਂ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਪੜ੍ਹ ਸਕਦੀ ਹੈ।"</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"ਇਹ ਐਪ ਤੁਹਾਡੀਆਂ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਪੜ੍ਹ ਸਕਦੀ ਹੈ।"</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"ਪਹੁੰਚ ਹਟਾਓ"</string>
+    <!-- no translation found for notification_listener_review_app_button_label (4452381557379652037) -->
+    <skip />
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"ਪਹੁੰਚ ਹਟਾਈ ਗਈ"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"ਪਹੁੰਚਯੋਗਤਾ ਪਹੁੰਚ ਦੇ ਨਾਲ ਐਪ ਦੀ ਸਮੀਖਿਆ ਕਰੋ"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"<xliff:g id="APP_NAME">%s</xliff:g> ਵੱਲੋਂ ਸਕ੍ਰੀਨ \'ਤੇ ਸਾਰੀਆਂ ਸਮੱਗਰੀਆਂ ਨੂੰ ਪੜ੍ਹਿਆ ਜਾ ਸਕਦਾ ਹੈ, ਹੋਰ ਐਪਾਂ \'ਤੇ ਸਮੱਗਰੀ ਨੂੰ ਡਿਸਪਲੇ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੀਆਂ ਅੰਤਰਕਿਰਿਆਵਾਂ ਨੂੰ ਟਰੈਕ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।"</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"ਇਹ ਐਪ ਸਕ੍ਰੀਨ \'ਤੇ ਸਾਰੀਆਂ ਸਮੱਗਰੀਆਂ ਨੂੰ ਪੜ੍ਹ ਸਕਦੀ ਹੈ, ਹੋਰ ਐਪਾਂ \'ਤੇ ਸਮੱਗਰੀ ਨੂੰ ਡਿਸਪਲੇ ਕਰ ਸਕਦੀ ਹੈ ਅਤੇ ਤੁਹਾਡੀਆਂ ਅੰਤਰਕਿਰਿਆਵਾਂ ਨੂੰ ਟਰੈਕ ਕਰ ਸਕਦੀ ਹੈ।"</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"ਪਹੁੰਚ ਹਟਾਓ"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"ਪਹੁੰਚਯੋਗਤਾ ਪਹੁੰਚ ਵਾਲੀਆਂ ਐਪਾਂ ਦੇਖੋ"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"ਪਹੁੰਚ ਹਟਾਈ ਗਈ"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"ਪਰਦੇਦਾਰੀ ਸੁਰੱਖਿਆ ਲਈ ਐਪ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾਇਆ ਗਿਆ"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> ਨੂੰ ਕੁਝ ਮਹੀਨਿਆਂ ਤੋਂ ਵਰਤਿਆ ਨਹੀਂ ਗਿਆ। ਸਮੀਖਿਆ ਲਈ ਟੈਪ ਕਰੋ।"</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> ਅਤੇ 1 ਹੋਰ ਐਪ ਨੂੰ ਕੁਝ ਮਹੀਨਿਆਂ ਤੋਂ ਵਰਤਿਆ ਨਹੀਂ ਗਿਆ। ਸਮੀਖਿਆ ਲਈ ਟੈਪ ਕਰੋ।"</string>
@@ -503,6 +516,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"ਸੁਰੱਖਿਆ ਅਤੇ ਪਰਦੇਦਾਰੀ"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"ਸਕੈਨ ਕਰੋ"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"ਖਾਰਜ ਕਰੋ"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"ਕੀ ਇਸ ਸੁਚੇਤਨਾ ਨੂੰ ਖਾਰਜ ਕਰਨਾ ਹੈ?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"ਖਾਰਜ ਕਰੋ"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"ਰੱਦ ਕਰੋ"</string>
     <string name="security_settings" msgid="3808106921175271317">"ਸੁਰੱਖਿਆ ਸੈਟਿੰਗਾਂ"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"ਸੈਂਸਰ ਇਜਾਜ਼ਤਾਂ"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"ਪਰਦੇਦਾਰੀ ਕੰਟਰੋਲ"</string>

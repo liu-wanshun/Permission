@@ -277,6 +277,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"మీ గోప్యతను రక్షించడానికి అనుమతులు తీసివేయబడ్డాయి"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"మీ లొకేషన్‌ను <xliff:g id="APP_NAME">%s</xliff:g> బ్యాక్‌గ్రౌండ్‌లో ఉపయోగిస్తోంది"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"ఈ యాప్ మీ లొకేషన్‌ను ఎల్లప్పుడూ యాక్సెస్ చేయగలదు. మార్చడానికి ట్యాప్ చేయండి."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"నోటిఫికేషన్ లిస్‌నర్ యాక్సెస్‌తో యాప్‌ను రివ్యూ చేయండి"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> మీ అన్ని నోటిఫికేషన్‌లను చదవగలదు."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"ఈ యాప్ మీ అన్ని నోటిఫికేషన్‌లను చదవగలదు."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"యాక్సెస్‌ను తీసివేయండి"</string>
+    <!-- no translation found for notification_listener_review_app_button_label (4452381557379652037) -->
+    <skip />
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"యాక్సెస్ తీసివేయబడింది"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"యాక్సెసిబిలిటీ యాక్సెస్‌తో యాప్‌ను రివ్యూ చేయండి"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"<xliff:g id="APP_NAME">%s</xliff:g> స్క్రీన్‌పై ఉన్న అన్ని కంటెంట్‌లను చదవగలదు, ఇతర యాప్‌లలో కంటెంట్‌లను ప్రదర్శించగలదు అలాగే మీ ఇంటరాక్షన్‌లను ట్రాక్ చేయగలదు."</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"ఈ యాప్ స్క్రీన్‌పై ఉన్న అన్ని కంటెంట్‌లను చదవగలదు, ఇతర యాప్‌లలో కంటెంట్‌లను ప్రదర్శించగలదు అలాగే మీ ఇంటరాక్షన్‌లను ట్రాక్ చేయగలదు."</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"యాక్సెస్‌ను తీసివేయండి"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"యాక్సెసిబిలిటీ యాక్సెస్ ఉన్న యాప్‌లను చూడండి"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"యాక్సెస్ తీసివేయబడింది"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"గోప్యతను కాపాడడానికి యాప్ అనుమతులు తీసివేయబడ్డాయి"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"కొన్ని నెలలుగా <xliff:g id="APP_NAME">%s</xliff:g> ఉపయోగంలో లేదు. రివ్యూ చేయడానికి నొక్కండి."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> మరియు మరో 1 యాప్ కొన్ని నెలలుగా ఉపయోగంలో లేవు. రివ్యూ చేయడానికి నొక్కండి."</string>
@@ -503,6 +516,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"సెక్యూరిటీ &amp; గోప్యత"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"స్కాన్ చేయండి"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"విస్మరించండి"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"ఈ అలర్ట్‌ను విస్మరించాలా?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"విస్మరించండి"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"రద్దు చేయండి"</string>
     <string name="security_settings" msgid="3808106921175271317">"సెక్యూరిటీ సెట్టింగ్‌లు"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"సెన్సార్ అనుమతులు"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"గోప్యతా కంట్రోల్స్"</string>

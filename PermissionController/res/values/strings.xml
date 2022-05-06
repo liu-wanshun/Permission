@@ -864,23 +864,41 @@
     <!-- The notification content for background location access reminder notification [CHAR LIMIT=none] -->
     <string name="background_location_access_reminder_notification_content">This app can always access your location. Tap to change.</string>
 
-    <!-- The notification title for background location access reminder notification [DO NOT TRANSLATE] [CHAR LIMIT=60] -->
+    <!-- The notification title for background location access reminder notification [CHAR LIMIT=60] -->
     <string name="notification_listener_reminder_notification_title">Review app with notification listener access</string>
 
-    <!-- The notification title for background location access reminder notification [DO NOT TRANSLATE] [CHAR LIMIT=60] -->
-    <string name="notification_listener_reminder_notification_title_plural">{count, plural,
-        =1      {Review app with notification listener access}
-        other   {Review apps with notification listener access}
-        }</string>
-
-    <!-- The notification content for background location access reminder notification [DO NOT TRANSLATE] [CHAR LIMIT=none] -->
+    <!-- The notification content for background location access reminder notification [CHAR LIMIT=none] -->
     <string name="notification_listener_reminder_notification_content"><xliff:g id="app_name" example="Gmail">%s</xliff:g> can read all your notifications.</string>
 
-    <!-- The notification content for background location access reminder notification [DO NOT TRANSLATE] [CHAR LIMIT=none] -->
-    <string name="notification_listener_reminder_notification_content_plural">{count, plural,
-        =1      {<xliff:g id="app_name" example="Gmail">%s</xliff:g> can read all your notifications.}
-        other   {# apps can read all your notifications.}
-        }</string>
+    <!-- The warning card (in safety center) content for notification listener access [CHAR LIMIT=none] -->
+    <string name="notification_listener_warning_card_content">This app can read all your notifications.</string>
+
+    <!-- The label for remove access button on safety center warning card [CHAR LIMIT=60] -->
+    <string name="notification_listener_remove_access_button_label">Remove access</string>
+
+    <!-- The label for notification listener settings button from safety center warning card [CHAR LIMIT=60] -->
+    <string name="notification_listener_review_app_button_label">Review all apps with notification access</string>
+
+    <!-- Success message for remove access action on safety center warning card [CHAR LIMIT=60] -->
+    <string name="notification_listener_remove_access_success_label">Access removed</string>
+
+    <!-- The notification title for accessibility access (3rd party apps) reminder notification [CHAR LIMIT=60] -->
+    <string name="accessibility_access_reminder_notification_title">Review app with accessibility access</string>
+
+    <!-- The notification content for accessibility access reminder notification [CHAR LIMIT=none] -->
+    <string name="accessibility_access_reminder_notification_content"><xliff:g id="app_name" example="Gmail">%s</xliff:g> can read all contents on the screen, display contents over other apps and track your interactions.</string>
+
+    <!-- The warning card (in safety center) content for accessibility access [CHAR LIMIT=none] -->
+    <string name="accessibility_access_warning_card_content">This app can read all contents on the screen, display contents over other apps and track your interactions.</string>
+
+    <!-- The label for remove access button on safety center warning card [CHAR LIMIT=60] -->
+    <string name="accessibility_remove_access_button_label">Remove access</string>
+
+    <!-- The label accessibility page button from safety center warning card [CHAR LIMIT=60] -->
+    <string name="accessibility_show_all_apps_button_label">See apps with accessibility access</string>
+
+    <!-- Success message for remove access action on safety center warning card [CHAR LIMIT=60] -->
+    <string name="accessibility_remove_access_success_label">Access removed</string>
 
     <!-- The notification title for the notification that a permission auto revoke has happened [CHAR LIMIT=60] -->
     <string name="auto_revoke_after_notification_title">App permissions removed to protect privacy</string>
@@ -1508,6 +1526,14 @@ Allow <xliff:g id="app_name" example="Gmail">%4$s</xliff:g> to upload a bug repo
     <string name="safety_center_rescan_button">Scan</string>
     <!-- Content description for the button dismisses a safety center issue [CHAR LIMIT=NONE] -->
     <string name="safety_center_issue_card_dismiss_button">Dismiss</string>
+    <!-- Title for a dialog confirming if a user wants to dismiss a safety center issue [CHAR LIMIT=NONE] -->
+    <string name="safety_center_issue_card_dismiss_confirmation_title">Dismiss this alert?</string>
+    <!-- Label for a button to dismiss a safety center issue in a confirmation dialog [CHAR LIMIT=30] -->
+    <string name="safety_center_issue_card_confirm_dismiss_button">Dismiss</string>
+    <!-- Label for a button to cancel dismissing a safety center issue in a confirmation dialog [CHAR LIMIT=30] -->
+    <string name="safety_center_issue_card_cancel_dismiss_button">Cancel</string>
+    <!-- Title for a section that contains security and privacy related settings on the Security and Privacy page [CHAR LIMIT=60] -->
+    <string name="safety_center_entries_category_title">Settings</string>
     <!-- Label for the button that takes the user to the settings page for Android Security  [CHAR LIMIT=60] -->
     <string name="security_settings">Security Settings</string>
     <!-- Label for the permission usage section of safety center QS page[CHAR LIMIT=30] -->

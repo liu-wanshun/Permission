@@ -277,6 +277,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Дазволы выдалены ў мэтах абароны прыватнасці"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> атрымала доступ да даных месцазнаходжання ў фонавым рэжыме"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Гэта праграма заўсёды можа атрымаць доступ да даных пра ваша месцазнаходжанне. Націсніце, каб змяніць."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Праверце праграму з доступам да праслухоўвання апавяшчэнняў"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> можа счытваць усе апавяшчэнні."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Гэта праграма можа счытваць усе вашы апавяшчэнні."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Выдаліць доступ"</string>
+    <!-- no translation found for notification_listener_review_app_button_label (4452381557379652037) -->
+    <skip />
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Доступ выдалены"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"Прагляд праграмы з доступам да спецыяльных магчымасцей"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"Праграма \"<xliff:g id="APP_NAME">%s</xliff:g>\" можа счытваць усё змесціва на экране, паказваць змесціва паверх іншых праграм і адсочваць ваша ўзаемадзеянне з ёй."</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"Гэта праграма можа счытваць усё змесціва на экране, паказваць змесціва паверх іншых праграм і адсочваць ваша ўзаемадзеянне з ёй."</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"Выдаліць доступ"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"Глядзець праграмы з доступам да спецыяльных магчымасцей"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"Доступ выдалены"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"У мэтах абароны прыватнасці дазволы праграмы выдалены"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"Праграма \"<xliff:g id="APP_NAME">%s</xliff:g>\" не выкарыстоўвалася некалькі месяцаў. Націсніце, каб праглядзець."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> і яшчэ 1 праграма не выкарыстоўваліся некалькі месяцаў. Націсніце, каб праглядзець."</string>
@@ -503,6 +516,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Бяспека і прыватнасць"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"Сканіраваць"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Адхіліць"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Закрыць гэту абвестку?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Закрыць"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Скасаваць"</string>
     <string name="security_settings" msgid="3808106921175271317">"Налады бяспекі"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"Дазволы на доступ да датчыка"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"Налады прыватнасці"</string>

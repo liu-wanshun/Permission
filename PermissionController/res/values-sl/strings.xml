@@ -277,6 +277,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Dovoljenja odstranjena za zaščito vaše zasebnosti"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"Aplikacija <xliff:g id="APP_NAME">%s</xliff:g> je podatek o lokaciji pridobila v ozadju"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Ta aplikacija lahko vedno dostopa do vaše lokacije. Dotaknite se, če želite spremeniti dovoljenje."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Pregled aplikacije z dostopom poslušalca obvestil"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> lahko bere vsa vaša obvestila."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Ta aplikacija lahko bere vsa vaša obvestila."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Odstrani dostop"</string>
+    <!-- no translation found for notification_listener_review_app_button_label (4452381557379652037) -->
+    <skip />
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Dostop je odstranjen"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"Preglejte aplikacijo z dostopom do funkcij za ljudi s posebnimi potrebami"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"Aplikacija <xliff:g id="APP_NAME">%s</xliff:g> lahko bere vso vsebino na zaslonu, prikazuje vsebino nad drugimi aplikacijami in sledi vašim interakcijam."</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"Ta aplikacija lahko bere vso vsebino na zaslonu, prikazuje vsebino nad drugimi aplikacijami in sledi vašim interakcijam."</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"Odstrani dostop"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"Prikaži aplikacije z dostopom do funkcij za ljudi s posebnimi potrebami"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"Dostop je odstranjen."</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Dovoljenja za aplikacije odstranjena za zaščito zasebnosti"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"Več mesecev niste uporabljali aplikacije <xliff:g id="APP_NAME">%s</xliff:g>. Dotaknite se za pregled."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"Več mesecev niste uporabljali aplikacije <xliff:g id="APP_NAME">%s</xliff:g> in 1 druge aplikacije. Dotaknite se za pregled."</string>
@@ -503,6 +516,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Varnost in zasebnost"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"Išči"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Opusti"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Želite opustiti to opozorilo?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Opusti"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Prekliči"</string>
     <string name="security_settings" msgid="3808106921175271317">"Varnostne nastavitve"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"Dovoljenja za tipala"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"Nastavitve zasebnosti"</string>

@@ -27,7 +27,11 @@
     <string name="permission_usage_summary" msgid="5323079206029964468">"ສະແດງວ່າແອັບໃດໃຊ້ການອະນຸຍາດຫຼ້າສຸດ"</string>
     <string name="permission_manager_title" msgid="5277347862821255015">"ຕົວຈັດການສິດອະນຸຍາດ"</string>
     <string name="permission_manager_summary" msgid="8099852107340970790">"ຄວບຄຸມສິດເຂົ້າເຖິງແອັບທີ່ມີຕໍ່ຂໍ້ມູນຂອງທ່ານ"</string>
+    <string name="privacy_controls_title" msgid="5322875777945432395">"ການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ"</string>
+    <string name="privacy_controls_summary" msgid="2402066941190435424">"ຄວບຄຸມສິດເຂົ້າເຖິງອຸປະກອນຫາໄມໂຄຣໂຟນ, ກ້ອງຖ່າຍຮູບ ແລະ ອື່ນໆ"</string>
     <string name="advanced_title" msgid="8745436380690561172">"ການຕັ້ງຄ່າເພີ່ມເຕີມ"</string>
     <string name="advanced_security_title" msgid="1126833338772188155">"ການຕັ້ງຄ່າຄວາມປອດໄພເພີ່ມເຕີມ"</string>
     <string name="advanced_security_summary" msgid="6172253327022425123">"ການເຂົ້າລະຫັດ, ຂໍ້ມູນການເຂົ້າສູ່ລະບົບ ແລະ ອື່ນໆ"</string>
+    <string name="advanced_privacy_title" msgid="1117725225706176643">"ການຕັ້ງຄ່າຄວາມເປັນສ່ວນຕົວເພີ່ມເຕີມ"</string>
+    <string name="advanced_privacy_summary" msgid="2281203390575069543">"ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ, ການຄວບຄຸມການເຄື່ອນໄຫວ ແລະ ອື່ນໆ"</string>
 </resources>

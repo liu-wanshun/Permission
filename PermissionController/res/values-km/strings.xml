@@ -277,6 +277,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"បានដក​ការអនុញ្ញាត ដើម្បីការពារ​ឯកជនភាព​របស់អ្នក"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> បានទទួល​ទីតាំង​របស់អ្នក​នៅផ្ទៃខាងក្រោយ"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"កម្មវិធី​នេះ​អាច​ចូលប្រើប្រាស់​ទីតាំង​របស់អ្នក​បានជា​និច្ច។ សូម​ចុច​ដើម្បី​ប្ដូរ។"</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"ពិនិត្យមើលកម្មវិធីដែលមានសិទ្ធិចូលប្រើមុខងារស្ដាប់ការជូនដំណឹង"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> អាចអានការជូនដំណឹងទាំងអស់របស់អ្នក។"</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"កម្មវិធីនេះអាចអានការជូនដំណឹងទាំងអស់របស់អ្នក។"</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"ដក​សិទ្ធិចូលប្រើចេញ"</string>
+    <!-- no translation found for notification_listener_review_app_button_label (4452381557379652037) -->
+    <skip />
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"បានដក​សិទ្ធិចូលប្រើចេញ"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"ពិនិត្យមើល​កម្មវិធីដោយប្រើ​មុខងារភាពងាយស្រួល"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"<xliff:g id="APP_NAME">%s</xliff:g> អាចអាន​ខ្លឹមសារ​ទាំងអស់​នៅលើអេក្រង់ បង្ហាញខ្លឹមសារ​នៅលើកម្មវិធី​ផ្សេងទៀត និងតាមដាន​អន្តរកម្ម​របស់អ្នក។"</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"កម្មវិធីនេះ​អាចអាន​ខ្លឹមសារ​ទាំងអស់​នៅលើអេក្រង់ បង្ហាញខ្លឹមសារ​នៅលើកម្មវិធី​ផ្សេងទៀត និងតាមដាន​អន្តរកម្ម​របស់អ្នក។"</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"ដក​សិទ្ធិចូលប្រើប្រាស់​ចេញ"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"មើលកម្មវិធី​ដោយប្រើ​មុខងារភាពងាយស្រួល"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"បានដក​សិទ្ធិចូលប្រើចេញ"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"បានដក​ការអនុញ្ញាត​កម្មវិធីចេញ ដើម្បី​ការពារ​ឯកជនភាព"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> មិនត្រូវបាន​ប្រើប្រាស់​រយៈពេល​ពីរបីខែ​ហើយ។ សូមចុច ដើម្បី​ពិនិត្យមើល។"</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> និង​កម្មវិធី 1 ផ្សេងទៀត​មិនត្រូវបាន​ប្រើប្រាស់​រយៈពេល​ពីរបីខែ​ហើយ។ សូមចុច ដើម្បី​ពិនិត្យមើល។"</string>
@@ -503,6 +516,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"សុវត្ថិភាព និងឯកជនភាព"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"ស្កេន"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"ច្រានចោល"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"ច្រានចោលការជូនដំណឹងនេះឬ?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"ច្រានចោល"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"បោះបង់"</string>
     <string name="security_settings" msgid="3808106921175271317">"ការកំណត់​សុវត្ថិភាព"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"ការអនុញ្ញាតឧបករណ៍ចាប់សញ្ញា"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"ការគ្រប់គ្រង​ឯកជនភាព"</string>

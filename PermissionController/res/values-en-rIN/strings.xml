@@ -277,6 +277,18 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Permissions removed to protect your privacy"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> got your location in the background"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"This app can always access your location. Tap to change."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Review app with notification listener access"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> can read all your notifications."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"This app can read all your notifications."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Remove access"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"Review all apps with notification access"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Access removed"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"Review app with accessibility access"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"<xliff:g id="APP_NAME">%s</xliff:g> can read all contents on the screen, display contents over other apps and track your interactions."</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"This app can read all contents on the screen, display contents over other apps and track your interactions."</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"Remove access"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"See apps with accessibility access"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"Access removed"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"App permissions removed to protect privacy"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> hasn’t been used for a few months. Tap to review."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> and one other app haven’t been used for a few months. Tap to review."</string>
@@ -503,6 +515,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Security &amp; privacy"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"Scan"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Dismiss"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Dismiss this alert?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Dismiss"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Cancel"</string>
     <string name="security_settings" msgid="3808106921175271317">"Security settings"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"Sensor permissions"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"Privacy controls"</string>

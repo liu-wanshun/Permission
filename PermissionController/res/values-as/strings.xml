@@ -277,6 +277,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"আপোনাৰ গোপনীয়তা সুৰক্ষিত কৰিবলৈ অনুমতিসমূহ আঁতৰোৱা হৈছে"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g>এ নেপথ্যত আপোনাৰ অৱস্থান লাভ কৰিছে"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"এই এপটোৱে সদায় আপোনাৰ অৱস্থান এক্সেছ কৰিব পাৰে। সলনি কৰিবলৈ টিপক।"</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"জাননী শুনাৰ এক্সেছ থকা এপৰ পৰ্যালোচনা কৰক"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g>এ আপোনাৰ আটাইবোৰ জাননী পঢ়িব পাৰে।"</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"এই এপ্‌টোৱে আপোনাৰ আটাইবোৰ জাননী পঢ়িব পাৰে।"</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"এক্সেছ আঁতৰাওক"</string>
+    <!-- no translation found for notification_listener_review_app_button_label (4452381557379652037) -->
+    <skip />
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"এক্সেছ আঁতৰোৱা হৈছে"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"সাধ্য-সুবিধাৰ এক্সেছ থকা এপ্ পৰ্যালোচনা কৰক"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"<xliff:g id="APP_NAME">%s</xliff:g>এ স্ক্ৰীনখনত থকা আটাইবোৰ সমল পঢ়িব পাৰে, অন্য এপৰ ওপৰত সমল প্ৰদৰ্শন কৰিব পাৰে আৰু আপুনি কৰা ভাব-বিনিময় ট্ৰেক কৰিব পাৰে।"</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"এই এপ্‌টোৱে স্ক্ৰীনখনত থকা আটাইবোৰ সমল পঢ়িব পাৰে, অন্য এপৰ ওপৰত সমল প্ৰদৰ্শন কৰিব পাৰে আৰু আপুনি কৰা ভাব-বিনিময় ট্ৰেক কৰিব পাৰে।"</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"এক্সেছ আঁতৰাওক"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"সাধ্য-সুবিধাৰ এক্সেছ থকা এপ্‌সমূহ চাওক"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"এক্সেছ আঁতৰোৱা হৈছে"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"গোপনীয়তা সুৰক্ষিত কৰিবলৈ এপৰ অনুমতিসমূহক আঁতৰোৱা হ\'ল"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> কেইমাহমান ব্যৱহাৰ কৰা হোৱা নাই। পর্যালোচনা কৰিবলৈ টিপক।"</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> আৰু অন্য এটা এপ্ কেইমাহমান ব্যৱহাৰ কৰা হোৱা নাই। পর্যালোচনা কৰিবলৈ টিপক।"</string>
@@ -503,6 +516,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"সুৰক্ষা আৰু গোপনীয়তা"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"স্কেন কৰক"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"অগ্ৰাহ্য কৰক"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"এই সতৰ্কবাৰ্তাটো অগ্ৰাহ্য কৰিবনে?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"অগ্ৰাহ্য কৰক"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"বাতিল কৰক"</string>
     <string name="security_settings" msgid="3808106921175271317">"সুৰক্ষা সম্পৰ্কীয় ছেটিং"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"ছেন্সৰৰ অনুমতি"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"গোপনীয়তাৰ নিয়ন্ত্ৰণ"</string>

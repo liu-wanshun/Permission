@@ -277,6 +277,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"तपाईंको गोपनीयताको सुरक्षार्थ अनुमतिहरू रद्द गरिए"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> ले पृष्ठभूमिमा तपाईंको स्थानमाथिको पहुँच प्राप्त गर्‍यो"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"यो एपले सधैँ तपाईंको स्थान प्रयोग गर्न सक्छ। बदल्न ट्याप गर्नुहोस्‌।"</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"सूचना सुन्ने अनुमति दिइएको एपको समीक्षा गर्नुहोस्"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> ले तपाईंका सबै सूचनाहरू रिड गर्न सक्छ।"</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"यो एपले तपाईंका सबै सूचनाहरू रिड गर्न सक्छ।"</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"अनुमति हटाउनुहोस्"</string>
+    <!-- no translation found for notification_listener_review_app_button_label (4452381557379652037) -->
+    <skip />
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"अनुमति हटाइएको छ"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"सर्वसुलभता प्राप्त एपको समीक्षा गर्नुहोस्"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"<xliff:g id="APP_NAME">%s</xliff:g> स्क्रिनमा भएका सबै सामग्री रिड गर्न, अन्य एपमाथि सामग्रीहरू देखाउन र तपाईंका अन्तर्क्रियाहरू ट्र्याक गर्न सक्छ।"</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"यो एप स्क्रिनमा भएका सबै सामग्री रिड गर्न, अन्य एपमाथि सामग्रीहरू देखाउन र तपाईंका अन्तर्क्रियाहरू ट्र्याक गर्न सक्छ।"</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"सर्वसुलभता प्रयोग गर्ने अनुमति हटाउनुहोस्"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"सर्वसुलभता प्राप्त एपहरू हेर्नुहोस्"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"सर्वसुलभता प्रयोग गर्ने अनुमति हटाइएको छ"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"गोपनीयताको संरक्षण गर्न एपलाई दिइएका अनुमति रद्द गरिए"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"केही महिनादेखि <xliff:g id="APP_NAME">%s</xliff:g> प्रयोग भएको छैन। समीक्षा गर्न ट्याप गर्नुहोस्।"</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"केही महिनादेखि <xliff:g id="APP_NAME">%s</xliff:g> र अर्को १ एप प्रयोग भएका छैनन्। समीक्षा गर्न ट्याप गर्नुहोस्।"</string>
@@ -503,6 +516,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"सुरक्षा तथा गोपनीयता"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"स्क्यान गर्नुहोस्"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"हटाउनुहोस्"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"यो अलर्ट हटाउने हो?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"हटाउनुहोस्"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"रद्द गर्नुहोस्"</string>
     <string name="security_settings" msgid="3808106921175271317">"सुरक्षासम्बन्धी सेटिङ"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"सेन्सर प्रयोग गर्ने अनुमतिहरू"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"गोपनीयता नियन्त्रणहरू"</string>

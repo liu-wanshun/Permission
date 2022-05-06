@@ -16,8 +16,10 @@
 
 package com.android.permissioncontroller.tests.mocking.privacysources
 
+import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_BOOT_COMPLETED
+import android.content.pm.PackageManager
 import android.os.Build
 import android.safetycenter.SafetyCenterManager
 import android.safetycenter.SafetyCenterManager.ACTION_REFRESH_SAFETY_SOURCES
@@ -70,6 +72,8 @@ class SafetyCenterReceiverTest {
     @Mock
     lateinit var mockSafetyCenterManager: SafetyCenterManager
     @Mock
+    lateinit var mockPackageManager: PackageManager
+    @Mock
     lateinit var mockPrivacySource: PrivacySource
     @Mock
     lateinit var mockPrivacySource2: PrivacySource
@@ -77,7 +81,7 @@ class SafetyCenterReceiverTest {
     private lateinit var mockitoSession: MockitoSession
     private lateinit var safetyCenterReceiver: SafetyCenterReceiver
 
-    private fun privacySourceMap() = mapOf(
+    private fun privacySourceMap(context: Context) = mapOf(
         TEST_PRIVACY_SOURCE_ID to mockPrivacySource,
         TEST_PRIVACY_SOURCE_ID_2 to mockPrivacySource2
     )
@@ -94,6 +98,7 @@ class SafetyCenterReceiverTest {
         whenever(application.applicationContext).thenReturn(application)
         whenever(application.getSystemService(SafetyCenterManager::class.java))
             .thenReturn(mockSafetyCenterManager)
+        whenever(application.packageManager).thenReturn(mockPackageManager)
         whenever(mockSafetyCenterManager.isSafetyCenterEnabled).thenReturn(true)
 
         safetyCenterReceiver = SafetyCenterReceiver(::privacySourceMap, testCoroutineDispatcher)
@@ -113,8 +118,8 @@ class SafetyCenterReceiverTest {
     fun onReceive_actionSafetyCenterEnabledChanged() = runBlockingTest {
         safetyCenterReceiver.onReceive(application, Intent(ACTION_SAFETY_CENTER_ENABLED_CHANGED))
 
-        verify(mockPrivacySource).safetyCenterEnabledChanged(true)
-        verify(mockPrivacySource2).safetyCenterEnabledChanged(true)
+        verify(mockPrivacySource).safetyCenterEnabledChanged(application, true)
+        verify(mockPrivacySource2).safetyCenterEnabledChanged(application, true)
     }
 
     @Test
@@ -124,8 +129,8 @@ class SafetyCenterReceiverTest {
         safetyCenterReceiver.onReceive(application, Intent(ACTION_SAFETY_CENTER_ENABLED_CHANGED))
         advanceUntilIdle()
 
-        verify(mockPrivacySource).safetyCenterEnabledChanged(false)
-        verify(mockPrivacySource2).safetyCenterEnabledChanged(false)
+        verify(mockPrivacySource).safetyCenterEnabledChanged(application, false)
+        verify(mockPrivacySource2).safetyCenterEnabledChanged(application, false)
     }
 
     @Test

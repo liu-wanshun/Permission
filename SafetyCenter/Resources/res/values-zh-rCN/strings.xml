@@ -27,7 +27,11 @@
     <string name="permission_usage_summary" msgid="5323079206029964468">"显示最近使用过权限的应用"</string>
     <string name="permission_manager_title" msgid="5277347862821255015">"权限管理器"</string>
     <string name="permission_manager_summary" msgid="8099852107340970790">"控制应用对您数据的访问权限"</string>
+    <string name="privacy_controls_title" msgid="5322875777945432395">"隐私控件"</string>
+    <string name="privacy_controls_summary" msgid="2402066941190435424">"控制设备对麦克风、摄像头等的访问权限"</string>
     <string name="advanced_title" msgid="8745436380690561172">"更多设置"</string>
     <string name="advanced_security_title" msgid="1126833338772188155">"更多安全设置"</string>
     <string name="advanced_security_summary" msgid="6172253327022425123">"加密、凭据等"</string>
+    <string name="advanced_privacy_title" msgid="1117725225706176643">"更多隐私设置"</string>
+    <string name="advanced_privacy_summary" msgid="2281203390575069543">"自动填充、活动控件等"</string>
 </resources>

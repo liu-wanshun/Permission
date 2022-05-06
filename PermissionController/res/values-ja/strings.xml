@@ -277,6 +277,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"プライバシー保護のため権限を削除しました"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> がバックグラウンドで位置情報を取得しました"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"このアプリは常に位置情報にアクセスできます。設定を変更するにはタップしてください。"</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"通知リスナー アクセス権を使用してアプリを確認する"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g>はすべての通知を読み取ることができます。"</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"このアプリはすべての通知を読み取ることができます。"</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"アクセス権を削除"</string>
+    <!-- no translation found for notification_listener_review_app_button_label (4452381557379652037) -->
+    <skip />
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"アクセス権が削除されました"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="798487829152263568">"アクセシビリティの権限を持つアプリを確認する"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="3897831796455872834">"<xliff:g id="APP_NAME">%s</xliff:g> は画面上のコンテンツをすべて読み取ったり、他のアプリの上にコンテンツを重ねて表示したり、ユーザーの操作を記録したりできます。"</string>
+    <string name="accessibility_access_warning_card_content" msgid="3418029245041163015">"このアプリは画面上のコンテンツをすべて読み取ったり、他のアプリの上にコンテンツを重ねて表示したり、ユーザーの操作を記録したりできます。"</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"アクセス権の削除"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="5027167822346195212">"アクセシビリティの権限を持つアプリを確認"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"アクセス権を削除しました"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"プライバシー保護のためアプリの権限を削除しました"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> は数か月使用されていません。タップしてご確認ください。"</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> と他 1 件のアプリは、数か月使用されていません。タップしてご確認ください。"</string>
@@ -503,6 +516,9 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"セキュリティとプライバシー"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"スキャン"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"閉じる"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"このアラートを閉じますか？"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"閉じる"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"キャンセル"</string>
     <string name="security_settings" msgid="3808106921175271317">"セキュリティ設定"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"センサーの権限"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"プライバシー管理"</string>
