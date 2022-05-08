@@ -80,7 +80,12 @@ android_app {
 
     srcs: [":permissioncontroller-sources"],
 
-    libs: ["android.car-stubs"],
+    libs: [
+        "android.car-stubs",
+        // Soong fails to automatically add this dependency because all the
+        // *.kt sources are inside a filegroup.
+        "kotlin-annotations",
+    ],
 
     static_libs: [
         "iconloader",
@@ -140,4 +145,6 @@ android_app {
     },
 
     plugins: ["java_api_finder"],
+
+    kotlincflags: ["-Xjvm-default=enable"],
 }

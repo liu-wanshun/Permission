@@ -52,6 +52,7 @@
     <string name="app_permissions" msgid="3369917736607944781">"Dozvole za aplikacije"</string>
     <string name="unused_apps" msgid="2058057455175955094">"Aplikacije koje se ne koriste"</string>
     <string name="no_unused_apps" msgid="12809387670415295">"Nema aplik. koje se ne koriste"</string>
+    <string name="zero_unused_apps" msgid="9024448554157499748">"0 aplikac. koje se ne koriste"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"Onemogući aplikaciju"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"Ako onemogućite ovu aplikaciju, Android i druge aplikacije možda više neće raditi ispravno. Imajte na umu da ne možete da izbrišete ovu aplikaciju jer je bila unapred instalirana na uređaju. Ako je onemogućite, isključićete je i sakriti na uređaju."</string>
     <string name="app_permission_manager" msgid="3903811137630909550">"Menadžer dozvola"</string>
@@ -445,8 +446,8 @@
     <string name="default_app_no_apps" msgid="115720991680586885">"Nema aplikacija"</string>
     <string name="car_default_app_selected" msgid="5416420830430644174">"Izabrano"</string>
     <string name="car_default_app_selected_with_info" msgid="1932204186080593500">"Izabrano – <xliff:g id="ADDITIONAL_INFO">%1$s</xliff:g>"</string>
-    <string name="special_app_access_search_keyword" msgid="8032347212290774210">"poseban pristup aplikaciji"</string>
-    <string name="special_app_access" msgid="5019319067120213797">"Poseban pristup aplikaciji"</string>
+    <string name="special_app_access_search_keyword" msgid="8032347212290774210">"poseban pristup aplikacija"</string>
+    <string name="special_app_access" msgid="5019319067120213797">"Poseban pristup aplikacija"</string>
     <string name="no_special_app_access" msgid="6950277571805106247">"Nema posebnog pristupa apl."</string>
     <string name="special_app_access_no_apps" msgid="4102911722787886970">"Nema aplikacija"</string>
     <string name="home_missing_work_profile_support" msgid="1756855847669387977">"Ne podržava poslovni profil"</string>
