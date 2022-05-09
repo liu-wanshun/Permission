@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The Android Open Source Project
+ * Copyright (C) 2022 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.ui.model
+package com.android.permissioncontroller.permission.ui.model.v31
 
 import android.Manifest
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.Manifest.permission_group.LOCATION
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.app.admin.DevicePolicyManager
@@ -36,8 +38,10 @@ import android.util.Log
 import androidx.core.util.Consumer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.Constants
 import com.android.permissioncontroller.DeviceUtils
+import com.android.permissioncontroller.PermissionControllerApplication
 import com.android.permissioncontroller.PermissionControllerStatsLog
 import com.android.permissioncontroller.PermissionControllerStatsLog.GRANT_PERMISSIONS_ACTIVITY_BUTTON_ACTIONS
 import com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_GRANT_REQUEST_RESULT_REPORTED__RESULT__AUTO_DENIED
@@ -63,7 +67,7 @@ import com.android.permissioncontroller.permission.data.get
 import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPackageInfo
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPermGroupInfo
-import com.android.permissioncontroller.permission.service.RecentPermissionDecisionsStorage
+import com.android.permissioncontroller.permission.service.v33.PermissionDecisionStorageImpl
 import com.android.permissioncontroller.permission.ui.AutoGrantPermissionsNotifier
 import com.android.permissioncontroller.permission.ui.GrantPermissionsActivity
 import com.android.permissioncontroller.permission.ui.GrantPermissionsActivity.ALLOW_BUTTON
@@ -93,15 +97,12 @@ import com.android.permissioncontroller.permission.ui.GrantPermissionsViewHandle
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity.EXTRA_RESULT_PERMISSION_INTERACTED
 import com.android.permissioncontroller.permission.ui.ManagePermissionsActivity.EXTRA_RESULT_PERMISSION_RESULT
-import com.android.permissioncontroller.permission.ui.handheld.dashboard.getDefaultPrecision
-import com.android.permissioncontroller.permission.ui.handheld.dashboard.isLocationAccuracyEnabled
+import com.android.permissioncontroller.permission.ui.handheld.v31.getDefaultPrecision
+import com.android.permissioncontroller.permission.ui.handheld.v31.isLocationAccuracyEnabled
 import com.android.permissioncontroller.permission.utils.AdminRestrictedPermissionsUtils
 import com.android.permissioncontroller.permission.utils.KotlinUtils
 import com.android.permissioncontroller.permission.utils.SafetyNetLogger
 import com.android.permissioncontroller.permission.utils.Utils
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 /**
  * ViewModel for the GrantPermissionsActivity. Tracks all permission groups that are affected by
@@ -145,7 +146,7 @@ class GrantPermissionsViewModel(
 
     private val splitPermissionTargetSdkMap = mutableMapOf<String, Int>()
 
-    private var appPermGroupLiveDatasCache = mutableMapOf<String, LightAppPermGroupLiveData>()
+    private var appPermGroupLiveDatas = mutableMapOf<String, LightAppPermGroupLiveData>()
 
     /**
      * A class which represents a correctly requested permission group, and the buttons and messages
@@ -171,40 +172,49 @@ class GrantPermissionsViewModel(
         SmartUpdateMediatorLiveData<List<RequestInfo>>() {
         private val LOG_TAG = GrantPermissionsViewModel::class.java.simpleName
         private val packagePermissionsLiveData = PackagePermissionsLiveData[packageName, user]
-        private val appPermGroupLiveDatas = mutableMapOf<String, LightAppPermGroupLiveData>()
 
         init {
-            GlobalScope.launch(Main.immediate) {
-                val groups = packagePermissionsLiveData.getInitializedValue()
-                if (groups == null || groups.isEmpty()) {
-                    Log.e(LOG_TAG, "Package $packageName not found")
-                    value = null
-                    return@launch
-                }
-                packageInfo = packageInfoLiveData.getInitializedValue()
+            addSource(packagePermissionsLiveData) { onPackageLoaded() }
+            addSource(packageInfoLiveData) { onPackageLoaded() }
+            // Load package state, if available
+            onPackageLoaded()
+        }
 
-                if (packageInfo.requestedPermissions.isEmpty() ||
-                    packageInfo.targetSdkVersion < Build.VERSION_CODES.M) {
-                    Log.e(LOG_TAG, "Package $packageName has no requested permissions, or " +
+        private fun onPackageLoaded() {
+            if (packageInfoLiveData.isStale || packagePermissionsLiveData.isStale) {
+                return
+            }
+
+            val groups = packagePermissionsLiveData.value
+            val pI = packageInfoLiveData.value
+            if (groups == null || groups.isEmpty() || pI == null) {
+                Log.e(LOG_TAG, "Package $packageName not found")
+                value = null
+                return
+            }
+            packageInfo = pI
+
+            if (packageInfo.requestedPermissions.isEmpty() ||
+                packageInfo.targetSdkVersion < Build.VERSION_CODES.M) {
+                Log.e(LOG_TAG, "Package $packageName has no requested permissions, or " +
                         "is a pre-M app")
-                    value = null
-                    return@launch
-                }
+                value = null
+                return
+            }
 
-                val allAffectedPermissions = requestedPermissions.toMutableSet()
-                for (requestedPerm in requestedPermissions) {
-                    allAffectedPermissions.addAll(computeAffectedPermissions(requestedPerm, groups))
-                }
-                unfilteredAffectedPermissions = allAffectedPermissions.toList()
+            val allAffectedPermissions = requestedPermissions.toMutableSet()
+            for (requestedPerm in requestedPermissions) {
+                allAffectedPermissions.addAll(computeAffectedPermissions(requestedPerm, groups))
+            }
+            unfilteredAffectedPermissions = allAffectedPermissions.toList()
 
-                getAppPermGroups(groups.toMutableMap().apply {
-                        remove(PackagePermissionsLiveData.NON_RUNTIME_NORMAL_PERMS)
-                    })
+            getAppPermGroups(groups.toMutableMap().apply {
+                remove(PackagePermissionsLiveData.NON_RUNTIME_NORMAL_PERMS)
+            })
 
-                for (splitPerm in app.getSystemService(
-                        PermissionManager::class.java)!!.splitPermissions) {
-                    splitPermissionTargetSdkMap[splitPerm.splitPermission] = splitPerm.targetSdk
-                }
+            for (splitPerm in app.getSystemService(
+                PermissionManager::class.java)!!.splitPermissions) {
+                splitPermissionTargetSdkMap[splitPerm.splitPermission] = splitPerm.targetSdk
             }
         }
 
@@ -231,7 +241,6 @@ class GrantPermissionsViewModel(
             if (appPermGroupLiveDatas.any { it.value.isStale }) {
                 return
             }
-            appPermGroupLiveDatasCache = appPermGroupLiveDatas
             var newGroups = false
             for ((groupName, groupLiveData) in appPermGroupLiveDatas) {
                 val appPermGroup = groupLiveData.value
@@ -253,7 +262,8 @@ class GrantPermissionsViewModel(
                     //  REVIEW_REQUIRED flag setting
                     for ((key, state) in states) {
                         val allAffectedGranted = state.affectedPermissions.all { perm ->
-                            appPermGroup.permissions[perm]?.isGrantedIncludingAppOp == true
+                            appPermGroup.permissions[perm]?.isGrantedIncludingAppOp == true &&
+                                appPermGroup.permissions[perm]?.isRevokeWhenRequested == false
                         } && !appPermGroup.isRuntimePermReviewRequired
                         if (allAffectedGranted) {
                             groupStates[key]!!.state = STATE_ALLOWED
@@ -496,12 +506,16 @@ class GrantPermissionsViewModel(
                     }
                 }
 
-                // If group is a storage group, legacy apps will need special text
-                if (groupState.group.permGroupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS) {
+                // If group is the storage group, legacy apps will need special text, and modern
+                // apps should not request it
+                if (SdkLevel.isAtLeastT() &&
+                    groupState.group.permGroupName == Manifest.permission_group.STORAGE) {
                     if (packageInfo.targetSdkVersion < Build.VERSION_CODES.Q) {
                         message = RequestMessage.STORAGE_SUPERGROUP_MESSAGE_PRE_Q
                     } else if (packageInfo.targetSdkVersion <= Build.VERSION_CODES.S_V2) {
                         message = RequestMessage.STORAGE_SUPERGROUP_MESSAGE_Q_TO_S
+                    } else {
+                        continue
                     }
                 }
 
@@ -685,6 +699,12 @@ class GrantPermissionsViewModel(
             return policyState
         }
 
+        if (perm == POST_NOTIFICATIONS &&
+            packageInfo.targetSdkVersion <= Build.VERSION_CODES.S_V2 &&
+            group.foreground.isUserSet) {
+            return STATE_SKIPPED
+        }
+
         val isBackground = perm in group.backgroundPermNames
 
         val hasForegroundRequest = groupRequestedPermissions.any {
@@ -693,7 +713,8 @@ class GrantPermissionsViewModel(
 
         // Do not attempt to grant background access if foreground access is not either already
         // granted or requested
-        if (isBackground && !group.foreground.isGranted && !hasForegroundRequest) {
+        if (isBackground && !group.foreground.isGrantedExcludeRevokeWhenRequestedPermissions &&
+            !hasForegroundRequest) {
             Log.w(LOG_TAG, "Cannot grant $perm as the matching foreground permission is not " +
                 "already granted.")
             val affectedPermissions = groupRequestedPermissions.filter {
@@ -706,8 +727,8 @@ class GrantPermissionsViewModel(
 
         // TODO(b/205888750): remove isRuntimePermReview line once confident in
         //  REVIEW_REQUIRED flag setting
-        if ((isBackground && group.background.isGranted ||
-            !isBackground && group.foreground.isGranted) &&
+        if ((isBackground && group.background.isGrantedExcludeRevokeWhenRequestedPermissions ||
+            !isBackground && group.foreground.isGrantedExcludeRevokeWhenRequestedPermissions) &&
             !group.isRuntimePermReviewRequired) {
             // If FINE location is not granted, do not grant it automatically when COARSE
             // location is already granted.
@@ -799,26 +820,27 @@ class GrantPermissionsViewModel(
         affectedForegroundPermissions: List<String>?,
         result: Int
     ) {
-        onPermissionGrantResult(groupName, affectedForegroundPermissions, result, true)
+        onPermissionGrantResult(groupName, affectedForegroundPermissions, result, false)
     }
 
     private fun onPermissionGrantResult(
         groupName: String?,
         affectedForegroundPermissions: List<String>?,
         result: Int,
-        canRecurse: Boolean
+        alreadyRequestedStorageGroupsIfNeeded: Boolean
     ) {
         if (groupName == null) {
             return
         }
 
         // If this is a legacy app, and a storage group is requested: request all storage groups
-        if (canRecurse && groupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS &&
-                packageInfo.targetSdkVersion <= Build.VERSION_CODES.S_V2) {
+        if (!alreadyRequestedStorageGroupsIfNeeded &&
+            groupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS &&
+            packageInfo.targetSdkVersion <= Build.VERSION_CODES.S_V2) {
             for (groupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS) {
-                val groupPerms = appPermGroupLiveDatasCache[groupName]
-                        ?.value?.allPermissions?.keys?.toList()
-                onPermissionGrantResult(groupName, groupPerms, result, false)
+                val groupPerms = appPermGroupLiveDatas[groupName]
+                    ?.value?.allPermissions?.keys?.toList()
+                onPermissionGrantResult(groupName, groupPerms, result, true)
             }
             return
         }
@@ -900,6 +922,7 @@ class GrantPermissionsViewModel(
         }
     }
 
+    @SuppressLint("NewApi")
     private fun onPermissionGrantResultSingleState(
         groupState: GroupState,
         affectedForegroundPermissions: List<String>?,
@@ -966,7 +989,7 @@ class GrantPermissionsViewModel(
         reportRequestResult(groupState.affectedPermissions, result)
         // group state has changed, reload liveData
         requestInfosLiveData.update()
-        RecentPermissionDecisionsStorage.recordPermissionDecision(app.applicationContext,
+        PermissionDecisionStorageImpl.recordPermissionDecision(app.applicationContext,
             packageName, groupState.group.permGroupName, granted)
         if (granted) {
             startDrivingDecisionReminderServiceIfNecessary(groupState.group.permGroupName)
@@ -1217,6 +1240,13 @@ class GrantPermissionsViewModel(
         if (groupName == null) {
             return
         }
+        if (!requestInfosLiveData.isInitialized || !packageInfoLiveData.isInitialized) {
+            Log.wtf(LOG_TAG, "Logged buttons presented and clicked permissionGroupName=" +
+                    "$groupName package=$packageName presentedButtons=$presentedButtons " +
+                    "clickedButton=$clickedButton sessionId=$sessionId, but requests were not yet" +
+                    "initialized", IllegalStateException())
+            return
+        }
         var selectedLocations = 0
         // log permissions if it's 1) first time requesting both locations OR 2) upgrade flow
         if (isFirstTimeRequestingFineAndCoarse ||
@@ -1263,6 +1293,27 @@ class GrantPermissionsViewModel(
             CONTINUE_MESSAGE(6),
             STORAGE_SUPERGROUP_MESSAGE_Q_TO_S(7),
             STORAGE_SUPERGROUP_MESSAGE_PRE_Q(8);
+        }
+
+        fun filterNotificationPermissionIfNeededSync(
+            packageName: String,
+            permissions: Array<String>?
+        ): Array<String>? {
+            if (permissions == null) {
+                return null
+            }
+
+            try {
+                val targetSdk = PermissionControllerApplication.get().packageManager
+                        .getPackageInfo(packageName, 0).applicationInfo.targetSdkVersion
+                if (targetSdk > Build.VERSION_CODES.S_V2) {
+                    return permissions
+                }
+            } catch (e: PackageManager.NameNotFoundException) {
+                return permissions
+            }
+
+            return permissions.toList().filter { it != POST_NOTIFICATIONS }.toTypedArray()
         }
     }
 }

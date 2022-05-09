@@ -24,7 +24,7 @@ import static com.android.permissioncontroller.PermissionControllerStatsLog.APP_
 import static com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISSIONS_FRAGMENT_VIEWED__CATEGORY__DENIED;
 import static com.android.permissioncontroller.hibernation.HibernationPolicyKt.isHibernationEnabled;
 import static com.android.permissioncontroller.permission.ui.handheld.UtilsKt.pressBack;
-import static com.android.permissioncontroller.permission.ui.handheld.dashboard.DashboardUtilsKt.is7DayToggleEnabled;
+import static com.android.permissioncontroller.permission.ui.handheld.v31.DashboardUtilsKt.is7DayToggleEnabled;
 
 import static java.util.concurrent.TimeUnit.DAYS;
 
@@ -66,9 +66,9 @@ import androidx.preference.SwitchPreference;
 import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.PermissionControllerStatsLog;
 import com.android.permissioncontroller.R;
-import com.android.permissioncontroller.permission.model.AppPermissionUsage;
-import com.android.permissioncontroller.permission.model.PermissionUsages;
 import com.android.permissioncontroller.permission.model.livedatatypes.HibernationSettingState;
+import com.android.permissioncontroller.permission.model.v31.AppPermissionUsage;
+import com.android.permissioncontroller.permission.model.v31.PermissionUsages;
 import com.android.permissioncontroller.permission.ui.Category;
 import com.android.permissioncontroller.permission.ui.model.AppPermissionGroupsViewModel;
 import com.android.permissioncontroller.permission.ui.model.AppPermissionGroupsViewModel.GroupUiInfo;
@@ -422,8 +422,19 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
             mViewModel.setAutoRevoke(autoRevokeSwitch.isChecked());
             return true;
         });
-        autoRevokeSwitch.setTitle(isHibernationEnabled() ? R.string.unused_apps_label
-                : R.string.auto_revoke_label);
+
+        int switchTitleId;
+        if (isHibernationEnabled()) {
+            if (SdkLevel.isAtLeastT()) {
+                switchTitleId = R.string.unused_apps_label_v2;
+                autoRevokeSwitch.setSummary(R.string.unused_apps_summary);
+            } else {
+                switchTitleId = R.string.unused_apps_label;
+            }
+        } else {
+            switchTitleId = R.string.auto_revoke_label;
+        }
+        autoRevokeSwitch.setTitle(switchTitleId);
         autoRevokeSwitch.setKey(AUTO_REVOKE_SWITCH_KEY);
         autoRevokeCategory.addPreference(autoRevokeSwitch);
 
@@ -433,7 +444,9 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
                 android.R.attr.colorControlNormal));
         autoRevokeSummary.setKey(AUTO_REVOKE_SUMMARY_KEY);
         if (isHibernationEnabled()) {
-            autoRevokeCategory.setTitle(R.string.unused_apps);
+            autoRevokeCategory.setTitle(
+                    SdkLevel.isAtLeastT() ? R.string.unused_apps_category_title
+                            : R.string.unused_apps);
         }
         autoRevokeCategory.addPreference(autoRevokeSummary);
     }
@@ -451,16 +464,8 @@ public final class AppPermissionGroupsFragment extends SettingsWithLargeHeader i
         Preference autoRevokeSummary = autoRevokeCategory.findPreference(
                 AUTO_REVOKE_SUMMARY_KEY);
 
-        if (!state.isEnabledGlobal() || state.getRevocableGroupNames().isEmpty()) {
-            autoRevokeCategory.setVisible(false);
-            autoRevokeSwitch.setVisible(false);
-            autoRevokeSummary.setVisible(false);
-            return;
-        }
-        autoRevokeCategory.setVisible(true);
-        autoRevokeSwitch.setVisible(true);
-        autoRevokeSummary.setVisible(true);
-        autoRevokeSwitch.setChecked(state.isEnabledForApp());
+        autoRevokeSwitch.setChecked(state.isEligibleForHibernation());
+        autoRevokeSwitch.setEnabled(!state.isExemptBySystem());
 
         List<String> groupLabels = new ArrayList<>();
         for (String groupName : state.getRevocableGroupNames()) {
