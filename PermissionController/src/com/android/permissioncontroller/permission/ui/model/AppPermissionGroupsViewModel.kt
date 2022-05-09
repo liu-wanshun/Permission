@@ -30,6 +30,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.PermissionControllerApplication
 import com.android.permissioncontroller.PermissionControllerStatsLog
 import com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISSION_GROUPS_FRAGMENT_AUTO_REVOKE_ACTION
@@ -45,10 +46,10 @@ import com.android.permissioncontroller.permission.data.PackagePermissionsLiveDa
 import com.android.permissioncontroller.permission.data.PackagePermissionsLiveData.Companion.NON_RUNTIME_NORMAL_PERMS
 import com.android.permissioncontroller.permission.data.SmartUpdateMediatorLiveData
 import com.android.permissioncontroller.permission.data.get
-import com.android.permissioncontroller.permission.model.AppPermissionUsage
+import com.android.permissioncontroller.permission.model.v31.AppPermissionUsage
 import com.android.permissioncontroller.permission.model.livedatatypes.AppPermGroupUiInfo.PermGrantState
 import com.android.permissioncontroller.permission.ui.Category
-import com.android.permissioncontroller.permission.ui.handheld.dashboard.is7DayToggleEnabled
+import com.android.permissioncontroller.permission.ui.handheld.v31.is7DayToggleEnabled
 import com.android.permissioncontroller.permission.utils.IPC
 import com.android.permissioncontroller.permission.utils.Utils
 import com.android.permissioncontroller.permission.utils.Utils.AppPermsLastAccessType
@@ -241,7 +242,10 @@ class AppPermissionGroupsViewModel(
                     MODE_IGNORED
                 }
                 aom.setUidMode(OPSTR_AUTO_REVOKE_PERMISSIONS_IF_UNUSED, uid, mode)
-                if (isHibernationEnabled() && !enabled) {
+                if (isHibernationEnabled() &&
+                    SdkLevel.isAtLeastSv2() &&
+                    !enabled) {
+                    // Only unhibernate on S_V2+ to have consistent toggle behavior w/ Settings
                     val ahm = app.getSystemService(AppHibernationManager::class.java)!!
                     ahm.setHibernatingForUser(packageName, false)
                     ahm.setHibernatingGlobally(packageName, false)
@@ -265,6 +269,10 @@ class AppPermissionGroupsViewModel(
         appPermissionUsages: List<AppPermissionUsage>,
         packageName: String
     ) {
+        if (!SdkLevel.isAtLeastS()) {
+            return;
+        }
+
         val aggregateDataFilterBeginDays = if (is7DayToggleEnabled())
             AGGREGATE_DATA_FILTER_BEGIN_DAYS_7 else AGGREGATE_DATA_FILTER_BEGIN_DAYS_1
 

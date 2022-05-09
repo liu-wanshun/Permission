@@ -43,7 +43,7 @@
     <string name="permission_revoked_none" msgid="9213345075484381180">"žiadne nie sú zakázané"</string>
     <string name="grant_dialog_button_allow" msgid="5314677880021102550">"Povoliť"</string>
     <string name="grant_dialog_button_allow_always" msgid="4485552579273565981">"Povoliť vždy"</string>
-    <string name="grant_dialog_button_allow_foreground" msgid="501896824973636533">"Pri používaní aplikácie"</string>
+    <string name="grant_dialog_button_allow_foreground" msgid="501896824973636533">"Počas používania aplikácie"</string>
     <string name="grant_dialog_button_change_to_precise_location" msgid="3273115879467236033">"Zmeniť na presnú polohu"</string>
     <string name="grant_dialog_button_keey_approximate_location" msgid="438025182769080011">"Ponechať približnú polohu"</string>
     <string name="grant_dialog_button_allow_one_time" msgid="2618088516449706391">"Iba tentokrát"</string>
@@ -120,7 +120,7 @@
     <string name="current_permissions_category" msgid="4292990083585728880">"Aktuálne povolenia"</string>
     <string name="message_staging" msgid="9110563899955511866">"Aplikácia je zavádzaná po etapách…"</string>
     <string name="app_name_unknown" msgid="1319665005754048952">"Neznáme"</string>
-    <string name="permission_usage_title" msgid="1568233336351734538">"Panel na ochranu súkromia"</string>
+    <string name="permission_usage_title" msgid="1568233336351734538">"Panel ochrany súkromia"</string>
     <string name="auto_permission_usage_summary" msgid="7335667266743337075">"Pozrite si, ktoré aplikácie nedávno použili povolenia"</string>
     <string name="permission_group_usage_title" msgid="2595013198075285173">"<xliff:g id="PERMGROUP">%1$s</xliff:g> – používanie"</string>
     <string name="perm_usage_adv_info_title" msgid="3357831829538873708">"Zobraziť ostatné povolenia"</string>
@@ -196,8 +196,11 @@
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"Zobraziť všetky povolenia aplikácie <xliff:g id="APP">%1$s</xliff:g>"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Zobraziť všetky aplikácie s týmto povolením"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Zobraziť používanie mikrofónu Asistentom"</string>
+    <string name="unused_apps_category_title" msgid="2988455616845243901">"Nastavenia nepoužívaných aplikácií"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Odstrániť povolenia, ak sa aplikácia nepoužíva"</string>
     <string name="unused_apps_label" msgid="2595428768404901064">"Odstraňovať povol. a uvoľňovať priestor"</string>
+    <string name="unused_apps_label_v2" msgid="7058776770056517980">"Pozastaviť aktivitu v nepoužívaných apl."</string>
+    <string name="unused_apps_summary" msgid="8839466950318403115">"Odstrániť povolenia, vymazať dočasné súbory a zastaviť upozornenia"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Ak túto aplikáciu niekoľko mesiacov nepoužijete, v záujme ochrany vašich údajov budú odstránené jej povolenia."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Ak túto aplikáciu niekoľko mesiacov nepoužijete, v záujme ochrany vašich údajov budú odstránené tieto povolenia: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"V záujme ochrany vašich údajov boli odobrané povolenia aplikáciám, ktoré ste niekoľko mesiacov nepoužívali."</string>
@@ -214,6 +217,7 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Bolo odstránené povolenie <xliff:g id="PERMISSION_NAME">%1$s</xliff:g> a ďalšie (<xliff:g id="NUMBER">%2$s</xliff:g>)"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Nepoužívané aplikácie"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"Ak aplikácia nebola používaná niekoľko mesiacov:\n\n• povolenia budú z dôvodu ochrany vašich údajov odstránené,\n• upozornenia prestanú fungovať, aby sa šetrila batéria,\n• dočasné súbory budú odstránené, aby sa uvoľnilo miesto.\n\nAk budete chcieť povolenia a upozornenia znova aktivovať, otvorte aplikáciu."</string>
+    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"Ak aplikácia nebola používaná niekoľko mesiacov:\n\n• povolenia budú z dôvodu ochrany vašich údajov odstránené;\n• dočasné súbory budú odstránené, aby sa uvoľnilo miesto.\n\nAk budete chcieť povolenia znova udeliť, otvorte aplikáciu."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Naposledy otvorené pred viac ako <xliff:g id="NUMBER">%s</xliff:g> mesiacmi"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Aplikácia bola naposledy otvorená <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Naposledy otvorená <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -245,8 +249,8 @@
     <string name="allowed_storage_full" msgid="5356699280625693530">"S povolením spravovať všetky súbory"</string>
     <string name="ask_header" msgid="2633816846459944376">"Vždy sa opýtať"</string>
     <string name="denied_header" msgid="903209608358177654">"Nepovolené"</string>
-    <string name="storage_footer_warning_text" msgid="2242258357752432337">"Niektoré aplikácie, ktoré vášmu zariadeniu poskytujú základné funkcie, môžu mať špeciálny prístup k všetkým vašim súborom"</string>
-    <string name="storage_footer_hyperlink_text" msgid="7759955324552930974">"Zobraziť aplikácie s prístupom k všetkým súborom"</string>
+    <!-- no translation found for storage_footer_hyperlink_text (8873343987957834810) -->
+    <skip />
     <string name="days" msgid="609563020985571393">"{count,plural, =1{1 deň}few{# dni}many{# dňa}other{# dní}}"</string>
     <string name="hours" msgid="3447767892295843282">"{count,plural, =1{1 hodina}few{# hodiny}many{# hodiny}other{# hodín}}"</string>
     <string name="minutes" msgid="4408293038068503157">"{count,plural, =1{1 minúta}few{# minúty}many{# minúty}other{# minút}}"</string>
@@ -264,6 +268,7 @@
     <string name="post_drive_permission_decision_reminder_summary_1_app_2_permissions" msgid="671791184670801301">"Počas jazdy ste udelili aplikácii <xliff:g id="APP">%1$s</xliff:g> prístup k povoleniam <xliff:g id="PERMISSION_1">%2$s</xliff:g> &amp; <xliff:g id="PERMISSION_2">%3$s</xliff:g>"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_multi_permission" msgid="4080701771111456927">"Počas jazdy ste udelili aplikácii <xliff:g id="APP">%2$s</xliff:g> tento počet povolení: <xliff:g id="COUNT">%1$d</xliff:g>"</string>
     <string name="post_drive_permission_decision_reminder_summary_multi_apps" msgid="5253882771252863902">"{count,plural, =1{Počas jazdy ste udelili prístup aplikácii <xliff:g id="APP_0">%1$s</xliff:g> a # ďalšej}few{Počas jazdy ste udelili prístup aplikácii <xliff:g id="APP_1">%1$s</xliff:g> a # ďalším}many{While driving, you gave <xliff:g id="APP_1">%1$s</xliff:g> &amp; # other apps access}other{Počas jazdy ste udelili prístup aplikácii <xliff:g id="APP_1">%1$s</xliff:g> a # ďalším}}"</string>
+    <string name="go_to_settings" msgid="1053735612211228335">"Prejsť do Nastavení"</string>
     <string name="auto_revoke_setting_subtitle" msgid="8631720570723050460">"Niektoré aplikácie neboli niekoľko mesiacov používané"</string>
     <string name="permissions_removed_category_title" msgid="1064754271178447643">"Odstránené povolenia"</string>
     <string name="permission_removed_page_title" msgid="2627436155091001209">"Povolenia boli odstránené"</string>
@@ -466,10 +471,10 @@
     <string name="permgrouprequest_calllog" msgid="2065327180175371397">"Chcete povoliť aplikácii &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; prístup k zoznamu tel. hovorov?"</string>
     <string name="permgrouprequest_phone" msgid="1829234136997316752">"Chcete povoliť aplikácii &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uskutočňovať a spravovať telefonické hovory?"</string>
     <string name="permgrouprequest_sensors" msgid="4397358316850652235">"Povoliť aplikácii &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; používať údaje senzorov o vašich životných funkciách?"</string>
-    <string name="permgroupupgraderequestdetail_sensors" msgid="5239219356063824373">"Táto aplikácia požaduje nepretržitý prístup k dátam senzorov o vašich životných funkciách, aj keď ju nepoužívate. "<annotation id="link">"Povolíte ho v nastaveniach."</annotation></string>
+    <string name="permgroupupgraderequestdetail_sensors" msgid="6651914048792092835">"Táto aplikácia požaduje nepretržitý prístup k dátam senzorov o vašich životných funkciách, a to aj vtedy, keď ju nepoužívate. Povolíte to "<annotation id="link">"v nastaveniach"</annotation>"."</string>
     <string name="permgroupbackgroundrequest_sensors" msgid="5661924322018503886">"Chcete povoliť aplikácii &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; používať dáta senzorov o vašich životných funkciách?"</string>
-    <string name="permgroupbackgroundrequestdetail_sensors" msgid="4853242818919117016">"Táto aplikácia môže požadovať nepretržitý prístup k dátam senzorov o vašich životných funkciách, aj keď ju nepoužívate. "<annotation id="link">"Povolíte ho v nastaveniach."</annotation></string>
-    <string name="permgroupupgraderequest_sensors" msgid="3346259833500506859">"Chcete zmeniť prístup aplikácie &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; k dátam senzorov o vašich životných funkciách?"</string>
+    <string name="permgroupbackgroundrequestdetail_sensors" msgid="7726767635834043501">"Ak chcete tejto aplikácii povoliť nepretržitý prístup k údajom telového senzora, a to aj v prípade, že ju nepoužívate, "<annotation id="link">"prejdite do nastavení."</annotation></string>
+    <string name="permgroupupgraderequest_sensors" msgid="7576527638411370468">"Chcete povoliť aplikácii &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; prístup k dátam telových senzorov počas jej používania?"</string>
     <string name="permgrouprequest_notifications" msgid="6396739062335106181">"Chcete povoliť aplikácii &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; posielať vám upozornenia?"</string>
     <string name="permgrouprequestcontinue_notifications" msgid="3895098107355024027">"Chcete povoliť aplikácii &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; posielať vám ďalej upozornenia?"</string>
     <string name="auto_granted_permissions" msgid="6009452264824455892">"Ovládané povolenia"</string>
@@ -499,6 +504,41 @@
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"Skontrolovať"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Zavrieť"</string>
     <string name="security_settings" msgid="3808106921175271317">"Nastavenia zabezpečenia"</string>
+    <string name="sensor_permissions_qs" msgid="4365989229426201877">"Povolenia pre senzory"</string>
+    <string name="privacy_controls_qs" msgid="471793881466080745">"Nastavenia ochrany súkromia"</string>
+    <string name="permissions_removed_qs" msgid="8957319130625294572">"Bolo odstránené povolenie"</string>
+    <string name="camera_usage_qs" msgid="7943349178368641820">"Zobraziť ďalšie využitie kamery"</string>
+    <string name="microphone_usage_qs" msgid="2393193350541830472">"Zobraziť ďalšie využitie mikrofónu"</string>
+    <string name="remove_camera_qs" msgid="8209716677879809162">"Odstrániť povolenie pre kameru"</string>
+    <string name="remove_microphone_qs" msgid="2893536836641560183">"Odstrániť povolenie pre mikrofón"</string>
+    <string name="manage_service_qs" msgid="7862555549364153805">"Spravovať službu"</string>
+    <string name="manage_permissions_qs" msgid="3780541819763475434">"Správy povolení"</string>
+    <string name="active_call_usage_qs" msgid="8559974395932523391">"Využíva telefonický hovor"</string>
+    <string name="recent_call_usage_qs" msgid="743044899599410935">"Nedávno využil telefonický hovor"</string>
+    <string name="active_app_usage_qs" msgid="4063912870936464727">"Využíva aplikácia <xliff:g id="APP_NAME">%1$s</xliff:g>"</string>
+    <string name="recent_app_usage_qs" msgid="6650259601306212327">"Nedávno využila aplikácia <xliff:g id="APP_NAME">%1$s</xliff:g>"</string>
+    <string name="active_app_usage_1_qs" msgid="4325136375823357052">"Využíva aplikácia <xliff:g id="APP_NAME">%1$s</xliff:g> (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g>)"</string>
+    <string name="recent_app_usage_1_qs" msgid="261450184773310741">"Nedávno využila aplikácia <xliff:g id="APP_NAME">%1$s</xliff:g> (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g>)"</string>
+    <string name="active_app_usage_2_qs" msgid="6107866785243565283">"Využíva aplikácia <xliff:g id="APP_NAME">%1$s</xliff:g> (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>)"</string>
+    <string name="recent_app_usage_2_qs" msgid="3591205954235694403">"Nedávno využila aplikácia <xliff:g id="APP_NAME">%1$s</xliff:g> (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>)"</string>
     <string name="safety_privacy_qs_tile_title" msgid="5431148204168066203">"Zabezpečenie a ochrana súkromia"</string>
     <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"Skontrolovať stav"</string>
+    <string name="media_confirm_dialog_positive_button" msgid="9020793594051526399">"Potvrdiť"</string>
+    <string name="media_confirm_dialog_negative_button" msgid="226987376924861785">"Späť"</string>
+    <string name="media_confirm_dialog_title_a_to_p_aural_allow" msgid="8560601114044699903">"Bude povolený aj prístup k ďalším súborom"</string>
+    <string name="media_confirm_dialog_title_a_to_p_aural_deny" msgid="7841428716317307685">"Nebude povolený ani prístup k ďalším súborom"</string>
+    <string name="media_confirm_dialog_title_a_to_p_visual_allow" msgid="6469086448310893751">"Bude povolený aj prístup k ďalším súborom"</string>
+    <string name="media_confirm_dialog_title_a_to_p_visual_deny" msgid="5767849609024384226">"Nebude povolený ani prístup k ďalším súborom"</string>
+    <string name="media_confirm_dialog_title_q_to_s_aural_allow" msgid="3191904399336990537">"Bude povolený aj prístup k fotkám a videám"</string>
+    <string name="media_confirm_dialog_title_q_to_s_aural_deny" msgid="3128147568953297969">"Nebude povolený ani prístup k fotkám a videám"</string>
+    <string name="media_confirm_dialog_title_q_to_s_visual_allow" msgid="6310682466493330434">"Bude povolený aj prístup k hudobným a zvukovým súborom"</string>
+    <string name="media_confirm_dialog_title_q_to_s_visual_deny" msgid="1123845663785900471">"Nebude povolený ani prístup k ďalším hudobným a zvukovým súborom"</string>
+    <string name="media_confirm_dialog_message_a_to_p_aural_allow" msgid="7865167246140107623">"Táto aplikácia nepodporuje najnovšiu verziu Androidu. Ak má táto aplikácia prístup k hudobným a zvukovým súborom, bude ho mať aj k fotkám, videám a ďalším súborom."</string>
+    <string name="media_confirm_dialog_message_a_to_p_aural_deny" msgid="287502523664804786">"Táto aplikácia nepodporuje najnovšiu verziu Androidu. Ak táto aplikácia nemá prístup k hudobným a zvukovým súborom, nebude ho mať ani k fotkám, videám a ďalším súborom."</string>
+    <string name="media_confirm_dialog_message_a_to_p_visual_allow" msgid="4952410892939590487">"Táto aplikácia nepodporuje najnovšiu verziu Androidu. Ak má táto aplikácia prístup k fotkám a videám, bude ho mať aj k hudobným, zvukovým a ďalším súborom."</string>
+    <string name="media_confirm_dialog_message_a_to_p_visual_deny" msgid="6609500525590757681">"Táto aplikácia nepodporuje najnovšiu verziu Androidu. Ak táto aplikácia nemá prístup k fotkám a videám, nebude ho mať ani k hudobným, zvukovým a ďalším súborom."</string>
+    <string name="media_confirm_dialog_message_q_to_s_aural_allow" msgid="1702402580147536160">"Táto aplikácia nepodporuje najnovšiu verziu Androidu. Ak má táto aplikácia prístup k hudobným a zvukovým súborom, bude ho mať aj k fotkám a videám."</string>
+    <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Táto aplikácia nepodporuje najnovšiu verziu Androidu. Ak táto aplikácia nemá prístup k hudobným a zvukovým súborom, nebude ho mať ani k fotkám a videám."</string>
+    <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Táto aplikácia nepodporuje najnovšiu verziu Androidu. Ak má táto aplikácia prístup k fotkám a videám, bude ho mať aj k hudobným a zvukovým súborom."</string>
+    <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Táto aplikácia nepodporuje najnovšiu verziu Androidu. Ak táto aplikácia nemá prístup k hudobným a zvukovým súborom, nebude ho mať ani k fotkám a videám."</string>
 </resources>
