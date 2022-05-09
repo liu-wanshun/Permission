@@ -259,13 +259,6 @@ public class Role {
         return mName;
     }
 
-    /**
-     * @see #mAllowBypassingQualification
-     */
-    public boolean shouldAllowBypassingQualification() {
-        return mAllowBypassingQualification;
-    }
-
     @Nullable
     public RoleBehavior getBehavior() {
         return mBehavior;
@@ -637,6 +630,24 @@ public class Role {
     }
 
     /**
+     * Check whether this role is allowed to bypass qualification, if enabled globally.
+     *
+     * @param context the {@code Context} to retrieve system services
+     *
+     * @return whether this role is allowed to bypass qualification
+     */
+    public boolean shouldAllowBypassingQualification(@NonNull Context context) {
+        if (mBehavior != null) {
+            Boolean allowBypassingQualification = mBehavior.shouldAllowBypassingQualification(this,
+                    context);
+            if (allowBypassingQualification != null) {
+                return allowBypassingQualification;
+            }
+        }
+        return mAllowBypassingQualification;
+    }
+
+    /**
      * Check whether a package is qualified for this role, i.e. whether it contains all the required
      * components (plus meeting some other general restrictions).
      *
@@ -647,7 +658,7 @@ public class Role {
      */
     public boolean isPackageQualified(@NonNull String packageName, @NonNull Context context) {
         RoleManager roleManager = context.getSystemService(RoleManager.class);
-        if (mAllowBypassingQualification
+        if (shouldAllowBypassingQualification(context)
                 && RoleManagerCompat.isBypassingRoleQualification(roleManager)) {
             return true;
         }
@@ -855,21 +866,20 @@ public class Role {
      *
      * @param packageName the package name of the application to be granted this role to
      * @param dontKillApp whether this application should not be killed despite changes
-     * @param overrideUserSetAndFixedPermissions whether to override user set and fixed flags on
-     *                                           permissions
+     * @param overrideUser whether to override user when granting privileges
      * @param context the {@code Context} to retrieve system services
      */
     public void grant(@NonNull String packageName, boolean dontKillApp,
-            boolean overrideUserSetAndFixedPermissions, @NonNull Context context) {
+            boolean overrideUser, @NonNull Context context) {
         boolean permissionOrAppOpChanged = Permissions.grant(packageName,
                 Permissions.filterBySdkVersion(mPermissions),
-                SdkLevel.isAtLeastS() ? !mSystemOnly : true, overrideUserSetAndFixedPermissions,
-                true, false, false, context);
+                SdkLevel.isAtLeastS() ? !mSystemOnly : true, overrideUser, true, false, false,
+                context);
 
         int appOpPermissionsSize = mAppOpPermissions.size();
         for (int i = 0; i < appOpPermissionsSize; i++) {
-            String appOpPermissions = mAppOpPermissions.get(i);
-            AppOpPermissions.grant(packageName, appOpPermissions, context);
+            String appOpPermission = mAppOpPermissions.get(i);
+            AppOpPermissions.grant(packageName, appOpPermission, overrideUser, context);
         }
 
         int appOpsSize = mAppOps.size();
