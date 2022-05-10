@@ -21,6 +21,8 @@ import android.app.AppOpsManager
 import android.app.AppOpsManager.MODE_ALLOWED
 import android.app.AppOpsManager.MODE_IGNORED
 import android.app.AppOpsManager.OPSTR_AUTO_REVOKE_PERMISSIONS_IF_UNUSED
+import android.apphibernation.AppHibernationManager
+import android.content.Context
 import android.os.Bundle
 import android.os.UserHandle
 import android.util.Log
@@ -28,12 +30,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.PermissionControllerApplication
 import com.android.permissioncontroller.PermissionControllerStatsLog
 import com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISSION_GROUPS_FRAGMENT_AUTO_REVOKE_ACTION
 import com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISSION_GROUPS_FRAGMENT_AUTO_REVOKE_ACTION__ACTION__SWITCH_DISABLED
 import com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISSION_GROUPS_FRAGMENT_AUTO_REVOKE_ACTION__ACTION__SWITCH_ENABLED
 import com.android.permissioncontroller.R
+import com.android.permissioncontroller.hibernation.isHibernationEnabled
 import com.android.permissioncontroller.permission.data.AppPermGroupUiInfoLiveData
 import com.android.permissioncontroller.permission.data.FullStoragePermissionAppsLiveData
 import com.android.permissioncontroller.permission.data.HibernationSettingStateLiveData
@@ -42,13 +46,19 @@ import com.android.permissioncontroller.permission.data.PackagePermissionsLiveDa
 import com.android.permissioncontroller.permission.data.PackagePermissionsLiveData.Companion.NON_RUNTIME_NORMAL_PERMS
 import com.android.permissioncontroller.permission.data.SmartUpdateMediatorLiveData
 import com.android.permissioncontroller.permission.data.get
+import com.android.permissioncontroller.permission.model.v31.AppPermissionUsage
 import com.android.permissioncontroller.permission.model.livedatatypes.AppPermGroupUiInfo.PermGrantState
 import com.android.permissioncontroller.permission.ui.Category
+import com.android.permissioncontroller.permission.ui.handheld.v31.is7DayToggleEnabled
 import com.android.permissioncontroller.permission.utils.IPC
 import com.android.permissioncontroller.permission.utils.Utils
+import com.android.permissioncontroller.permission.utils.Utils.AppPermsLastAccessType
 import com.android.permissioncontroller.permission.utils.navigateSafe
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.util.concurrent.TimeUnit
+import kotlin.math.max
 
 /**
  * ViewModel for the AppPermissionGroupsFragment. Has a liveData with the UI information for all
@@ -64,6 +74,8 @@ class AppPermissionGroupsViewModel(
 ) : ViewModel() {
 
     companion object {
+        const val AGGREGATE_DATA_FILTER_BEGIN_DAYS_1 = 1
+        const val AGGREGATE_DATA_FILTER_BEGIN_DAYS_7 = 7
         val LOG_TAG: String = AppPermissionGroupsViewModel::class.java.simpleName
     }
 
@@ -89,6 +101,11 @@ class AppPermissionGroupsViewModel(
     // Auto-revoke and hibernation share the same settings
     val autoRevokeLiveData = HibernationSettingStateLiveData[packageName, user]
 
+    private val packagePermsLiveData =
+            PackagePermissionsLiveData[packageName, user]
+    private val appPermGroupUiInfoLiveDatas = mutableMapOf<String, AppPermGroupUiInfoLiveData>()
+    private val fullStoragePermsLiveData = FullStoragePermissionAppsLiveData
+
     /**
      * LiveData whose data is a map of grant category (either allowed or denied) to a list
      * of permission group names that match the key, and two booleans representing if this is a
@@ -96,11 +113,6 @@ class AppPermissionGroupsViewModel(
      */
     val packagePermGroupsLiveData = object : SmartUpdateMediatorLiveData<@JvmSuppressWildcards
     Map<Category, List<GroupUiInfo>>>() {
-
-        private val packagePermsLiveData =
-            PackagePermissionsLiveData[packageName, user]
-        private val appPermGroupUiInfoLiveDatas = mutableMapOf<String, AppPermGroupUiInfoLiveData>()
-        private val fullStoragePermsLiveData = FullStoragePermissionAppsLiveData
 
         init {
             addSource(packagePermsLiveData) {
@@ -186,6 +198,27 @@ class AppPermissionGroupsViewModel(
         }
     }
 
+    // TODO 206455664: remove once issue is identified
+    fun logLiveDataState() {
+        Log.i(LOG_TAG, "Overall liveData isStale: ${packagePermGroupsLiveData.isStale}, " +
+                "isInitialized: ${packagePermGroupsLiveData.isInitialized}, " +
+                "value: ${packagePermGroupsLiveData.value}")
+        Log.i(LOG_TAG, "AutoRevoke liveData isStale: ${autoRevokeLiveData.isStale}, " +
+                "isInitialized: ${autoRevokeLiveData.isInitialized}, " +
+                "value: ${autoRevokeLiveData.value}")
+        Log.i(LOG_TAG, "PackagePerms liveData isStale: ${packagePermsLiveData.isStale}, " +
+                "isInitialized: ${packagePermsLiveData.isInitialized}, " +
+                "value: ${packagePermsLiveData.value}")
+        Log.i(LOG_TAG, "FullStorage liveData isStale: ${fullStoragePermsLiveData.isStale}, " +
+                "isInitialized: ${fullStoragePermsLiveData.isInitialized}, " +
+                "value size: ${fullStoragePermsLiveData.value?.size}")
+        for ((group, liveData) in appPermGroupUiInfoLiveDatas) {
+            Log.i(LOG_TAG, "$group ui liveData isStale: ${liveData.isStale}, " +
+                    "isInitialized: ${liveData.isInitialized}, " +
+                    "value size: ${liveData.value}")
+        }
+    }
+
     fun setAutoRevoke(enabled: Boolean) {
         GlobalScope.launch(IPC) {
             val aom = app.getSystemService(AppOpsManager::class.java)!!
@@ -209,6 +242,14 @@ class AppPermissionGroupsViewModel(
                     MODE_IGNORED
                 }
                 aom.setUidMode(OPSTR_AUTO_REVOKE_PERMISSIONS_IF_UNUSED, uid, mode)
+                if (isHibernationEnabled() &&
+                    SdkLevel.isAtLeastSv2() &&
+                    !enabled) {
+                    // Only unhibernate on S_V2+ to have consistent toggle behavior w/ Settings
+                    val ahm = app.getSystemService(AppHibernationManager::class.java)!!
+                    ahm.setHibernatingForUser(packageName, false)
+                    ahm.setHibernatingGlobally(packageName, false)
+                }
             }
         }
     }
@@ -219,6 +260,139 @@ class AppPermissionGroupsViewModel(
 
     fun showAllPermissions(fragment: Fragment, args: Bundle) {
         fragment.findNavController().navigateSafe(R.id.perm_groups_to_all_perms, args)
+    }
+
+    // This method should be consolidated with
+    // PermissionAppsViewModel#extractGroupUsageLastAccessTime
+    fun extractGroupUsageLastAccessTime(
+        accessTime: MutableMap<String, Long>,
+        appPermissionUsages: List<AppPermissionUsage>,
+        packageName: String
+    ) {
+        if (!SdkLevel.isAtLeastS()) {
+            return;
+        }
+
+        val aggregateDataFilterBeginDays = if (is7DayToggleEnabled())
+            AGGREGATE_DATA_FILTER_BEGIN_DAYS_7 else AGGREGATE_DATA_FILTER_BEGIN_DAYS_1
+
+        accessTime.clear()
+        val filterTimeBeginMillis = max(System.currentTimeMillis() -
+                TimeUnit.DAYS.toMillis(aggregateDataFilterBeginDays.toLong()),
+                Instant.EPOCH.toEpochMilli())
+        val numApps: Int = appPermissionUsages.size
+        for (appIndex in 0 until numApps) {
+            val appUsage: AppPermissionUsage = appPermissionUsages[appIndex]
+            if (appUsage.packageName != packageName) {
+                continue
+            }
+            val appGroups = appUsage.groupUsages
+            val numGroups = appGroups.size
+            for (groupIndex in 0 until numGroups) {
+                val groupUsage = appGroups[groupIndex]
+                var lastAccessTime = groupUsage.lastAccessTime
+                val groupName = groupUsage.group.name
+                if (lastAccessTime == 0L || lastAccessTime < filterTimeBeginMillis) {
+                    continue
+                }
+
+                // We might have another AppPermissionUsage entry that's of the same packageName
+                // but with a different uid. In that case, we want to grab the max lastAccessTime
+                // as the last usage to show.
+                lastAccessTime = Math.max(
+                        accessTime.getOrDefault(groupName, Instant.EPOCH.toEpochMilli()),
+                        lastAccessTime)
+                accessTime[groupName] = lastAccessTime
+            }
+        }
+    }
+
+    fun getPreferenceSummary(groupInfo: GroupUiInfo, context: Context, lastAccessTime: Long?):
+            String {
+        val summaryTimestamp = Utils
+                .getPermissionLastAccessSummaryTimestamp(
+                        lastAccessTime, context, groupInfo.groupName)
+        @AppPermsLastAccessType val lastAccessType: Int = summaryTimestamp.second
+
+        return when (groupInfo.subtitle) {
+            PermSubtitle.BACKGROUND ->
+                when (lastAccessType) {
+                    Utils.LAST_24H_CONTENT_PROVIDER -> context.getString(
+                            R.string.app_perms_content_provider_24h_background)
+                    Utils.LAST_7D_CONTENT_PROVIDER -> context.getString(
+                            R.string.app_perms_content_provider_7d_background)
+                    Utils.LAST_24H_SENSOR_TODAY -> context.getString(
+                            R.string.app_perms_24h_access_background,
+                            summaryTimestamp.first)
+                    Utils.LAST_24H_SENSOR_YESTERDAY -> context.getString(
+                            R.string.app_perms_24h_access_yest_background,
+                            summaryTimestamp.first)
+                    Utils.LAST_7D_SENSOR -> context.getString(
+                            R.string.app_perms_7d_access_background,
+                            summaryTimestamp.third, summaryTimestamp.first)
+                    Utils.NOT_IN_LAST_7D -> context.getString(
+                            R.string.permission_subtitle_background)
+                    else -> context.getString(
+                            R.string.permission_subtitle_background)
+                }
+            PermSubtitle.MEDIA_ONLY ->
+                when (lastAccessType) {
+                    Utils.LAST_24H_CONTENT_PROVIDER -> context.getString(
+                            R.string.app_perms_content_provider_24h_media_only)
+                    Utils.LAST_7D_CONTENT_PROVIDER -> context.getString(
+                            R.string.app_perms_content_provider_7d_media_only)
+                    Utils.LAST_24H_SENSOR_TODAY -> context.getString(
+                            R.string.app_perms_24h_access_media_only,
+                            summaryTimestamp.first)
+                    Utils.LAST_24H_SENSOR_YESTERDAY -> context.getString(
+                            R.string.app_perms_24h_access_yest_media_only,
+                            summaryTimestamp.first)
+                    Utils.LAST_7D_SENSOR -> context.getString(
+                            R.string.app_perms_7d_access_media_only,
+                            summaryTimestamp.third, summaryTimestamp.first)
+                    Utils.NOT_IN_LAST_7D -> context.getString(
+                            R.string.permission_subtitle_media_only)
+                    else -> context.getString(R.string.permission_subtitle_media_only)
+                }
+            PermSubtitle.ALL_FILES ->
+                when (lastAccessType) {
+                    Utils.LAST_24H_CONTENT_PROVIDER -> context.getString(
+                            R.string.app_perms_content_provider_24h_all_files)
+                    Utils.LAST_7D_CONTENT_PROVIDER -> context.getString(
+                            R.string.app_perms_content_provider_7d_all_files)
+                    Utils.LAST_24H_SENSOR_TODAY -> context.getString(
+                            R.string.app_perms_24h_access_all_files,
+                            summaryTimestamp.first)
+                    Utils.LAST_24H_SENSOR_YESTERDAY -> context.getString(
+                            R.string.app_perms_24h_access_yest_all_files,
+                            summaryTimestamp.first)
+                    Utils.LAST_7D_SENSOR -> context.getString(
+                            R.string.app_perms_7d_access_all_files,
+                            summaryTimestamp.third, summaryTimestamp.first)
+                    Utils.NOT_IN_LAST_7D -> context.getString(
+                            R.string.permission_subtitle_all_files)
+                    else -> context.getString(R.string.permission_subtitle_all_files)
+                }
+            else ->
+                // PermSubtitle.FOREGROUND_ONLY should fall into this as well
+                when (lastAccessType) {
+                    Utils.LAST_24H_CONTENT_PROVIDER -> context.getString(
+                            R.string.app_perms_content_provider_24h)
+                    Utils.LAST_7D_CONTENT_PROVIDER -> context.getString(
+                            R.string.app_perms_content_provider_7d)
+                    Utils.LAST_24H_SENSOR_TODAY -> context.getString(
+                            R.string.app_perms_24h_access,
+                            summaryTimestamp.first)
+                    Utils.LAST_24H_SENSOR_YESTERDAY -> context.getString(
+                            R.string.app_perms_24h_access_yest,
+                            summaryTimestamp.first)
+                    Utils.LAST_7D_SENSOR -> context.getString(
+                            R.string.app_perms_7d_access,
+                            summaryTimestamp.third, summaryTimestamp.first)
+                    Utils.NOT_IN_LAST_7D -> ""
+                    else -> ""
+                }
+        }
     }
 }
 

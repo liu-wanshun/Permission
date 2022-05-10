@@ -43,6 +43,8 @@ import android.content.pm.PackageManager.MATCH_DIRECT_BOOT_AWARE
 import android.content.pm.PackageManager.MATCH_DIRECT_BOOT_UNAWARE
 import android.content.pm.PermissionGroupInfo
 import android.content.pm.PermissionInfo
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
@@ -54,6 +56,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
+import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.permission.data.LightPackageInfoLiveData
 import com.android.permissioncontroller.permission.data.get
@@ -174,7 +177,8 @@ object KotlinUtils {
      * @return The permission group's icon, the ic_perm_device_info icon if the group has no icon,
      * or the group does not exist
      */
-    fun getPermGroupIcon(context: Context, groupName: String): Drawable? {
+    @JvmOverloads
+    fun getPermGroupIcon(context: Context, groupName: String, tint: Int? = null): Drawable? {
         val groupInfo = Utils.getGroupInfo(groupName, context)
         var icon: Drawable? = null
         if (groupInfo != null && groupInfo.icon != 0) {
@@ -186,7 +190,12 @@ object KotlinUtils {
             icon = context.getDrawable(R.drawable.ic_perm_device_info)
         }
 
-        return Utils.applyTint(context, icon, android.R.attr.colorControlNormal)
+        if (tint == null) {
+            return Utils.applyTint(context, icon, android.R.attr.colorControlNormal)
+        }
+
+        icon?.setTint(tint)
+        return icon
     }
 
     /**
@@ -328,6 +337,16 @@ object KotlinUtils {
         } catch (e: PackageManager.NameNotFoundException) {
             packageName
         }
+    }
+
+    fun convertToBitmap(pkgIcon: Drawable): Bitmap {
+        val pkgIconBmp = Bitmap.createBitmap(pkgIcon.intrinsicWidth, pkgIcon.intrinsicHeight,
+            Bitmap.Config.ARGB_8888)
+        // Draw the icon so it can be displayed.
+        val canvas = Canvas(pkgIconBmp)
+        pkgIcon.setBounds(0, 0, pkgIcon.intrinsicWidth, pkgIcon.intrinsicHeight)
+        pkgIcon.draw(canvas)
+        return pkgIconBmp
     }
 
     /**
@@ -510,6 +529,18 @@ object KotlinUtils {
                 shouldKillForAnyPermission = shouldKillForAnyPermission || shouldKill
             }
         }
+        if (!newPerms.isEmpty()) {
+            val user = UserHandle.getUserHandleForUid(group.packageInfo.uid)
+            for (groupPerm in group.allPermissions.values) {
+                var permFlags = groupPerm!!.flags
+                permFlags = permFlags.clearFlag(PackageManager.FLAG_PERMISSION_AUTO_REVOKED)
+                if (groupPerm!!.flags != permFlags) {
+                    app.packageManager.updatePermissionFlags(groupPerm!!.name,
+                        group.packageInfo.packageName, PERMISSION_CONTROLLER_CHANGED_FLAG_MASK,
+                        permFlags, user)
+                }
+            }
+        }
 
         if (shouldKillForAnyPermission) {
             (app.getSystemService(ActivityManager::class.java) as ActivityManager).killUid(
@@ -519,10 +550,18 @@ object KotlinUtils {
             group.hasInstallToRuntimeSplit, group.specialLocationGrant)
         // If any permission in the group is one time granted, start one time permission session.
         if (newGroup.permissions.any { it.value.isOneTime && it.value.isGrantedIncludingAppOp }) {
-            app.getSystemService(PermissionManager::class.java)!!.startOneTimePermissionSession(
-                group.packageName, Utils.getOneTimePermissionsTimeout(),
-                ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_RESET_TIMER,
-                ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_KEEP_SESSION_ALIVE)
+            if (SdkLevel.isAtLeastT()) {
+                app.getSystemService(PermissionManager::class.java)!!.startOneTimePermissionSession(
+                        group.packageName, Utils.getOneTimePermissionsTimeout(),
+                        Utils.getOneTimePermissionsKilledDelay(false),
+                        ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_RESET_TIMER,
+                        ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_KEEP_SESSION_ALIVE)
+            } else {
+                app.getSystemService(PermissionManager::class.java)!!.startOneTimePermissionSession(
+                        group.packageName, Utils.getOneTimePermissionsTimeout(),
+                        ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_RESET_TIMER,
+                        ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_KEEP_SESSION_ALIVE)
+            }
         }
         return newGroup
     }
@@ -562,8 +601,8 @@ object KotlinUtils {
         if (!perm.isGrantedIncludingAppOp) {
             val affectsAppOp = permissionToOp(perm.name) != null || perm.isBackgroundPermission
 
-            if (supportsRuntime &&
-                    !isPermissionSplitFromNonRuntime(app, perm.name, pkgInfo.targetSdkVersion)) {
+            // TODO 195016052: investigate adding split permission handling
+            if (supportsRuntime) {
                 app.packageManager.grantRuntimePermission(group.packageName, perm.name, user)
                 isGranted = true
             } else if (affectsAppOp) {
@@ -575,6 +614,7 @@ object KotlinUtils {
                 isGranted = true
             }
             newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_REVOKED_COMPAT)
+            newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_REVOKE_WHEN_REQUESTED)
 
             // If this permission affects an app op, ensure the permission app op is enabled
             // before the permission grant.
@@ -796,10 +836,10 @@ object KotlinUtils {
                 // app. This matches the revoke runtime permission behavior.
                 shouldKill = true
                 newFlags = newFlags.setFlag(PackageManager.FLAG_PERMISSION_REVOKED_COMPAT)
-                newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_REVOKE_WHEN_REQUESTED)
                 isGranted = false
             }
 
+            newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_REVOKE_WHEN_REQUESTED)
             if (affectsAppOp) {
                 disallowAppOp(app, perm, group)
             }
@@ -814,6 +854,7 @@ object KotlinUtils {
         newFlags = if (oneTime) newFlags.setFlag(PackageManager.FLAG_PERMISSION_ONE_TIME)
         else newFlags.clearFlag(PackageManager.FLAG_PERMISSION_ONE_TIME)
         newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_AUTO_REVOKED)
+        newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_REVIEW_REQUIRED)
 
         if (perm.flags != newFlags) {
             app.packageManager.updatePermissionFlags(perm.name, group.packageInfo.packageName,
