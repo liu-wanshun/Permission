@@ -19,6 +19,7 @@ package com.android.permissioncontroller.hibernation
 import android.Manifest
 import android.Manifest.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION
 import android.accessibilityservice.AccessibilityService
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_CANT_SAVE_STATE
 import android.app.AppOpsManager
@@ -67,6 +68,8 @@ import com.android.permissioncontroller.Constants
 import com.android.permissioncontroller.DumpableLog
 import com.android.permissioncontroller.PermissionControllerApplication
 import com.android.permissioncontroller.R
+import com.android.permissioncontroller.hibernation.v31.HibernationController
+import com.android.permissioncontroller.hibernation.v31.InstallerPackagesLiveData
 import com.android.permissioncontroller.permission.data.AllPackageInfosLiveData
 import com.android.permissioncontroller.permission.data.AppOpLiveData
 import com.android.permissioncontroller.permission.data.BroadcastReceiverLiveData
@@ -75,13 +78,13 @@ import com.android.permissioncontroller.permission.data.DataRepositoryForPackage
 import com.android.permissioncontroller.permission.data.HasIntentAction
 import com.android.permissioncontroller.permission.data.LauncherPackagesLiveData
 import com.android.permissioncontroller.permission.data.ServiceLiveData
-import com.android.permissioncontroller.permission.data.SmartAsyncMediatorLiveData
 import com.android.permissioncontroller.permission.data.SmartUpdateMediatorLiveData
 import com.android.permissioncontroller.permission.data.UsageStatsLiveData
 import com.android.permissioncontroller.permission.data.get
 import com.android.permissioncontroller.permission.data.getUnusedPackages
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPackageInfo
 import com.android.permissioncontroller.permission.service.revokeAppPermissions
+import com.android.permissioncontroller.permission.utils.StringUtils
 import com.android.permissioncontroller.permission.utils.Utils
 import com.android.permissioncontroller.permission.utils.forEachInParallel
 import kotlinx.coroutines.Dispatchers.Main
@@ -97,15 +100,12 @@ const val DEBUG_OVERRIDE_THRESHOLDS = false
 // TODO eugenesusla: temporarily enabled for extra logs during dogfooding
 const val DEBUG_HIBERNATION_POLICY = true || DEBUG_OVERRIDE_THRESHOLDS
 
-private const val AUTO_REVOKE_ENABLED = true
-
 private var SKIP_NEXT_RUN = false
 
 private val DEFAULT_UNUSED_THRESHOLD_MS = TimeUnit.DAYS.toMillis(90)
 
 fun getUnusedThresholdMs() = when {
     DEBUG_OVERRIDE_THRESHOLDS -> TimeUnit.SECONDS.toMillis(1)
-    !isHibernationEnabled() && !AUTO_REVOKE_ENABLED -> Long.MAX_VALUE
     else -> DeviceConfig.getLong(DeviceConfig.NAMESPACE_PERMISSIONS,
             Utils.PROPERTY_HIBERNATION_UNUSED_THRESHOLD_MILLIS,
             DEFAULT_UNUSED_THRESHOLD_MS)
@@ -136,12 +136,6 @@ fun hibernationTargetsPreSApps(): Boolean {
         false /* defaultValue */)
 }
 
-fun isHibernationJobEnabled(): Boolean {
-    return getCheckFrequencyMs() > 0 &&
-            getUnusedThresholdMs() > 0 &&
-            getUnusedThresholdMs() != Long.MAX_VALUE
-}
-
 /**
  * Receiver of the onBoot event.
  */
@@ -157,10 +151,9 @@ class HibernationOnBootReceiver : BroadcastReceiver() {
         // Write first boot time if first boot
         context.firstBootTime
 
-        val userManager = context.getSystemService(UserManager::class.java)!!
         // If this user is a profile, then its hibernation/auto-revoke will be handled by the
         // primary user
-        if (userManager.isProfile) {
+        if (isProfile(context)) {
             if (DEBUG_HIBERNATION_POLICY) {
                 DumpableLog.i(LOG_TAG, "user ${Process.myUserHandle().identifier} is a profile." +
                         " Not running hibernation job.")
@@ -187,6 +180,14 @@ class HibernationOnBootReceiver : BroadcastReceiver() {
                     "Could not schedule ${HibernationJobService::class.java.simpleName}: $status")
             }
         }
+    }
+
+    // UserManager#isProfile was already a systemAPI, linter started complaining after it
+    // was exposed as a public API thinking it was a newly exposed API.
+    @SuppressLint("NewApi")
+    private fun isProfile(context: Context): Boolean {
+        val userManager = context.getSystemService(UserManager::class.java)!!
+        return userManager.isProfile
     }
 
     /**
@@ -225,16 +226,9 @@ class HibernationOnBootReceiver : BroadcastReceiver() {
 private suspend fun getAppsToHibernate(
     context: Context
 ): Map<UserHandle, List<LightPackageInfo>> {
-    if (!isHibernationJobEnabled()) {
-        return emptyMap()
-    }
-
     val now = System.currentTimeMillis()
     val firstBootTime = context.firstBootTime
 
-    // TODO ntmyren: remove once b/154796729 is fixed
-    Log.i(LOG_TAG, "getting UserPackageInfoLiveData for all users " +
-            "in " + HibernationJobService::class.java.simpleName)
     val allPackagesByUser = AllPackageInfosLiveData.getInitializedValue(forceUpdate = true)
     val allPackagesByUserByUid = allPackagesByUser.mapValues { (_, pkgs) ->
         pkgs.groupBy { pkg -> pkg.uid }
@@ -423,8 +417,8 @@ suspend fun isPackageHibernationExemptBySystem(
         return true
     }
 
+    val context = PermissionControllerApplication.get()
     if (SdkLevel.isAtLeastS()) {
-        val context = PermissionControllerApplication.get()
         val hasInstallOrUpdatePermissions =
                 context.checkPermission(
                         Manifest.permission.INSTALL_PACKAGES, -1 /* pid */, pkg.uid) ==
@@ -453,6 +447,17 @@ suspend fun isPackageHibernationExemptBySystem(
         if (roleHolders.contains(pkg.packageName)) {
             if (DEBUG_HIBERNATION_POLICY) {
                 DumpableLog.i(LOG_TAG, "Exempted ${pkg.packageName} - wellbeing app")
+            }
+            return true
+        }
+    }
+
+    if (SdkLevel.isAtLeastT()) {
+        val roleHolders = context.getSystemService(android.app.role.RoleManager::class.java)!!
+            .getRoleHolders(RoleManager.ROLE_DEVICE_POLICY_MANAGEMENT)
+        if (roleHolders.contains(pkg.packageName)) {
+            if (DEBUG_HIBERNATION_POLICY) {
+                DumpableLog.i(LOG_TAG, "Exempted ${pkg.packageName} - device policy manager app")
             }
             return true
         }
@@ -592,20 +597,21 @@ class HibernationJobService : JobService() {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         val pendingIntent = PendingIntent.getActivity(this, 0, clickIntent,
-                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_UPDATE_CURRENT or
-                PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_UPDATE_CURRENT or
+            PendingIntent.FLAG_IMMUTABLE)
 
         var notifTitle: String
         var notifContent: String
         if (isHibernationEnabled()) {
-            notifTitle = getResources().getQuantityString(
-                R.plurals.unused_apps_notification_title, numUnused, numUnused)
+            notifTitle = StringUtils.getIcuPluralsString(this,
+                R.string.unused_apps_notification_title, numUnused)
             notifContent = getString(R.string.unused_apps_notification_content)
         } else {
             notifTitle = getString(R.string.auto_revoke_permission_notification_title)
             notifContent = getString(R.string.auto_revoke_permission_notification_content)
         }
 
+        // Notification won't appear on TV, because notifications are considered distruptive on TV
         val b = Notification.Builder(this, Constants.PERMISSION_REMINDER_CHANNEL_ID)
             .setContentTitle(notifTitle)
             .setContentText(notifContent)
@@ -614,7 +620,6 @@ class HibernationJobService : JobService() {
             .setColor(getColor(android.R.color.system_notification_accent_color))
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
-            .extend(Notification.TvExtender())
         Utils.getSettingsLabelForNotifications(applicationContext.packageManager)?.let {
             settingsLabel ->
             val extras = Bundle()
@@ -639,7 +644,7 @@ class HibernationJobService : JobService() {
  * Packages using exempt services for the current user (package-name -> list<service-interfaces>
  * implemented by the package)
  */
-class ExemptServicesLiveData(val user: UserHandle)
+class ExemptServicesLiveData(private val user: UserHandle)
     : SmartUpdateMediatorLiveData<Map<String, List<String>>>() {
     private val serviceLiveDatas: List<SmartUpdateMediatorLiveData<Set<String>>> = listOf(
             ServiceLiveData[InputMethod.SERVICE_INTERFACE,
@@ -715,64 +720,14 @@ class ExemptServicesLiveData(val user: UserHandle)
 }
 
 /**
- * Packages that are the installer of record for some package on the device.
- */
-class InstallerPackagesLiveData(val user: UserHandle)
-    : SmartAsyncMediatorLiveData<Set<String>>() {
-
-    init {
-        addSource(AllPackageInfosLiveData) {
-            update()
-        }
-    }
-
-    override suspend fun loadDataAndPostValue(job: Job) {
-        if (job.isCancelled) {
-            return
-        }
-        if (!AllPackageInfosLiveData.isInitialized) {
-            return
-        }
-        val userPackageInfos = AllPackageInfosLiveData.value!![user]
-        val installerPackages = mutableSetOf<String>()
-        val packageManager = PermissionControllerApplication.get().packageManager
-
-        userPackageInfos!!.forEach { pkgInfo ->
-            try {
-                val installerPkg =
-                    packageManager.getInstallSourceInfo(pkgInfo.packageName).installingPackageName
-                if (installerPkg != null) {
-                    installerPackages.add(installerPkg)
-                }
-            } catch (e: PackageManager.NameNotFoundException) {
-                DumpableLog.w(LOG_TAG, "Unable to find installer source info", e)
-            }
-        }
-
-        postValue(installerPackages)
-    }
-
-    /**
-     * Repository for installer packages
-     *
-     * <p> Key value is user
-     */
-    companion object : DataRepositoryForPackage<UserHandle, InstallerPackagesLiveData>() {
-        override fun newValue(key: UserHandle): InstallerPackagesLiveData {
-            return InstallerPackagesLiveData(key)
-        }
-    }
-}
-
-/**
  * Live data for whether the hibernation feature is enabled or not.
  */
 object HibernationEnabledLiveData
     : MutableLiveData<Boolean>() {
     init {
-        value = SdkLevel.isAtLeastS() &&
+        postValue(SdkLevel.isAtLeastS() &&
             DeviceConfig.getBoolean(NAMESPACE_APP_HIBERNATION,
-            Utils.PROPERTY_APP_HIBERNATION_ENABLED, true /* defaultValue */)
+            Utils.PROPERTY_APP_HIBERNATION_ENABLED, true /* defaultValue */))
         DeviceConfig.addOnPropertiesChangedListener(
             NAMESPACE_APP_HIBERNATION,
             PermissionControllerApplication.get().mainExecutor,
