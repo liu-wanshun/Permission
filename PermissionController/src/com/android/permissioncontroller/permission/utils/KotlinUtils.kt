@@ -43,17 +43,22 @@ import android.content.pm.PackageManager.MATCH_DIRECT_BOOT_AWARE
 import android.content.pm.PackageManager.MATCH_DIRECT_BOOT_UNAWARE
 import android.content.pm.PermissionGroupInfo
 import android.content.pm.PermissionInfo
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.os.UserHandle
 import android.permission.PermissionManager
+import android.provider.DeviceConfig
 import android.text.TextUtils
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
+import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.permission.data.LightPackageInfoLiveData
 import com.android.permissioncontroller.permission.data.get
@@ -88,6 +93,7 @@ object KotlinUtils {
         FLAG_PERMISSION_AUTO_REVOKED
 
     private const val KILL_REASON_APP_OP_CHANGE = "Permission related app op changed"
+    private const val SAFETY_PROTECTION_RESOURCES_ENABLED = "safety_protection_enabled"
 
     /**
      * Importance level to define the threshold for whether a package is in a state which resets the
@@ -174,7 +180,8 @@ object KotlinUtils {
      * @return The permission group's icon, the ic_perm_device_info icon if the group has no icon,
      * or the group does not exist
      */
-    fun getPermGroupIcon(context: Context, groupName: String): Drawable? {
+    @JvmOverloads
+    fun getPermGroupIcon(context: Context, groupName: String, tint: Int? = null): Drawable? {
         val groupInfo = Utils.getGroupInfo(groupName, context)
         var icon: Drawable? = null
         if (groupInfo != null && groupInfo.icon != 0) {
@@ -186,7 +193,12 @@ object KotlinUtils {
             icon = context.getDrawable(R.drawable.ic_perm_device_info)
         }
 
-        return Utils.applyTint(context, icon, android.R.attr.colorControlNormal)
+        if (tint == null) {
+            return Utils.applyTint(context, icon, android.R.attr.colorControlNormal)
+        }
+
+        icon?.setTint(tint)
+        return icon
     }
 
     /**
@@ -328,6 +340,16 @@ object KotlinUtils {
         } catch (e: PackageManager.NameNotFoundException) {
             packageName
         }
+    }
+
+    fun convertToBitmap(pkgIcon: Drawable): Bitmap {
+        val pkgIconBmp = Bitmap.createBitmap(pkgIcon.intrinsicWidth, pkgIcon.intrinsicHeight,
+            Bitmap.Config.ARGB_8888)
+        // Draw the icon so it can be displayed.
+        val canvas = Canvas(pkgIconBmp)
+        pkgIcon.setBounds(0, 0, pkgIcon.intrinsicWidth, pkgIcon.intrinsicHeight)
+        pkgIcon.draw(canvas)
+        return pkgIconBmp
     }
 
     /**
@@ -510,6 +532,18 @@ object KotlinUtils {
                 shouldKillForAnyPermission = shouldKillForAnyPermission || shouldKill
             }
         }
+        if (!newPerms.isEmpty()) {
+            val user = UserHandle.getUserHandleForUid(group.packageInfo.uid)
+            for (groupPerm in group.allPermissions.values) {
+                var permFlags = groupPerm!!.flags
+                permFlags = permFlags.clearFlag(PackageManager.FLAG_PERMISSION_AUTO_REVOKED)
+                if (groupPerm!!.flags != permFlags) {
+                    app.packageManager.updatePermissionFlags(groupPerm!!.name,
+                        group.packageInfo.packageName, PERMISSION_CONTROLLER_CHANGED_FLAG_MASK,
+                        permFlags, user)
+                }
+            }
+        }
 
         if (shouldKillForAnyPermission) {
             (app.getSystemService(ActivityManager::class.java) as ActivityManager).killUid(
@@ -519,10 +553,18 @@ object KotlinUtils {
             group.hasInstallToRuntimeSplit, group.specialLocationGrant)
         // If any permission in the group is one time granted, start one time permission session.
         if (newGroup.permissions.any { it.value.isOneTime && it.value.isGrantedIncludingAppOp }) {
-            app.getSystemService(PermissionManager::class.java)!!.startOneTimePermissionSession(
-                group.packageName, Utils.getOneTimePermissionsTimeout(),
-                ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_RESET_TIMER,
-                ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_KEEP_SESSION_ALIVE)
+            if (SdkLevel.isAtLeastT()) {
+                app.getSystemService(PermissionManager::class.java)!!.startOneTimePermissionSession(
+                        group.packageName, Utils.getOneTimePermissionsTimeout(),
+                        Utils.getOneTimePermissionsKilledDelay(false),
+                        ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_RESET_TIMER,
+                        ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_KEEP_SESSION_ALIVE)
+            } else {
+                app.getSystemService(PermissionManager::class.java)!!.startOneTimePermissionSession(
+                        group.packageName, Utils.getOneTimePermissionsTimeout(),
+                        ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_RESET_TIMER,
+                        ONE_TIME_PACKAGE_IMPORTANCE_LEVEL_TO_KEEP_SESSION_ALIVE)
+            }
         }
         return newGroup
     }
@@ -575,6 +617,7 @@ object KotlinUtils {
                 isGranted = true
             }
             newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_REVOKED_COMPAT)
+            newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_REVOKE_WHEN_REQUESTED)
 
             // If this permission affects an app op, ensure the permission app op is enabled
             // before the permission grant.
@@ -796,10 +839,10 @@ object KotlinUtils {
                 // app. This matches the revoke runtime permission behavior.
                 shouldKill = true
                 newFlags = newFlags.setFlag(PackageManager.FLAG_PERMISSION_REVOKED_COMPAT)
-                newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_REVOKE_WHEN_REQUESTED)
                 isGranted = false
             }
 
+            newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_REVOKE_WHEN_REQUESTED)
             if (affectsAppOp) {
                 disallowAppOp(app, perm, group)
             }
@@ -814,6 +857,7 @@ object KotlinUtils {
         newFlags = if (oneTime) newFlags.setFlag(PackageManager.FLAG_PERMISSION_ONE_TIME)
         else newFlags.clearFlag(PackageManager.FLAG_PERMISSION_ONE_TIME)
         newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_AUTO_REVOKED)
+        newFlags = newFlags.clearFlag(PackageManager.FLAG_PERMISSION_REVIEW_REQUIRED)
 
         if (perm.flags != newFlags) {
             app.packageManager.updatePermissionFlags(perm.name, group.packageInfo.packageName,
@@ -1027,6 +1071,22 @@ object KotlinUtils {
                 PackageManager.FLAG_PERMISSION_SELECTED_LOCATION_ACCURACY to true,
                 filterPermissions = listOf(Manifest.permission.ACCESS_COARSE_LOCATION))
         }
+    }
+
+    /**
+     * Determines whether we should show the safety protection resources.
+     * We show the resources only if
+     * (1) the build version is T or after and
+     * (2) the feature flag safety_protection_enabled is enabled and
+     * (3) the resources exist (currently the resources only exist on GMS devices)
+     */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
+    fun shouldShowSafetyProtectionResources(context: Context): Boolean {
+        return SdkLevel.isAtLeastT() &&
+            DeviceConfig.getBoolean(
+                DeviceConfig.NAMESPACE_PRIVACY, SAFETY_PROTECTION_RESOURCES_ENABLED, false) &&
+            context.getDrawable(android.R.drawable.ic_safety_protection) != null &&
+            !context.getString(android.R.string.safety_protection_display_text).isNullOrEmpty()
     }
 }
 
