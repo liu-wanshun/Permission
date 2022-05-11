@@ -20,8 +20,15 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.pm.PackageItemInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.ArrayMap;
+import android.view.accessibility.AccessibilityManager;
 
+import androidx.annotation.RequiresApi;
+
+import com.android.modules.utils.build.SdkLevel;
+import com.android.permissioncontroller.permission.utils.Utils;
+import com.android.permissioncontroller.privacysources.SafetyCenterAccessibilityListener;
 import com.android.permissioncontroller.role.model.Role;
 import com.android.permissioncontroller.role.model.Roles;
 import com.android.permissioncontroller.role.ui.SpecialAppAccessListActivity;
@@ -38,6 +45,9 @@ public final class PermissionControllerApplication extends Application {
 
         PackageItemInfo.forceSafeLabels();
         updateSpecialAppAccessListActivityEnabledState();
+        if (SdkLevel.isAtLeastT()) {
+            addAccessibilityListener();
+        }
     }
 
     /**
@@ -71,4 +81,13 @@ public final class PermissionControllerApplication extends Application {
         packageManager.setComponentEnabledSetting(componentName, enabledState,
                 PackageManager.DONT_KILL_APP);
     }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private void addAccessibilityListener() {
+        AccessibilityManager a11yManager = Utils.getSystemServiceSafe(
+                this, AccessibilityManager.class);
+        a11yManager.addAccessibilityServicesStateChangeListener(
+                new SafetyCenterAccessibilityListener(this));
+    }
+
 }
