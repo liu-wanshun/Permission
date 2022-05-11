@@ -16,7 +16,10 @@
 
 package com.android.permissioncontroller.permission.ui.television;
 
+import static android.Manifest.permission_group.NOTIFICATIONS;
+
 import static com.android.permissioncontroller.Constants.INVALID_SESSION_ID;
+import static com.android.permissioncontroller.hibernation.HibernationPolicyKt.isHibernationEnabled;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -26,6 +29,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.hardware.SensorPrivacyManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.UserHandle;
@@ -42,10 +46,12 @@ import android.widget.Toast;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.PreferenceViewHolder;
 import androidx.preference.SwitchPreference;
 
+import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.model.AppPermissionGroup;
 import com.android.permissioncontroller.permission.model.AppPermissions;
@@ -56,6 +62,7 @@ import com.android.permissioncontroller.permission.ui.model.AppPermissionGroupsV
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
 import com.android.permissioncontroller.permission.utils.LocationUtils;
 import com.android.permissioncontroller.permission.utils.SafetyNetLogger;
+import com.android.permissioncontroller.permission.utils.StringUtils;
 import com.android.permissioncontroller.permission.utils.Utils;
 
 public final class AppPermissionsFragment extends SettingsWithHeader
@@ -65,6 +72,7 @@ public final class AppPermissionsFragment extends SettingsWithHeader
 
     static final String EXTRA_HIDE_INFO_BUTTON = "hideInfoButton";
     private static final String AUTO_REVOKE_SWITCH_KEY = "_AUTO_REVOKE_SWITCH_KEY";
+    private static final String UNUSED_APPS_KEY = "_UNUSED_APPS_KEY";
 
     private static final int MENU_ALL_PERMS = 0;
 
@@ -74,6 +82,13 @@ public final class AppPermissionsFragment extends SettingsWithHeader
     private PreferenceScreen mExtraScreen;
 
     private boolean mHasConfirmedRevoke;
+
+    private SensorPrivacyManager mSensorPrivacyManager;
+    private final SensorPrivacyManager.OnSensorPrivacyChangedListener mPrivacyChangedListener =
+            (sensor, enabled) -> {
+                mAppPermissions.refresh();
+                setPreferencesCheckedState();
+            };
 
     public static AppPermissionsFragment newInstance(String packageName, UserHandle user) {
         return setPackage(new AppPermissionsFragment(), packageName, user);
@@ -120,6 +135,10 @@ public final class AppPermissionsFragment extends SettingsWithHeader
             getActivity().finish();
             return;
         }
+
+        if (SdkLevel.isAtLeastT()) {
+            mSensorPrivacyManager = getContext().getSystemService(SensorPrivacyManager.class);
+        }
     }
 
     @Override
@@ -136,6 +155,9 @@ public final class AppPermissionsFragment extends SettingsWithHeader
         mAppPermissions.refresh();
         loadPreferences();
         setPreferencesCheckedState();
+        if (mSensorPrivacyManager != null) {
+            mSensorPrivacyManager.addSensorPrivacyListener(mPrivacyChangedListener);
+        }
     }
 
     @Override
@@ -216,7 +238,9 @@ public final class AppPermissionsFragment extends SettingsWithHeader
         extraPerms.setTitle(R.string.additional_permissions);
 
         for (AppPermissionGroup group : mAppPermissions.getPermissionGroups()) {
-            if (!Utils.shouldShowPermission(getContext(), group)) {
+            if (!Utils.shouldShowPermission(getContext(), group)
+                    || group.getName().equals(NOTIFICATIONS)) {
+                // Skip notification group on TV
                 continue;
             }
 
@@ -264,8 +288,8 @@ public final class AppPermissionsFragment extends SettingsWithHeader
                 return true;
             });
             int count = mExtraScreen.getPreferenceCount() - 1;
-            extraPerms.setSummary(getResources().getQuantityString(
-                    R.plurals.additional_permissions_more, count, count));
+            extraPerms.setSummary(StringUtils.getIcuPluralsString(getContext(),
+                    R.string.additional_permissions_more, count));
             screen.addPreference(extraPerms);
         }
 
@@ -339,6 +363,9 @@ public final class AppPermissionsFragment extends SettingsWithHeader
         mViewModel.getAutoRevokeLiveData().removeObservers(this);
         super.onPause();
         logToggledGroups();
+        if (mSensorPrivacyManager != null) {
+            mSensorPrivacyManager.removeSensorPrivacyListener(mPrivacyChangedListener);
+        }
     }
 
     private void addToggledGroup(AppPermissionGroup group) {
@@ -406,10 +433,20 @@ public final class AppPermissionsFragment extends SettingsWithHeader
             android.util.Log.w(LOG_TAG, "setAutoRevoke " + autoRevokeSwitch.isChecked());
             return true;
         });
-        autoRevokeSwitch.setTitle(R.string.auto_revoke_label);
+        autoRevokeSwitch.setTitle(isHibernationEnabled() ? R.string.unused_apps_label
+                : R.string.auto_revoke_label);
         autoRevokeSwitch.setSummary(R.string.auto_revoke_summary);
         autoRevokeSwitch.setKey(AUTO_REVOKE_SWITCH_KEY);
-        screen.addPreference(autoRevokeSwitch);
+        if (isHibernationEnabled()) {
+            PreferenceCategory unusedAppsCategory = new PreferenceCategory(
+                    screen.getPreferenceManager().getContext());
+            unusedAppsCategory.setKey(UNUSED_APPS_KEY);
+            unusedAppsCategory.setTitle(R.string.unused_apps);
+            screen.addPreference(unusedAppsCategory);
+            unusedAppsCategory.addPreference(autoRevokeSwitch);
+        } else {
+            screen.addPreference(autoRevokeSwitch);
+        }
     }
 
     private void setAutoRevokeToggleState(HibernationSettingState state) {
@@ -418,13 +455,18 @@ public final class AppPermissionsFragment extends SettingsWithHeader
         if (state == null || autoRevokeSwitch == null) {
             return;
         }
-        if (!state.isEnabledGlobal()) {
+        if (state.getRevocableGroupNames().isEmpty()) {
+            if (isHibernationEnabled()) {
+                getPreferenceScreen().findPreference(UNUSED_APPS_KEY).setVisible(false);
+            }
             autoRevokeSwitch.setVisible(false);
             return;
         }
+        if (isHibernationEnabled()) {
+            getPreferenceScreen().findPreference(UNUSED_APPS_KEY).setVisible(true);
+        }
         autoRevokeSwitch.setVisible(true);
-        autoRevokeSwitch.setEnabled(state.getShouldAllowUserToggle());
-        autoRevokeSwitch.setChecked(state.isEnabledForApp());
+        autoRevokeSwitch.setChecked(state.isEligibleForHibernation());
     }
 
     private static PackageInfo getPackageInfo(Activity activity, String packageName) {
