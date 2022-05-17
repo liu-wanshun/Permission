@@ -71,7 +71,7 @@
     <string name="app_permissions_group_summary2" msgid="4329922444840521150">"Дозвољено апликација: <xliff:g id="COUNT_0">%1$d</xliff:g>/<xliff:g id="COUNT_1">%2$d</xliff:g>"</string>
     <string name="menu_show_system" msgid="4254021607027872504">"Прикажи системске"</string>
     <string name="menu_hide_system" msgid="3855390843744028465">"Сакриј системске"</string>
-    <string name="manage_permission" msgid="2895385393037061964">"Управљање дозволом"</string>
+    <string name="manage_permission" msgid="2895385393037061964">"Управљајте дозволом"</string>
     <string name="no_apps" msgid="2412612731628386816">"Нема апликација"</string>
     <string name="location_settings" msgid="3624412509133422562">"Подешавања локације"</string>
     <string name="location_warning" msgid="2381649060929040962">"<xliff:g id="APP_NAME">%1$s</xliff:g> пружа услуге локације за овај уређај. Приступ локацији можете да измените у подешавањима локације."</string>
@@ -446,8 +446,8 @@
     <string name="default_app_no_apps" msgid="115720991680586885">"Нема апликација"</string>
     <string name="car_default_app_selected" msgid="5416420830430644174">"Изабрано"</string>
     <string name="car_default_app_selected_with_info" msgid="1932204186080593500">"Изабрано – <xliff:g id="ADDITIONAL_INFO">%1$s</xliff:g>"</string>
-    <string name="special_app_access_search_keyword" msgid="8032347212290774210">"посебан приступ апликацији"</string>
-    <string name="special_app_access" msgid="5019319067120213797">"Посебан приступ апликацији"</string>
+    <string name="special_app_access_search_keyword" msgid="8032347212290774210">"посебан приступ апликација"</string>
+    <string name="special_app_access" msgid="5019319067120213797">"Посебан приступ апликација"</string>
     <string name="no_special_app_access" msgid="6950277571805106247">"Нема посебног приступа апл."</string>
     <string name="special_app_access_no_apps" msgid="4102911722787886970">"Нема апликација"</string>
     <string name="home_missing_work_profile_support" msgid="1756855847669387977">"Не подржава пословни профил"</string>
@@ -501,7 +501,7 @@
     <string name="permgroupupgraderequestdetail_camera" msgid="6642747548010962597">"Ова апликација жели да снима слике и видео снимке све време, чак и када не користите апликацију. "<annotation id="link">"Дозволите у подешавањима."</annotation></string>
     <string name="permgrouprequest_calllog" msgid="2065327180175371397">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа евиденцијама позива на телефону?"</string>
     <string name="permgrouprequest_phone" msgid="1829234136997316752">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; упућује позиве и управља њима?"</string>
-    <string name="permgrouprequest_sensors" msgid="4397358316850652235">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;приступа подацима сензора о виталним функцијама?"</string>
+    <string name="permgrouprequest_sensors" msgid="4397358316850652235">"Желите да дозволите да &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; приступа подацима сензора о виталним функцијама?"</string>
     <string name="auto_granted_permissions" msgid="6009452264824455892">"Контролисане дозволе"</string>
     <string name="auto_granted_location_permission_notification_title" msgid="1438871159268985993">"Може да се приступи локацији"</string>
     <string name="auto_granted_permission_notification_body" msgid="6919835973190443695">"ИТ администратор дозвољава апликацији <xliff:g id="APP_NAME">%s</xliff:g> да приступа локацији"</string>
