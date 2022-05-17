@@ -57,6 +57,10 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
+    <style name="GrantPermissions.Car">
+        <item name="carUiActivity">true</item>
+    </style>
+
     <!-- Unused since R but exposed as overlayable. -->
     <style name="Header.Settings"
             parent="@android:style/Theme.DeviceDefault.Settings">
@@ -99,6 +103,16 @@
 
     <style name="Theme.DeviceDefault.Dialog.Alert.DayNight" parent="@android:style/Theme.DeviceDefault.Light.Dialog.Alert" />
 
+    <style name="StoragePermissionDialogBase" parent="android:Theme.DeviceDefault.Light.Dialog.Alert" />
+
+    <style name="StoragePermissionDialog" parent="StoragePermissionDialogBase">
+        <item name="android:buttonCornerRadius">28dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/StoragePermissionDialogPositiveButton</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/StoragePermissionDialogNegativeButton</item>
+        <item name="android:buttonBarButtonStyle">@style/StoragePermissionDialogButtonBar</item>
+    </style>
+
 
 <!-- Do not allow OEMs to overlay these themes.
  Must Guarantee that filterTouches is set for these activities -->
@@ -115,6 +129,10 @@
     </style>
 
     <style name="GrantPermissions.FilterTouches">
+        <item name="android:filterTouchesWhenObscured">true</item>
+    </style>
+
+    <style name="GrantPermissions.Car.FilterTouches">
         <item name="android:filterTouchesWhenObscured">true</item>
     </style>
 

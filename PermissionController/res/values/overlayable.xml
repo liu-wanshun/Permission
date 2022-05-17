@@ -277,7 +277,33 @@
             <!-- START GENERAL CONFIGS -->
             <item type="bool" name="config_useAlternativePermGroupSummary" />
             <item type="bool" name="config_useMaterial3PermissionGrantDialog" />
+            <item type="string" name="config_headlineFontFamily" />
             <!-- END GENERAL CONFIGS -->
+
+            <!-- START WARNING BANNER PREFERENCE STYLE -->
+            <item type="style" name="WarningBannerMainContainer" />
+            <item type="style" name="WarningBannerCardView" />
+            <item type="style" name="WarningBannerIcon" />
+            <item type="style" name="WarningBannerDimensions" />
+            <item type="style" name="WarningBannerText" />
+            <item type="style" name="WarningBannerTitle" />
+            <item type="style" name="WarningBannerSummary" />
+            <item type="style" name="WarningBannerButton" />
+            <item type="style" name="WarningBannerWidgetFrame" />
+            <!-- END WARNING BANNER PREFERENCE STYLE -->
+
+            <!-- START STORAGE PERMISSION DIALOG -->
+            <item type="style" name="StoragePermissionDialogPositiveButton" />
+            <item type="style" name="StoragePermissionDialogNegativeButton" />
+            <item type="style" name="StoragePermissionDialogButtonBar" />
+
+            <item type="style" name="StorageDialogHeaderStyle" />
+            <item type="style" name="StorageDialogHeaderIconStyle" />
+            <item type="style" name="StorageDialogHeaderTitleStyle" />
+
+            <!-- dialog theme -->
+            <item type="style" name="StoragePermissionDialog" />
+            <!-- END STORAGE PERMISSION DIALOG -->
 
         </policy>
 
