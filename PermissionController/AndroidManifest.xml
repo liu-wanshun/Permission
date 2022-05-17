@@ -4,8 +4,8 @@
   xmlns:tools="http://schemas.android.com/tools"
   package="com.android.permissioncontroller"
   coreApp="true"
-  android:versionCode="330450000"
-  android:versionName="aml_per_330450000"
+  android:versionCode="330451000"
+  android:versionName="aml_per_330451000"
 >
 
     <original-package android:name="com.android.permissioncontroller" />
@@ -99,6 +99,8 @@
         <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$NotificationDeleteHandler" />
 
         <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$NotificationClickHandler" />
+
+        <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$SafetyCenterPrimaryActionHandler" />
 
         <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$PackageResetHandler"
                   android:exported="true">
