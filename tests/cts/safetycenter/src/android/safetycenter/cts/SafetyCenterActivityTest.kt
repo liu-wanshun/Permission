@@ -30,6 +30,7 @@ import android.safetycenter.cts.testing.SafetyCenterCtsHelper
 import android.safetycenter.cts.testing.SafetyCenterFlags.deviceSupportsSafetyCenter
 import android.safetycenter.cts.testing.SafetySourceCtsData
 import android.support.test.uiautomator.By
+import android.support.test.uiautomator.BySelector
 import android.support.test.uiautomator.UiObject2
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -51,15 +52,28 @@ class SafetyCenterActivityTest {
 
     private val safetyCenterCtsHelper = SafetyCenterCtsHelper(context)
     private val safetySourceCtsData = SafetySourceCtsData(context)
+    // JUnit's Assume is not supported in @BeforeClass by the CTS tests runner, so this is used to
+    // manually skip the setup and teardown methods.
+    private val shouldRunTests = context.deviceSupportsSafetyCenter()
 
     @Before
     fun assumeDeviceSupportsSafetyCenterToRunTests() {
-        assumeTrue(context.deviceSupportsSafetyCenter())
+        assumeTrue(shouldRunTests)
     }
 
     @Before
+    fun enableSafetyCenterBeforeTest() {
+        if (!shouldRunTests) {
+            return
+        }
+        safetyCenterCtsHelper.setEnabled(true)
+    }
+
     @After
-    fun clearDataBetweenTest() {
+    fun clearDataAfterTest() {
+        if (!shouldRunTests) {
+            return
+        }
         safetyCenterCtsHelper.reset()
     }
 
@@ -75,9 +89,7 @@ class SafetyCenterActivityTest {
     fun launchActivity_withFlagDisabled_showsSettingsTitle() {
         safetyCenterCtsHelper.setEnabled(false)
 
-        context.launchSafetyCenterActivity {
-            waitFindObject(By.text("Settings"))
-        }
+        context.launchSafetyCenterActivity { waitFindObject(By.text("Settings")) }
     }
 
     @Test
@@ -128,6 +140,7 @@ class SafetyCenterActivityTest {
             findButton("Dismiss").click()
 
             assertIssueNotDisplayed(safetySourceCtsData.criticalIssue)
+            findButton("Scan")
         }
     }
 
@@ -142,6 +155,26 @@ class SafetyCenterActivityTest {
             findButton("Cancel").click()
 
             assertIssueDisplayed(safetySourceCtsData.criticalIssue)
+        }
+    }
+
+    @Test
+    fun launchActivity_withNoIssues_hasRescanButton() {
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.information)
+
+        context.launchSafetyCenterActivity {
+            findButton("Scan")
+        }
+    }
+
+    @Test
+    fun launchActivity_withIssue_doesNotHaveRescanButton() {
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.informationWithIssue)
+
+        context.launchSafetyCenterActivity {
+            waitButtonNotDisplayed("Scan")
         }
     }
 
@@ -169,8 +202,15 @@ class SafetyCenterActivityTest {
     }
 
     private fun findButton(label: CharSequence): UiObject2 {
-        return waitFindObject(
-            By.clickable(true).text(Pattern.compile("$label|${label.toString().uppercase()}")))
+        return waitFindObject(buttonSelector(label))
+    }
+
+    private fun waitButtonNotDisplayed(label: CharSequence) {
+        waitNotDisplayed(buttonSelector(label))
+    }
+
+    private fun buttonSelector(label: CharSequence): BySelector {
+        return By.clickable(true).text(Pattern.compile("$label|${label.toString().uppercase()}"))
     }
 
     private fun findAllText(vararg textToFind: CharSequence?) {
@@ -178,9 +218,13 @@ class SafetyCenterActivityTest {
     }
 
     private fun waitTextNotDisplayed(text: String) {
+        waitNotDisplayed(By.text(text))
+    }
+
+    private fun waitNotDisplayed(selector: BySelector) {
         val startMillis = SystemClock.elapsedRealtime()
         while (true) {
-            if (waitFindObjectOrNull(By.text(text), NOT_DISPLAYED_CHECK_INTERVAL.toMillis()) ==
+            if (waitFindObjectOrNull(selector, NOT_DISPLAYED_CHECK_INTERVAL.toMillis()) ==
                 null) {
                 return
             }
@@ -191,7 +235,7 @@ class SafetyCenterActivityTest {
             Thread.sleep(NOT_DISPLAYED_CHECK_INTERVAL.toMillis())
         }
         throw AssertionError(
-            "View with text $text is still displayed after waiting for at least" +
+            "View matching selector $selector is still displayed after waiting for at least" +
                 "$NOT_DISPLAYED_TIMEOUT")
     }
 
