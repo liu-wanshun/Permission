@@ -42,7 +42,6 @@ import android.app.BroadcastOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.UserHandle;
 import android.safetycenter.SafetyCenterManager;
 import android.safetycenter.SafetyCenterManager.RefreshReason;
@@ -50,32 +49,20 @@ import android.safetycenter.SafetyCenterManager.RefreshRequestType;
 
 import androidx.annotation.RequiresApi;
 
-import com.android.modules.utils.BackgroundThread;
 import com.android.safetycenter.SafetyCenterConfigReader.Broadcast;
-import com.android.safetycenter.SafetyCenterConfigReader.SafetyCenterConfigInternal;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Objects;
 
 /**
- * Class to manage and track broadcasts sent by {@link SafetyCenterService}.
+ * A class that dispatches SafetyCenter broadcasts.
  *
- * <p>This class isn't thread safe. Thread safety must be handled by the caller.
+ * <p>This class is thread safe as it does not contain any mutable state.
  */
 @RequiresApi(TIRAMISU)
 final class SafetyCenterBroadcastDispatcher {
 
     private static final String TAG = "SafetyCenterBroadcastDi";
-
-    /**
-     * Time for which a refresh is allowed to wait for sources to set data before timing out and
-     * marking the refresh as finished.
-     */
-    // TODO(b/218285164): Decide final timeout and use a Device Config value instead so that this
-    //  duration can be easily adjusted. Once done, add a test that overrides this Device Config
-    //  value in CTS tests.
-    private static final Duration REFRESH_TIMEOUT = Duration.ofSeconds(5);
 
     /**
      * Time for which an app, upon receiving a particular broadcast, will be placed on a temporary
@@ -85,22 +72,11 @@ final class SafetyCenterBroadcastDispatcher {
     //  easily adjusted.
     private static final Duration ALLOWLIST_DURATION = Duration.ofSeconds(20);
 
-    /** Counter to distinguish refreshes happening in quick succession. */
-    private int mRefreshCounter = 0;
-
     @NonNull private final Context mContext;
 
-    @NonNull private final SafetyCenterRefreshTracker mSafetyCenterRefreshTracker;
-
-    /**
-     * Creates a {@link SafetyCenterBroadcastDispatcher} using the given {@link Context} and {@link
-     * SafetyCenterRefreshTracker}.
-     */
-    SafetyCenterBroadcastDispatcher(
-            @NonNull Context context,
-            @NonNull SafetyCenterRefreshTracker safetyCenterRefreshTracker) {
+    /** Creates a {@link SafetyCenterBroadcastDispatcher} using the given {@link Context}. */
+    SafetyCenterBroadcastDispatcher(@NonNull Context context) {
         mContext = context;
-        mSafetyCenterRefreshTracker = safetyCenterRefreshTracker;
     }
 
     /**
@@ -108,38 +84,18 @@ final class SafetyCenterBroadcastDispatcher {
      * SafetyCenterManager#ACTION_REFRESH_SAFETY_SOURCES}.
      */
     void sendRefreshSafetySources(
-            @NonNull SafetyCenterConfigInternal configInternal,
+            @NonNull List<Broadcast> broadcasts,
+            @NonNull String broadcastId,
             @RefreshReason int refreshReason,
             @NonNull UserProfileGroup userProfileGroup) {
-        List<Broadcast> broadcasts = configInternal.getBroadcasts();
-        int requestType = toRefreshRequestType(refreshReason);
         BroadcastOptions broadcastOptions = createBroadcastOptions();
-        String broadcastId =
-                String.format(
-                        "%s_%s",
-                        Objects.hash(
-                                requestType,
-                                broadcasts,
-                                userProfileGroup,
-                                System.currentTimeMillis()),
-                        incrementRefreshCounter());
-
-        mSafetyCenterRefreshTracker.reportRefreshInProgress(
-                broadcastId, requestType, userProfileGroup, broadcasts);
-        // TODO(b/229060064): Determine best way to ensure one refresh at a time.
 
         for (int i = 0; i < broadcasts.size(); i++) {
             Broadcast broadcast = broadcasts.get(i);
 
             sendRefreshSafetySourcesBroadcast(
-                    broadcast, broadcastOptions, requestType, userProfileGroup, broadcastId);
+                    broadcast, broadcastOptions, refreshReason, userProfileGroup, broadcastId);
         }
-
-        // TODO(b/229062879): Should we block here or not?
-        Handler handler = BackgroundThread.getHandler();
-        handler.postDelayed(
-                mSafetyCenterRefreshTracker.createClearRefreshRunnable(broadcastId),
-                REFRESH_TIMEOUT.toMillis());
     }
 
     /**
@@ -151,8 +107,7 @@ final class SafetyCenterBroadcastDispatcher {
      */
     // TODO(b/227310195): Consider adding a boolean extra to the intent instead of having clients
     //  rely on SafetyCenterManager#isSafetyCenterEnabled()?
-    void sendEnabledChanged(@NonNull SafetyCenterConfigInternal configInternal) {
-        List<Broadcast> broadcasts = configInternal.getBroadcasts();
+    void sendEnabledChanged(@NonNull List<Broadcast> broadcasts) {
         BroadcastOptions broadcastOptions = createBroadcastOptions();
 
         for (int i = 0; i < broadcasts.size(); i++) {
@@ -175,16 +130,18 @@ final class SafetyCenterBroadcastDispatcher {
     private void sendRefreshSafetySourcesBroadcast(
             @NonNull Broadcast broadcast,
             @NonNull BroadcastOptions broadcastOptions,
-            @RefreshRequestType int requestType,
+            @RefreshReason int refreshReason,
             @NonNull UserProfileGroup userProfileGroup,
             @NonNull String broadcastId) {
-        if (!broadcast.getSourceIdsForProfileOwner().isEmpty()) {
+        int requestType = toRefreshRequestType(refreshReason);
+        List<String> profileOwnerSourceIds = broadcast.getSourceIdsForProfileOwner(refreshReason);
+        if (!profileOwnerSourceIds.isEmpty()) {
             int profileOwnerUserId = userProfileGroup.getProfileOwnerUserId();
             Intent broadcastIntent =
                     createRefreshSafetySourcesBroadcastIntent(
                             requestType,
                             broadcast.getPackageName(),
-                            broadcast.getSourceIdsForProfileOwner(),
+                            profileOwnerSourceIds,
                             broadcastId);
             sendBroadcast(
                     broadcastIntent,
@@ -192,15 +149,17 @@ final class SafetyCenterBroadcastDispatcher {
                     SEND_SAFETY_CENTER_UPDATE,
                     broadcastOptions);
         }
-        if (!broadcast.getSourceIdsForManagedProfiles().isEmpty()) {
-            int[] managedProfileUserIds = userProfileGroup.getManagedProfilesUserIds();
-            for (int i = 0; i < managedProfileUserIds.length; i++) {
-                int managedProfileUserId = managedProfileUserIds[i];
+        List<String> managedProfilesSourceIds =
+                broadcast.getSourceIdsForManagedProfiles(refreshReason);
+        if (!managedProfilesSourceIds.isEmpty()) {
+            int[] managedProfilesUserIds = userProfileGroup.getManagedProfilesUserIds();
+            for (int i = 0; i < managedProfilesUserIds.length; i++) {
+                int managedProfileUserId = managedProfilesUserIds[i];
                 Intent broadcastIntent =
                         createRefreshSafetySourcesBroadcastIntent(
                                 requestType,
                                 broadcast.getPackageName(),
-                                broadcast.getSourceIdsForManagedProfiles(),
+                                managedProfilesSourceIds,
                                 broadcastId);
 
                 sendBroadcast(
@@ -290,13 +249,5 @@ final class SafetyCenterBroadcastDispatcher {
                 return EXTRA_REFRESH_REQUEST_TYPE_GET_DATA;
         }
         throw new IllegalArgumentException("Invalid refresh reason: " + refreshReason);
-    }
-
-    /**
-     * Increments {@link #mRefreshCounter} by 1 modulus 1000, to be used to distinguish refreshes
-     * happening in quick succession.
-     */
-    private int incrementRefreshCounter() {
-        return mRefreshCounter = (mRefreshCounter + 1) % 1000;
     }
 }

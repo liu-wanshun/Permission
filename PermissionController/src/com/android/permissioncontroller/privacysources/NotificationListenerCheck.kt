@@ -1156,6 +1156,10 @@ class NotificationListenerPrivacySource : PrivacySource {
         intent: Intent,
         refreshEvent: RefreshEvent
     ) {
+        if (!isNotificationListenerCheckFlagEnabled()) {
+            return
+        }
+
         val safetyRefreshEvent = when (refreshEvent) {
             UNKNOWN ->
                 SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_SOURCE_STATE_CHANGED).build()

@@ -19,6 +19,9 @@ package com.android.permissioncontroller.permission.utils
 import android.Manifest
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.BACKUP
+import android.Manifest.permission.POST_NOTIFICATIONS
+import android.Manifest.permission_group.NOTIFICATIONS
 import android.app.ActivityManager
 import android.app.AppOpsManager
 import android.app.AppOpsManager.MODE_ALLOWED
@@ -50,7 +53,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.UserHandle
 import android.permission.PermissionManager
+import android.provider.DeviceConfig
+import android.provider.Settings
 import android.text.TextUtils
+import android.util.Log
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -58,6 +65,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
 import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.R
+import com.android.permissioncontroller.permission.data.LightAppPermGroupLiveData
 import com.android.permissioncontroller.permission.data.LightPackageInfoLiveData
 import com.android.permissioncontroller.permission.data.get
 import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup
@@ -72,15 +80,17 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicReference
+import com.android.permissioncontroller.permission.service.LocationAccessCheck.PostRevokeHandler
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-
 /**
  * A set of util functions designed to work with kotlin, though they can work with java, as well.
  */
 object KotlinUtils {
+
+    private const val LOG_TAG = "PermissionController Utils"
 
     private const val PERMISSION_CONTROLLER_CHANGED_FLAG_MASK = FLAG_PERMISSION_USER_SET or
         FLAG_PERMISSION_USER_FIXED or
@@ -91,6 +101,7 @@ object KotlinUtils {
         FLAG_PERMISSION_AUTO_REVOKED
 
     private const val KILL_REASON_APP_OP_CHANGE = "Permission related app op changed"
+    private const val SAFETY_PROTECTION_RESOURCES_ENABLED = "safety_protection_enabled"
 
     /**
      * Importance level to define the threshold for whether a package is in a state which resets the
@@ -740,7 +751,7 @@ object KotlinUtils {
             }
         }
 
-        if (shouldKillForAnyPermission) {
+        if (shouldKillForAnyPermission && !shouldSkipKillForGroup(app, group)) {
             (app.getSystemService(ActivityManager::class.java) as ActivityManager).killUid(
                 group.packageInfo.uid, KILL_REASON_APP_OP_CHANGE)
         }
@@ -753,6 +764,34 @@ object KotlinUtils {
                 group.packageName)
         }
         return newGroup
+    }
+
+    /**
+     * Revoke background permissions
+     *
+     * @param context context
+     * @param packageName Name of the package
+     * @param permissionGroupName Name of the permission group
+     * @param user User handle
+     * @param postRevokeHandler Optional callback that lets us perform an action on revoke
+     */
+    fun revokeBackgroundRuntimePermissions(
+        context: Context,
+        packageName: String,
+        permissionGroupName: String,
+        user: UserHandle,
+        postRevokeHandler: PostRevokeHandler?
+    ) {
+        GlobalScope.launch(Dispatchers.Main) {
+            val group = LightAppPermGroupLiveData[packageName, permissionGroupName, user]
+                .getInitializedValue()
+            if (group != null) {
+                revokeBackgroundRuntimePermissions(context.application, group)
+            }
+            if (postRevokeHandler != null) {
+                postRevokeHandler.onRevoke(context, packageName)
+            }
+        }
     }
 
     /**
@@ -859,6 +898,26 @@ object KotlinUtils {
         if (perm.flags != newFlags) {
             app.packageManager.updatePermissionFlags(perm.name, group.packageInfo.packageName,
                 PERMISSION_CONTROLLER_CHANGED_FLAG_MASK, newFlags, user)
+        }
+
+        // If we revoke background access to the fine location, we trigger a check to remove
+        // notification warning about background location access
+        if (perm.isGrantedIncludingAppOp && !isGranted) {
+            var cancelLocationAccessWarning = false
+            if (perm.name == ACCESS_FINE_LOCATION) {
+                val bgPerm = group.permissions[perm.backgroundPermission]
+                cancelLocationAccessWarning = bgPerm?.isGrantedIncludingAppOp == true
+            } else if (perm.name == ACCESS_BACKGROUND_LOCATION) {
+                val fgPerm = group.permissions[ACCESS_FINE_LOCATION]
+                cancelLocationAccessWarning = fgPerm?.isGrantedIncludingAppOp == true
+            }
+            if (cancelLocationAccessWarning) {
+                // cancel location access warning notification
+                LocationAccessCheck(app, null).cancelBackgroundAccessWarningNotification(
+                    group.packageInfo.packageName,
+                    user
+                )
+            }
         }
 
         val newState = PermState(newFlags, isGranted)
@@ -1015,6 +1074,53 @@ object KotlinUtils {
         return true
     }
 
+    private fun shouldSkipKillForGroup(app: Application, group: LightAppPermGroup): Boolean {
+        if (group.permGroupName != NOTIFICATIONS) {
+            return false
+        }
+
+        return shouldSkipKillOnPermDeny(app, POST_NOTIFICATIONS, group.packageName,
+            group.userHandle)
+    }
+
+    /**
+     * Determine if the usual "kill app on permission denial" should be skipped. It should be
+     * skipped if the permission is POST_NOTIFICATIONS, the app holds the BACKUP permission, and
+     * a backup restore is currently in progress.
+     *
+     * @param app the current application
+     * @param permission the permission being denied
+     * @param packageName the package the permission was denied for
+     * @param user the user whose package the permission was denied for
+     *
+     * @return true if the permission denied was POST_NOTIFICATIONS, the app is a backup app, and a
+     * backup restore is in progress, false otherwise
+     */
+    fun shouldSkipKillOnPermDeny(
+        app: Application,
+        permission: String,
+        packageName: String,
+        user: UserHandle
+    ): Boolean {
+        val userContext: Context = Utils.getUserContext(app, user)
+        if (permission != POST_NOTIFICATIONS || userContext.packageManager
+            .checkPermission(BACKUP, packageName) != PackageManager.PERMISSION_GRANTED) {
+            return false
+        }
+
+        return try {
+            val isInSetup = Settings.Secure.getInt(userContext.contentResolver,
+                Settings.Secure.USER_SETUP_COMPLETE, user.identifier) == 0
+            val isInDeferredSetup = Settings.Secure.getInt(userContext.contentResolver,
+                Settings.Secure.USER_SETUP_PERSONALIZATION_STATE, user.identifier) ==
+                    Settings.Secure.USER_SETUP_PERSONALIZATION_STARTED
+            isInSetup || isInDeferredSetup
+        } catch (e: Settings.SettingNotFoundException) {
+            Log.w(LOG_TAG, "Failed to check if the user is in restore: $e")
+            false
+        }
+    }
+
     /**
      * Determine if a given package has a launch intent. Will function correctly even if called
      * before user is unlocked.
@@ -1068,6 +1174,22 @@ object KotlinUtils {
                 PackageManager.FLAG_PERMISSION_SELECTED_LOCATION_ACCURACY to true,
                 filterPermissions = listOf(Manifest.permission.ACCESS_COARSE_LOCATION))
         }
+    }
+
+    /**
+     * Determines whether we should show the safety protection resources.
+     * We show the resources only if
+     * (1) the build version is T or after and
+     * (2) the feature flag safety_protection_enabled is enabled and
+     * (3) the resources exist (currently the resources only exist on GMS devices)
+     */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
+    fun shouldShowSafetyProtectionResources(context: Context): Boolean {
+        return SdkLevel.isAtLeastT() &&
+            DeviceConfig.getBoolean(
+                DeviceConfig.NAMESPACE_PRIVACY, SAFETY_PROTECTION_RESOURCES_ENABLED, false) &&
+            context.getDrawable(android.R.drawable.ic_safety_protection) != null &&
+            !context.getString(android.R.string.safety_protection_display_text).isNullOrEmpty()
     }
 }
 
