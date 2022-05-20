@@ -41,6 +41,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
@@ -112,11 +113,11 @@ public class GrantPermissionsActivity extends SettingsActivity
     private static final int APP_PERMISSION_REQUEST_CODE = 1;
 
     /**
-     * A map of the currently shown GrantPermissionsActivity for this user, per package.
+     * A map of the currently shown GrantPermissionsActivity for this user, per package and task ID
      */
     @GuardedBy("sCurrentGrantRequests")
-    private static final Map<String, GrantPermissionsActivity> sCurrentGrantRequests =
-            new HashMap<>();
+    private static final Map<Pair<String, Integer>, GrantPermissionsActivity>
+            sCurrentGrantRequests = new HashMap<>();
 
     /** Unique Id of a request */
     private long mSessionId;
@@ -131,10 +132,7 @@ public class GrantPermissionsActivity extends SettingsActivity
     private String[] mRequestedPermissions;
     /** The list of permissions requested in the intent to this activity*/
     private String[] mOriginalRequestedPermissions;
-    /** The list of permissions that this app has or had legacy access to, that might need to
-     * show a different message
-     */
-    private String[] mLegacyAccessPermissions;
+
     private boolean[] mButtonVisibilities;
     private boolean[] mLocationVisibilities;
     private List<RequestInfo> mRequestInfos = new ArrayList<>();
@@ -151,6 +149,8 @@ public class GrantPermissionsActivity extends SettingsActivity
     private int mResultCode = Integer.MAX_VALUE;
     /** Package that shall have permissions granted */
     private String mTargetPackage;
+    /** A key representing this activity, defined by the target package and task ID */
+    private Pair<String, Integer> mKey;
     private int mTotalRequests = 0;
     private int mCurrentRequestIdx = 0;
     private float mOriginalDimAmount;
@@ -205,26 +205,21 @@ public class GrantPermissionsActivity extends SettingsActivity
         }
         mOriginalRequestedPermissions = mRequestedPermissions;
 
-        mLegacyAccessPermissions = getIntent().getStringArrayExtra(
-                PackageManager.EXTRA_REQUEST_PERMISSIONS_LEGACY_ACCESS_PERMISSION_NAMES);
-        if (mLegacyAccessPermissions == null) {
-            mLegacyAccessPermissions = new String[0];
-        }
-
         synchronized (sCurrentGrantRequests) {
-            if (!sCurrentGrantRequests.containsKey(mTargetPackage)) {
-                sCurrentGrantRequests.put(mTargetPackage, this);
+            mKey = new Pair<>(mTargetPackage, getTaskId());
+            if (!sCurrentGrantRequests.containsKey(mKey)) {
+                sCurrentGrantRequests.put(mKey, this);
+                finishSystemStartedDialogsOnOtherTasksLocked();
             } else if (getCallingPackage() == null) {
                 // The trampoline doesn't require results. Delegate, and finish.
-                sCurrentGrantRequests.get(mTargetPackage).onNewFollowerActivity(null,
-                        mRequestedPermissions, mLegacyAccessPermissions);
+                sCurrentGrantRequests.get(mKey).onNewFollowerActivity(null,
+                        mRequestedPermissions);
                 finishAfterTransition();
                 return;
             } else {
                 mDelegated = true;
-                sCurrentGrantRequests.get(mTargetPackage).onNewFollowerActivity(this,
-                        mRequestedPermissions, mLegacyAccessPermissions);
-                return;
+                sCurrentGrantRequests.get(mKey).onNewFollowerActivity(this,
+                        mRequestedPermissions);
             }
         }
 
@@ -248,8 +243,7 @@ public class GrantPermissionsActivity extends SettingsActivity
         }
 
         GrantPermissionsViewModelFactory factory = new GrantPermissionsViewModelFactory(
-                getApplication(), mTargetPackage, mRequestedPermissions, mLegacyAccessPermissions,
-                mSessionId, icicle);
+                getApplication(), mTargetPackage, mRequestedPermissions, mSessionId, icicle);
         mViewModel = factory.create(GrantPermissionsViewModel.class);
         mViewModel.getRequestInfosLiveData().observe(this, this::onRequestInfoLoad);
 
@@ -297,8 +291,7 @@ public class GrantPermissionsActivity extends SettingsActivity
      *                 activity finishing
      * @param newPermissions The new permissions requested in the activity
      */
-    private void onNewFollowerActivity(GrantPermissionsActivity follower, String[] newPermissions,
-            String[] newLegacyPermissions) {
+    private void onNewFollowerActivity(GrantPermissionsActivity follower, String[] newPermissions) {
         if (follower != null) {
             // Ensure the list of follower activities is a stack
             mFollowerActivities.add(0, follower);
@@ -320,26 +313,16 @@ public class GrantPermissionsActivity extends SettingsActivity
             }
         }
 
-        ArrayList<String> currentLegacyPermissions =
-                new ArrayList<>(Arrays.asList(mLegacyAccessPermissions));
-        for (String newLegacyPerm: newLegacyPermissions) {
-            if (!currentLegacyPermissions.contains(newLegacyPerm)) {
-                currentLegacyPermissions.add(newLegacyPerm);
-            }
-            newPermission = true;
-        }
-
         if (!newPermission) {
             return;
         }
 
         mRequestedPermissions = currentPermissions.toArray(new String[0]);
-        mLegacyAccessPermissions = currentLegacyPermissions.toArray(new String[0]);
         Bundle oldState = new Bundle();
         mViewModel.getRequestInfosLiveData().removeObservers(this);
         mViewModel.saveInstanceState(oldState);
         GrantPermissionsViewModelFactory factory = new GrantPermissionsViewModelFactory(
-                getApplication(), mTargetPackage, mRequestedPermissions, mLegacyAccessPermissions,
+                getApplication(), mTargetPackage, mRequestedPermissions,
                 mSessionId, oldState);
         mViewModel = factory.create(GrantPermissionsViewModel.class);
         mViewModel.getRequestInfosLiveData().observe(this, this::onRequestInfoLoad);
@@ -355,7 +338,7 @@ public class GrantPermissionsActivity extends SettingsActivity
     }
 
     private void onRequestInfoLoad(List<RequestInfo> requests) {
-        if (!mViewModel.getRequestInfosLiveData().isInitialized() || isResultSet()) {
+        if (!mViewModel.getRequestInfosLiveData().isInitialized() || isResultSet() || mDelegated) {
             return;
         } else if (requests == null) {
             finishAfterTransition();
@@ -411,9 +394,6 @@ public class GrantPermissionsActivity extends SettingsActivity
                 break;
             case UPGRADE_MESSAGE:
                 messageId = Utils.getUpgradeRequest(info.getGroupName());
-                break;
-            case CONTINUE_MESSAGE:
-                messageId = Utils.getContinueRequest(info.getGroupName());
                 break;
             case STORAGE_SUPERGROUP_MESSAGE_Q_TO_S:
                 icon = Icon.createWithResource(getPackageName(), R.drawable.perm_group_storage);
@@ -526,6 +506,10 @@ public class GrantPermissionsActivity extends SettingsActivity
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        if (mViewHandler == null || mViewModel == null) {
+            return;
+        }
+
         mViewHandler.saveInstanceState(outState);
         mViewModel.saveInstanceState(outState);
 
@@ -622,9 +606,9 @@ public class GrantPermissionsActivity extends SettingsActivity
      */
     private void removeActivityFromMap() {
         synchronized (sCurrentGrantRequests) {
-            GrantPermissionsActivity top = sCurrentGrantRequests.get(mTargetPackage);
+            GrantPermissionsActivity top = sCurrentGrantRequests.get(mKey);
             if (this.equals(top)) {
-                sCurrentGrantRequests.remove(mTargetPackage);
+                sCurrentGrantRequests.remove(mKey);
             } else if (top != null) {
                 top.mFollowerActivities.remove(this);
             }
@@ -784,5 +768,23 @@ public class GrantPermissionsActivity extends SettingsActivity
 
     private boolean isResultSet() {
         return mResultCode != Integer.MAX_VALUE;
+    }
+
+    /**
+     * If there is another system-shown dialog on another task, that is not being relied upon by an
+     * app-defined dialogs, these other dialogs should be finished.
+     */
+    @GuardedBy("sCurrentGrantRequests")
+    private void finishSystemStartedDialogsOnOtherTasksLocked() {
+        for (Pair<String, Integer> key : sCurrentGrantRequests.keySet()) {
+            if (key.first.equals(mTargetPackage) && key.second != getTaskId()) {
+                GrantPermissionsActivity other = sCurrentGrantRequests.get(key);
+                if (other.getIntent().getAction()
+                        .equals(PackageManager.ACTION_REQUEST_PERMISSIONS_FOR_OTHER)
+                        && other.mFollowerActivities.isEmpty()) {
+                    other.finish();
+                }
+            }
+        }
     }
 }
