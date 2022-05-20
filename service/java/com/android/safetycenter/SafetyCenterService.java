@@ -33,7 +33,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Binder;
-import android.os.RemoteCallbackList;
 import android.provider.DeviceConfig;
 import android.provider.DeviceConfig.OnPropertiesChangedListener;
 import android.safetycenter.IOnSafetyCenterDataChangedListener;
@@ -96,7 +95,7 @@ public final class SafetyCenterService extends SystemService {
     // TODO(b/218285164): Decide final timeout and use a Device Config value instead so that this
     //  duration can be easily adjusted. Once done, add a test that overrides this Device Config
     //  value in CTS tests.
-    private static final Duration RESOLVE_ACTION_TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration RESOLVING_ACTION_TIMEOUT = Duration.ofSeconds(10);
 
     private final Object mApiLock = new Object();
 
@@ -197,9 +196,6 @@ public final class SafetyCenterService extends SystemService {
             }
 
             UserProfileGroup userProfileGroup = UserProfileGroup.from(getContext(), userId);
-
-            SafetyCenterData safetyCenterData;
-            List<RemoteCallbackList<IOnSafetyCenterDataChangedListener>> listeners;
             synchronized (mApiLock) {
                 boolean hasUpdate =
                         mSafetyCenterDataTracker.setSafetySourceData(
@@ -207,12 +203,11 @@ public final class SafetyCenterService extends SystemService {
                 if (!hasUpdate) {
                     return;
                 }
-                safetyCenterData = mSafetyCenterDataTracker.getSafetyCenterData(userProfileGroup);
-                listeners = mSafetyCenterListeners.getListeners(userProfileGroup);
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
+                        userProfileGroup,
+                        mSafetyCenterDataTracker.getSafetyCenterData(userProfileGroup),
+                        null);
             }
-
-            // TODO(b/228832622): Ensure listeners are called only when data changes.
-            SafetyCenterListeners.deliverUpdate(listeners, safetyCenterData, null);
         }
 
         @Override
@@ -257,30 +252,24 @@ public final class SafetyCenterService extends SystemService {
             }
 
             UserProfileGroup userProfileGroup = UserProfileGroup.from(getContext(), userId);
-
-            SafetyCenterData safetyCenterData = null;
-            SafetyCenterErrorDetails safetyCenterErrorDetails;
-            List<RemoteCallbackList<IOnSafetyCenterDataChangedListener>> listeners;
             synchronized (mApiLock) {
                 boolean hasUpdate =
                         mSafetyCenterDataTracker.reportSafetySourceError(
                                 errorDetails, safetySourceId, packageName, userId);
-                safetyCenterErrorDetails =
+                SafetyCenterErrorDetails safetyCenterErrorDetails =
                         mSafetyCenterDataTracker.getSafetyCenterErrorDetails(
                                 safetySourceId, errorDetails);
                 if (safetyCenterErrorDetails == null && !hasUpdate) {
                     return;
                 }
+                SafetyCenterData safetyCenterData = null;
                 if (hasUpdate) {
                     safetyCenterData =
                             mSafetyCenterDataTracker.getSafetyCenterData(userProfileGroup);
                 }
-                listeners = mSafetyCenterListeners.getListeners(userProfileGroup);
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
+                        userProfileGroup, safetyCenterData, safetyCenterErrorDetails);
             }
-
-            // TODO(b/228832622): Ensure listeners are called only when data changes.
-            SafetyCenterListeners.deliverUpdate(
-                    listeners, safetyCenterData, safetyCenterErrorDetails);
         }
 
         @Override
@@ -360,17 +349,16 @@ public final class SafetyCenterService extends SystemService {
             }
 
             UserProfileGroup userProfileGroup = UserProfileGroup.from(getContext(), userId);
-
-            SafetyCenterData safetyCenterData;
             synchronized (mApiLock) {
                 boolean registered = mSafetyCenterListeners.addListener(listener, userId);
                 if (!registered) {
                     return;
                 }
-                safetyCenterData = mSafetyCenterDataTracker.getSafetyCenterData(userProfileGroup);
+                SafetyCenterListeners.deliverUpdate(
+                        listener,
+                        mSafetyCenterDataTracker.getSafetyCenterData(userProfileGroup),
+                        null);
             }
-
-            SafetyCenterListeners.deliverUpdate(listener, safetyCenterData, null);
         }
 
         @Override
@@ -405,31 +393,37 @@ public final class SafetyCenterService extends SystemService {
             UserProfileGroup userProfileGroup = UserProfileGroup.from(getContext(), userId);
             enforceSameUserProfileGroup(
                     "dismissSafetyCenterIssue", userProfileGroup, safetyCenterIssueId.getUserId());
-
-            SafetySourceIssue safetySourceIssue;
-            SafetyCenterData safetyCenterData;
-            List<RemoteCallbackList<IOnSafetyCenterDataChangedListener>> listeners;
             synchronized (mApiLock) {
-                safetySourceIssue =
+                SafetySourceIssue safetySourceIssue =
                         mSafetyCenterDataTracker.getSafetySourceIssue(safetyCenterIssueId);
                 if (safetySourceIssue == null) {
                     Log.w(
                             TAG,
                             "Attempt to dismiss an issue that is not provided by the source, or "
                                     + "that was dismissed already");
+                    // Don't send the error to the UI here, since it could happen when clicking the
+                    // button multiple times in a row.
                     return;
                 }
                 mSafetyCenterDataTracker.dismissSafetyCenterIssue(safetyCenterIssueId);
-                safetyCenterData = mSafetyCenterDataTracker.getSafetyCenterData(userProfileGroup);
-                listeners = mSafetyCenterListeners.getListeners(userProfileGroup);
-            }
-
-            // TODO(b/228832622): Ensure listeners are called only when data changes.
-            SafetyCenterListeners.deliverUpdate(listeners, safetyCenterData, null);
-
-            PendingIntent onDismissPendingIntent = safetySourceIssue.getOnDismissPendingIntent();
-            if (onDismissPendingIntent != null) {
-                dispatchPendingIntent(onDismissPendingIntent);
+                PendingIntent onDismissPendingIntent =
+                        safetySourceIssue.getOnDismissPendingIntent();
+                if (onDismissPendingIntent != null
+                        && !dispatchPendingIntent(onDismissPendingIntent)) {
+                    Log.w(
+                            TAG,
+                            "Error dispatching dismissal for issue: "
+                                    + safetyCenterIssueId.getSafetySourceIssueId()
+                                    + ", of source: "
+                                    + safetyCenterIssueId.getSafetySourceId());
+                    // We still consider the dismissal a success if there is an error dispatching
+                    // the dismissal PendingIntent, since SafetyCenter won't surface this warning
+                    // anymore.
+                }
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
+                        userProfileGroup,
+                        mSafetyCenterDataTracker.getSafetyCenterData(userProfileGroup),
+                        null);
             }
         }
 
@@ -451,21 +445,19 @@ public final class SafetyCenterService extends SystemService {
                     SafetyCenterIds.issueActionIdFromString(issueActionId);
             if (!safetyCenterIssueActionId.getSafetyCenterIssueId().equals(safetyCenterIssueId)) {
                 throw new IllegalArgumentException(
-                        String.format(
-                                "issueId: %s and issueActionId: %s do not match",
-                                safetyCenterIssueId, safetyCenterIssueActionId));
+                        "issueId: "
+                                + safetyCenterIssueId
+                                + " and issueActionId: "
+                                + safetyCenterIssueActionId
+                                + " do not match");
             }
             UserProfileGroup userProfileGroup = UserProfileGroup.from(getContext(), userId);
             enforceSameUserProfileGroup(
                     "executeSafetyCenterIssueAction",
                     userProfileGroup,
                     safetyCenterIssueId.getUserId());
-
-            SafetySourceIssue.Action safetySourceIssueAction;
-            SafetyCenterData safetyCenterData = null;
-            List<RemoteCallbackList<IOnSafetyCenterDataChangedListener>> listeners = null;
             synchronized (mApiLock) {
-                safetySourceIssueAction =
+                SafetySourceIssue.Action safetySourceIssueAction =
                         mSafetyCenterDataTracker.getSafetySourceIssueAction(
                                 safetyCenterIssueActionId);
                 if (safetySourceIssueAction == null) {
@@ -473,31 +465,44 @@ public final class SafetyCenterService extends SystemService {
                             TAG,
                             "Attempt to execute an issue action that is not provided by the source,"
                                     + " that was dismissed, or is already in flight");
+                    // Don't send the error to the UI here, since it could happen when clicking the
+                    // button multiple times in a row.
+                    return;
+                }
+                if (!dispatchPendingIntent(safetySourceIssueAction.getPendingIntent())) {
+                    Log.w(
+                            TAG,
+                            "Error dispatching action: "
+                                    + safetyCenterIssueActionId.getSafetySourceIssueActionId()
+                                    + ", for issue: "
+                                    + safetyCenterIssueActionId
+                                            .getSafetyCenterIssueId()
+                                            .getSafetySourceIssueId()
+                                    + ", of source: "
+                                    + safetyCenterIssueActionId
+                                            .getSafetyCenterIssueId()
+                                            .getSafetySourceId());
+                    mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
+                            userProfileGroup,
+                            null,
+                            // TODO(b/229080761): Implement proper error message.
+                            new SafetyCenterErrorDetails("Error executing action"));
                     return;
                 }
                 if (safetySourceIssueAction.willResolve()) {
                     mSafetyCenterDataTracker.markSafetyCenterIssueActionAsInFlight(
                             safetyCenterIssueActionId);
-                    safetyCenterData =
-                            mSafetyCenterDataTracker.getSafetyCenterData(userProfileGroup);
-                    listeners = mSafetyCenterListeners.getListeners(userProfileGroup);
+                    ResolvingActionTimeout resolvingActionTimeout =
+                            new ResolvingActionTimeout(safetyCenterIssueActionId, userProfileGroup);
+                    BackgroundThread.getHandler()
+                            .postDelayed(
+                                    resolvingActionTimeout, RESOLVING_ACTION_TIMEOUT.toMillis());
+                    mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
+                            userProfileGroup,
+                            mSafetyCenterDataTracker.getSafetyCenterData(userProfileGroup),
+                            null);
                 }
             }
-
-            if (safetySourceIssueAction.willResolve()) {
-                ResolvingActionTimeout resolvingActionTimeout =
-                        new ResolvingActionTimeout(safetyCenterIssueActionId, userProfileGroup);
-                BackgroundThread.getHandler()
-                        .postDelayed(resolvingActionTimeout, RESOLVE_ACTION_TIMEOUT.toMillis());
-            }
-
-            if (listeners != null) {
-                // TODO(b/228832622): Ensure listeners are called only when data changes.
-                SafetyCenterListeners.deliverUpdate(listeners, safetyCenterData, null);
-            }
-            // TODO(b/229080116): Unmark as in flight if there is an issue dispatching the
-            //  PendingIntent.
-            dispatchPendingIntent(safetySourceIssueAction.getPendingIntent());
         }
 
         @Override
@@ -567,9 +572,10 @@ public final class SafetyCenterService extends SystemService {
                 }
             }
             throw new SecurityException(
-                    String.format(
-                            "%s requires any of: %s, but none were granted",
-                            message, Arrays.toString(permissions)));
+                    message
+                            + " requires any of: "
+                            + Arrays.toString(permissions)
+                            + ", but none were granted");
         }
 
         /** Enforces cross user permission and returns whether the user is existent. */
@@ -578,10 +584,11 @@ public final class SafetyCenterService extends SystemService {
             if (!UserUtils.isUserExistent(userId, getContext())) {
                 Log.e(
                         TAG,
-                        String.format(
-                                "Called %s with user id %s, which does not correspond to an"
-                                        + " existing user",
-                                message, userId));
+                        "Called "
+                                + message
+                                + " with user id "
+                                + userId
+                                + ", which does not correspond to an existing user");
                 return false;
             }
             // TODO(b/223132917): Check if user is enabled, running and/or if quiet mode is enabled?
@@ -590,7 +597,7 @@ public final class SafetyCenterService extends SystemService {
 
         private boolean checkApiEnabled(@NonNull String message) {
             if (!isApiEnabled()) {
-                Log.w(TAG, String.format("Called %s, but Safety Center is disabled", message));
+                Log.w(TAG, "Called " + message + ", but Safety Center is disabled");
                 return false;
             }
             return true;
@@ -602,19 +609,21 @@ public final class SafetyCenterService extends SystemService {
                 @UserIdInt int userId) {
             if (!userProfileGroup.contains(userId)) {
                 throw new SecurityException(
-                        String.format(
-                                "%s requires target user id %s to be within the same profile group"
-                                        + " of the caller: %s",
-                                message, userId, userProfileGroup));
+                        message
+                                + " requires target user id "
+                                + userId
+                                + " to be within the same profile group of the caller: "
+                                + userProfileGroup);
             }
         }
 
-        private void dispatchPendingIntent(@NonNull PendingIntent pendingIntent) {
+        private boolean dispatchPendingIntent(@NonNull PendingIntent pendingIntent) {
             try {
                 pendingIntent.send();
+                return true;
             } catch (PendingIntent.CanceledException ex) {
                 Log.w(TAG, "Couldn't dispatch PendingIntent", ex);
-                // TODO(b/229080116): Propagate error with listeners here?
+                return false;
             }
         }
     }
@@ -694,24 +703,18 @@ public final class SafetyCenterService extends SystemService {
 
         @Override
         public void run() {
-            List<RemoteCallbackList<IOnSafetyCenterDataChangedListener>> listeners;
-            SafetyCenterData safetyCenterData;
             synchronized (mApiLock) {
                 boolean hasClearedRefresh =
                         mSafetyCenterRefreshTracker.clearRefresh(mRefreshBroadcastId);
                 if (!hasClearedRefresh) {
                     return;
                 }
-                safetyCenterData = mSafetyCenterDataTracker.getSafetyCenterData(mUserProfileGroup);
-                listeners = mSafetyCenterListeners.getListeners(mUserProfileGroup);
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
+                        mUserProfileGroup,
+                        mSafetyCenterDataTracker.getSafetyCenterData(mUserProfileGroup),
+                        // TODO(b/229080761): Implement proper error message.
+                        new SafetyCenterErrorDetails("Refresh timeout"));
             }
-
-            // TODO(b/228832622): Ensure listeners are called only when data changes.
-            SafetyCenterListeners.deliverUpdate(
-                    listeners,
-                    safetyCenterData,
-                    // TODO(b/229080761): Implement proper error message.
-                    new SafetyCenterErrorDetails("Refresh timeout"));
         }
     }
 
@@ -730,25 +733,19 @@ public final class SafetyCenterService extends SystemService {
 
         @Override
         public void run() {
-            List<RemoteCallbackList<IOnSafetyCenterDataChangedListener>> listeners;
-            SafetyCenterData safetyCenterData;
             synchronized (mApiLock) {
-                boolean hasClearedInFlightAction =
+                boolean safetyCenterDataHasChanged =
                         mSafetyCenterDataTracker.unmarkSafetyCenterIssueActionAsInFlight(
                                 mSafetyCenterIssueActionId);
-                if (!hasClearedInFlightAction) {
+                if (!safetyCenterDataHasChanged) {
                     return;
                 }
-                safetyCenterData = mSafetyCenterDataTracker.getSafetyCenterData(mUserProfileGroup);
-                listeners = mSafetyCenterListeners.getListeners(mUserProfileGroup);
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
+                        mUserProfileGroup,
+                        mSafetyCenterDataTracker.getSafetyCenterData(mUserProfileGroup),
+                        // TODO(b/229080761): Implement proper error message.
+                        new SafetyCenterErrorDetails("Resolving action timeout"));
             }
-
-            // TODO(b/228832622): Ensure listeners are called only when data changes.
-            SafetyCenterListeners.deliverUpdate(
-                    listeners,
-                    safetyCenterData,
-                    // TODO(b/229080761): Implement proper error message.
-                    new SafetyCenterErrorDetails("Resolve action timeout"));
         }
     }
 
