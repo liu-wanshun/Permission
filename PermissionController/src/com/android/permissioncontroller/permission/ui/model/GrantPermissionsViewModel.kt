@@ -38,6 +38,7 @@ import android.util.Log
 import androidx.core.util.Consumer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.Constants
 import com.android.permissioncontroller.DeviceUtils
 import com.android.permissioncontroller.PermissionControllerApplication
@@ -118,7 +119,6 @@ class GrantPermissionsViewModel(
     private val app: Application,
     private val packageName: String,
     private val requestedPermissions: List<String>,
-    private val legacyAccessPermissions: List<String>,
     private val sessionId: Long,
     private val storedState: Bundle?
 ) : ViewModel() {
@@ -322,12 +322,7 @@ class GrantPermissionsViewModel(
                 buttonVisibilities[DENY_BUTTON] = true
                 buttonVisibilities[ALLOW_ONE_TIME_BUTTON] =
                     Utils.supportsOneTimeGrant(groupName)
-                var message = if (
-                    legacyAccessPermissions.any { it in groupState.affectedPermissions }) {
-                    RequestMessage.CONTINUE_MESSAGE
-                } else {
-                    RequestMessage.FG_MESSAGE
-                }
+                var message = RequestMessage.FG_MESSAGE
                 // Whether or not to use the foreground, background, or no detail message.
                 // null ==
                 var detailMessage = RequestMessage.NO_MESSAGE
@@ -505,12 +500,19 @@ class GrantPermissionsViewModel(
                     }
                 }
 
-                // If group is a storage group, legacy apps will need special text
-                if (groupState.group.permGroupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS) {
-                    if (packageInfo.targetSdkVersion < Build.VERSION_CODES.Q) {
-                        message = RequestMessage.STORAGE_SUPERGROUP_MESSAGE_PRE_Q
-                    } else if (packageInfo.targetSdkVersion <= Build.VERSION_CODES.S_V2) {
-                        message = RequestMessage.STORAGE_SUPERGROUP_MESSAGE_Q_TO_S
+                if (SdkLevel.isAtLeastT()) {
+                    // If app is T+, requests for the STORAGE group are ignored
+                    if (packageInfo.targetSdkVersion > Build.VERSION_CODES.S_V2 &&
+                        groupState.group.permGroupName == Manifest.permission_group.STORAGE) {
+                        continue
+                    }
+                    // If app is <T and requests STORAGE, grant dialogs has special text
+                    if (groupState.group.permGroupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS) {
+                        if (packageInfo.targetSdkVersion < Build.VERSION_CODES.Q) {
+                            message = RequestMessage.STORAGE_SUPERGROUP_MESSAGE_PRE_Q
+                        } else if (packageInfo.targetSdkVersion <= Build.VERSION_CODES.S_V2) {
+                            message = RequestMessage.STORAGE_SUPERGROUP_MESSAGE_Q_TO_S
+                        }
                     }
                 }
 
@@ -1285,9 +1287,8 @@ class GrantPermissionsViewModel(
             NO_MESSAGE(3),
             FG_FINE_LOCATION_MESSAGE(4),
             FG_COARSE_LOCATION_MESSAGE(5),
-            CONTINUE_MESSAGE(6),
-            STORAGE_SUPERGROUP_MESSAGE_Q_TO_S(7),
-            STORAGE_SUPERGROUP_MESSAGE_PRE_Q(8);
+            STORAGE_SUPERGROUP_MESSAGE_Q_TO_S(6),
+            STORAGE_SUPERGROUP_MESSAGE_PRE_Q(7);
         }
 
         fun filterNotificationPermissionIfNeededSync(
@@ -1323,13 +1324,12 @@ class GrantPermissionsViewModelFactory(
     private val app: Application,
     private val packageName: String,
     private val requestedPermissions: Array<String>,
-    private val legacyAccessPermissions: Array<String>,
     private val sessionId: Long,
     private val savedState: Bundle?
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
         return GrantPermissionsViewModel(app, packageName, requestedPermissions.toList(),
-            legacyAccessPermissions.toList(), sessionId, savedState) as T
+            sessionId, savedState) as T
     }
 }
