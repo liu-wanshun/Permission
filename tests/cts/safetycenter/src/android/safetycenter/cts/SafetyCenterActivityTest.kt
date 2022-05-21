@@ -53,20 +53,18 @@ class SafetyCenterActivityTest {
     }
 
     @Test
-    fun launchActivity_withFlagDisabled_showsSecurityTitle() {
+    fun launchActivity_withFlagDisabled_showsSettingsTitle() {
         SafetyCenterFlags.setSafetyCenterEnabled(false)
 
         startSafetyCenterActivity()
 
-        // CollapsingToolbar title can't be found by text, so using description instead.
-        waitFindObject(By.desc("Security"))
+        waitFindObject(By.text("Settings"))
     }
 
     private fun startSafetyCenterActivity() {
         context.startActivity(
             Intent(ACTION_SAFETY_CENTER)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        )
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
     }
 }

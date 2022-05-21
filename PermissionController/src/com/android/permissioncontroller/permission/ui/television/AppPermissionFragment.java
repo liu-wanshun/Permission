@@ -16,6 +16,7 @@
 
 package com.android.permissioncontroller.permission.ui.television;
 
+import static android.Manifest.permission_group.NOTIFICATIONS;
 import static android.Manifest.permission_group.STORAGE;
 
 import static com.android.permissioncontroller.Constants.EXTRA_SESSION_ID;
@@ -66,6 +67,7 @@ import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.data.FullStoragePermissionAppsLiveData.FullStoragePackageState;
 import com.android.permissioncontroller.permission.model.AppPermissionGroup;
 import com.android.permissioncontroller.permission.model.AppPermissions;
+import com.android.permissioncontroller.permission.ui.AdvancedConfirmDialogArgs;
 import com.android.permissioncontroller.permission.ui.GrantPermissionsViewHandler;
 import com.android.permissioncontroller.permission.ui.model.AppPermissionViewModel;
 import com.android.permissioncontroller.permission.ui.model.AppPermissionViewModel.ButtonState;
@@ -161,6 +163,12 @@ public class AppPermissionFragment extends SettingsWithHeader
             activity.finish();
             return;
         }
+
+        // Skip notification group on tv
+        if (mPermGroupName.equals(NOTIFICATIONS)) {
+            getActivity().finish();
+        }
+
         mIsStorageGroup = Objects.equals(mPermGroupName, STORAGE);
         mUser = getArguments().getParcelable(Intent.EXTRA_USER);
         mPackageLabel = BidiFormatter.getInstance().unicodeWrap(
@@ -489,5 +497,28 @@ public class AppPermissionFragment extends SettingsWithHeader
             AppPermissionFragment fragment = (AppPermissionFragment) getTargetFragment();
             fragment.setRadioButtonsState(fragment.mViewModel.getButtonStateLiveData().getValue());
         }
+    }
+
+    @Override
+    public void showAdvancedConfirmDialog(AdvancedConfirmDialogArgs args) {
+        AlertDialog.Builder b = new AlertDialog.Builder(getContext())
+                .setIcon(args.getIconId())
+                .setMessage(args.getMessageId())
+                .setNegativeButton(args.getNegativeButtonTextId(),
+                        (DialogInterface dialog, int which) -> {
+                            setRadioButtonsState(mViewModel.getButtonStateLiveData().getValue());
+                        })
+                .setPositiveButton(args.getPositiveButtonTextId(),
+                        (DialogInterface dialog, int which) -> {
+                            mViewModel.requestChange(args.getSetOneTime(),
+                                    AppPermissionFragment.this,
+                                    AppPermissionFragment.this,
+                                    args.getChangeRequest(),
+                                    args.getButtonClicked());
+                        });
+        if (args.getTitleId() != 0) {
+            b.setTitle(args.getTitleId());
+        }
+        b.show();
     }
 }

@@ -20,6 +20,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_SAFETY_CENTER
 import android.content.pm.PackageManager.FEATURE_AUTOMOTIVE
+import android.content.pm.PackageManager.FEATURE_LEANBACK
 import android.os.Build.VERSION_CODES.TIRAMISU
 import android.safetycenter.SafetyCenterManager
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.isSafetyCenterEnabledWithPermission
@@ -50,13 +51,13 @@ class SafetyCenterUnsupportedTest {
 
     @Test
     fun launchActivity_showsSecurityTitle() {
-        // The security page redirects to the cars settings page on auto devices.
+        // TODO(b/232284056): Check if we can remove these test restrictions
         assumeFalse(packageManager.hasSystemFeature(FEATURE_AUTOMOTIVE))
+        assumeFalse(packageManager.hasSystemFeature(FEATURE_LEANBACK))
 
         startSafetyCenterActivity()
 
-        // CollapsingToolbar title can't be found by text, so using description instead.
-        waitFindObject(By.desc("Security"))
+        waitFindObject(By.text("Settings"))
     }
 
     @Test
@@ -81,7 +82,6 @@ class SafetyCenterUnsupportedTest {
         context.startActivity(
             Intent(ACTION_SAFETY_CENTER)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        )
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
     }
 }

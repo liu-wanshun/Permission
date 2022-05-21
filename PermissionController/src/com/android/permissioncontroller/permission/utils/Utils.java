@@ -177,9 +177,9 @@ public final class Utils {
     private static final String PROPERTY_LOCATION_ACCESS_CHECK_ENABLED =
             "location_access_check_enabled";
 
-    /** The time an app needs to be unused in order to be hibernated */
-    public static final String PROPERTY_PERMISSION_DECISIONS_CHECK_OLD_FREQUENCY_MILLIS =
-            "permission_decisions_check_old_frequency_millis";
+    /** How frequently to check permission event store to scrub old data */
+    public static final String PROPERTY_PERMISSION_EVENTS_CHECK_OLD_FREQUENCY_MILLIS =
+            "permission_events_check_old_frequency_millis";
 
     /** The time an app needs to be unused in order to be hibernated */
     public static final String PROPERTY_PERMISSION_DECISIONS_MAX_DATA_AGE_MILLIS =
@@ -226,7 +226,6 @@ public final class Utils {
     private static final ArrayMap<String, Integer> PERM_GROUP_BACKGROUND_REQUEST_DETAIL_RES;
     private static final ArrayMap<String, Integer> PERM_GROUP_UPGRADE_REQUEST_RES;
     private static final ArrayMap<String, Integer> PERM_GROUP_UPGRADE_REQUEST_DETAIL_RES;
-    private static final ArrayMap<String, Integer> PERM_GROUP_CONTINUE_REQUEST_RES;
 
     /** Permission -> Sensor codes */
     private static final ArrayMap<String, Integer> PERM_SENSOR_CODES;
@@ -285,12 +284,15 @@ public final class Utils {
         // STORAGE_PERMISSIONS list in PermissionManagerService in frameworks/base
         PLATFORM_PERMISSIONS.put(Manifest.permission.READ_EXTERNAL_STORAGE, STORAGE);
         PLATFORM_PERMISSIONS.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, STORAGE);
-        PLATFORM_PERMISSIONS.put(Manifest.permission.ACCESS_MEDIA_LOCATION, STORAGE);
+        if (!SdkLevel.isAtLeastT()) {
+            PLATFORM_PERMISSIONS.put(Manifest.permission.ACCESS_MEDIA_LOCATION, STORAGE);
+        }
 
         if (SdkLevel.isAtLeastT()) {
             PLATFORM_PERMISSIONS.put(Manifest.permission.READ_MEDIA_AUDIO, READ_MEDIA_AURAL);
             PLATFORM_PERMISSIONS.put(Manifest.permission.READ_MEDIA_IMAGES, READ_MEDIA_VISUAL);
             PLATFORM_PERMISSIONS.put(Manifest.permission.READ_MEDIA_VIDEO, READ_MEDIA_VISUAL);
+            PLATFORM_PERMISSIONS.put(Manifest.permission.ACCESS_MEDIA_LOCATION, READ_MEDIA_VISUAL);
         }
 
         PLATFORM_PERMISSIONS.put(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION);
@@ -417,10 +419,6 @@ public final class Utils {
                 .put(CAMERA, R.string.permgroupupgraderequestdetail_camera);
         PERM_GROUP_UPGRADE_REQUEST_DETAIL_RES
                 .put(SENSORS,  R.string.permgroupupgraderequestdetail_sensors);
-
-        PERM_GROUP_CONTINUE_REQUEST_RES = new ArrayMap<>();
-        PERM_GROUP_CONTINUE_REQUEST_RES
-                .put(NOTIFICATIONS, R.string.permgrouprequestcontinue_notifications);
 
         PERM_SENSOR_CODES = new ArrayMap<>();
         if (SdkLevel.isAtLeastS()) {
@@ -1223,15 +1221,6 @@ public final class Utils {
      */
     public static int getUpgradeRequestDetail(String groupName) {
         return PERM_GROUP_UPGRADE_REQUEST_DETAIL_RES.getOrDefault(groupName, 0);
-    }
-
-    /**
-     * The resource id for the "continue allowing" message for a permission group
-     * @param groupName Permission group name
-     * @return The id or 0 if the permission group doesn't exist or have a message
-     */
-    public static int getContinueRequest(String groupName) {
-        return PERM_GROUP_CONTINUE_REQUEST_RES.getOrDefault(groupName, 0);
     }
 
     /**

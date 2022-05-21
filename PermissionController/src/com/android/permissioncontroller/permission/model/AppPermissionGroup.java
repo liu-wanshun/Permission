@@ -18,12 +18,14 @@ package com.android.permissioncontroller.permission.model;
 
 import static android.Manifest.permission.ACCESS_BACKGROUND_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.POST_NOTIFICATIONS;
 import static android.app.AppOpsManager.MODE_ALLOWED;
 import static android.app.AppOpsManager.MODE_FOREGROUND;
 import static android.app.AppOpsManager.MODE_IGNORED;
 import static android.app.AppOpsManager.OPSTR_LEGACY_STORAGE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.app.AppOpsManager;
 import android.app.Application;
@@ -47,9 +49,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.android.modules.utils.build.SdkLevel;
+import com.android.permissioncontroller.PermissionControllerApplication;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.service.LocationAccessCheck;
 import com.android.permissioncontroller.permission.utils.ArrayUtils;
+import com.android.permissioncontroller.permission.utils.KotlinUtils;
 import com.android.permissioncontroller.permission.utils.LocationUtils;
 import com.android.permissioncontroller.permission.utils.SoftRestrictedPermissionPolicy;
 import com.android.permissioncontroller.permission.utils.Utils;
@@ -869,7 +873,20 @@ public final class AppPermissionGroup implements Comparable<AppPermissionGroup> 
      * @param reason The reason why the apps are killed
      */
     private void killApp(String reason) {
+        if (shouldSkipKillForGroup()) {
+            return;
+        }
+
         mActivityManager.killUid(mPackageInfo.applicationInfo.uid, reason);
+    }
+
+    private boolean shouldSkipKillForGroup() {
+        if (!mName.equals(Manifest.permission_group.NOTIFICATIONS)) {
+            return false;
+        }
+
+        return KotlinUtils.INSTANCE.shouldSkipKillOnPermDeny(PermissionControllerApplication.get(),
+                POST_NOTIFICATIONS, mPackageInfo.packageName, mUserHandle);
     }
 
     /**
@@ -1449,9 +1466,8 @@ public final class AppPermissionGroup implements Comparable<AppPermissionGroup> 
      *                                     caller has to make sure to kill the app if needed.
      */
     public void persistChanges(boolean mayKillBecauseOfAppOpsChange) {
-        persistChanges(mayKillBecauseOfAppOpsChange, null);
+        persistChanges(mayKillBecauseOfAppOpsChange, null, null);
     }
-
 
     /**
      * If the changes to this group were delayed, persist them to the platform.
@@ -1462,6 +1478,20 @@ public final class AppPermissionGroup implements Comparable<AppPermissionGroup> 
      * @param revokeReason If any permissions are getting revoked, the reason for revoking them.
      */
     public void persistChanges(boolean mayKillBecauseOfAppOpsChange, String revokeReason) {
+        persistChanges(mayKillBecauseOfAppOpsChange, revokeReason, null);
+    }
+
+    /**
+     * If the changes to this group were delayed, persist them to the platform.
+     *
+     * @param mayKillBecauseOfAppOpsChange If the app these permissions belong to may be killed if
+     *                                     app ops change. If this is set to {@code false} the
+     *                                     caller has to make sure to kill the app if needed.
+     * @param revokeReason If any permissions are getting revoked, the reason for revoking them.
+     * @param filterPermissions If provided, only persist state for the given permissions
+     */
+    public void persistChanges(boolean mayKillBecauseOfAppOpsChange, String revokeReason,
+            Set<String> filterPermissions) {
         int uid = mPackageInfo.applicationInfo.uid;
 
         int numPermissions = mPermissions.size();
@@ -1469,6 +1499,10 @@ public final class AppPermissionGroup implements Comparable<AppPermissionGroup> 
 
         for (int i = 0; i < numPermissions; i++) {
             Permission permission = mPermissions.valueAt(i);
+
+            if (filterPermissions != null && !filterPermissions.contains(permission.getName())) {
+                continue;
+            }
 
             if (!permission.isSystemFixed()) {
                 if (permission.isGranted()) {

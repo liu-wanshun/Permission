@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.ui.model
+package com.android.permissioncontroller.permission.ui.model.v33
 
 import android.app.Application
 import android.content.Context
