@@ -15,6 +15,8 @@
  */
 package com.android.permissioncontroller.permission.ui.television;
 
+import static android.Manifest.permission_group.NOTIFICATIONS;
+
 import static com.android.permissioncontroller.Constants.INVALID_SESSION_ID;
 
 import android.app.ActionBar;
@@ -22,6 +24,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.hardware.SensorPrivacyManager;
 import android.os.Bundle;
 import android.util.ArraySet;
 import android.view.View;
@@ -33,6 +36,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 
+import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.model.AppPermissionGroup;
 import com.android.permissioncontroller.permission.model.legacy.PermissionApps;
@@ -73,6 +77,10 @@ public final class PermissionAppsFragment extends SettingsWithHeader implements 
 
     private Callback mOnPermissionsLoadedListener;
 
+    private SensorPrivacyManager mSensorPrivacyManager;
+    private final SensorPrivacyManager.OnSensorPrivacyChangedListener mPrivacyChangedListener =
+            (sensor, enabled) -> mPermissionApps.refresh(true);
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +89,14 @@ public final class PermissionAppsFragment extends SettingsWithHeader implements 
         if (groupName == null) {
             groupName = getArguments().getString(Intent.EXTRA_PERMISSION_NAME);
         }
+        if (groupName.equals(NOTIFICATIONS)) {
+            getActivity().onBackPressed();
+            return;
+        }
         mPermissionApps = new PermissionApps(getActivity(), groupName, this);
+        if (SdkLevel.isAtLeastT()) {
+            mSensorPrivacyManager = getContext().getSystemService(SensorPrivacyManager.class);
+        }
     }
 
     @Override
@@ -95,6 +110,9 @@ public final class PermissionAppsFragment extends SettingsWithHeader implements 
         }
 
         mPermissionApps.refresh(true);
+        if (mSensorPrivacyManager != null) {
+            mSensorPrivacyManager.addSensorPrivacyListener(mPrivacyChangedListener);
+        }
     }
 
     @Override
@@ -343,6 +361,9 @@ public final class PermissionAppsFragment extends SettingsWithHeader implements 
     public void onStop() {
         super.onStop();
         logToggledGroups();
+        if (mSensorPrivacyManager != null) {
+            mSensorPrivacyManager.removeSensorPrivacyListener(mPrivacyChangedListener);
+        }
     }
 
     private PreferenceCategory findOrCreateCategory(

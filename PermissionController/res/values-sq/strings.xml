@@ -126,8 +126,8 @@
     <string name="perm_usage_adv_info_title" msgid="3357831829538873708">"Shiko lejet e tjera"</string>
     <string name="perm_usage_adv_info_summary_2_items" msgid="3702175198750127822">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g>"</string>
     <string name="perm_usage_adv_info_summary_more_items" msgid="949055326299562218">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g> dhe <xliff:g id="NUM">%3$s</xliff:g> të tjera"</string>
-    <string name="permission_group_usage_subtitle_24h" msgid="5120155996322114181">"Kronologjia se kur e kanë përdorur aplikacionet \"<xliff:g id="PERMGROUP">%1$s</xliff:g>\" gjatë 24 orëve të fundit"</string>
-    <string name="permission_group_usage_subtitle_7d" msgid="1465828402260324654">"Kronologjia se kur e kanë përdorur aplikacionet \"<xliff:g id="PERMGROUP">%1$s</xliff:g>\" gjatë 7 ditëve të fundit"</string>
+    <string name="permission_group_usage_subtitle_24h" msgid="5120155996322114181">"Kronologjia se kur është përdorur \"<xliff:g id="PERMGROUP">%1$s</xliff:g>\" nga aplikacionet në 24 orët e fundit"</string>
+    <string name="permission_group_usage_subtitle_7d" msgid="1465828402260324654">"Kronologjia se kur është përdorur \"<xliff:g id="PERMGROUP">%1$s</xliff:g>\" nga aplikacionet në 7 ditët e fundit"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Kur ky aplikacion ka përdorur lejen për: <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Mëso më shumë"</string>
     <string name="manage_permission_summary" msgid="4117555482684114317">"Kontrollo qasjen e aplikacionit në <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
@@ -196,14 +196,11 @@
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"Shiko të gjitha lejet e aplikacionit \"<xliff:g id="APP">%1$s</xliff:g>\""</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"Shiko të gjitha aplikacionet me këtë leje"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"Shfaq përdorimin e mikrofonit të \"Asistentit\""</string>
-    <!-- no translation found for unused_apps_category_title (2988455616845243901) -->
-    <skip />
+    <string name="unused_apps_category_title" msgid="2988455616845243901">"Cilësimet e aplikacioneve të papërdorura"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"Hiq lejet nëse aplikacioni nuk është përdorur"</string>
     <string name="unused_apps_label" msgid="2595428768404901064">"Hiq lejet dhe liro hapësirën"</string>
-    <!-- no translation found for unused_apps_label_v2 (2443239537162119403) -->
-    <skip />
-    <!-- no translation found for unused_apps_summary (4416065734063612849) -->
-    <skip />
+    <string name="unused_apps_label_v2" msgid="7058776770056517980">"Ndërprit aktivitetin nëse nuk përdoret"</string>
+    <string name="unused_apps_summary" msgid="8839466950318403115">"Hiq lejet, fshi skedarët e përkohshëm dhe ndalo njoftimet"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"Për të mbrojtur të dhënat e tua, lejet për këtë aplikacion do të hiqen nëse aplikacioni nuk përdoret për disa muaj."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Për të mbrojtur të dhënat e tua, nëse aplikacioni nuk është përdorur për disa muaj, lejet e mëposhtme do të hiqen: <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Për të mbrojtur të dhënat e tua, lejet janë hequr nga aplikacionet që nuk i ke përdorur për disa muaj."</string>
@@ -220,6 +217,7 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> dhe <xliff:g id="NUMBER">%2$s</xliff:g> leje të tjera janë hequr"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Aplikacionet e papërdorura"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"Nëse një aplikacion nuk përdoret për disa muaj:\n\n• Lejet hiqen për të mbrojtur të dhënat e tua\n• Njoftimet ndalohen për të kursyer baterinë\n• Skedarët e përkohshëm hiqen për të liruar hapësirën\n\nPër të lejuar përsëri lejet dhe njoftimet, hap aplikacionin."</string>
+    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"Nëse një aplikacion nuk përdoret për disa muaj:\n\n• Lejet hiqen për të mbrojtur të dhënat e tua\n• Skedarët e përkohshëm hiqen për të liruar hapësirën\n\nPër të lejuar përsëri lejet, hap aplikacionin."</string>
     <string name="last_opened_category_title" msgid="7871347400611202595">"Hapur për herë të fundit më shumë se <xliff:g id="NUMBER">%s</xliff:g> muaj më parë"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Aplikacioni është hapur së fundi më <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Hapur së fundi më <xliff:g id="DATE">%s</xliff:g>"</string>
@@ -238,8 +236,8 @@
     <string name="permission_description_summary_sensors" msgid="1836045815643119949">"Aplikacionet me këtë leje mund të kenë qasje te të dhënat e sensorëve për shenjat e tua jetësore"</string>
     <string name="permission_description_summary_sms" msgid="725999468547768517">"Aplikacionet me këtë leje mund të dërgojnë dhe të shikojnë mesazhet SMS"</string>
     <string name="permission_description_summary_storage" msgid="6575759089065303346">"Aplikacionet me këtë leje mund të kenë qasje te fotografitë, media dhe skedarët në pajisjen tënde"</string>
-    <string name="permission_description_summary_read_media_aural" msgid="2789020637856210454">"Aplikacionet me këtë leje mund të kenë qasje te muzika dhe skedarë të tjerë audio në pajisjen tënde"</string>
-    <string name="permission_description_summary_read_media_visual" msgid="4210569227927436735">"Aplikacionet me këtë leje mund të kenë qasje te fotografitë dhe videot në pajisjen tënde"</string>
+    <string name="permission_description_summary_read_media_aural" msgid="3354728149930482199">"Aplikacionet me këtë leje mund të kenë qasje te muzika dhe skedarë të tjerë audio në këtë pajisje"</string>
+    <string name="permission_description_summary_read_media_visual" msgid="4991801977881732641">"Aplikacionet me këtë leje mund të kenë qasje te fotografitë dhe videot në këtë pajisje"</string>
     <string name="app_permission_most_recent_summary" msgid="4292074449384040590">"Qasja e fundit: <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_permission_most_recent_denied_summary" msgid="7659497197737708112">"Refuzuar aktualisht / qasja e fundit: <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_permission_never_accessed_summary" msgid="401346181461975090">"Nuk ka pasur asnjëherë qasje"</string>
@@ -251,8 +249,7 @@
     <string name="allowed_storage_full" msgid="5356699280625693530">"Lejohet të menaxhojë të gjithë skedarët"</string>
     <string name="ask_header" msgid="2633816846459944376">"Pyet çdo herë"</string>
     <string name="denied_header" msgid="903209608358177654">"Nuk lejohet"</string>
-    <string name="storage_footer_warning_text" msgid="2242258357752432337">"Disa aplikacione që ofrojnë funksionalitete thelbësore për pajisjen tënde mund të kenë qasje të veçantë në të gjithë skedarët e tu"</string>
-    <string name="storage_footer_hyperlink_text" msgid="7759955324552930974">"Shiko aplikacionet me qasje në të gjithë skedarët"</string>
+    <string name="storage_footer_hyperlink_text" msgid="8873343987957834810">"Shiko më shumë aplikacione me qasje tek të gjithë skedarët"</string>
     <string name="days" msgid="609563020985571393">"{count,plural, =1{1 ditë}other{# ditë}}"</string>
     <string name="hours" msgid="3447767892295843282">"{count,plural, =1{1 orë}other{# orë}}"</string>
     <string name="minutes" msgid="4408293038068503157">"{count,plural, =1{1 minutë}other{# minuta}}"</string>
@@ -334,8 +331,6 @@
     <string name="role_assistant_label" msgid="4727586018198208128">"Apl. i parazgjedhur i asistentit dixhital"</string>
     <string name="role_assistant_short_label" msgid="3369003713187703399">"Aplikacioni i asistentit dixhital"</string>
     <string name="role_assistant_description" msgid="6622458130459922952">"Aplikacionet e asistentit të ndihmojnë bazuar në informacionet nga ekrani që je duke shikuar. Disa aplikacione mbështesin shërbimet e nisësit dhe të hyrjes me zë për të të siguruar një ndihmë të integruar."</string>
-    <string name="role_assistant_request_title" msgid="5964976301922776060">"Dëshiron ta caktosh <xliff:g id="APP_NAME">%1$s</xliff:g> si aplikacionin tënd të parazgjedhur të asistentit?"</string>
-    <string name="role_assistant_request_description" msgid="6836644847620178483">"Merr qasjen tek evidenca e telefonatave dhe mesazhet SMS"</string>
     <string name="role_browser_label" msgid="2877796144554070207">"Aplikacioni i parazgjedhur i shfletuesit"</string>
     <string name="role_browser_short_label" msgid="6745009127123292296">"Aplikacioni i shfletuesit"</string>
     <string name="role_browser_description" msgid="3465253637499842671">"Aplikacionet që të japin qasje në internet dhe që shfaqin lidhjet që troket ti"</string>
@@ -345,13 +340,13 @@
     <string name="role_dialer_short_label" msgid="7186888549465352489">"Aplikacioni \"Telefoni\""</string>
     <string name="role_dialer_description" msgid="8768708633696539612">"Aplikacione që të lejojnë të bësh dhe të marrësh telefonata në pajisjen tënde"</string>
     <string name="role_dialer_request_title" msgid="5959618560705912058">"Dëshiron ta caktosh <xliff:g id="APP_NAME">%1$s</xliff:g> si aplikacionin tënd të parazgjedhur të telefonit?"</string>
-    <string name="role_dialer_request_description" msgid="2264219375528345270">"Merr qasjen tek evidenca e telefonatave dhe dërgon SMS"</string>
+    <string name="role_dialer_request_description" msgid="6288839625724909320">"Këtij aplikacioni do t\'i jepet qasje te kamera, kontaktet, mikrofoni, telefoni dhe mesazhet SMS"</string>
     <string name="role_dialer_search_keywords" msgid="3324448983559188087">"formuesi i numrit"</string>
     <string name="role_sms_label" msgid="8456999857547686640">"Aplikacioni i parazgjedhur i SMS-ve"</string>
     <string name="role_sms_short_label" msgid="4371444488034692243">"Aplikacioni i mesazheve SMS"</string>
     <string name="role_sms_description" msgid="3424020199148153513">"Aplikacione që të lejojnë të përdorësh numrin e telefonit për të dërguar dhe për të marrë mesazhe të shkurtra me tekst, fotografi, video etj."</string>
     <string name="role_sms_request_title" msgid="7953552109601185602">"Dëshiron ta caktosh <xliff:g id="APP_NAME">%1$s</xliff:g> si aplikacionin e parazgjedhur për mesazhet SMS?"</string>
-    <string name="role_sms_request_description" msgid="983371022668134198">"Merr qasjen te kontaktet, mesazhet SMS dhe telefoni"</string>
+    <string name="role_sms_request_description" msgid="2691004766132144886">"Këtij aplikacioni do t\'i jepet qasje te kamera, kontaktet, skedarët, media, mikrofoni, telefoni dhe mesazhet SMS"</string>
     <string name="role_sms_search_keywords" msgid="8022048144395047352">"mesazhe me tekst, dërgimi i mesazheve, mesazhe, mesazhim"</string>
     <string name="role_emergency_label" msgid="7028825857206842366">"Aplikacioni i parazgjedhur i urgjencës"</string>
     <string name="role_emergency_short_label" msgid="2388431453335350348">"Aplikacioni i urgjencës"</string>
@@ -446,17 +441,17 @@
     <string name="permgroupupgraderequestdetail_location" msgid="1550899076845189165">"Ky aplikacion dëshiron të ketë qasje në vendndodhjen tënde gjatë gjithë kohës, edhe kur nuk po e përdor aplikacionin. "<annotation id="link">"Lejoje te cilësimet"</annotation>"."</string>
     <string name="permgrouprequest_nearby_devices" msgid="2272829282660436700">"Të lejohet &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të gjejë, lidhet dhe përcaktojë pozicionin relativ të pajisjeve në afërsi?"</string>
     <string name="permgroupupgraderequestdetail_nearby_devices" msgid="6877531270654738614">"Të lejohet &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të gjejë, lidhet dhe përcaktojë pozicionin relativ të pajisjeve në afërsi? "<annotation id="link">"Lejoje te cilësimet."</annotation></string>
-    <string name="permgrouprequest_fineupgrade" msgid="2334242928821697672">"Të ndryshohet qasja e <xliff:g id="APP_NAME">&lt;b&gt;%1$s&lt;/b&gt;</xliff:g> te vendndodhja nga \"e përafërt në \"e saktë\"?"</string>
+    <string name="permgrouprequest_fineupgrade" msgid="2334242928821697672">"Të ndryshohet qasja që ka <xliff:g id="APP_NAME">&lt;b&gt;%1$s&lt;/b&gt;</xliff:g> te vendndodhja nga \"e përafërt\" në \"e saktë\"?"</string>
     <string name="permgrouprequest_coarselocation" msgid="7244605063736425232">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te vendndodhja e përafërt e kësaj pajisjeje?"</string>
     <string name="permgrouprequest_finelocation_imagetext" msgid="1313062433398914334">"E saktë"</string>
     <string name="permgrouprequest_coarselocation_imagetext" msgid="8650605041483025297">"E përafërt"</string>
     <string name="permgrouprequest_calendar" msgid="1493150855673603806">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te kalendari yt?"</string>
     <string name="permgrouprequest_sms" msgid="5672063688745420991">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të dërgojë dhe të shikojë mesazhet SMS?"</string>
-    <string name="permgrouprequest_storage" msgid="7426990523173124539">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te &lt;b&gt;skedarët dhe dokumentet&lt;/b&gt; në pajisjen tënde?"</string>
-    <string name="permgrouprequest_storage_q_to_s" msgid="3942779386983426698">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te &lt;b&gt;fotografitë, videot, muzika dhe audioja&lt;/b&gt; në pajisjen tënde?"</string>
-    <string name="permgrouprequest_storage_pre_q" msgid="1681166745228672009">"Të lejohet që &lt;b&amp;gt<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te &lt;b&gt;fotografitë, videot, muzika, audio dhe skedarë të tjerë&lt;/b&gt; në pajisjen tënde?"</string>
-    <string name="permgrouprequest_read_media_aural" msgid="5948278590400297839">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te muzika dhe skedarët e tjerë audio në këtë pajisje?"</string>
-    <string name="permgrouprequest_read_media_visual" msgid="4188474766470776052">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te fotografitë dhe videot e kësaj pajisjeje?"</string>
+    <string name="permgrouprequest_storage" msgid="8717773092518621602">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te fotografitë, media dhe skedarët në pajisjen tënde?"</string>
+    <string name="permgrouprequest_storage_q_to_s" msgid="8213701872983685505">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te &lt;b&gt;fotografitë, videot, muzika dhe audioja&lt;/b&gt; në këtë pajisje?"</string>
+    <string name="permgrouprequest_storage_pre_q" msgid="168130651144569428">"Të lejohet që &lt;b&amp;gt<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te &lt;b&gt;fotografitë, videot, muzika, audioja e të tjera&lt;/b&gt; në pajisje?"</string>
+    <string name="permgrouprequest_read_media_aural" msgid="2593365397347577812">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te muzika dhe te audioja në këtë pajisje?"</string>
+    <string name="permgrouprequest_read_media_visual" msgid="5548780620779729975">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te fotografitë dhe videot në këtë pajisje?"</string>
     <string name="permgrouprequest_microphone" msgid="2825208549114811299">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të regjistrojë audio?"</string>
     <string name="permgrouprequestdetail_microphone" msgid="8510456971528228861">"Aplikacioni do të mund të regjistrojë audion vetëm kur ti po e përdor aplikacionin"</string>
     <string name="permgroupbackgroundrequest_microphone" msgid="8874462606796368183">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të regjistrojë audio?"</string>
@@ -475,10 +470,9 @@
     <string name="permgrouprequest_sensors" msgid="4397358316850652235">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te të dhënat e sensorëve rreth shenjave të tua jetësore?"</string>
     <string name="permgroupupgraderequestdetail_sensors" msgid="6651914048792092835">"Aplikacioni kërkon qasje te të dhënat e sensorëve rreth shenjave të tua jetësore gjithmonë, edhe kur nuk e përdor aplikacionin. Për ta bërë këtë ndryshim, "<annotation id="link">"shko te cilësimet."</annotation></string>
     <string name="permgroupbackgroundrequest_sensors" msgid="5661924322018503886">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te të dhënat e sensorëve rreth shenjave të tua jetësore?"</string>
-    <string name="permgroupbackgroundrequestdetail_sensors" msgid="7649389834182449783">"Për të lejuar këtë aplikacion që të ketë qasje te të dhënat e sensorit të trupit gjithmonë, edhe kur nuk e përdor aplikacionin, "<annotation id="link">"shko te cilësimet."</annotation></string>
+    <string name="permgroupbackgroundrequestdetail_sensors" msgid="7726767635834043501">"Për të lejuar këtë aplikacion që të ketë qasje te të dhënat e sensorit të trupit gjithmonë, edhe kur nuk e përdor aplikacionin, "<annotation id="link">"shko te cilësimet."</annotation></string>
     <string name="permgroupupgraderequest_sensors" msgid="7576527638411370468">"Të lejohet akoma që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të ketë qasje te të dhënat e sensorit të trupit kur aplikacioni përdoret?"</string>
     <string name="permgrouprequest_notifications" msgid="6396739062335106181">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të të dërgojë njoftime?"</string>
-    <string name="permgrouprequestcontinue_notifications" msgid="3895098107355024027">"Të lejohet që &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; të vazhdojë të të dërgojë njoftime?"</string>
     <string name="auto_granted_permissions" msgid="6009452264824455892">"Lejet e kontrolluara"</string>
     <string name="auto_granted_location_permission_notification_title" msgid="1438871159268985993">"Lejohet qasja te vendndodhja"</string>
     <string name="auto_granted_permission_notification_body" msgid="6919835973190443695">"Administratori yt i TI-së e lejon aplikacionin \"<xliff:g id="APP_NAME">%s</xliff:g>\" të ketë qasje te vendndodhja jote"</string>
@@ -525,4 +519,22 @@
     <string name="recent_app_usage_2_qs" msgid="3591205954235694403">"Përdorur së fundi nga <xliff:g id="APP_NAME">%1$s</xliff:g> (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>)"</string>
     <string name="safety_privacy_qs_tile_title" msgid="5431148204168066203">"Siguria dhe privatësia"</string>
     <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"Kontrollo statusin"</string>
+    <string name="media_confirm_dialog_positive_button" msgid="9020793594051526399">"Konfirmo"</string>
+    <string name="media_confirm_dialog_negative_button" msgid="226987376924861785">"Pas"</string>
+    <string name="media_confirm_dialog_title_a_to_p_aural_allow" msgid="8560601114044699903">"Gjithashtu, do të lejohet qasja te skedarët e tjerë"</string>
+    <string name="media_confirm_dialog_title_a_to_p_aural_deny" msgid="7841428716317307685">"Gjithashtu, nuk do të lejohet qasja te skedarët e tjerë"</string>
+    <string name="media_confirm_dialog_title_a_to_p_visual_allow" msgid="6469086448310893751">"Gjithashtu, do të lejohet qasja te skedarët e tjerë"</string>
+    <string name="media_confirm_dialog_title_a_to_p_visual_deny" msgid="5767849609024384226">"Gjithashtu, nuk do të lejohet qasja te skedarët e tjerë"</string>
+    <string name="media_confirm_dialog_title_q_to_s_aural_allow" msgid="3191904399336990537">"Gjithashtu, do të lejohet qasja te fotografitë dhe te videot"</string>
+    <string name="media_confirm_dialog_title_q_to_s_aural_deny" msgid="3128147568953297969">"Gjithashtu, nuk do të lejohet qasja te fotografitë dhe te videot"</string>
+    <string name="media_confirm_dialog_title_q_to_s_visual_allow" msgid="6310682466493330434">"Gjithashtu, do të lejohet qasja te muzika dhe te skedarët audio"</string>
+    <string name="media_confirm_dialog_title_q_to_s_visual_deny" msgid="1123845663785900471">"Gjithashtu, nuk do të lejohet qasja te muzika dhe te skedarët audio"</string>
+    <string name="media_confirm_dialog_message_a_to_p_aural_allow" msgid="7865167246140107623">"Ky aplikacion nuk mbështet versionin më të fundit të Android. Nëse ky aplikacion mund të ketë qasje te muzika dhe te skedarët audio, atij do t\'i lejohet gjithashtu të ketë qasje te fotografitë, videot dhe skedarët e tjerë."</string>
+    <string name="media_confirm_dialog_message_a_to_p_aural_deny" msgid="287502523664804786">"Ky aplikacion nuk mbështet versionin më të fundit të Android. Nëse ky aplikacion nuk mund të ketë qasje te muzika dhe te skedarët audio, atij nuk do t\'i lejohet gjithashtu të ketë qasje te fotografitë, videot dhe skedarët e tjerë."</string>
+    <string name="media_confirm_dialog_message_a_to_p_visual_allow" msgid="4952410892939590487">"Ky aplikacion nuk mbështet versionin më të fundit të Android. Nëse ky aplikacion mund të ketë qasje te fotografitë dhe te videot, atij do t\'i lejohet gjithashtu të ketë qasje te muzika, audioja dhe skedarët e tjerë."</string>
+    <string name="media_confirm_dialog_message_a_to_p_visual_deny" msgid="6609500525590757681">"Ky aplikacion nuk mbështet versionin më të fundit të Android. Nëse ky aplikacion nuk mund të ketë qasje te fotografitë dhe te videot, atij nuk do t\'i lejohet gjithashtu të ketë qasje te muzika, audioja dhe skedarët e tjerë."</string>
+    <string name="media_confirm_dialog_message_q_to_s_aural_allow" msgid="1702402580147536160">"Ky aplikacion nuk mbështet versionin më të fundit të Android. Nëse ky aplikacion mund të ketë qasje te muzika dhe te skedarët audio, atij do t\'i lejohet gjithashtu të ketë qasje te fotografitë dhe videot."</string>
+    <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Ky aplikacion nuk mbështet versionin më të fundit të Android. Nëse ky aplikacion nuk mund të ketë qasje te muzika dhe te skedarët audio, atij nuk do t\'i lejohet gjithashtu të ketë qasje te fotografitë dhe te videot."</string>
+    <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Ky aplikacion nuk mbështet versionin më të fundit të Android. Nëse ky aplikacion mund të ketë qasje te fotografitë dhe te videot, atij do t\'i lejohet gjithashtu të ketë qasje te muzika dhe te skedarët audio."</string>
+    <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Ky aplikacion nuk mbështet versionin më të fundit të Android. Nëse ky aplikacion nuk mund të ketë qasje te muzika dhe te skedarët audio, atij nuk do t\'i lejohet gjithashtu të ketë qasje te fotografitë dhe te videot."</string>
 </resources>
