@@ -14,8 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/expanded_icon"
-    android:layout_width="24dp"
-    android:layout_height="24dp"
-    android:src="@drawable/ic_safety_group_collapse" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.android.safetycenter.resources">
+</manifest>
