@@ -456,8 +456,8 @@
     <string name="permgrouprequest_storage" msgid="8717773092518621602">"Engedélyezi a(z) &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; számára, hogy hozzáférjen az eszközön tárolt fotókhoz, médiatartalmakhoz és fájlokhoz?"</string>
     <string name="permgrouprequest_storage_q_to_s" msgid="8213701872983685505">"Hozzáférhet a(z) &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; az eszközön lévő &lt;b&gt;fotókhoz, videókhoz, zenékhez és hangfájlokhoz&lt;/b&gt;?"</string>
     <string name="permgrouprequest_storage_pre_q" msgid="168130651144569428">"Hozzáférhet a(z) &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; az eszközön tárolt &lt;b&gt;fotókhoz, hang-, videó- és egyéb fájlokhoz&lt;/b&gt;?"</string>
-    <string name="permgrouprequest_read_media_aural" msgid="2593365397347577812">"Engedélyezi a(z) &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; számára, hogy hozzáférjen a zenékhez és egyéb hanganyagokhoz ezen az eszközön?"</string>
-    <string name="permgrouprequest_read_media_visual" msgid="5548780620779729975">"Engedélyezi a(z) &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; számára, hogy hozzáférjen az eszközön tárolt fotókhoz és videókhoz?"</string>
+    <string name="permgrouprequest_read_media_aural" msgid="2593365397347577812">"Hozzáférhet a(z) &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; az eszközön tárolt zenékhez és egyéb hanganyagokhoz?"</string>
+    <string name="permgrouprequest_read_media_visual" msgid="5548780620779729975">"Hozzáférhet a(z) &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; az eszközön tárolt fotókhoz és videókhoz?"</string>
     <string name="permgrouprequest_microphone" msgid="2825208549114811299">"Engedélyezi a(z) &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; számára, hogy hangfelvételt készíthessen?"</string>
     <string name="permgrouprequestdetail_microphone" msgid="8510456971528228861">"Az alkalmazás csak akkor tud majd hangfelvételt készíteni, amikor Ön használja az alkalmazást."</string>
     <string name="permgroupbackgroundrequest_microphone" msgid="8874462606796368183">"Engedélyezi a(z) &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; számára, hogy hangfelvételt készíthessen?"</string>
@@ -532,13 +532,13 @@
     <string name="media_confirm_dialog_positive_button" msgid="9020793594051526399">"Megerősítés"</string>
     <string name="media_confirm_dialog_negative_button" msgid="226987376924861785">"Vissza"</string>
     <string name="media_confirm_dialog_title_a_to_p_aural_allow" msgid="8560601114044699903">"Az egyéb fájlokhoz való hozzáférés szintén engedélyezett"</string>
-    <string name="media_confirm_dialog_title_a_to_p_aural_deny" msgid="7841428716317307685">"Az egyéb fájlokhoz való hozzáférés szintén nem engedélyezett"</string>
+    <string name="media_confirm_dialog_title_a_to_p_aural_deny" msgid="7841428716317307685">"Az egyéb fájlokhoz való hozzáférés sem engedélyezett"</string>
     <string name="media_confirm_dialog_title_a_to_p_visual_allow" msgid="6469086448310893751">"Az egyéb fájlokhoz való hozzáférés szintén engedélyezett"</string>
-    <string name="media_confirm_dialog_title_a_to_p_visual_deny" msgid="5767849609024384226">"Az egyéb fájlokhoz való hozzáférés szintén nem engedélyezett"</string>
+    <string name="media_confirm_dialog_title_a_to_p_visual_deny" msgid="5767849609024384226">"Az egyéb fájlokhoz való hozzáférés sem engedélyezett"</string>
     <string name="media_confirm_dialog_title_q_to_s_aural_allow" msgid="3191904399336990537">"A fotókhoz és videókhoz való hozzáférés szintén engedélyezett"</string>
-    <string name="media_confirm_dialog_title_q_to_s_aural_deny" msgid="3128147568953297969">"A fotókhoz és videókhoz való hozzáférés szintén nem engedélyezett"</string>
+    <string name="media_confirm_dialog_title_q_to_s_aural_deny" msgid="3128147568953297969">"A fotókhoz és videókhoz való hozzáférés sem engedélyezett"</string>
     <string name="media_confirm_dialog_title_q_to_s_visual_allow" msgid="6310682466493330434">"A zenékhez és a hangfájlokhoz való hozzáférés szintén engedélyezett"</string>
-    <string name="media_confirm_dialog_title_q_to_s_visual_deny" msgid="1123845663785900471">"A zenékhez és a hangfájlokhoz való hozzáférés szintén nem engedélyezett"</string>
+    <string name="media_confirm_dialog_title_q_to_s_visual_deny" msgid="1123845663785900471">"A zenékhez és a hangfájlokhoz való hozzáférés sem engedélyezett"</string>
     <string name="media_confirm_dialog_message_a_to_p_aural_allow" msgid="7865167246140107623">"Az alkalmazás nem támogatja az Android legújabb verzióját. Ha az alkalmazás hozzáférhet a zenékhez és a hangfájlokhoz, akkor hozzáférhet a fotókhoz, videókhoz és az egyéb fájlokhoz is."</string>
     <string name="media_confirm_dialog_message_a_to_p_aural_deny" msgid="287502523664804786">"Az alkalmazás nem támogatja az Android legújabb verzióját. Ha az alkalmazás nem férhet hozzá a zenei és hangfájlokhoz, akkor ugyanúgy a fotókhoz, a videókhoz és az egyéb fájlokhoz sem férhet hozzá."</string>
     <string name="media_confirm_dialog_message_a_to_p_visual_allow" msgid="4952410892939590487">"Az alkalmazás nem támogatja az Android legújabb verzióját. Ha az alkalmazás hozzáférhet a fotókhoz és videókhoz, akkor hozzáférhet a zenékhez, a hanganyagokhoz és az egyéb fájlokhoz is."</string>
