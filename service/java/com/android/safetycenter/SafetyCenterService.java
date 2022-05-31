@@ -504,8 +504,7 @@ public final class SafetyCenterService extends SystemService {
             }
 
             synchronized (mApiLock) {
-                mSafetyCenterDataTracker.clear();
-                mSafetyCenterTimeouts.clear();
+                clearDataLocked();
                 // TODO(b/223550097): Should we dispatch a new listener update here? This call can
                 //  modify the SafetyCenterData.
             }
@@ -523,8 +522,7 @@ public final class SafetyCenterService extends SystemService {
 
             synchronized (mApiLock) {
                 mSafetyCenterConfigReader.setConfigOverrideForTests(safetyCenterConfig);
-                mSafetyCenterDataTracker.clear();
-                mSafetyCenterTimeouts.clear();
+                clearDataLocked();
                 // TODO(b/223550097): Should we clear the listeners here? Or should we dispatch a
                 //  new listener update since the SafetyCenterData will have changed?
             }
@@ -541,8 +539,7 @@ public final class SafetyCenterService extends SystemService {
 
             synchronized (mApiLock) {
                 mSafetyCenterConfigReader.clearConfigOverrideForTests();
-                mSafetyCenterDataTracker.clear();
-                mSafetyCenterTimeouts.clear();
+                clearDataLocked();
                 // TODO(b/223550097): Should we clear the listeners here? Or should we dispatch a
                 //  new listener update since the SafetyCenterData will have changed?
             }
@@ -674,8 +671,7 @@ public final class SafetyCenterService extends SystemService {
             List<Broadcast> broadcasts;
             synchronized (mApiLock) {
                 broadcasts = mSafetyCenterConfigReader.getBroadcasts();
-                mSafetyCenterDataTracker.clear();
-                mSafetyCenterTimeouts.clear();
+                clearDataLocked();
                 mSafetyCenterListeners.clear();
             }
 
@@ -707,8 +703,9 @@ public final class SafetyCenterService extends SystemService {
                 deliverListenersUpdateLocked(
                         mUserProfileGroup,
                         true,
+                        // TODO(b/234110665): Add SafetyCenterErrorDetails once all sources work.
                         // TODO(b/229080761): Implement proper error message.
-                        new SafetyCenterErrorDetails("Refresh timeout"));
+                        null);
             }
 
             Log.v(
@@ -743,9 +740,8 @@ public final class SafetyCenterService extends SystemService {
                 deliverListenersUpdateLocked(
                         mUserProfileGroup,
                         true,
-                        // TODO(b/234110665): Add SafetyCenterErrorDetails once all sources work
                         // TODO(b/229080761): Implement proper error message.
-                        null);
+                        new SafetyCenterErrorDetails("Resolving action timeout"));
             }
         }
     }
@@ -828,5 +824,12 @@ public final class SafetyCenterService extends SystemService {
         mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
                 userProfileGroup, safetyCenterData, safetyCenterErrorDetails);
         return true;
+    }
+
+    @GuardedBy("mApiLock")
+    private void clearDataLocked() {
+        mSafetyCenterDataTracker.clear();
+        mSafetyCenterTimeouts.clear();
+        mSafetyCenterRefreshTracker.clearRefresh();
     }
 }
