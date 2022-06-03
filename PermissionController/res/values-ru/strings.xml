@@ -58,7 +58,7 @@
     <string name="review_permission_decisions" msgid="309559429150613632">"Действия с разрешениями"</string>
     <string name="review_permission_decisions_view_all" msgid="90391040431566130">"Все недавние действия с разрешениями"</string>
     <string name="review_permission_decisions_empty" msgid="8120775336417279806">"Нет недавних действий с разрешениями"</string>
-    <string name="auto_permission_manager_summary" msgid="9157438376234301354">"Управление доступом к данным Календаря, Списка вызовов и др."</string>
+    <string name="auto_permission_manager_summary" msgid="9157438376234301354">"Управление доступом к календарю, списку вызовов и другим данным"</string>
     <string name="granted_permission_decision" msgid="7824827491551861365">"Вы предоставили приложению \"<xliff:g id="APP_NAME">%1$s</xliff:g>\" доступ к разрешению \"<xliff:g id="PERMISSION_NAME">%2$s</xliff:g>\""</string>
     <string name="denied_permission_decision" msgid="5308961501779563781">"Вы запретили приложению \"<xliff:g id="APP_NAME">%1$s</xliff:g>\" доступ к разрешению \"<xliff:g id="PERMISSION_NAME">%2$s</xliff:g>\""</string>
     <string name="days_ago" msgid="6650359081551335629">"{count,plural, =0{Сегодня}=1{1 день назад}one{# день назад}few{# дня назад}many{# дней назад}other{# дня назад}}"</string>
@@ -236,8 +236,8 @@
     <string name="permission_description_summary_sensors" msgid="1836045815643119949">"Приложения с этим разрешением могут получать доступ к данным датчиков основных показателей жизнедеятельности."</string>
     <string name="permission_description_summary_sms" msgid="725999468547768517">"Приложения с этим разрешением могут отправлять и просматривать SMS-сообщения."</string>
     <string name="permission_description_summary_storage" msgid="6575759089065303346">"Приложения с этим разрешением могут получать доступ к фотографиям, медиа и другим файлам на вашем устройстве."</string>
-    <string name="permission_description_summary_read_media_aural" msgid="3354728149930482199">"У приложений с этим разрешением будет доступ к музыке и другим аудиофайлам на устройстве"</string>
-    <string name="permission_description_summary_read_media_visual" msgid="4991801977881732641">"У приложений с этим разрешением будет доступ к фото и видео на устройстве"</string>
+    <string name="permission_description_summary_read_media_aural" msgid="3354728149930482199">"Приложения с этим разрешением могут получать доступ к музыке и другим аудиофайлам на устройстве."</string>
+    <string name="permission_description_summary_read_media_visual" msgid="4991801977881732641">"Приложения с этим разрешением могут получать доступ к фото и видео на устройстве."</string>
     <string name="app_permission_most_recent_summary" msgid="4292074449384040590">"Последний раз использовано: <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_permission_most_recent_denied_summary" msgid="7659497197737708112">"Временно запрещено / Последний доступ: <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_permission_never_accessed_summary" msgid="401346181461975090">"Не использовалось"</string>
@@ -522,13 +522,13 @@
     <string name="media_confirm_dialog_positive_button" msgid="9020793594051526399">"Подтвердить"</string>
     <string name="media_confirm_dialog_negative_button" msgid="226987376924861785">"Назад"</string>
     <string name="media_confirm_dialog_title_a_to_p_aural_allow" msgid="8560601114044699903">"Будет предоставлен доступ и к другим файлам"</string>
-    <string name="media_confirm_dialog_title_a_to_p_aural_deny" msgid="7841428716317307685">"Доступ к другим файлам не будет предоставлен"</string>
+    <string name="media_confirm_dialog_title_a_to_p_aural_deny" msgid="7841428716317307685">"Доступа к другим файлам тоже не будет"</string>
     <string name="media_confirm_dialog_title_a_to_p_visual_allow" msgid="6469086448310893751">"Будет предоставлен доступ и к другим файлам"</string>
-    <string name="media_confirm_dialog_title_a_to_p_visual_deny" msgid="5767849609024384226">"Доступ к другим файлам не будет предоставлен"</string>
+    <string name="media_confirm_dialog_title_a_to_p_visual_deny" msgid="5767849609024384226">"Доступа к другим файлам тоже не будет"</string>
     <string name="media_confirm_dialog_title_q_to_s_aural_allow" msgid="3191904399336990537">"Будет предоставлен доступ к фотографиям и видео"</string>
-    <string name="media_confirm_dialog_title_q_to_s_aural_deny" msgid="3128147568953297969">"Доступ к фотографиям и видео не будет предоставлен"</string>
+    <string name="media_confirm_dialog_title_q_to_s_aural_deny" msgid="3128147568953297969">"Доступа к фотографиям и видео тоже не будет"</string>
     <string name="media_confirm_dialog_title_q_to_s_visual_allow" msgid="6310682466493330434">"Будет предоставлен доступ к музыке и аудиофайлам"</string>
-    <string name="media_confirm_dialog_title_q_to_s_visual_deny" msgid="1123845663785900471">"Доступ к музыке и аудиофайлам не будет предоставлен"</string>
+    <string name="media_confirm_dialog_title_q_to_s_visual_deny" msgid="1123845663785900471">"Доступа к музыке и аудиофайлам тоже не будет"</string>
     <string name="media_confirm_dialog_message_a_to_p_aural_allow" msgid="7865167246140107623">"Это приложение не поддерживает последнюю версию Android. Если у него есть доступ к музыке и аудиофайлам, ему также будет предоставлен доступ к фотографиям, видео и другому контенту."</string>
     <string name="media_confirm_dialog_message_a_to_p_aural_deny" msgid="287502523664804786">"Это приложение не поддерживает последнюю версию Android. Если у него нет доступа к музыке и аудиофайлам, у него также не будет доступа к фотографиям, видео и другому контенту."</string>
     <string name="media_confirm_dialog_message_a_to_p_visual_allow" msgid="4952410892939590487">"Это приложение не поддерживает последнюю версию Android. Если у него есть доступ к фотографиям и видео, ему также будет предоставлен доступ к музыке, аудиофайлам и другому контенту."</string>
