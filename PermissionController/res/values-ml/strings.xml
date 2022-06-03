@@ -59,7 +59,7 @@
     <string name="review_permission_decisions_view_all" msgid="90391040431566130">"അനുമതിയുമായി ബന്ധപ്പെട്ട സമീപകാലത്തെ എല്ലാ തീരുമാനങ്ങളും കാണുക"</string>
     <string name="review_permission_decisions_empty" msgid="8120775336417279806">"അനുമതിയുമായി ബന്ധപ്പെട്ട സമീപകാല തീരുമാനമൊന്നുമില്ല"</string>
     <string name="auto_permission_manager_summary" msgid="9157438376234301354">"കലണ്ടർ, കോൾ ചരിത്രങ്ങൾ എന്നിവയിലേക്കും മറ്റുമുള്ള ഡാറ്റാ ആക്‌സസ് മാനേജ് ചെയ്യുക"</string>
-    <string name="granted_permission_decision" msgid="7824827491551861365">"നിങ്ങൾ <xliff:g id="APP_NAME">%1$s</xliff:g> എന്നതിന് <xliff:g id="PERMISSION_NAME">%2$s</xliff:g> ആക്‌സസ് നൽകി"</string>
+    <string name="granted_permission_decision" msgid="7824827491551861365">"<xliff:g id="APP_NAME">%1$s</xliff:g> എന്നതിന് <xliff:g id="PERMISSION_NAME">%2$s</xliff:g> ആക്‌സസ് നൽകി"</string>
     <string name="denied_permission_decision" msgid="5308961501779563781">"നിങ്ങൾ <xliff:g id="APP_NAME">%1$s</xliff:g> എന്നതിനുള്ള <xliff:g id="PERMISSION_NAME">%2$s</xliff:g> ആക്‌സസ് നിരസിച്ചു"</string>
     <string name="days_ago" msgid="6650359081551335629">"{count,plural, =0{ഇന്ന്}=1{1 ദിവസം മുമ്പ്}other{# ദിവസം മുമ്പ്}}"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"ആപ്പ് പ്രവർത്തനരഹിതമാക്കുക"</string>
@@ -448,7 +448,7 @@
     <string name="permgrouprequest_calendar" msgid="1493150855673603806">"നിങ്ങളുടെ കലണ്ടർ ആക്‌സസ് ചെയ്യാൻ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ആപ്പിനെ അനുവദിക്കണോ?"</string>
     <string name="permgrouprequest_sms" msgid="5672063688745420991">"SMS സന്ദേശങ്ങൾ അയയ്ക്കാനും കാണാനും &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ആപ്പിനെ അനുവദിക്കണോ?"</string>
     <string name="permgrouprequest_storage" msgid="8717773092518621602">"നിങ്ങളുടെ ഉപകരണത്തിലെ ഫോട്ടോകളും മീഡിയയും ഫയലുകളും ആക്‌സസ് ചെയ്യാൻ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ആപ്പിനെ അനുവദിക്കണോ?"</string>
-    <string name="permgrouprequest_storage_q_to_s" msgid="8213701872983685505">"ഇതിലെ lt;b&gt;ഫോട്ടോകൾ, വീഡിയോ, സംഗീതം, ഓഡിയോ&lt;/b&gt; എന്നിവ ആക്സസ് ചെയ്യാൻ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; എന്നതിനെ അനുവദിക്കണോ?"</string>
+    <string name="permgrouprequest_storage_q_to_s" msgid="8213701872983685505">"ഇതിലെ &lt;/b&gt;ഫോട്ടോകൾ, വീഡിയോ, സംഗീതം, ഓഡിയോ&lt;/b&gt; എന്നിവ ആക്സസ് ചെയ്യാൻ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; എന്നതിനെ അനുവദിക്കണോ?"</string>
     <string name="permgrouprequest_storage_pre_q" msgid="168130651144569428">"&lt;b&gt;ഫോട്ടോ, വീഡിയോ, സംഗീതം, ഓഡിയോ, മറ്റ് ഫയലുകൾ&lt;/b&gt; എന്നിവയിലേക്ക് &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; എന്നതിന് ആക്സസ് നൽകണോ?"</string>
     <string name="permgrouprequest_read_media_aural" msgid="2593365397347577812">"ഈ ഉപകരണത്തിലെ സംഗീതവും ഓഡിയോയും ആക്സസ് ചെയ്യാൻ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; എന്നതിനെ അനുവദിക്കണോ?"</string>
     <string name="permgrouprequest_read_media_visual" msgid="5548780620779729975">"ഈ ഉപകരണത്തിലെ ഫോട്ടോകളും വീഡിയോകളും ആക്‌സസ് ചെയ്യാൻ &lt;b&gt; <xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; എന്നതിനെ അനുവദിക്കണോ?"</string>
