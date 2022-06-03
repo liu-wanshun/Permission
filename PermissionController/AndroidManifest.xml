@@ -4,8 +4,8 @@
   xmlns:tools="http://schemas.android.com/tools"
   package="com.android.permissioncontroller"
   coreApp="true"
-  android:versionCode="330463000"
-  android:versionName="aml_per_330463000"
+  android:versionCode="330464000"
+  android:versionName="aml_per_330464000"
 >
 
     <original-package android:name="com.android.permissioncontroller" />
@@ -61,6 +61,7 @@
     <uses-permission android:name="android.permission.SEND_SAFETY_CENTER_UPDATE" />
     <!--SYSTEM_APPLICATION_OVERLAY will be granted on T+, as installer protection is added in T -->
     <uses-permission android:name="android.permission.SYSTEM_APPLICATION_OVERLAY"/>
+    <uses-permission android:name="android.permission.SET_UNRESTRICTED_KEEP_CLEAR_AREAS"/>
 
     <application android:name="com.android.permissioncontroller.PermissionControllerApplication"
             android:label="@string/app_name"
