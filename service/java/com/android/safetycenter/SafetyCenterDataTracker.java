@@ -64,6 +64,7 @@ import com.android.safetycenter.internaldata.SafetyCenterEntryId;
 import com.android.safetycenter.internaldata.SafetyCenterIds;
 import com.android.safetycenter.internaldata.SafetyCenterIssueActionId;
 import com.android.safetycenter.internaldata.SafetyCenterIssueId;
+import com.android.safetycenter.internaldata.SafetyCenterIssueKey;
 import com.android.safetycenter.resources.SafetyCenterResourcesContext;
 
 import java.util.ArrayList;
@@ -95,7 +96,7 @@ final class SafetyCenterDataTracker {
             new ArrayMap<>();
 
     // TODO(b/221406600): Add persistent storage for dismissed issues.
-    private final ArraySet<SafetyCenterIssueId> mDismissedSafetyCenterIssues = new ArraySet<>();
+    private final ArraySet<SafetyCenterIssueKey> mDismissedSafetyCenterIssueKeys = new ArraySet<>();
 
     private final ArraySet<SafetyCenterIssueActionId> mSafetyCenterIssueActionsInFlight =
             new ArraySet<>();
@@ -244,8 +245,8 @@ final class SafetyCenterDataTracker {
     }
 
     /** Dismisses the given {@link SafetyCenterIssueId}. */
-    void dismissSafetyCenterIssue(@NonNull SafetyCenterIssueId safetyCenterIssueId) {
-        mDismissedSafetyCenterIssues.add(safetyCenterIssueId);
+    void dismissSafetyCenterIssue(@NonNull SafetyCenterIssueKey safetyCenterIssueKey) {
+        mDismissedSafetyCenterIssueKeys.add(safetyCenterIssueKey);
     }
 
     /**
@@ -254,9 +255,8 @@ final class SafetyCenterDataTracker {
      */
     void clear() {
         mSafetySourceDataForKey.clear();
-        mDismissedSafetyCenterIssues.clear();
+        mDismissedSafetyCenterIssueKeys.clear();
         mSafetyCenterIssueActionsInFlight.clear();
-        mSafetyCenterRefreshTracker.clearRefresh();
     }
 
     /**
@@ -266,14 +266,14 @@ final class SafetyCenterDataTracker {
      * dismissed.
      */
     @Nullable
-    SafetySourceIssue getSafetySourceIssue(@NonNull SafetyCenterIssueId safetyCenterIssueId) {
-        if (isDismissed(safetyCenterIssueId)) {
+    SafetySourceIssue getSafetySourceIssue(@NonNull SafetyCenterIssueKey safetyCenterIssueKey) {
+        if (isDismissed(safetyCenterIssueKey)) {
             return null;
         }
 
         SafetySourceKey key =
                 SafetySourceKey.of(
-                        safetyCenterIssueId.getSafetySourceId(), safetyCenterIssueId.getUserId());
+                        safetyCenterIssueKey.getSafetySourceId(), safetyCenterIssueKey.getUserId());
         SafetySourceData safetySourceData = mSafetySourceDataForKey.get(key);
         if (safetySourceData == null) {
             return null;
@@ -283,7 +283,7 @@ final class SafetyCenterDataTracker {
         for (int i = 0; i < safetySourceIssues.size(); i++) {
             SafetySourceIssue safetySourceIssue = safetySourceIssues.get(i);
 
-            if (safetyCenterIssueId.getSafetySourceIssueId().equals(safetySourceIssue.getId())) {
+            if (safetyCenterIssueKey.getSafetySourceIssueId().equals(safetySourceIssue.getId())) {
                 return safetySourceIssue;
             }
         }
@@ -304,7 +304,7 @@ final class SafetyCenterDataTracker {
     SafetySourceIssue.Action getSafetySourceIssueAction(
             @NonNull SafetyCenterIssueActionId safetyCenterIssueActionId) {
         SafetySourceIssue safetySourceIssue =
-                getSafetySourceIssue(safetyCenterIssueActionId.getSafetyCenterIssueId());
+                getSafetySourceIssue(safetyCenterIssueActionId.getSafetyCenterIssueKey());
 
         if (safetySourceIssue == null) {
             return null;
@@ -346,8 +346,8 @@ final class SafetyCenterDataTracker {
                 emptyList());
     }
 
-    private boolean isDismissed(@NonNull SafetyCenterIssueId safetyCenterIssueId) {
-        return mDismissedSafetyCenterIssues.contains(safetyCenterIssueId);
+    private boolean isDismissed(@NonNull SafetyCenterIssueKey safetyCenterIssueKey) {
+        return mDismissedSafetyCenterIssueKeys.contains(safetyCenterIssueKey);
     }
 
     private boolean isInFlight(@NonNull SafetyCenterIssueActionId safetyCenterIssueActionId) {
@@ -487,15 +487,15 @@ final class SafetyCenterDataTracker {
                                     + " without a safety source issue action id");
                     return false;
                 }
-                SafetyCenterIssueId safetyCenterIssueId =
-                        SafetyCenterIssueId.newBuilder()
+                SafetyCenterIssueKey safetyCenterIssueKey =
+                        SafetyCenterIssueKey.newBuilder()
                                 .setSafetySourceId(safetySourceId)
                                 .setSafetySourceIssueId(safetySourceIssueId)
                                 .setUserId(userId)
                                 .build();
                 SafetyCenterIssueActionId safetyCenterIssueActionId =
                         SafetyCenterIssueActionId.newBuilder()
-                                .setSafetyCenterIssueId(safetyCenterIssueId)
+                                .setSafetyCenterIssueKey(safetyCenterIssueKey)
                                 .setSafetySourceIssueActionId(safetySourceIssueActionId)
                                 .build();
                 return unmarkSafetyCenterIssueActionAsInFlight(safetyCenterIssueActionId);
@@ -576,7 +576,7 @@ final class SafetyCenterDataTracker {
                             addSafetyCenterIssues(
                                     safetyCenterIssues,
                                     safetySource,
-                                    userProfileGroup.getProfileOwnerUserId()));
+                                    userProfileGroup.getProfileParentUserId()));
 
             if (!SafetySources.supportsManagedProfiles(safetySource)) {
                 continue;
@@ -638,12 +638,16 @@ final class SafetyCenterDataTracker {
             @UserIdInt int userId) {
         SafetyCenterIssueId safetyCenterIssueId =
                 SafetyCenterIssueId.newBuilder()
-                        .setSafetySourceId(safetySource.getId())
-                        .setSafetySourceIssueId(safetySourceIssue.getId())
-                        .setUserId(userId)
+                        .setSafetyCenterIssueKey(
+                                SafetyCenterIssueKey.newBuilder()
+                                        .setSafetySourceId(safetySource.getId())
+                                        .setSafetySourceIssueId(safetySourceIssue.getId())
+                                        .setUserId(userId)
+                                        .build())
+                        .setIssueTypeId(safetySourceIssue.getIssueTypeId())
                         .build();
 
-        if (isDismissed(safetyCenterIssueId)) {
+        if (isDismissed(safetyCenterIssueId.getSafetyCenterIssueKey())) {
             return null;
         }
 
@@ -654,11 +658,11 @@ final class SafetyCenterDataTracker {
             SafetySourceIssue.Action safetySourceIssueAction = safetySourceIssueActions.get(i);
 
             safetyCenterIssueActions.add(
-                    toSafetyCenterIssueAction(safetySourceIssueAction, safetyCenterIssueId));
+                    toSafetyCenterIssueAction(
+                            safetySourceIssueAction,
+                            safetyCenterIssueId.getSafetyCenterIssueKey()));
         }
 
-        // TODO(b/218817233): Add dismissible and shouldConfirmDismissal. Still TBD by UX: green
-        //  issues won't have confirm on dismiss and red might not be dismissible.
         return new SafetyCenterIssue.Builder(
                         SafetyCenterIds.encodeToString(safetyCenterIssueId),
                         safetySourceIssue.getTitle(),
@@ -673,10 +677,10 @@ final class SafetyCenterDataTracker {
     @NonNull
     private SafetyCenterIssue.Action toSafetyCenterIssueAction(
             @NonNull SafetySourceIssue.Action safetySourceIssueAction,
-            @NonNull SafetyCenterIssueId safetyCenterIssueId) {
+            @NonNull SafetyCenterIssueKey safetyCenterIssueKey) {
         SafetyCenterIssueActionId safetyCenterIssueActionId =
                 SafetyCenterIssueActionId.newBuilder()
-                        .setSafetyCenterIssueId(safetyCenterIssueId)
+                        .setSafetyCenterIssueKey(safetyCenterIssueKey)
                         .setSafetySourceIssueActionId(safetySourceIssueAction.getId())
                         .build();
         return new SafetyCenterIssue.Action.Builder(
@@ -707,7 +711,7 @@ final class SafetyCenterDataTracker {
                                     entries,
                                     safetySource,
                                     false,
-                                    userProfileGroup.getProfileOwnerUserId()));
+                                    userProfileGroup.getProfileParentUserId()));
 
             if (!SafetySources.supportsManagedProfiles(safetySource)) {
                 continue;
@@ -906,7 +910,7 @@ final class SafetyCenterDataTracker {
             SafetySource safetySource = safetySources.get(i);
 
             addSafetyCenterStaticEntry(
-                    staticEntries, safetySource, false, userProfileGroup.getProfileOwnerUserId());
+                    staticEntries, safetySource, false, userProfileGroup.getProfileParentUserId());
 
             if (!SafetySources.supportsManagedProfiles(safetySource)) {
                 continue;

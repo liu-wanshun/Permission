@@ -16,7 +16,6 @@
 
 package android.safetycenter.cts
 
-import android.Manifest.permission.MANAGE_SAFETY_CENTER
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -116,7 +115,6 @@ import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.refreshSa
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
-import com.android.compatibility.common.util.SystemUtil.callWithShellPermissionIdentity
 import com.google.common.truth.Truth.assertThat
 import com.google.common.util.concurrent.MoreExecutors.directExecutor
 import kotlin.test.assertFailsWith
@@ -1109,6 +1107,29 @@ class SafetyCenterManagerTest {
     }
 
     @Test
+    fun refreshSafetySources_waitForPreviousRefreshToTimeout_completesSuccessfully() {
+        SafetyCenterFlags.refreshTimeout = TIMEOUT_SHORT
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+
+        safetyCenterManager.refreshSafetySourcesWithReceiverPermissionAndWait(
+            REFRESH_REASON_PAGE_OPEN)
+        val apiSafetySourceData1 =
+            safetyCenterManager.getSafetySourceDataWithPermission(SINGLE_SOURCE_ID)
+        assertThat(apiSafetySourceData1).isNull()
+        // Wait for the ongoing refresh to timeout.
+        Thread.sleep(TIMEOUT_SHORT.toMillis())
+        SafetySourceReceiver.safetySourceData[
+                SafetySourceDataKey(REFRESH_GET_DATA, SINGLE_SOURCE_ID)] =
+            safetySourceCtsData.information
+
+        safetyCenterManager.refreshSafetySourcesWithReceiverPermissionAndWait(
+            REFRESH_REASON_PAGE_OPEN)
+        val apiSafetySourceData2 =
+            safetyCenterManager.getSafetySourceDataWithPermission(SINGLE_SOURCE_ID)
+        assertThat(apiSafetySourceData2).isEqualTo(safetySourceCtsData.information)
+    }
+
+    @Test
     fun refreshSafetySources_withoutAllowingPreviousRefreshToTimeout_completesSuccessfully() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterManager.refreshSafetySourcesWithReceiverPermissionAndWait(
@@ -1369,29 +1390,22 @@ class SafetyCenterManagerTest {
     }
 
     @Test
-    // Permission is held for the entire test to avoid a racy scenario where the shell identity is
-    // dropped while it's being acquired on another thread.
     fun addOnSafetyCenterDataChangedListener_oneShot_doesntDeadlock() {
-        callWithShellPermissionIdentity(
-            {
-                val listener = SafetyCenterCtsListener()
-                val oneShotListener =
-                    object : OnSafetyCenterDataChangedListener {
-                        override fun onSafetyCenterDataChanged(safetyCenterData: SafetyCenterData) {
-                            safetyCenterManager.removeOnSafetyCenterDataChangedListener(this)
-                            listener.onSafetyCenterDataChanged(safetyCenterData)
-                        }
-                    }
-                safetyCenterManager.addOnSafetyCenterDataChangedListener(
-                    directExecutor(), oneShotListener)
+        val listener = SafetyCenterCtsListener()
+        val oneShotListener =
+            object : OnSafetyCenterDataChangedListener {
+                override fun onSafetyCenterDataChanged(safetyCenterData: SafetyCenterData) {
+                    safetyCenterManager.removeOnSafetyCenterDataChangedListenerWithPermission(this)
+                    listener.onSafetyCenterDataChanged(safetyCenterData)
+                }
+            }
+        safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
+            directExecutor(), oneShotListener)
 
-                // Check that we don't deadlock when using a one-shot listener: this is because
-                // adding the listener could call the listener while holding a lock on the binder
-                // thread-pool; causing a deadlock when attempting to call the `SafetyCenterManager`
-                // from that listener.
-                listener.receiveSafetyCenterData()
-            },
-            MANAGE_SAFETY_CENTER)
+        // Check that we don't deadlock when using a one-shot listener. This is because adding the
+        // listener could call it while holding a lock; which would cause a deadlock if the listener
+        // wasn't oneway.
+        listener.receiveSafetyCenterData()
     }
 
     @Test
@@ -1495,6 +1509,21 @@ class SafetyCenterManagerTest {
     }
 
     @Test
+    fun dismissSafetyCenterIssue_existingWithDifferentIssueType_callsListenerAndDismisses() {
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithIssue)
+        val listener = safetyCenterCtsHelper.addListener()
+
+        safetyCenterManager.dismissSafetyCenterIssueWithPermission(
+            SafetyCenterCtsData.issueId(
+                SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID, issueTypeId = "some_other_issue_type_id"))
+
+        val safetyCenterDataFromListener = listener.receiveSafetyCenterData()
+        assertThat(safetyCenterDataFromListener)
+            .isEqualTo(safetyCenterDataCriticalWithDismissedIssue)
+    }
+
+    @Test
     fun dismissSafetyCenterIssue_nonExisting_doesntCallListenerOrDismiss() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithIssue)
@@ -1518,6 +1547,23 @@ class SafetyCenterManagerTest {
 
         safetyCenterManager.dismissSafetyCenterIssueWithPermission(
             SafetyCenterCtsData.issueId(SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID))
+
+        assertFailsWith(TimeoutCancellationException::class) {
+            listener.receiveSafetyCenterData(TIMEOUT_SHORT)
+        }
+    }
+
+    @Test
+    fun dismissSafetyCenterIssue_dismissedWithDifferentIssueType_doesntCallListenerOrDismiss() {
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithIssue)
+        safetyCenterManager.dismissSafetyCenterIssueWithPermission(
+            SafetyCenterCtsData.issueId(SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID))
+        val listener = safetyCenterCtsHelper.addListener()
+
+        safetyCenterManager.dismissSafetyCenterIssueWithPermission(
+            SafetyCenterCtsData.issueId(
+                SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID, issueTypeId = "some_other_issue_type_id"))
 
         assertFailsWith(TimeoutCancellationException::class) {
             listener.receiveSafetyCenterData(TIMEOUT_SHORT)
@@ -1550,7 +1596,8 @@ class SafetyCenterManagerTest {
     fun dismissSafetyCenterIssue_invalidUser_throwsSecurityException() {
         assertFailsWith(SecurityException::class) {
             safetyCenterManager.dismissSafetyCenterIssueWithPermission(
-                SafetyCenterCtsData.issueId(SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID, USER_NULL))
+                SafetyCenterCtsData.issueId(
+                    SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID, userId = USER_NULL))
         }
     }
 
@@ -1689,9 +1736,13 @@ class SafetyCenterManagerTest {
     fun executeSafetyCenterIssueAction_invalidUser_throwsSecurityException() {
         assertFailsWith(SecurityException::class) {
             safetyCenterManager.executeSafetyCenterIssueActionWithPermission(
-                SafetyCenterCtsData.issueId(SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID, USER_NULL),
+                SafetyCenterCtsData.issueId(
+                    SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID, userId = USER_NULL),
                 SafetyCenterCtsData.issueActionId(
-                    SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID, CRITICAL_ISSUE_ACTION_ID, USER_NULL))
+                    SINGLE_SOURCE_ID,
+                    CRITICAL_ISSUE_ID,
+                    CRITICAL_ISSUE_ACTION_ID,
+                    userId = USER_NULL))
         }
     }
 
