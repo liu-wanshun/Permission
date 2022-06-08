@@ -160,7 +160,7 @@
     <string name="permission_usage_bar_chart_title_last_minute" msgid="820450867183487607">"Upotreba dopuštenja u posljednjoj minuti"</string>
     <string name="permission_usage_preference_summary_not_used_24h" msgid="3087783232178611025">"Nije korišteno u posljednja 24 sata"</string>
     <string name="permission_usage_preference_summary_not_used_7d" msgid="4592301300810120096">"Nije korišteno u posljednjih sedam dana"</string>
-    <string name="permission_usage_preference_label" msgid="8343167938128676378">"{count,plural, =1{Koristi ga 1 aplikacija}one{Koristi ga # aplikacija}few{Koriste ga # aplikacije}other{Koristi ga # aplikacija}}"</string>
+    <string name="permission_usage_preference_label" msgid="8343167938128676378">"{count,plural, =1{Koristi 1 aplikacija}one{Koristi # aplikacija}few{Koriste # aplikacije}other{Koristi # aplikacija}}"</string>
     <string name="permission_usage_view_details" msgid="6675335735468752787">"Pogledajte sve na nadzornoj ploči"</string>
     <string name="app_permission_usage_filter_label" msgid="7182861154638631550">"Filtrirano po: <xliff:g id="PERM">%1$s</xliff:g>"</string>
     <string name="app_permission_usage_remove_filter" msgid="2926157607436428207">"Ukloni filtar"</string>
@@ -492,7 +492,7 @@
     <string name="privdash_label_location" msgid="6882400763866489291">"Lokacija"</string>
     <string name="privdash_label_other" msgid="3710394147423236033">"Drugo"</string>
     <string name="privdash_label_none" msgid="5991866260360484858">"Nijedno"</string>
-    <string name="privdash_label_24h" msgid="1512532123865375319">"Protekla\n24 sata"</string>
+    <string name="privdash_label_24h" msgid="1512532123865375319">"Posljednja\n24 sata"</string>
     <string name="privdash_label_7d" msgid="5645301995348656931">"U posljednjih\n7 dana"</string>
     <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"Aplikaciju <xliff:g id="APP_NAME">%1$s</xliff:g> štiti Android. Budući da se vaši podaci obrađuju na ovom uređaju, upotreba dopuštenja te aplikacije ne prikazuje se na traci statusa ni na vašoj nadzornoj ploči za privatnost."</string>
     <string name="exempt_info_label" msgid="6286190981253476699">"Aplikaciju <xliff:g id="APP_NAME">%1$s</xliff:g> štiti Android. Budući da se vaši podaci obrađuju na ovom uređaju, upotreba dopuštenja te aplikacije ne prikazuje se na vašoj nadzornoj ploči za privatnost."</string>
@@ -531,14 +531,14 @@
     <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"Provjera statusa"</string>
     <string name="media_confirm_dialog_positive_button" msgid="9020793594051526399">"Potvrdi"</string>
     <string name="media_confirm_dialog_negative_button" msgid="226987376924861785">"Natrag"</string>
-    <string name="media_confirm_dialog_title_a_to_p_aural_allow" msgid="8560601114044699903">"Dopustit će se i pristup drugim datotekama"</string>
+    <string name="media_confirm_dialog_title_a_to_p_aural_allow" msgid="8560601114044699903">"Dopustit će se pristup i drugim datotekama"</string>
     <string name="media_confirm_dialog_title_a_to_p_aural_deny" msgid="7841428716317307685">"Neće se dopustiti ni pristup drugim datotekama"</string>
-    <string name="media_confirm_dialog_title_a_to_p_visual_allow" msgid="6469086448310893751">"Dopustit će se i pristup drugim datotekama"</string>
+    <string name="media_confirm_dialog_title_a_to_p_visual_allow" msgid="6469086448310893751">"Dopustit će se pristup i drugim datotekama"</string>
     <string name="media_confirm_dialog_title_a_to_p_visual_deny" msgid="5767849609024384226">"Neće se dopustiti ni pristup drugim datotekama"</string>
     <string name="media_confirm_dialog_title_q_to_s_aural_allow" msgid="3191904399336990537">"Dopustite će se i pristup fotografijama i videozapisima"</string>
-    <string name="media_confirm_dialog_title_q_to_s_aural_deny" msgid="3128147568953297969">"Neće se dopustiti ni pristup fotografijama i videozapisima"</string>
+    <string name="media_confirm_dialog_title_q_to_s_aural_deny" msgid="3128147568953297969">"Neće se dopustiti pristup ni fotografijama ni videozapisima"</string>
     <string name="media_confirm_dialog_title_q_to_s_visual_allow" msgid="6310682466493330434">"Dopustit će se i pristup glazbenim i audiodatotekama"</string>
-    <string name="media_confirm_dialog_title_q_to_s_visual_deny" msgid="1123845663785900471">"Neće se dopustiti ni pristup glazbenim i audiodatotekama"</string>
+    <string name="media_confirm_dialog_title_q_to_s_visual_deny" msgid="1123845663785900471">"Neće se dopustiti pristup ni glazbenim ni audiodatotekama"</string>
     <string name="media_confirm_dialog_message_a_to_p_aural_allow" msgid="7865167246140107623">"Aplikacija ne podržava najnoviju verziju Androida. Ako aplikacija može pristupiti glazbenim i audiodatotekama, moći će pristupiti i fotografijama, videozapisima i drugim datotekama."</string>
     <string name="media_confirm_dialog_message_a_to_p_aural_deny" msgid="287502523664804786">"Aplikacija ne podržava najnoviju verziju Androida. Ako aplikacija ne može pristupiti glazbenim i audiodatotekama, neće moći pristupiti ni fotografijama, videozapisima i drugim datotekama."</string>
     <string name="media_confirm_dialog_message_a_to_p_visual_allow" msgid="4952410892939590487">"Aplikacija ne podržava najnoviju verziju Androida. Ako aplikacija može pristupiti fotografijama i videozapisima, moći će pristupiti i glazbenim, audiodatotekama i drugim datotekama."</string>
@@ -547,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Aplikacija ne podržava najnoviju verziju Androida. Ako aplikacija ne može pristupiti glazbenim i audiodatotekama, neće moći pristupiti ni fotografijama i videozapisima."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Aplikacija ne podržava najnoviju verziju Androida. Ako aplikacija može pristupiti fotografijama i videozapisima, moći će pristupiti i glazbenim i audiodatotekama."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Aplikacija ne podržava najnoviju verziju Androida. Ako aplikacija ne može pristupiti glazbenim i audiodatotekama, neće moći pristupiti ni fotografijama i videozapisima."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"Zatvori"</string>
 </resources>
