@@ -59,7 +59,7 @@
     <string name="review_permission_decisions_view_all" msgid="90391040431566130">"Prikaži sve nedavne odluke o dozvolama"</string>
     <string name="review_permission_decisions_empty" msgid="8120775336417279806">"Nema nedavnih odluka o dozvolama"</string>
     <string name="auto_permission_manager_summary" msgid="9157438376234301354">"Upravljajte pristupom podacima za kalendar, evidencije poziva i drugo"</string>
-    <string name="granted_permission_decision" msgid="7824827491551861365">"Odobrili ste pristup aplikacije <xliff:g id="APP_NAME">%1$s</xliff:g> za: <xliff:g id="PERMISSION_NAME">%2$s</xliff:g>"</string>
+    <string name="granted_permission_decision" msgid="7824827491551861365">"Odobrili ste <xliff:g id="APP_NAME">%1$s</xliff:g> pristup za: <xliff:g id="PERMISSION_NAME">%2$s</xliff:g>"</string>
     <string name="denied_permission_decision" msgid="5308961501779563781">"Odbili ste pristup aplikacije <xliff:g id="APP_NAME">%1$s</xliff:g> za: <xliff:g id="PERMISSION_NAME">%2$s</xliff:g>"</string>
     <string name="days_ago" msgid="6650359081551335629">"{count,plural, =0{Danas}=1{Pre 1 dan}one{Pre # dan}few{Pre # dana}other{Pre # dana}}"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"Onemogući aplikaciju"</string>
@@ -494,8 +494,8 @@
     <string name="privdash_label_none" msgid="5991866260360484858">"Ništa"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Prethodna\n24 sata"</string>
     <string name="privdash_label_7d" msgid="5645301995348656931">"U prethodnih\n7 dana"</string>
-    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"Android štiti<xliff:g id="APP_NAME">%1$s</xliff:g>. Pošto se podaci obrađuju na ovom uređaju, korišćenje dozvola za ovu aplikaciju se ne prikazuje na statusnoj traci ili kontrolnoj tabli za privatnost."</string>
-    <string name="exempt_info_label" msgid="6286190981253476699">"Android štiti<xliff:g id="APP_NAME">%1$s</xliff:g>. Pošto se podaci obrađuju na ovom uređaju, korišćenje dozvola za ovu aplikaciju se ne prikazuje na kontrolnoj tabli za privatnost."</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"Android štiti <xliff:g id="APP_NAME">%1$s</xliff:g>. Pošto se podaci obrađuju na ovom uređaju, korišćenje dozvola za ovu aplikaciju se ne prikazuje na statusnoj traci ili kontrolnoj tabli za privatnost."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"Android štiti <xliff:g id="APP_NAME">%1$s</xliff:g>. Pošto se podaci obrađuju na ovom uređaju, korišćenje dozvola za ovu aplikaciju se ne prikazuje na kontrolnoj tabli za privatnost."</string>
     <string name="blocked_camera_title" msgid="1128510551791284384">"Kamera uređaja je blokirana"</string>
     <string name="blocked_microphone_title" msgid="1631517143648232585">"Mikrofon uređaja je blokiran"</string>
     <string name="blocked_location_title" msgid="2005608279812892383">"Lokacija uređaja je isključena"</string>
@@ -547,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Ova aplikacija ne podržava najnoviju verziju Android-a. Ako ova aplikacija ne može da pristupa muzici i audio fajlovima, neće joj biti dozvoljeno ni da pristupa slikama i video snimcima."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Ova aplikacija ne podržava najnoviju verziju Android-a. Ako ova aplikacija može da pristupa slikama i video snimcima, biće joj dozvoljeno i da pristupa muzici i audio fajlovima."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Ova aplikacija ne podržava najnoviju verziju Android-a. Ako ova aplikacija ne može da pristupa muzici i audio fajlovima, neće joj biti dozvoljeno ni da pristupa slikama i video snimcima."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"Zatvori"</string>
 </resources>
