@@ -31,7 +31,7 @@ import androidx.preference.PreferenceViewHolder;
 import com.android.permissioncontroller.R;
 
 /** A preference that displays a visual representation of a {@link SafetyCenterEntry}. */
-public final class SafetyEntryPreference extends Preference {
+public final class SafetyEntryPreference extends Preference implements ComparablePreference {
 
     private static final String TAG = SafetyEntryPreference.class.getSimpleName();
 
@@ -73,8 +73,8 @@ public final class SafetyEntryPreference extends Preference {
     @Override
     public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        holder.itemView.setBackgroundResource(mPosition.toBackgroundDrawableResId());
-        final int topMargin = mPosition.toTopMargin(holder.itemView.getContext());
+        holder.itemView.setBackgroundResource(mPosition.getBackgroundDrawableResId());
+        final int topMargin = mPosition.getTopMargin(holder.itemView.getContext());
 
         final ViewGroup.MarginLayoutParams params =
                 (ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams();
@@ -89,6 +89,8 @@ public final class SafetyEntryPreference extends Preference {
                                 == SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_ICON;
         holder.findViewById(R.id.icon_frame)
                 .setVisibility(hideIcon ? View.GONE : View.VISIBLE);
+        holder.findViewById(R.id.empty_space)
+                .setVisibility(hideIcon ? View.VISIBLE : View.GONE);
     }
 
     private static int selectIconResId(SafetyCenterEntry entry) {
@@ -125,12 +127,14 @@ public final class SafetyEntryPreference extends Preference {
         return R.drawable.ic_safety_null_state;
     }
 
-    boolean isSameItem(Preference other) {
+    @Override
+    public boolean isSameItem(@NonNull Preference other) {
         return other instanceof SafetyEntryPreference
                 && TextUtils.equals(mEntry.getId(), ((SafetyEntryPreference) other).mEntry.getId());
     }
 
-    boolean hasSameContents(Preference other) {
+    @Override
+    public boolean hasSameContents(@NonNull Preference other) {
         if (other instanceof SafetyEntryPreference) {
             SafetyEntryPreference o = (SafetyEntryPreference) other;
             return mEntry.equals(o.mEntry) && mPosition == o.mPosition;
