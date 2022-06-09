@@ -160,7 +160,7 @@
     <string name="permission_usage_bar_chart_title_last_minute" msgid="820450867183487607">"पिछले एक मिनट में अनुमति का इस्तेमाल"</string>
     <string name="permission_usage_preference_summary_not_used_24h" msgid="3087783232178611025">"पिछले 24 घंटों में इस्तेमाल नहीं किया गया"</string>
     <string name="permission_usage_preference_summary_not_used_7d" msgid="4592301300810120096">"पिछले सात दिनों में इस्तेमाल नहीं किया गया"</string>
-    <string name="permission_usage_preference_label" msgid="8343167938128676378">"{count,plural, =1{1 ऐप्लिकेशन ने इस्तेमाल की}one{# ऐप्लिकेशन ने इस्तेमाल की}other{# ऐप्लिकेशन ने इस्तेमाल की}}"</string>
+    <string name="permission_usage_preference_label" msgid="8343167938128676378">"{count,plural, =1{1 ऐप्लिकेशन ने इस्तेमाल किया}one{# ऐप्लिकेशन ने इस्तेमाल किया}other{# ऐप्लिकेशन ने इस्तेमाल किया}}"</string>
     <string name="permission_usage_view_details" msgid="6675335735468752787">"डैशबोर्ड में सभी को देखें"</string>
     <string name="app_permission_usage_filter_label" msgid="7182861154638631550">"इससे फ़िल्टर किया गया: <xliff:g id="PERM">%1$s</xliff:g>"</string>
     <string name="app_permission_usage_remove_filter" msgid="2926157607436428207">"फ़िल्टर हटाएं"</string>
@@ -547,6 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"यह ऐप्लिकेशन, Android के नए वर्शन पर काम नहीं करता है. अगर यह ऐप्लिकेशन संगीत और ऑडियो फ़ाइलों को ऐक्सेस नहीं कर सकता, तो यह फ़ोटो और वीडियो को भी ऐक्सेस नहीं कर सकेगा."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"यह ऐप्लिकेशन, Android के नए वर्शन पर काम नहीं करता है. अगर यह ऐप्लिकेशन फ़ोटो और वीडियो को ऐक्सेस कर सकता है, तो यह संगीत और ऑडियो फ़ाइलों को भी ऐक्सेस कर सकेगा."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"यह ऐप्लिकेशन, Android के नए वर्शन पर काम नहीं करता है. अगर यह ऐप्लिकेशन संगीत और ऑडियो फ़ाइलों को ऐक्सेस नहीं कर सकता, तो यह फ़ोटो और वीडियो को भी ऐक्सेस नहीं कर सकेगा."</string>
-    <!-- no translation found for security_privacy_qs_close_button (6788105863103224114) -->
-    <skip />
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"बंद करें"</string>
 </resources>
