@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2022 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,31 +28,46 @@ import androidx.annotation.Keep;
 import com.android.permissioncontroller.R;
 import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseActivity;
 
-/**
- * Entry-point activity for SafetyCenter.
- */
+/** Entry-point activity for SafetyCenter. */
 @Keep
 public final class SafetyCenterActivity extends CollapsingToolbarBaseActivity {
 
     private static final String TAG = SafetyCenterActivity.class.getSimpleName();
+    private SafetyCenterManager mSafetyCenterManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SafetyCenterManager safetyCenterManager = getSystemService(SafetyCenterManager.class);
+        mSafetyCenterManager = getSystemService(SafetyCenterManager.class);
 
-        if (safetyCenterManager == null || !safetyCenterManager.isSafetyCenterEnabled()) {
-            Log.w(TAG, "Safety Center disabled, redirecting to security settings page");
-            startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS).addFlags(
-                    FLAG_ACTIVITY_FORWARD_RESULT));
-            finish();
-            return;
-        }
+        if (maybeRedirectIfDisabled()) return;
 
         setTitle(getString(R.string.safety_center_dashboard_page_title));
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_frame, new SafetyCenterDashboardFragment())
-                .commitNow();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(
+                            R.id.content_frame,
+                            SafetyCenterDashboardFragment.newInstance(
+                                    /* isQuickSettingsFragment= */ false))
+                    .commitNow();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        maybeRedirectIfDisabled();
+    }
+
+    private boolean maybeRedirectIfDisabled() {
+        if (mSafetyCenterManager == null || !mSafetyCenterManager.isSafetyCenterEnabled()) {
+            Log.w(TAG, "Safety Center disabled, redirecting to settings page");
+            startActivity(
+                    new Intent(Settings.ACTION_SETTINGS).addFlags(FLAG_ACTIVITY_FORWARD_RESULT));
+            finish();
+            return true;
+        }
+        return false;
     }
 }

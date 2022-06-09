@@ -164,13 +164,6 @@ data class LightAppPermGroup(
     val isRevokeWhenRequested = permissions.any { it.value.isRevokeWhenRequested }
 
     /**
-     * Whether a runtime permission request dialog must be shown on behalf of the app, rather than
-     * the app requesting explicitly
-     */
-    val isRuntimePermReviewRequired = supportsRuntimePerms &&
-            permissions.any { it.value.isReviewRequired }
-
-    /**
      * A subset of the AppPermissionGroup, representing either the background or foreground permissions
      * of the full group.
      *
@@ -187,6 +180,17 @@ data class LightAppPermGroup(
          * Whether any of this App Permission SubGroup's permissions are granted
          */
         val isGranted = specialLocationGrant ?: permissions.any { it.value.isGrantedIncludingAppOp }
+
+        /**
+         * Whether this App Permission SubGroup should be treated as granted. This means either:
+         * 1) At least one permission was granted excluding auto-granted permissions (i.e., granted
+         * during install time with flag RevokeWhenRequested.) Or,
+         * 2) All permissions were auto-granted (all permissions are all granted and all
+         * RevokeWhenRequested.)
+         */
+        val isGrantedExcludingRWROrAllRWR = specialLocationGrant ?: (permissions
+            .any { it.value.isGrantedIncludingAppOp && !it.value.isRevokeWhenRequested } ||
+            permissions.all { it.value.isGrantedIncludingAppOp && it.value.isRevokeWhenRequested })
 
         /**
          * Whether any of this App Permission SubGroup's permissions are granted by default
