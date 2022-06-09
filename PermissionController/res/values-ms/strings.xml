@@ -494,8 +494,8 @@
     <string name="privdash_label_none" msgid="5991866260360484858">"Tiada"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"24 jam\nyang lalu"</string>
     <string name="privdash_label_7d" msgid="5645301995348656931">"7 hari\nyang lalu"</string>
-    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> dilindungi oleh Android. Oleh sebab data anda diproses pada peranti ini, penggunaan kebenaran apl ini tidak ditunjukkan pada bar status atau papan pemuka privasi anda."</string>
-    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> dilindungi oleh Android. Oleh sebab data anda diproses pada peranti ini, penggunaan kebenaran apl ini tidak ditunjukkan pada papan pemuka privasi anda."</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"Ini ialah <xliff:g id="APP_NAME">%1$s</xliff:g> Protected by Android. Oleh sebab data anda diproses pada peranti ini, penggunaan kebenaran apl ini tidak ditunjukkan pada bar status atau papan pemuka privasi anda."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"Ini ialah <xliff:g id="APP_NAME">%1$s</xliff:g> Protected by Android. Oleh sebab data anda diproses pada peranti ini, penggunaan kebenaran apl ini tidak ditunjukkan pada papan pemuka privasi anda."</string>
     <string name="blocked_camera_title" msgid="1128510551791284384">"Kamera peranti disekat"</string>
     <string name="blocked_microphone_title" msgid="1631517143648232585">"Mikrofon peranti disekat"</string>
     <string name="blocked_location_title" msgid="2005608279812892383">"Lokasi peranti dimatikan"</string>
@@ -547,6 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Apl ini tidak menyokong versi terkini Android. Jika apl ini tidak boleh mengakses fail muzik dan audio, apl ini juga akan tidak dibenarkan untuk mengakses foto dan video."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Apl ini tidak menyokong versi terkini Android. Jika apl ini boleh mengakses foto dan video, apl ini juga akan dibenarkan untuk mengakses fail muzik dan audio."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Apl ini tidak menyokong versi terkini Android. Jika apl ini tidak boleh mengakses fail muzik dan audio, apl ini juga akan tidak dibenarkan untuk mengakses foto dan video."</string>
-    <!-- no translation found for security_privacy_qs_close_button (6788105863103224114) -->
-    <skip />
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"Tutup"</string>
 </resources>
