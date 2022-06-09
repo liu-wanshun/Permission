@@ -52,6 +52,7 @@ import android.app.Application;
 import android.app.admin.DevicePolicyManager;
 import android.app.role.RoleManager;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -181,7 +182,14 @@ public final class Utils {
     public static final String PROPERTY_PERMISSION_EVENTS_CHECK_OLD_FREQUENCY_MILLIS =
             "permission_events_check_old_frequency_millis";
 
-    /** The time an app needs to be unused in order to be hibernated */
+    /**
+     * Whether to store the exact time for permission changes. Only for use in tests and should
+     * not be modified in prod.
+     */
+    public static final String PROPERTY_PERMISSION_CHANGES_STORE_EXACT_TIME =
+            "permission_changes_store_exact_time";
+
+    /** The max amount of time permission data can stay in the storage before being scrubbed */
     public static final String PROPERTY_PERMISSION_DECISIONS_MAX_DATA_AGE_MILLIS =
             "permission_decisions_max_data_age_millis";
 
@@ -226,7 +234,6 @@ public final class Utils {
     private static final ArrayMap<String, Integer> PERM_GROUP_BACKGROUND_REQUEST_DETAIL_RES;
     private static final ArrayMap<String, Integer> PERM_GROUP_UPGRADE_REQUEST_RES;
     private static final ArrayMap<String, Integer> PERM_GROUP_UPGRADE_REQUEST_DETAIL_RES;
-    private static final ArrayMap<String, Integer> PERM_GROUP_CONTINUE_REQUEST_RES;
 
     /** Permission -> Sensor codes */
     private static final ArrayMap<String, Integer> PERM_SENSOR_CODES;
@@ -420,10 +427,6 @@ public final class Utils {
                 .put(CAMERA, R.string.permgroupupgraderequestdetail_camera);
         PERM_GROUP_UPGRADE_REQUEST_DETAIL_RES
                 .put(SENSORS,  R.string.permgroupupgraderequestdetail_sensors);
-
-        PERM_GROUP_CONTINUE_REQUEST_RES = new ArrayMap<>();
-        PERM_GROUP_CONTINUE_REQUEST_RES
-                .put(NOTIFICATIONS, R.string.permgrouprequestcontinue_notifications);
 
         PERM_SENSOR_CODES = new ArrayMap<>();
         if (SdkLevel.isAtLeastS()) {
@@ -1229,15 +1232,6 @@ public final class Utils {
     }
 
     /**
-     * The resource id for the "continue allowing" message for a permission group
-     * @param groupName Permission group name
-     * @return The id or 0 if the permission group doesn't exist or have a message
-     */
-    public static int getContinueRequest(String groupName) {
-        return PERM_GROUP_CONTINUE_REQUEST_RES.getOrDefault(groupName, 0);
-    }
-
-    /**
      * Checks whether a package has an active one-time permission according to the system server's
      * flags
      *
@@ -1471,5 +1465,34 @@ public final class Utils {
         DevicePolicyManager dpm = getSystemServiceSafe(context, DevicePolicyManager.class);
         return  dpm.getResources().getString(updatableStringId, () -> context.getString(
                 defaultStringId, formatArgs), formatArgs);
+    }
+
+    /**
+     * Get {@link PackageInfo} for this ComponentName.
+     *
+     * @param context The current Context
+     * @param component component to get package info for
+     * @return The package info
+     *
+     * @throws PackageManager.NameNotFoundException if package does not exist
+     */
+    @NonNull
+    public static PackageInfo getPackageInfoForComponentName(@NonNull Context context,
+            @NonNull ComponentName component) throws PackageManager.NameNotFoundException {
+        return context.getPackageManager().getPackageInfo(component.getPackageName(), 0);
+    }
+
+    /**
+     * Return the label to use for this application.
+     *
+     * @param context The current Context
+     * @param applicationInfo The {@link ApplicationInfo} of the application to get the label of.
+     * @return Returns a {@link CharSequence} containing the label associated with this application,
+     * or its name the  item does not have a label.
+     */
+    @NonNull
+    public static CharSequence getApplicationLabel(@NonNull Context context,
+            @NonNull ApplicationInfo applicationInfo) {
+        return context.getPackageManager().getApplicationLabel(applicationInfo);
     }
 }

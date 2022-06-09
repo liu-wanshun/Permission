@@ -296,9 +296,9 @@ public final class SafetySourceIssue implements Parcelable {
                 + mId
                 + "mTitle="
                 + mTitle
-                + ", mSummary="
-                + mSubtitle
                 + ", mSubtitle="
+                + mSubtitle
+                + ", mSummary="
                 + mSummary
                 + ", mSeverityLevel="
                 + mSeverityLevel
@@ -323,10 +323,7 @@ public final class SafetySourceIssue implements Parcelable {
      *
      * <p>The user will be allowed to invoke the action from the UI by clicking on a UI element and
      * consequently resolve the issue.
-     *
-     * @hide
      */
-    @SystemApi
     public static final class Action implements Parcelable {
 
         @NonNull
@@ -626,7 +623,7 @@ public final class SafetySourceIssue implements Parcelable {
             default:
         }
         throw new IllegalArgumentException(
-                String.format("Unexpected SeverityLevel for SafetySourceIssue: %s", value));
+                "Unexpected SeverityLevel for SafetySourceIssue: " + value);
     }
 
     @IssueCategory
@@ -639,6 +636,6 @@ public final class SafetySourceIssue implements Parcelable {
             default:
         }
         throw new IllegalArgumentException(
-                String.format("Unexpected IssueCategory for SafetySourceIssue: %s", value));
+                "Unexpected IssueCategory for SafetySourceIssue: " + value);
     }
 }

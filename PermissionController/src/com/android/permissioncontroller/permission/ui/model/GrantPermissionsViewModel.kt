@@ -67,6 +67,7 @@ import com.android.permissioncontroller.permission.data.get
 import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPackageInfo
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPermGroupInfo
+import com.android.permissioncontroller.permission.service.PermissionChangeStorageImpl
 import com.android.permissioncontroller.permission.service.v33.PermissionDecisionStorageImpl
 import com.android.permissioncontroller.permission.ui.AutoGrantPermissionsNotifier
 import com.android.permissioncontroller.permission.ui.GrantPermissionsActivity
@@ -119,7 +120,6 @@ class GrantPermissionsViewModel(
     private val app: Application,
     private val packageName: String,
     private val requestedPermissions: List<String>,
-    private val legacyAccessPermissions: List<String>,
     private val sessionId: Long,
     private val storedState: Bundle?
 ) : ViewModel() {
@@ -257,14 +257,11 @@ class GrantPermissionsViewModel(
 
                 val states = groupStates.filter { it.key.first == groupName }
                 if (states.isNotEmpty()) {
-                    // some requests might have been granted, check for that
-                    // TODO(b/205888750): remove isRuntimePermReview line once confident in
-                    //  REVIEW_REQUIRED flag setting
                     for ((key, state) in states) {
                         val allAffectedGranted = state.affectedPermissions.all { perm ->
                             appPermGroup.permissions[perm]?.isGrantedIncludingAppOp == true &&
                                 appPermGroup.permissions[perm]?.isRevokeWhenRequested == false
-                        } && !appPermGroup.isRuntimePermReviewRequired
+                        }
                         if (allAffectedGranted) {
                             groupStates[key]!!.state = STATE_ALLOWED
                         }
@@ -323,12 +320,7 @@ class GrantPermissionsViewModel(
                 buttonVisibilities[DENY_BUTTON] = true
                 buttonVisibilities[ALLOW_ONE_TIME_BUTTON] =
                     Utils.supportsOneTimeGrant(groupName)
-                var message = if (
-                    legacyAccessPermissions.any { it in groupState.affectedPermissions }) {
-                    RequestMessage.CONTINUE_MESSAGE
-                } else {
-                    RequestMessage.FG_MESSAGE
-                }
+                var message = RequestMessage.FG_MESSAGE
                 // Whether or not to use the foreground, background, or no detail message.
                 // null ==
                 var detailMessage = RequestMessage.NO_MESSAGE
@@ -506,16 +498,19 @@ class GrantPermissionsViewModel(
                     }
                 }
 
-                // If group is the storage group, legacy apps will need special text, and modern
-                // apps should not request it
-                if (SdkLevel.isAtLeastT() &&
-                    groupState.group.permGroupName == Manifest.permission_group.STORAGE) {
-                    if (packageInfo.targetSdkVersion < Build.VERSION_CODES.Q) {
-                        message = RequestMessage.STORAGE_SUPERGROUP_MESSAGE_PRE_Q
-                    } else if (packageInfo.targetSdkVersion <= Build.VERSION_CODES.S_V2) {
-                        message = RequestMessage.STORAGE_SUPERGROUP_MESSAGE_Q_TO_S
-                    } else {
+                if (SdkLevel.isAtLeastT()) {
+                    // If app is T+, requests for the STORAGE group are ignored
+                    if (packageInfo.targetSdkVersion > Build.VERSION_CODES.S_V2 &&
+                        groupState.group.permGroupName == Manifest.permission_group.STORAGE) {
                         continue
+                    }
+                    // If app is <T and requests STORAGE, grant dialogs has special text
+                    if (groupState.group.permGroupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS) {
+                        if (packageInfo.targetSdkVersion < Build.VERSION_CODES.Q) {
+                            message = RequestMessage.STORAGE_SUPERGROUP_MESSAGE_PRE_Q
+                        } else if (packageInfo.targetSdkVersion <= Build.VERSION_CODES.S_V2) {
+                            message = RequestMessage.STORAGE_SUPERGROUP_MESSAGE_Q_TO_S
+                        }
                     }
                 }
 
@@ -713,7 +708,7 @@ class GrantPermissionsViewModel(
 
         // Do not attempt to grant background access if foreground access is not either already
         // granted or requested
-        if (isBackground && !group.foreground.isGrantedExcludeRevokeWhenRequestedPermissions &&
+        if (isBackground && !group.foreground.isGrantedExcludingRWROrAllRWR &&
             !hasForegroundRequest) {
             Log.w(LOG_TAG, "Cannot grant $perm as the matching foreground permission is not " +
                 "already granted.")
@@ -725,11 +720,8 @@ class GrantPermissionsViewModel(
             return STATE_SKIPPED
         }
 
-        // TODO(b/205888750): remove isRuntimePermReview line once confident in
-        //  REVIEW_REQUIRED flag setting
-        if ((isBackground && group.background.isGrantedExcludeRevokeWhenRequestedPermissions ||
-            !isBackground && group.foreground.isGrantedExcludeRevokeWhenRequestedPermissions) &&
-            !group.isRuntimePermReviewRequired) {
+        if ((isBackground && group.background.isGrantedExcludingRWROrAllRWR ||
+            !isBackground && group.foreground.isGrantedExcludingRWROrAllRWR)) {
             // If FINE location is not granted, do not grant it automatically when COARSE
             // location is already granted.
             if (group.permGroupName == LOCATION &&
@@ -755,11 +747,6 @@ class GrantPermissionsViewModel(
             } else {
                 STATE_ALLOWED
             }
-        } else if (group.isRuntimePermReviewRequired) {
-            // TODO(b/205888750): uncomment line if it is deemed necessary to deal with bad flag
-            // state
-            // KotlinUtils.setGroupFlags(app, group, FLAG_PERMISSION_REVIEW_REQUIRED to false,
-            //    filterPermissions = listOf(perm))
         }
         return STATE_UNKNOWN
     }
@@ -991,6 +978,7 @@ class GrantPermissionsViewModel(
         requestInfosLiveData.update()
         PermissionDecisionStorageImpl.recordPermissionDecision(app.applicationContext,
             packageName, groupState.group.permGroupName, granted)
+        PermissionChangeStorageImpl.recordPermissionChange(packageName)
         if (granted) {
             startDrivingDecisionReminderServiceIfNecessary(groupState.group.permGroupName)
         }
@@ -1290,9 +1278,8 @@ class GrantPermissionsViewModel(
             NO_MESSAGE(3),
             FG_FINE_LOCATION_MESSAGE(4),
             FG_COARSE_LOCATION_MESSAGE(5),
-            CONTINUE_MESSAGE(6),
-            STORAGE_SUPERGROUP_MESSAGE_Q_TO_S(7),
-            STORAGE_SUPERGROUP_MESSAGE_PRE_Q(8);
+            STORAGE_SUPERGROUP_MESSAGE_Q_TO_S(6),
+            STORAGE_SUPERGROUP_MESSAGE_PRE_Q(7);
         }
 
         fun filterNotificationPermissionIfNeededSync(
@@ -1328,13 +1315,12 @@ class GrantPermissionsViewModelFactory(
     private val app: Application,
     private val packageName: String,
     private val requestedPermissions: Array<String>,
-    private val legacyAccessPermissions: Array<String>,
     private val sessionId: Long,
     private val savedState: Bundle?
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
         return GrantPermissionsViewModel(app, packageName, requestedPermissions.toList(),
-            legacyAccessPermissions.toList(), sessionId, savedState) as T
+            sessionId, savedState) as T
     }
 }
