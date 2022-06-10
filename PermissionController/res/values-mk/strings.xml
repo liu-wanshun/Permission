@@ -121,7 +121,7 @@
     <string name="message_staging" msgid="9110563899955511866">"Апликацијата се поставува…"</string>
     <string name="app_name_unknown" msgid="1319665005754048952">"Непознатo"</string>
     <string name="permission_usage_title" msgid="1568233336351734538">"Контролна табла за приватност"</string>
-    <string name="auto_permission_usage_summary" msgid="7335667266743337075">"Прегледајте кои апликации користеа дозволи неодамна"</string>
+    <string name="auto_permission_usage_summary" msgid="7335667266743337075">"да прегледува кои апликации користеле дозволи неодамна"</string>
     <string name="permission_group_usage_title" msgid="2595013198075285173">"Користење на <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="perm_usage_adv_info_title" msgid="3357831829538873708">"Видете други дозволи"</string>
     <string name="perm_usage_adv_info_summary_2_items" msgid="3702175198750127822">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g>"</string>
@@ -547,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Апликацијава не ја поддржува најновата верзија на Android. Ако оваа апликација не може да пристапува до музички и аудиодатотеки, тогаш нема да ѝ биде дозволено да пристапува и до фотографии и видеа."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Апликацијава не ја поддржува најновата верзија на Android. Ако оваа апликација може да пристапува до фотографии и видеа, тогаш ќе ѝ биде дозволено да пристапува и до музички и аудиодатотеки."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Апликацијава не ја поддржува најновата верзија на Android. Ако оваа апликација не може да пристапува до музички и аудиодатотеки, тогаш нема да ѝ биде дозволено да пристапува и до фотографии и видеа."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"Затвори"</string>
 </resources>

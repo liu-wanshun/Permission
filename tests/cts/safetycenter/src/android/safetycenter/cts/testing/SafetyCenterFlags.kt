@@ -23,14 +23,28 @@ import android.content.res.Resources
 import android.provider.DeviceConfig
 import android.provider.DeviceConfig.NAMESPACE_PRIVACY
 import android.provider.DeviceConfig.Properties
-import com.android.compatibility.common.util.SystemUtil.callWithShellPermissionIdentity
+import android.safetycenter.cts.testing.ShellPermissions.callWithShellPermissionIdentity
+import java.time.Duration
 
 /** A class that facilitates working with Safety Center flags. */
 // TODO(b/219553295): Add timeout flags.
 object SafetyCenterFlags {
 
-    /** Name of the flag that determines whether SafetyCenter is enabled. */
+    /** Flag that determines whether SafetyCenter is enabled. */
     private const val PROPERTY_SAFETY_CENTER_ENABLED = "safety_center_is_enabled"
+
+    /**
+     * Flag that determines the time for which a Safety Center refresh is allowed to wait for a
+     * source to respond to a refresh request before timing out and marking the refresh as finished.
+     */
+    private const val PROPERTY_SAFETY_CENTER_REFRESH_SOURCE_TIMEOUT =
+        "safety_center_refresh_source_timeout_millis"
+
+    /**
+     * Default time for which a Safety Center refresh is allowed to wait for a source to respond to
+     * a refresh request before timing out and marking the refresh as finished.
+     */
+    private val REFRESH_SOURCE_TIMEOUT_DEFAULT_DURATION = Duration.ofSeconds(10)
 
     /** Returns whether the device supports Safety Center. */
     fun Context.deviceSupportsSafetyCenter() =
@@ -48,25 +62,47 @@ object SafetyCenterFlags {
                 READ_DEVICE_CONFIG)
         set(value) {
             callWithShellPermissionIdentity(
-                { setSafetyCenterEnabledWithoutPermission(value) }, WRITE_DEVICE_CONFIG)
+                {
+                    val valueWasSet =
+                        DeviceConfig.setProperty(
+                            NAMESPACE_PRIVACY,
+                            PROPERTY_SAFETY_CENTER_ENABLED,
+                            /* value = */ value.toString(),
+                            /* makeDefault = */ false)
+                    require(valueWasSet) { "Could not set Safety Center flag value to: $value" }
+                },
+                WRITE_DEVICE_CONFIG)
         }
 
     /**
-     * Sets the Safety Center device config flag to the given boolean [value], but without holding
-     * the [WRITE_DEVICE_CONFIG] permission.
-     *
-     * [callWithShellPermissionIdentity] mutates a global state, so it is not possible to modify
-     * [isEnabled] within another call to [callWithShellPermissionIdentity].
+     * A property that allows getting and setting the
+     * [PROPERTY_SAFETY_CENTER_REFRESH_SOURCE_TIMEOUT] device config flag.
      */
-    fun setSafetyCenterEnabledWithoutPermission(value: Boolean) {
-        val valueWasSet =
-            DeviceConfig.setProperty(
-                NAMESPACE_PRIVACY,
-                PROPERTY_SAFETY_CENTER_ENABLED,
-                /* value = */ value.toString(),
-                /* makeDefault = */ false)
-        require(valueWasSet) { "Could not set Safety Center flag value to: $value" }
-    }
+    var refreshTimeout: Duration
+        get() =
+            callWithShellPermissionIdentity(
+                {
+                    Duration.ofMillis(
+                        DeviceConfig.getLong(
+                            NAMESPACE_PRIVACY,
+                            PROPERTY_SAFETY_CENTER_REFRESH_SOURCE_TIMEOUT,
+                            REFRESH_SOURCE_TIMEOUT_DEFAULT_DURATION.toMillis()))
+                },
+                READ_DEVICE_CONFIG)
+        set(value) =
+            callWithShellPermissionIdentity(
+                {
+                    val valueWasSet =
+                        DeviceConfig.setProperty(
+                            NAMESPACE_PRIVACY,
+                            PROPERTY_SAFETY_CENTER_REFRESH_SOURCE_TIMEOUT,
+                            /* value = */ value.toMillis().toString(),
+                            /* makeDefault = */ false)
+                    require(valueWasSet) {
+                        "Could not set Safety Center refresh timeout to: $value"
+                    }
+                },
+                WRITE_DEVICE_CONFIG)
 
     /**
      * Returns a snapshot of all the Safety Center flags.
