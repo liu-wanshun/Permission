@@ -236,8 +236,8 @@
     <string name="permission_description_summary_sensors" msgid="1836045815643119949">"Bunday ruxsatga ega ilovalar organizm holati haqidagi sezgichlar axborotlaridan foydalana oladi"</string>
     <string name="permission_description_summary_sms" msgid="725999468547768517">"Bunday ruxsatga ega ilovalar SMS xabarlarga kira oladi va yubora oladi"</string>
     <string name="permission_description_summary_storage" msgid="6575759089065303346">"Bunday ruxsatga ega ilovalar qurilmangizdagi rasm, multimedia va fayllaringizdan foydalana oladi"</string>
-    <string name="permission_description_summary_read_media_aural" msgid="3354728149930482199">"Bunday ruxsatga ega ilovalar bu qurilmadagi musiqa va audio fayllardan foydalana oladi"</string>
-    <string name="permission_description_summary_read_media_visual" msgid="4991801977881732641">"Bunday ruxsatga ega ilovalar bu qurilmadagi surat va videolardan foydalana oladi"</string>
+    <string name="permission_description_summary_read_media_aural" msgid="3354728149930482199">"Bunday ruxsatga ega ilovalar ushbu qurilmadagi musiqa va audio fayllardan foydalana oladi"</string>
+    <string name="permission_description_summary_read_media_visual" msgid="4991801977881732641">"Bunday ruxsatga ega ilovalar ushbu qurilmadagi surat va videolardan foydalana oladi"</string>
     <string name="app_permission_most_recent_summary" msgid="4292074449384040590">"Oxirgi marta ishlatilgan: <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_permission_most_recent_denied_summary" msgid="7659497197737708112">"Hozirda rad etilgan / Oxirgi marta ishlatilgan: <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_permission_never_accessed_summary" msgid="401346181461975090">"Hech qachon ishlatilmagan"</string>
@@ -448,10 +448,10 @@
     <string name="permgrouprequest_calendar" msgid="1493150855673603806">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uchun taqvimingizga ruxsat berilsinmi?"</string>
     <string name="permgrouprequest_sms" msgid="5672063688745420991">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uchun SMS xabarlarni yuborish va ko‘rishga ruxsat berilsinmi?"</string>
     <string name="permgrouprequest_storage" msgid="8717773092518621602">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uchun qurilmangizdagi suratlar, multimedia va fayllarga kirish ruxsati berilsinmi?"</string>
-    <string name="permgrouprequest_storage_q_to_s" msgid="8213701872983685505">"<xliff:g id="APP_NAME">%1$s</xliff:g> ilovasiga bu qurilmadagi surat, video, musiqa va audiolarga kirish uchun ruxsat berilsinmi?"</string>
-    <string name="permgrouprequest_storage_pre_q" msgid="168130651144569428">"<xliff:g id="APP_NAME">%1$s</xliff:g> ilovasiga bu qurilmadagi surat, video, musiqa, audio va fayllarga kirish uchun ruxsat berilsinmi?"</string>
-    <string name="permgrouprequest_read_media_aural" msgid="2593365397347577812">"<xliff:g id="APP_NAME">%1$s</xliff:g> ilovasiga bu qurilmadagi musiqa va audio fayllarga kirish uchun ruxsat berilsinmi?"</string>
-    <string name="permgrouprequest_read_media_visual" msgid="5548780620779729975">"<xliff:g id="APP_NAME">%1$s</xliff:g> ilovasiga qurilmadagi rasm va videolarga kirish ruxsati berilsinmi?"</string>
+    <string name="permgrouprequest_storage_q_to_s" msgid="8213701872983685505">"<xliff:g id="APP_NAME">%1$s</xliff:g> uchun ushbu qurilmadagi surat, video, musiqa va audiolarga kirish ruxsati berilsinmi?"</string>
+    <string name="permgrouprequest_storage_pre_q" msgid="168130651144569428">"<xliff:g id="APP_NAME">%1$s</xliff:g> uchun ushbu qurilmadagi surat, video, musiqa, audio va fayllarga kirish ruxsati berilsinmi?"</string>
+    <string name="permgrouprequest_read_media_aural" msgid="2593365397347577812">"<xliff:g id="APP_NAME">%1$s</xliff:g> uchun ushbu qurilmadagi musiqa va audio fayllarga kirish ruxsati berilsinmi?"</string>
+    <string name="permgrouprequest_read_media_visual" msgid="5548780620779729975">"<xliff:g id="APP_NAME">%1$s</xliff:g> uchun qurilmadagi rasm va videolarga kirish ruxsati berilsinmi?"</string>
     <string name="permgrouprequest_microphone" msgid="2825208549114811299">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uchun audio yozib olish ruxsati berilsinmi?"</string>
     <string name="permgrouprequestdetail_microphone" msgid="8510456971528228861">"Bu ilova faqat undan foydalanganingizda ovozlarni yozib oladi"</string>
     <string name="permgroupbackgroundrequest_microphone" msgid="8874462606796368183">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; uchun audio yozib olishga ruxsat berilsinmi?"</string>
@@ -488,8 +488,8 @@
     <string name="privdash_label_none" msgid="5991866260360484858">"Hech qanday"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"Oxirgi\n24 soat"</string>
     <string name="privdash_label_7d" msgid="5645301995348656931">"Oxirgi\n7 kun"</string>
-    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> ilovasi Android himoyasida. Maʼlumotlaringiz qurilmada qayta ishlanishi sababli ilovaning ruxsatlardan foydalanish statistikasi maxfiylik boshqaruv panelida chiqmaydi."</string>
-    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> ilovasi Android himoyasida. Maʼlumotlaringiz qurilmada qayta ishlanishi sababli ilovaning ruxsatlardan foydalanish statistikasi maxfiylik boshqaruv panelida chiqmaydi."</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> Android tomonidan himoyalangan. Maʼlumotlaringiz qurilmada qayta ishlanishi sababli ilovaning ruxsatlardan foydalanish statistikasi maxfiylik boshqaruv panelida chiqmaydi."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> Android tomonidan himoyalangan. Maʼlumotlaringiz qurilmada qayta ishlanishi sababli ilovaning ruxsatlardan foydalanish statistikasi maxfiylik boshqaruv panelida chiqmaydi."</string>
     <string name="blocked_camera_title" msgid="1128510551791284384">"Qurilma kamerasi bloklandi"</string>
     <string name="blocked_microphone_title" msgid="1631517143648232585">"Qurilma mikrofoni bloklandi"</string>
     <string name="blocked_location_title" msgid="2005608279812892383">"Qurilmada joylashuv axboroti yoqilmagan"</string>
