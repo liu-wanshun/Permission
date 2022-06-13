@@ -13,6 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.android.permissioncontroller.safetycenter.ui
 
-@androidx.annotation.RequiresApi(android.os.Build.VERSION_CODES.TIRAMISU)
-package com.android.permissioncontroller.permission.ui.handheld.v33;
+import androidx.preference.Preference
+
+/** Allows comparison with a [Preference] to determine if it has been changed.
+ *
+ * @see SafetyPreferenceComparisonCallback
+ */
+internal interface ComparablePreference {
+    /** Returns true if given Preference represents an item of the same kind.  */
+    fun isSameItem(preference: Preference): Boolean
+
+    /** Returns true if given Preference contains the same data.  */
+    fun hasSameContents(preference: Preference): Boolean
+}
