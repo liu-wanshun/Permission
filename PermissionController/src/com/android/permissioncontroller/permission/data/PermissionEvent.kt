@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.tests.mocking.permission.service.v33
-
-import com.android.permissioncontroller.permission.data.v33.PermissionEvent
+package com.android.permissioncontroller.permission.data
 
 /**
- * Test permission event used for tests.
+ * A record of a permission event caused by the user.
  *
- * @param id arbitrary test id used for testing uniqueness of primary keys
+ * @param packageName package name of the app the event is for
+ * @param eventTime the time of the event, in epoch time. Should be rounded to day-level
+ * precision for user privacy.
  */
-data class TestPermissionEvent(
-    override val packageName: String,
-    override val eventTime: Long,
-    val id: Int = 1
-) : PermissionEvent(packageName, eventTime)
+abstract class PermissionEvent(
+    open val packageName: String,
+    open val eventTime: Long
+)

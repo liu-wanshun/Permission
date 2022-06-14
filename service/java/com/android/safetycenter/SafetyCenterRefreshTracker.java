@@ -89,13 +89,13 @@ final class SafetyCenterRefreshTracker {
 
         for (int i = 0; i < broadcasts.size(); i++) {
             Broadcast broadcast = broadcasts.get(i);
-            List<String> profileOwnerSourceIds =
-                    broadcast.getSourceIdsForProfileOwner(refreshReason);
-            for (int j = 0; j < profileOwnerSourceIds.size(); j++) {
+            List<String> profileParentSourceIds =
+                    broadcast.getSourceIdsForProfileParent(refreshReason);
+            for (int j = 0; j < profileParentSourceIds.size(); j++) {
                 mRefreshInProgress.addSourceRefreshInFlight(
                         SafetySourceKey.of(
-                                profileOwnerSourceIds.get(j),
-                                userProfileGroup.getProfileOwnerUserId()));
+                                profileParentSourceIds.get(j),
+                                userProfileGroup.getProfileParentUserId()));
             }
             List<String> managedProfilesSourceIds =
                     broadcast.getSourceIdsForManagedProfiles(refreshReason);
@@ -158,8 +158,7 @@ final class SafetyCenterRefreshTracker {
     // TODO(b/229188900): Should we stop any scheduled broadcasts from going out?
     void clearRefresh() {
         if (mRefreshInProgress != null) {
-            Log.v(TAG, "Clearing refresh with refreshBroadcastId:" + mRefreshInProgress.getId());
-            mRefreshInProgress = null;
+            clearRefresh(mRefreshInProgress.getId());
         } else {
             Log.v(TAG, "Clear refresh called but no refresh in progress");
         }

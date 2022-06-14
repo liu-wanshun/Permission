@@ -23,14 +23,41 @@ import android.content.res.Resources
 import android.provider.DeviceConfig
 import android.provider.DeviceConfig.NAMESPACE_PRIVACY
 import android.provider.DeviceConfig.Properties
-import com.android.compatibility.common.util.SystemUtil.callWithShellPermissionIdentity
+import android.safetycenter.cts.testing.ShellPermissions.callWithShellPermissionIdentity
+import java.time.Duration
 
 /** A class that facilitates working with Safety Center flags. */
 // TODO(b/219553295): Add timeout flags.
 object SafetyCenterFlags {
 
-    /** Name of the flag that determines whether SafetyCenter is enabled. */
+    /** Flag that determines whether SafetyCenter is enabled. */
     private const val PROPERTY_SAFETY_CENTER_ENABLED = "safety_center_is_enabled"
+
+    /**
+     * Flag that determines the time for which a Safety Center refresh is allowed to wait for a
+     * source to respond to a refresh request before timing out and marking the refresh as finished.
+     */
+    private const val PROPERTY_SAFETY_CENTER_REFRESH_SOURCE_TIMEOUT =
+        "safety_center_refresh_source_timeout_millis"
+
+    /**
+     * Device Config flag that determines the time for which Safety Center will wait for a source to
+     * respond to a resolving action before timing out.
+     */
+    private const val PROPERTY_SAFETY_CENTER_RESOLVE_ACTION_TIMEOUT =
+        "safety_center_resolve_action_timeout_millis"
+
+    /**
+     * Default time for which a Safety Center refresh is allowed to wait for a source to respond to
+     * a refresh request before timing out and marking the refresh as finished.
+     */
+    private val REFRESH_SOURCE_TIMEOUT_DEFAULT_DURATION = Duration.ofSeconds(10)
+
+    /**
+     * Default time for which Safety Center will wait for a source to respond to a resolving action
+     * before timing out.
+     */
+    private val RESOLVE_ACTION_TIMEOUT_DEFAULT_DURATION = Duration.ofSeconds(10)
 
     /** Returns whether the device supports Safety Center. */
     fun Context.deviceSupportsSafetyCenter() =
@@ -48,25 +75,60 @@ object SafetyCenterFlags {
                 READ_DEVICE_CONFIG)
         set(value) {
             callWithShellPermissionIdentity(
-                { setSafetyCenterEnabledWithoutPermission(value) }, WRITE_DEVICE_CONFIG)
+                {
+                    val valueWasSet =
+                        DeviceConfig.setProperty(
+                            NAMESPACE_PRIVACY,
+                            PROPERTY_SAFETY_CENTER_ENABLED,
+                            /* value = */ value.toString(),
+                            /* makeDefault = */ false)
+                    require(valueWasSet) { "Could not set Safety Center flag value to: $value" }
+                },
+                WRITE_DEVICE_CONFIG)
         }
 
     /**
-     * Sets the Safety Center device config flag to the given boolean [value], but without holding
-     * the [WRITE_DEVICE_CONFIG] permission.
-     *
-     * [callWithShellPermissionIdentity] mutates a global state, so it is not possible to modify
-     * [isEnabled] within another call to [callWithShellPermissionIdentity].
+     * A property that allows getting and setting the
+     * [PROPERTY_SAFETY_CENTER_REFRESH_SOURCE_TIMEOUT] device config flag.
      */
-    fun setSafetyCenterEnabledWithoutPermission(value: Boolean) {
-        val valueWasSet =
-            DeviceConfig.setProperty(
-                NAMESPACE_PRIVACY,
-                PROPERTY_SAFETY_CENTER_ENABLED,
-                /* value = */ value.toString(),
-                /* makeDefault = */ false)
-        require(valueWasSet) { "Could not set Safety Center flag value to: $value" }
-    }
+    var refreshTimeout: Duration
+        get() =
+            readDurationProperty(
+                PROPERTY_SAFETY_CENTER_REFRESH_SOURCE_TIMEOUT,
+                REFRESH_SOURCE_TIMEOUT_DEFAULT_DURATION)
+        set(value) = writeDurationProperty(PROPERTY_SAFETY_CENTER_REFRESH_SOURCE_TIMEOUT, value)
+
+    /**
+     * A property that allows getting and setting the
+     * [PROPERTY_SAFETY_CENTER_RESOLVE_ACTION_TIMEOUT] device config flag.
+     */
+    var resolveActionTimeout: Duration
+        get() =
+            readDurationProperty(
+                PROPERTY_SAFETY_CENTER_RESOLVE_ACTION_TIMEOUT,
+                RESOLVE_ACTION_TIMEOUT_DEFAULT_DURATION)
+        set(value) = writeDurationProperty(PROPERTY_SAFETY_CENTER_RESOLVE_ACTION_TIMEOUT, value)
+
+    private fun readDurationProperty(name: String, defaultValue: Duration) =
+        callWithShellPermissionIdentity(
+            {
+                Duration.ofMillis(
+                    DeviceConfig.getLong(NAMESPACE_PRIVACY, name, defaultValue.toMillis()))
+            },
+            READ_DEVICE_CONFIG)
+
+    private fun writeDurationProperty(name: String, value: Duration) =
+        callWithShellPermissionIdentity(
+            {
+                val valueWasSet =
+                    DeviceConfig.setProperty(
+                        NAMESPACE_PRIVACY,
+                        name,
+                        value.toMillis().toString(),
+                        /* makeDefault = */ false)
+                require(valueWasSet) { "Could not set $name to: $value" }
+            },
+            WRITE_DEVICE_CONFIG)
 
     /**
      * Returns a snapshot of all the Safety Center flags.

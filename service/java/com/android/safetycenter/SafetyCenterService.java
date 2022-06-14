@@ -52,12 +52,13 @@ import androidx.annotation.Keep;
 import androidx.annotation.RequiresApi;
 
 import com.android.internal.annotations.GuardedBy;
-import com.android.modules.utils.BackgroundThread;
+import com.android.permission.util.ForegroundThread;
 import com.android.permission.util.UserUtils;
 import com.android.safetycenter.SafetyCenterConfigReader.Broadcast;
 import com.android.safetycenter.internaldata.SafetyCenterIds;
 import com.android.safetycenter.internaldata.SafetyCenterIssueActionId;
 import com.android.safetycenter.internaldata.SafetyCenterIssueId;
+import com.android.safetycenter.internaldata.SafetyCenterIssueKey;
 import com.android.safetycenter.resources.SafetyCenterResourcesContext;
 import com.android.server.SystemService;
 
@@ -84,22 +85,32 @@ public final class SafetyCenterService extends SystemService {
     private static final String PROPERTY_SAFETY_CENTER_ENABLED = "safety_center_is_enabled";
 
     /**
-     * Time for which a refresh is allowed to wait for sources to set data before timing out and
-     * marking the refresh as finished.
+     * Device Config flag that determines the time for which a Safety Center refresh is allowed to
+     * wait for a source to respond to a refresh request before timing out and marking the refresh
+     * as finished.
      */
-    // TODO(b/218285164): Decide final timeout and use a Device Config value instead so that this
-    //  duration can be easily adjusted. Once done, add a test that overrides this Device Config
-    //  value in CTS tests.
-    private static final Duration REFRESH_TIMEOUT = Duration.ofSeconds(10);
+    private static final String PROPERTY_REFRESH_SOURCE_TIMEOUT_MILLIS =
+            "safety_center_refresh_source_timeout_millis";
 
     /**
-     * Time for which a resolving action is allowed to run for before timing out and unmarking it as
-     * in-flight.
+     * Default time for which a Safety Center refresh is allowed to wait for a source to respond to
+     * a refresh request before timing out and marking the refresh as finished.
      */
-    // TODO(b/218285164): Decide final timeout and use a Device Config value instead so that this
-    //  duration can be easily adjusted. Once done, add a test that overrides this Device Config
-    //  value in CTS tests.
-    private static final Duration RESOLVING_ACTION_TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration REFRESH_SOURCE_TIMEOUT_DEFAULT_DURATION = Duration.ofSeconds(10);
+
+    /**
+     * Device Config flag that determines the time for which Safety Center will wait for a source to
+     * respond to a resolving action before timing out.
+     */
+    private static final String PROPERTY_RESOLVING_ACTION_TIMEOUT_MILLIS =
+            "safety_center_resolve_action_timeout_millis";
+
+    /**
+     * Default time for which Safety Center will wait for a source to respond to a resolving action
+     * before timing out.
+     */
+    private static final Duration RESOLVING_ACTION_TIMEOUT_DEFAULT_DURATION =
+            Duration.ofSeconds(10);
 
     private final Object mApiLock = new Object();
 
@@ -164,12 +175,12 @@ public final class SafetyCenterService extends SystemService {
     @Override
     public void onBootPhase(int phase) {
         if (phase == SystemService.PHASE_BOOT_COMPLETED && canUseSafetyCenter()) {
-            Executor backgroundThreadExecutor = BackgroundThread.getExecutor();
+            Executor foregroundThreadExecutor = ForegroundThread.getExecutor();
             SafetyCenterEnabledListener listener = new SafetyCenterEnabledListener();
             // Ensure the listener is called first with the current state on the same thread.
-            backgroundThreadExecutor.execute(listener::setInitialState);
+            foregroundThreadExecutor.execute(listener::setInitialState);
             DeviceConfig.addOnPropertiesChangedListener(
-                    DeviceConfig.NAMESPACE_PRIVACY, backgroundThreadExecutor, listener);
+                    DeviceConfig.NAMESPACE_PRIVACY, foregroundThreadExecutor, listener);
         }
     }
 
@@ -285,7 +296,7 @@ public final class SafetyCenterService extends SystemService {
 
                 RefreshTimeout refreshTimeout =
                         new RefreshTimeout(refreshBroadcastId, userProfileGroup);
-                mSafetyCenterTimeouts.add(refreshTimeout, REFRESH_TIMEOUT);
+                mSafetyCenterTimeouts.add(refreshTimeout, getRefreshTimeout());
 
                 deliverListenersUpdateLocked(userProfileGroup, true, null);
             }
@@ -387,12 +398,14 @@ public final class SafetyCenterService extends SystemService {
             }
 
             SafetyCenterIssueId safetyCenterIssueId = SafetyCenterIds.issueIdFromString(issueId);
+            SafetyCenterIssueKey safetyCenterIssueKey =
+                    safetyCenterIssueId.getSafetyCenterIssueKey();
             UserProfileGroup userProfileGroup = UserProfileGroup.from(getContext(), userId);
             enforceSameUserProfileGroup(
-                    "dismissSafetyCenterIssue", userProfileGroup, safetyCenterIssueId.getUserId());
+                    "dismissSafetyCenterIssue", userProfileGroup, safetyCenterIssueKey.getUserId());
             synchronized (mApiLock) {
                 SafetySourceIssue safetySourceIssue =
-                        mSafetyCenterDataTracker.getSafetySourceIssue(safetyCenterIssueId);
+                        mSafetyCenterDataTracker.getSafetySourceIssue(safetyCenterIssueKey);
                 if (safetySourceIssue == null) {
                     Log.w(
                             TAG,
@@ -402,7 +415,7 @@ public final class SafetyCenterService extends SystemService {
                     // button multiple times in a row.
                     return;
                 }
-                mSafetyCenterDataTracker.dismissSafetyCenterIssue(safetyCenterIssueId);
+                mSafetyCenterDataTracker.dismissSafetyCenterIssue(safetyCenterIssueKey);
                 PendingIntent onDismissPendingIntent =
                         safetySourceIssue.getOnDismissPendingIntent();
                 if (onDismissPendingIntent != null
@@ -410,9 +423,9 @@ public final class SafetyCenterService extends SystemService {
                     Log.w(
                             TAG,
                             "Error dispatching dismissal for issue: "
-                                    + safetyCenterIssueId.getSafetySourceIssueId()
+                                    + safetyCenterIssueKey.getSafetySourceIssueId()
                                     + ", of source: "
-                                    + safetyCenterIssueId.getSafetySourceId());
+                                    + safetyCenterIssueKey.getSafetySourceId());
                     // We still consider the dismissal a success if there is an error dispatching
                     // the dismissal PendingIntent, since SafetyCenter won't surface this warning
                     // anymore.
@@ -435,9 +448,11 @@ public final class SafetyCenterService extends SystemService {
             }
 
             SafetyCenterIssueId safetyCenterIssueId = SafetyCenterIds.issueIdFromString(issueId);
+            SafetyCenterIssueKey safetyCenterIssueKey =
+                    safetyCenterIssueId.getSafetyCenterIssueKey();
             SafetyCenterIssueActionId safetyCenterIssueActionId =
                     SafetyCenterIds.issueActionIdFromString(issueActionId);
-            if (!safetyCenterIssueActionId.getSafetyCenterIssueId().equals(safetyCenterIssueId)) {
+            if (!safetyCenterIssueActionId.getSafetyCenterIssueKey().equals(safetyCenterIssueKey)) {
                 throw new IllegalArgumentException(
                         "issueId: "
                                 + safetyCenterIssueId
@@ -449,7 +464,7 @@ public final class SafetyCenterService extends SystemService {
             enforceSameUserProfileGroup(
                     "executeSafetyCenterIssueAction",
                     userProfileGroup,
-                    safetyCenterIssueId.getUserId());
+                    safetyCenterIssueKey.getUserId());
             synchronized (mApiLock) {
                 SafetySourceIssue.Action safetySourceIssueAction =
                         mSafetyCenterDataTracker.getSafetySourceIssueAction(
@@ -469,13 +484,9 @@ public final class SafetyCenterService extends SystemService {
                             "Error dispatching action: "
                                     + safetyCenterIssueActionId.getSafetySourceIssueActionId()
                                     + ", for issue: "
-                                    + safetyCenterIssueActionId
-                                            .getSafetyCenterIssueId()
-                                            .getSafetySourceIssueId()
+                                    + safetyCenterIssueKey.getSafetySourceIssueId()
                                     + ", of source: "
-                                    + safetyCenterIssueActionId
-                                            .getSafetyCenterIssueId()
-                                            .getSafetySourceId());
+                                    + safetyCenterIssueKey.getSafetySourceId());
                     deliverListenersUpdateLocked(
                             userProfileGroup,
                             false,
@@ -488,7 +499,7 @@ public final class SafetyCenterService extends SystemService {
                             safetyCenterIssueActionId);
                     ResolvingActionTimeout resolvingActionTimeout =
                             new ResolvingActionTimeout(safetyCenterIssueActionId, userProfileGroup);
-                    mSafetyCenterTimeouts.add(resolvingActionTimeout, RESOLVING_ACTION_TIMEOUT);
+                    mSafetyCenterTimeouts.add(resolvingActionTimeout, getResolvingActionTimeout());
                     deliverListenersUpdateLocked(userProfileGroup, true, null);
                 }
             }
@@ -504,8 +515,7 @@ public final class SafetyCenterService extends SystemService {
             }
 
             synchronized (mApiLock) {
-                mSafetyCenterDataTracker.clear();
-                mSafetyCenterTimeouts.clear();
+                clearDataLocked();
                 // TODO(b/223550097): Should we dispatch a new listener update here? This call can
                 //  modify the SafetyCenterData.
             }
@@ -523,8 +533,7 @@ public final class SafetyCenterService extends SystemService {
 
             synchronized (mApiLock) {
                 mSafetyCenterConfigReader.setConfigOverrideForTests(safetyCenterConfig);
-                mSafetyCenterDataTracker.clear();
-                mSafetyCenterTimeouts.clear();
+                clearDataLocked();
                 // TODO(b/223550097): Should we clear the listeners here? Or should we dispatch a
                 //  new listener update since the SafetyCenterData will have changed?
             }
@@ -541,8 +550,7 @@ public final class SafetyCenterService extends SystemService {
 
             synchronized (mApiLock) {
                 mSafetyCenterConfigReader.clearConfigOverrideForTests();
-                mSafetyCenterDataTracker.clear();
-                mSafetyCenterTimeouts.clear();
+                clearDataLocked();
                 // TODO(b/223550097): Should we clear the listeners here? Or should we dispatch a
                 //  new listener update since the SafetyCenterData will have changed?
             }
@@ -674,8 +682,7 @@ public final class SafetyCenterService extends SystemService {
             List<Broadcast> broadcasts;
             synchronized (mApiLock) {
                 broadcasts = mSafetyCenterConfigReader.getBroadcasts();
-                mSafetyCenterDataTracker.clear();
-                mSafetyCenterTimeouts.clear();
+                clearDataLocked();
                 mSafetyCenterListeners.clear();
             }
 
@@ -707,8 +714,9 @@ public final class SafetyCenterService extends SystemService {
                 deliverListenersUpdateLocked(
                         mUserProfileGroup,
                         true,
+                        // TODO(b/234110665): Add SafetyCenterErrorDetails once all sources work.
                         // TODO(b/229080761): Implement proper error message.
-                        new SafetyCenterErrorDetails("Refresh timeout"));
+                        null);
             }
 
             Log.v(
@@ -765,7 +773,7 @@ public final class SafetyCenterService extends SystemService {
         private static final int MAX_TRACKED = 10;
 
         private final ArrayDeque<Runnable> mTimeouts = new ArrayDeque<>(MAX_TRACKED);
-        private final Handler mBackgroundHandler = BackgroundThread.getHandler();
+        private final Handler mForegroundHandler = ForegroundThread.getHandler();
 
         SafetyCenterTimeouts() {}
 
@@ -774,17 +782,17 @@ public final class SafetyCenterService extends SystemService {
                 remove(mTimeouts.pollFirst());
             }
             mTimeouts.addLast(timeoutAction);
-            mBackgroundHandler.postDelayed(timeoutAction, timeoutDuration.toMillis());
+            mForegroundHandler.postDelayed(timeoutAction, timeoutDuration.toMillis());
         }
 
         private void remove(@NonNull Runnable timeoutAction) {
             mTimeouts.remove(timeoutAction);
-            mBackgroundHandler.removeCallbacks(timeoutAction);
+            mForegroundHandler.removeCallbacks(timeoutAction);
         }
 
         private void clear() {
             while (!mTimeouts.isEmpty()) {
-                mBackgroundHandler.removeCallbacks(mTimeouts.pollFirst());
+                mForegroundHandler.removeCallbacks(mTimeouts.pollFirst());
             }
         }
     }
@@ -827,5 +835,48 @@ public final class SafetyCenterService extends SystemService {
         mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
                 userProfileGroup, safetyCenterData, safetyCenterErrorDetails);
         return true;
+    }
+
+    @GuardedBy("mApiLock")
+    private void clearDataLocked() {
+        mSafetyCenterDataTracker.clear();
+        mSafetyCenterTimeouts.clear();
+        mSafetyCenterRefreshTracker.clearRefresh();
+    }
+
+    /**
+     * Returns the time for which a Safety Center refresh is allowed to wait for a source to respond
+     * to a refresh request before timing out and marking the refresh as finished.
+     */
+    private Duration getRefreshTimeout() {
+        // This call requires the READ_DEVICE_CONFIG permission.
+        final long callingId = Binder.clearCallingIdentity();
+        try {
+            return Duration.ofMillis(
+                    DeviceConfig.getLong(
+                            DeviceConfig.NAMESPACE_PRIVACY,
+                            PROPERTY_REFRESH_SOURCE_TIMEOUT_MILLIS,
+                            REFRESH_SOURCE_TIMEOUT_DEFAULT_DURATION.toMillis()));
+        } finally {
+            Binder.restoreCallingIdentity(callingId);
+        }
+    }
+
+    /**
+     * Returns the time for which Safety Center will wait for a source to respond to a resolving
+     * action before timing out.
+     */
+    private Duration getResolvingActionTimeout() {
+        // This call requires the READ_DEVICE_CONFIG permission.
+        final long callingId = Binder.clearCallingIdentity();
+        try {
+            return Duration.ofMillis(
+                    DeviceConfig.getLong(
+                            DeviceConfig.NAMESPACE_PRIVACY,
+                            PROPERTY_RESOLVING_ACTION_TIMEOUT_MILLIS,
+                            RESOLVING_ACTION_TIMEOUT_DEFAULT_DURATION.toMillis()));
+        } finally {
+            Binder.restoreCallingIdentity(callingId);
+        }
     }
 }

@@ -14,5 +14,17 @@
  * limitations under the License.
  */
 
-@androidx.annotation.RequiresApi(android.os.Build.VERSION_CODES.TIRAMISU)
-package com.android.permissioncontroller.permission.ui.handheld.v33;
+package com.android.permissioncontroller.tests.mocking.permission.service
+
+import com.android.permissioncontroller.permission.data.PermissionEvent
+
+/**
+ * Test permission event used for tests.
+ *
+ * @param id arbitrary test id used for testing uniqueness of primary keys
+ */
+data class TestPermissionEvent(
+    override val packageName: String,
+    override val eventTime: Long,
+    val id: Int = 1
+) : PermissionEvent(packageName, eventTime)
