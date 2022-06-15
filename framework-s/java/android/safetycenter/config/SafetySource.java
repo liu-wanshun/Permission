@@ -392,9 +392,6 @@ public final class SafetySource implements Parcelable {
     /**
      * Returns the logging allowed property of this safety source.
      *
-     * <p>If set to {@code false}, any remote logging related to the source data and UI interactions
-     * is disabled.
-     *
      * <p>Throws an {@link UnsupportedOperationException} if the source is of type static.
      */
     public boolean isLoggingAllowed() {
@@ -464,21 +461,18 @@ public final class SafetySource implements Parcelable {
         return "SafetySource{"
                 + "mType="
                 + mType
-                + ", mId='"
+                + ", mId="
                 + mId
-                + '\''
-                + ", mPackageName='"
+                + ", mPackageName="
                 + mPackageName
-                + '\''
                 + ", mTitleResId="
                 + mTitleResId
                 + ", mTitleForWorkResId="
                 + mTitleForWorkResId
                 + ", mSummaryResId="
                 + mSummaryResId
-                + ", mIntentAction='"
+                + ", mIntentAction="
                 + mIntentAction
-                + '\''
                 + ", mProfile="
                 + mProfile
                 + ", mInitialDisplayState="
@@ -694,8 +688,7 @@ public final class SafetySource implements Parcelable {
         /**
          * Sets the logging allowed property of this safety source.
          *
-         * <p>If set to {@code false}, any remote logging related to the source data and UI
-         * interactions is disabled. The logging allowed property defaults to {@code true}.
+         * <p>The logging allowed property defaults to {@code true}.
          *
          * <p>The logging allowed property is prohibited for sources of type static.
          */
