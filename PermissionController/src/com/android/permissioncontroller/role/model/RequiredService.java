@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.os.Bundle;
 import android.os.UserHandle;
 
 import androidx.annotation.NonNull;
@@ -36,9 +35,9 @@ import java.util.List;
  */
 public class RequiredService extends RequiredComponent {
 
-    public RequiredService(@NonNull IntentFilterData intentFilterData, int minTargetSdkVersion,
-            @Nullable String permission, int queryFlags, @NonNull List<RequiredMetaData> metaData) {
-        super(intentFilterData, minTargetSdkVersion, permission, queryFlags, metaData);
+    public RequiredService(@NonNull IntentFilterData intentFilterData,
+            @Nullable String permission, int queryFlags) {
+        super(intentFilterData, permission, queryFlags);
     }
 
     @NonNull
@@ -60,11 +59,5 @@ public class RequiredService extends RequiredComponent {
     @Override
     protected String getComponentPermission(@NonNull ResolveInfo resolveInfo) {
         return resolveInfo.serviceInfo.permission;
-    }
-
-    @Nullable
-    @Override
-    protected Bundle getComponentMetaData(@NonNull ResolveInfo resolveInfo) {
-        return resolveInfo.serviceInfo.metaData;
     }
 }

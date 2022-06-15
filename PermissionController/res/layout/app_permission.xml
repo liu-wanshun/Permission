@@ -119,9 +119,7 @@
 
                     <TextView
                         android:id="@+id/permission_details"
-                        style="@style/AppPermissionDetails"
-                        android:gravity="start"
-                        android:textAlignment="viewStart"/>
+                        style="@style/AppPermissionDetails" />
 
                     <LinearLayout
                         android:id="@+id/two_target_divider"

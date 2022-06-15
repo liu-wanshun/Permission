@@ -8,7 +8,6 @@ import static com.android.permissioncontroller.permission.ui.GrantPermissionsAct
 
 import android.content.Context;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.Build;
@@ -30,8 +29,6 @@ import androidx.annotation.RequiresApi;
 import com.android.modules.utils.build.SdkLevel;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.ui.GrantPermissionsViewHandler;
-
-import java.util.Collections;
 
 /**
  * TV-specific view handler for the grant permissions activity.
@@ -99,11 +96,6 @@ public final class GrantPermissionsViewHandlerImpl implements GrantPermissionsVi
         mAllowOneTimeButton.setOnClickListener(this);
         mSoftDenyButton.setOnClickListener(this);
         mHardDenyButton.setOnClickListener(this);
-
-        mRootView.addOnLayoutChangeListener((view, l, t, r, b, oldL, oldT, oldR, oldB) -> {
-            mRootView.setUnrestrictedPreferKeepClearRects(
-                    Collections.singletonList(new Rect(0, 0, r - l, b - t)));
-        });
 
         return mRootView;
     }

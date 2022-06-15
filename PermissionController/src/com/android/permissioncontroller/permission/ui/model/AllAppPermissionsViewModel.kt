@@ -16,15 +16,12 @@
 
 package com.android.permissioncontroller.permission.ui.model
 
-import android.Manifest
 import android.os.UserHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.android.permissioncontroller.permission.data.LightPackageInfoLiveData
 import com.android.permissioncontroller.permission.data.PackagePermissionsLiveData
 import com.android.permissioncontroller.permission.data.SmartUpdateMediatorLiveData
 import com.android.permissioncontroller.permission.data.get
-import com.android.permissioncontroller.permission.utils.Utils
 
 /**
  * ViewModel for the AllAppPermissionsFragment. Has a liveData with the UI information for all
@@ -54,33 +51,21 @@ class AllAppPermissionsViewModel(
 
         private val packagePermsLiveData =
             PackagePermissionsLiveData[packageName, user]
-        private val packageInfoLiveData = LightPackageInfoLiveData[packageName, user]
 
         init {
             addSource(packagePermsLiveData) {
                 update()
             }
-            addSource(packageInfoLiveData) {
-                update()
-            }
+            update()
         }
 
         override fun onUpdate() {
-            if (!packagePermsLiveData.isInitialized || packagePermsLiveData.isStale ||
-                !packageInfoLiveData.isInitialized) {
-                return
-            }
             val permissions = packagePermsLiveData.value
-            val packageInfo = packageInfoLiveData.value
-            if (permissions == null || packageInfo == null) {
+            if (permissions == null) {
                 value = null
                 return
             }
-
-            value = permissions
-                .filter { filterGroup == null || it.key == filterGroup }
-                .filter { (it.key != Manifest.permission_group.STORAGE ||
-                        Utils.shouldShowStorage(packageInfo!!)) }
+            value = permissions.filter { filterGroup == null || it.key == filterGroup }
         }
     }
 }

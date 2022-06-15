@@ -16,6 +16,7 @@
 
 package com.android.permissioncontroller.role.ui.auto;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -57,8 +58,8 @@ public class AutoDefaultAppListFragment extends AutoSettingsFrameFragment implem
 
     @NonNull
     @Override
-    public TwoTargetPreference createPreference() {
-        return new AutoSettingsPreference(requireContext());
+    public TwoTargetPreference createPreference(@NonNull Context context) {
+        return new AutoSettingsPreference(context);
     }
 
     @Override

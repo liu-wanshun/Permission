@@ -127,7 +127,7 @@ class LightPackageInfoLiveData private constructor(
         }
     }
 
-    private val userPackageInfosObserver = Observer<List<LightPackageInfo>> {
+    val userPackageInfosObserver = Observer<List<LightPackageInfo>> {
         updateFromUserPackageInfosLiveData()
     }
 

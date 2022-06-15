@@ -37,10 +37,12 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
+import android.os.Process;
 import android.os.RemoteCallback;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.os.UserHandle;
+import android.os.UserManager;
 import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.IndentingPrintWriter;
@@ -48,7 +50,6 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.util.proto.ProtoOutputStream;
 
-import androidx.annotation.Keep;
 import androidx.annotation.RequiresApi;
 
 import com.android.internal.annotations.GuardedBy;
@@ -60,7 +61,6 @@ import com.android.permission.util.ArrayUtils;
 import com.android.permission.util.CollectionUtils;
 import com.android.permission.util.ForegroundThread;
 import com.android.permission.util.ThrottledRunnable;
-import com.android.permission.util.UserUtils;
 import com.android.server.LocalManagerRegistry;
 import com.android.server.SystemService;
 import com.android.server.role.RoleServicePlatformHelper;
@@ -83,7 +83,6 @@ import java.util.concurrent.TimeoutException;
  *
  * @see RoleManager
  */
-@Keep
 @RequiresApi(Build.VERSION_CODES.S)
 public class RoleService extends SystemService implements RoleUserState.Callback {
     private static final String LOG_TAG = RoleService.class.getSimpleName();
@@ -94,6 +93,8 @@ public class RoleService extends SystemService implements RoleUserState.Callback
 
     @NonNull
     private final AppOpsManager mAppOpsManager;
+    @NonNull
+    private final UserManager mUserManager;
 
     @NonNull
     private final Object mLock = new Object();
@@ -145,6 +146,7 @@ public class RoleService extends SystemService implements RoleUserState.Callback
         RoleControllerManager.initializeRemoteServiceComponentName(context);
 
         mAppOpsManager = context.getSystemService(AppOpsManager.class);
+        mUserManager = context.getSystemService(UserManager.class);
 
         LocalManagerRegistry.addManager(RoleManagerLocal.class, new Local());
 
@@ -257,8 +259,7 @@ public class RoleService extends SystemService implements RoleUserState.Callback
         synchronized (mLock) {
             RoleUserState userState = mUserStates.get(userId);
             if (userState == null) {
-                userState = new RoleUserState(userId, mPlatformHelper, this,
-                        mBypassingRoleQualification);
+                userState = new RoleUserState(userId, mPlatformHelper, this);
                 mUserStates.put(userId, userState);
             }
             return userState;
@@ -392,9 +393,8 @@ public class RoleService extends SystemService implements RoleUserState.Callback
         @NonNull
         @Override
         public List<String> getRoleHoldersAsUser(@NonNull String roleName, @UserIdInt int userId) {
-            UserUtils.enforceCrossUserPermission(userId, false, "getRoleHoldersAsUser",
-                    getContext());
-            if (!UserUtils.isUserExistent(userId, getContext())) {
+            enforceCrossUserPermission(userId, false, "getRoleHoldersAsUser");
+            if (!isUserExistent(userId)) {
                 Log.e(LOG_TAG, "user " + userId + " does not exist");
                 return Collections.emptyList();
             }
@@ -415,9 +415,8 @@ public class RoleService extends SystemService implements RoleUserState.Callback
         public void addRoleHolderAsUser(@NonNull String roleName, @NonNull String packageName,
                 @RoleManager.ManageHoldersFlags int flags, @UserIdInt int userId,
                 @NonNull RemoteCallback callback) {
-            UserUtils.enforceCrossUserPermission(userId, false, "addRoleHolderAsUser",
-                    getContext());
-            if (!UserUtils.isUserExistent(userId, getContext())) {
+            enforceCrossUserPermission(userId, false, "addRoleHolderAsUser");
+            if (!isUserExistent(userId)) {
                 Log.e(LOG_TAG, "user " + userId + " does not exist");
                 return;
             }
@@ -437,9 +436,8 @@ public class RoleService extends SystemService implements RoleUserState.Callback
         public void removeRoleHolderAsUser(@NonNull String roleName, @NonNull String packageName,
                 @RoleManager.ManageHoldersFlags int flags, @UserIdInt int userId,
                 @NonNull RemoteCallback callback) {
-            UserUtils.enforceCrossUserPermission(userId, false, "removeRoleHolderAsUser",
-                    getContext());
-            if (!UserUtils.isUserExistent(userId, getContext())) {
+            enforceCrossUserPermission(userId, false, "removeRoleHolderAsUser");
+            if (!isUserExistent(userId)) {
                 Log.e(LOG_TAG, "user " + userId + " does not exist");
                 return;
             }
@@ -459,9 +457,8 @@ public class RoleService extends SystemService implements RoleUserState.Callback
         public void clearRoleHoldersAsUser(@NonNull String roleName,
                 @RoleManager.ManageHoldersFlags int flags, @UserIdInt int userId,
                 @NonNull RemoteCallback callback) {
-            UserUtils.enforceCrossUserPermission(userId, false, "clearRoleHoldersAsUser",
-                    getContext());
-            if (!UserUtils.isUserExistent(userId, getContext())) {
+            enforceCrossUserPermission(userId, false, "clearRoleHoldersAsUser");
+            if (!isUserExistent(userId)) {
                 Log.e(LOG_TAG, "user " + userId + " does not exist");
                 return;
             }
@@ -478,10 +475,8 @@ public class RoleService extends SystemService implements RoleUserState.Callback
         @Override
         public void addOnRoleHoldersChangedListenerAsUser(
                 @NonNull IOnRoleHoldersChangedListener listener, @UserIdInt int userId) {
-            UserUtils.enforceCrossUserPermission(userId, true,
-                    "addOnRoleHoldersChangedListenerAsUser", getContext());
-            if (userId != UserHandleCompat.USER_ALL && !UserUtils.isUserExistent(userId,
-                    getContext())) {
+            enforceCrossUserPermission(userId, true, "addOnRoleHoldersChangedListenerAsUser");
+            if (userId != UserHandleCompat.USER_ALL && !isUserExistent(userId)) {
                 Log.e(LOG_TAG, "user " + userId + " does not exist");
                 return;
             }
@@ -499,10 +494,8 @@ public class RoleService extends SystemService implements RoleUserState.Callback
         @Override
         public void removeOnRoleHoldersChangedListenerAsUser(
                 @NonNull IOnRoleHoldersChangedListener listener, @UserIdInt int userId) {
-            UserUtils.enforceCrossUserPermission(userId, true,
-                    "removeOnRoleHoldersChangedListenerAsUser", getContext());
-            if (userId != UserHandleCompat.USER_ALL && !UserUtils.isUserExistent(userId,
-                    getContext())) {
+            enforceCrossUserPermission(userId, true, "removeOnRoleHoldersChangedListenerAsUser");
+            if (userId != UserHandleCompat.USER_ALL && !isUserExistent(userId)) {
                 Log.e(LOG_TAG, "user " + userId + " does not exist");
                 return;
             }
@@ -523,7 +516,6 @@ public class RoleService extends SystemService implements RoleUserState.Callback
         public boolean isBypassingRoleQualification() {
             getContext().enforceCallingOrSelfPermission(Manifest.permission.MANAGE_ROLE_HOLDERS,
                     "isBypassingRoleQualification");
-
             synchronized (mLock) {
                 return mBypassingRoleQualification;
             }
@@ -533,19 +525,8 @@ public class RoleService extends SystemService implements RoleUserState.Callback
         public void setBypassingRoleQualification(boolean bypassRoleQualification) {
             getContext().enforceCallingOrSelfPermission(
                     Manifest.permission.BYPASS_ROLE_QUALIFICATION, "setBypassingRoleQualification");
-
             synchronized (mLock) {
-                if (mBypassingRoleQualification == bypassRoleQualification) {
-                    return;
-                }
                 mBypassingRoleQualification = bypassRoleQualification;
-
-                final int userStatesSize = mUserStates.size();
-                for (int i = 0; i < userStatesSize; i++) {
-                    final RoleUserState userState = mUserStates.valueAt(i);
-
-                    userState.setBypassingRoleQualification(bypassRoleQualification);
-                }
             }
         }
 
@@ -599,6 +580,35 @@ public class RoleService extends SystemService implements RoleUserState.Callback
 
             int userId = UserHandleCompat.getUserId(Binder.getCallingUid());
             return getOrCreateUserState(userId).getHeldRoles(packageName);
+        }
+
+        private boolean isUserExistent(@UserIdInt int userId) {
+            final long identity = Binder.clearCallingIdentity();
+            try {
+                return mUserManager.getUserHandles(true).contains(UserHandle.of(userId));
+            } finally {
+                Binder.restoreCallingIdentity(identity);
+            }
+        }
+
+        private void enforceCrossUserPermission(@UserIdInt int userId, boolean allowAll,
+                @NonNull String message) {
+            final int callingUid = Binder.getCallingUid();
+            final int callingUserId = UserHandleCompat.getUserId(callingUid);
+            if (userId == callingUserId) {
+                return;
+            }
+            Preconditions.checkArgument(userId >= UserHandleCompat.USER_SYSTEM
+                    || (allowAll && userId == UserHandleCompat.USER_ALL), "Invalid user " + userId);
+            getContext().enforceCallingOrSelfPermission(
+                    android.Manifest.permission.INTERACT_ACROSS_USERS_FULL, message);
+            if (callingUid == Process.SHELL_UID && userId >= UserHandleCompat.USER_SYSTEM) {
+                if (mUserManager.hasUserRestrictionForUser(UserManager.DISALLOW_DEBUGGING_FEATURES,
+                        UserHandle.of(userId))) {
+                    throw new SecurityException("Shell does not have permission to access user "
+                            + userId);
+                }
+            }
         }
 
         @Override
@@ -659,7 +669,7 @@ public class RoleService extends SystemService implements RoleUserState.Callback
                         android.Manifest.permission.INTERACT_ACROSS_USERS_FULL, null);
             }
 
-            if (!UserUtils.isUserExistent(userId, context)) {
+            if (!isUserExistent(userId)) {
                 return false;
             }
 
@@ -694,8 +704,8 @@ public class RoleService extends SystemService implements RoleUserState.Callback
 
         @Override
         public String getSmsRoleHolder(int userId) {
-            UserUtils.enforceCrossUserPermission(userId, false, "getSmsRoleHolder", getContext());
-            if (!UserUtils.isUserExistent(userId, getContext())) {
+            enforceCrossUserPermission(userId, false, "getSmsRoleHolder");
+            if (!isUserExistent(userId)) {
                 Log.e(LOG_TAG, "user " + userId + " does not exist");
                 return null;
             }

@@ -37,7 +37,6 @@ import android.os.Build;
 import android.os.UserHandle;
 import android.permission.PermissionManager;
 import android.permission.PermissionManager.SplitPermissionInfo;
-import android.util.ArraySet;
 import android.util.Log;
 import android.util.Xml;
 
@@ -727,13 +726,11 @@ public class BackupHelper {
         void restore(@NonNull Context context, @NonNull PackageInfo pkgInfo) {
             AppPermissions appPerms = new AppPermissions(context, pkgInfo, false, true, null);
 
-            ArraySet<String> affectedPermissions = new ArraySet<>();
             // Restore background permissions after foreground permissions as for pre-M apps bg
             // granted and fg revoked cannot be expressed.
             int numPerms = mPermissionsToRestore.size();
             for (int i = 0; i < numPerms; i++) {
                 mPermissionsToRestore.get(i).restore(appPerms, false);
-                affectedPermissions.add(mPermissionsToRestore.get(i).mPermissionName);
             }
             for (int i = 0; i < numPerms; i++) {
                 mPermissionsToRestore.get(i).restore(appPerms, true);
@@ -757,7 +754,7 @@ public class BackupHelper {
                 }
             }
 
-            appPerms.persistChanges(true, affectedPermissions);
+            appPerms.persistChanges(true);
         }
     }
 }

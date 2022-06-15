@@ -182,6 +182,7 @@ public class RuntimePermissionsPersistenceImpl implements RuntimePermissionsPers
 
             XmlSerializer serializer = Xml.newSerializer();
             serializer.setOutput(outputStream, StandardCharsets.UTF_8.name());
+            serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
             serializer.startDocument(null, true);
 
             serializeRuntimePermissions(serializer, runtimePermissions);
