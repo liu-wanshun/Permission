@@ -29,12 +29,12 @@ import android.safetycenter.SafetySourceIssue.Action
 import android.safetycenter.SafetySourceIssue.ISSUE_CATEGORY_ACCOUNT
 import android.safetycenter.SafetySourceIssue.ISSUE_CATEGORY_DEVICE
 import android.safetycenter.SafetySourceIssue.ISSUE_CATEGORY_GENERAL
-import android.safetycenter.cts.testing.EqualsHashCodeToStringTester
 import android.safetycenter.cts.testing.Generic
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.os.ParcelableSubject.assertThat
 import androidx.test.filters.SdkSuppress
+import com.android.permission.testing.EqualsHashCodeToStringTester
 import com.google.common.truth.Truth.assertThat
 import kotlin.test.assertFailsWith
 import org.junit.Test
@@ -318,6 +318,40 @@ class SafetySourceIssueTest {
                 .build()
 
         assertThat(safetySourceIssue.actions).containsExactly(action1, action2).inOrder()
+    }
+
+    @Test
+    fun getActions_mutationsAreNotAllowed() {
+        val safetySourceIssue =
+            SafetySourceIssue.Builder(
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
+                .addAction(action1)
+                .addAction(action2)
+                .build()
+        val mutatedActions = safetySourceIssue.actions
+
+        assertFailsWith(UnsupportedOperationException::class) { mutatedActions.add(action3) }
+    }
+
+    @Test
+    fun builder_addAction_doesNotMutatePreviouslyBuiltInstance() {
+        val safetySourceIssueBuilder =
+            SafetySourceIssue.Builder(
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
+                .addAction(action1)
+        val actions = safetySourceIssueBuilder.build().actions
+
+        safetySourceIssueBuilder.addAction(action2)
+
+        assertThat(actions).containsExactly(action1)
     }
 
     @Test
