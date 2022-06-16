@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"আপনার গোপনীয়তা রক্ষা করতে অনুমতি প্রত্যাহার করা হয়েছে"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> ব্যাকগ্রাউন্ডে আপনার লোকেশনের ডেটা অ্যাক্সেস করেছে"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"এই অ্যাপটি যেকোনও সময় আপনার লোকেশনের ডেটা অ্যাক্সেস করতে পারে। পরিবর্তন করতে ট্যাপ করুন।"</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"বিজ্ঞপ্তি শোনার অ্যাক্সেস আছে এমন অ্যাপের পর্যালোচনা করুন"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"আপনার সব বিজ্ঞপ্তি <xliff:g id="APP_NAME">%s</xliff:g> পড়তে পারবে।"</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"এই অ্যাপ আপনার সব বিজ্ঞপ্তি পড়তে পারবে।"</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"অ্যাক্সেস সরিয়ে দিন"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"বিজ্ঞপ্তিতে অ্যাক্সেস রয়েছে এমন সব অ্যাপ পর্যালোচনা করুন"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"অ্যাক্সেস সরানো হয়েছে"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"গোপনীয়তা রক্ষা করতে অ্যাপকে দেওয়া অনুমতি প্রত্যাহার করা হয়েছে"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> গত কয়েক মাসে ব্যবহার করা হয়নি। পর্যালোচনা করতে ট্যাপ করুন।"</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> ও অন্য ১টি অ্যাপ গত কয়েক মাসে ব্যবহার করা হয়নি। পর্যালোচনা করতে ট্যাপ করুন।"</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"নিরাপত্তা এবং গোপনীয়তা"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"স্ক্যান করুন"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"বাতিল করুন"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"এই বিজ্ঞপ্তি বাতিল করবেন?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"বাতিল করুন"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"বাতিল করুন"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"সেটিংস"</string>
     <string name="security_settings" msgid="3808106921175271317">"নিরাপত্তা সংক্রান্ত সেটিংস"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"সেন্সর সংক্রান্ত অনুমতি"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"গোপনীয়তার নিয়ন্ত্রণ"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"এই অ্যাপ Android-এর লেটেস্ট ভার্সনে কাজ করে না। এই অ্যাপ যদি মিউজিক এবং অডিও ফাইল অ্যাক্সেস করতে না পারে, তাহলে ফটো ও ভিডিও অ্যাক্সেস করারও অনুমতি থাকবে না।"</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"এই অ্যাপ Android-এর লেটেস্ট ভার্সনে কাজ করে না। এই অ্যাপ যদি ফটো এবং ভিডিও অ্যাক্সেস করতে পারে, তাহলে মিউজিক ও অডিও ফাইল অ্যাক্সেস করারও অনুমতি থাকবে।"</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"এই অ্যাপ Android-এর লেটেস্ট ভার্সনে কাজ করে না। এই অ্যাপ যদি মিউজিক এবং অডিও ফাইল অ্যাক্সেস করতে না পারে, তাহলে ফটো ও ভিডিও অ্যাক্সেস করারও অনুমতি থাকবে না।"</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"বন্ধ করুন"</string>
 </resources>
