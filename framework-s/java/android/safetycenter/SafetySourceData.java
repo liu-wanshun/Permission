@@ -254,15 +254,17 @@ public final class SafetySourceData implements Parcelable {
         @NonNull
         public SafetySourceData build() {
             List<SafetySourceIssue> issues = unmodifiableList(new ArrayList<>(mIssues));
-            if (mStatus != null) {
-                int issuesMaxSeverityLevel = getIssuesMaxSeverityLevel(issues);
-                if (issuesMaxSeverityLevel > SafetySourceData.SEVERITY_LEVEL_INFORMATION) {
-                    checkArgument(
-                            issuesMaxSeverityLevel <= mStatus.getSeverityLevel(),
-                            "Safety source data must not contain any issue with a severity level "
-                                    + "both greater than SEVERITY_LEVEL_INFORMATION and greater "
-                                    + "than the status severity level");
-                }
+            if (mStatus == null) {
+                return new SafetySourceData(null, issues);
+            }
+            int statusSeverityLevel = mStatus.getSeverityLevel();
+            int issuesMaxSeverityLevel = getIssuesMaxSeverityLevel(issues);
+            boolean requiresAttention = issuesMaxSeverityLevel > SEVERITY_LEVEL_INFORMATION;
+            if (requiresAttention) {
+                checkArgument(
+                        statusSeverityLevel >= issuesMaxSeverityLevel,
+                        "Safety source data cannot have issues that are more severe than its"
+                                + " status");
             }
             return new SafetySourceData(mStatus, issues);
         }
