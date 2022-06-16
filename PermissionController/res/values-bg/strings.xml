@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Разрешенията са премахнати с цел защита на поверителността ви"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> получи достъп до местоположението ви на заден план"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Приложението винаги има достъп до местоположението ви. Докоснете, за да промените това."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Преглед на приложенията с достъп до приемателя на известия"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> може да чете всичките ви известия."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Това приложение може да чете всичките ви известия."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Премахване на достъпа"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"Преглед на всички приложения с достъп до известията"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Достъпът е премахнат"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Премахнати са разр. за прил. с цел защита на поверителността"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"Приложението <xliff:g id="APP_NAME">%s</xliff:g> не е използвано от няколко месеца. Докоснете за преглед."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> и още 1 приложение не са използвани от няколко месеца. Докоснете за преглед."</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Сигурност и поверителност"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"Сканиране"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Отхвърляне"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Да се отхвърли ли сигналът?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Отхвърляне"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Отказ"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"Настройки"</string>
     <string name="security_settings" msgid="3808106921175271317">"Настройки за сигурност"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"Разрешения за сензорите"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"Контроли за поверителност"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Това приложение не поддържа най-новата версия на Android. Ако то няма достъп до музиката и аудиофайловете, няма да има разрешение за достъп и до снимките и видеоклиповете."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Това приложение не поддържа най-новата версия на Android. Ако то има достъп до снимките и видеоклиповете, ще има разрешение за достъп и до музиката и аудиофайловете."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Това приложение не поддържа най-новата версия на Android. Ако то няма достъп до музиката и аудиофайловете, няма да има разрешение за достъп и до снимките и видеоклиповете."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"Затваряне"</string>
 </resources>
