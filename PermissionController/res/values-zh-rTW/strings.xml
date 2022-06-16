@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"為保護你的隱私，系統已移除相關權限"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"「<xliff:g id="APP_NAME">%s</xliff:g>」在背景存取了你的位置資訊"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"這個應用程式隨時都能存取你的位置資訊。輕觸即可變更設定。"</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"查看具有通知事件監聽器存取權的應用程式"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"「<xliff:g id="APP_NAME">%s</xliff:g>」能讀取你的所有通知。"</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"這個應用程式能存讀取你的所有通知。"</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"移除存取權"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"查看可以存取通知的所有應用程式"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"存取權已移除"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"為保護隱私，系統已移除應用程式權限"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"「<xliff:g id="APP_NAME">%s</xliff:g>」已有數個月未使用。輕觸即可查看。"</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"「<xliff:g id="APP_NAME">%s</xliff:g>」和另外 1 個應用程式已有數個月未使用。輕觸即可查看。"</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"安全性與隱私權"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"掃描"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"關閉"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"要關閉這個警示嗎？"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"關閉"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"取消"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"設定"</string>
     <string name="security_settings" msgid="3808106921175271317">"安全性設定"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"感應器權限"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"隱私權控制項"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"這個應用程式不支援最新版 Android。如果這個應用程式無法存取音樂和音訊檔案，也就無法存取相片和影片。"</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"這個應用程式不支援最新版 Android。如果這個應用程式可以存取相片和影片，也就能存取音樂和音訊檔案。"</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"這個應用程式不支援最新版 Android。如果這個應用程式無法存取音樂和音訊檔案，也就無法存取相片和影片。"</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"關閉"</string>
 </resources>
