@@ -25,7 +25,7 @@
     <string name="blocked" msgid="9195547604866033708">"مسدود"</string>
     <string name="uninstall_or_disable" msgid="4496612999740858933">"حذف نصب یا غیرفعال کردن"</string>
     <string name="app_not_found_dlg_title" msgid="6029482906093859756">"برنامه یافت نشد"</string>
-    <string name="grant_dialog_button_deny" msgid="88262611492697192">"مجاز نیست"</string>
+    <string name="grant_dialog_button_deny" msgid="88262611492697192">"اجازه ندادن"</string>
     <string name="grant_dialog_button_deny_and_dont_ask_again" msgid="1748925431574312595">"مجاز نیست و دیگر سؤال نشود"</string>
     <string name="grant_dialog_button_no_upgrade" msgid="8344732743633736625">"تغییر ندادن اجازه «هنگامی که از برنامه استفاده می‌شود»"</string>
     <string name="grant_dialog_button_no_upgrade_one_time" msgid="5125892775684968694">"«فقط این بار» نگه داشته شود"</string>
@@ -102,7 +102,7 @@
     <!-- no translation found for background_access_chooser_dialog_choices:2 (4305536986042401191) -->
     <string name="permission_access_always" msgid="1474641821883823446">"همیشه مجاز است"</string>
     <string name="permission_access_only_foreground" msgid="7801170728159326195">"فقط هنگام استفاده از برنامه مجاز است"</string>
-    <string name="permission_access_never" msgid="4647014230217936900">"مجاز نیست"</string>
+    <string name="permission_access_never" msgid="4647014230217936900">"اجازه ندادن"</string>
     <string name="loading" msgid="4789365003890741082">"درحال بارگیری…"</string>
     <string name="all_permissions" msgid="6911125611996872522">"همه مجوزها"</string>
     <string name="other_permissions" msgid="2901186127193849594">"سایر قابلیت‌های برنامه"</string>
@@ -186,7 +186,7 @@
     <string name="app_permission_button_allow_always" msgid="4573292371734011171">"همیشه مجاز است"</string>
     <string name="app_permission_button_allow_foreground" msgid="1991570451498943207">"فقط هنگام استفاده از برنامه مجاز است"</string>
     <string name="app_permission_button_ask" msgid="3342950658789427">"هربار پرسیده شود"</string>
-    <string name="app_permission_button_deny" msgid="6016454069832050300">"مجاز نیست"</string>
+    <string name="app_permission_button_deny" msgid="6016454069832050300">"اجازه ندادن"</string>
     <string name="precise_image_description" msgid="6349638632303619872">"مکان دقیق"</string>
     <string name="approximate_image_description" msgid="938803699637069884">"مکان تقریبی"</string>
     <string name="app_permission_location_accuracy" msgid="7166912915040018669">"استفاده از مکان دقیق"</string>
@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"برای محافظت از حریم‌خصوصی شما، اجازه‌ها برداشته شد"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> به موقعیت مکانی شما در پس‌زمینه دسترسی دارد"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"این برنامه همیشه می‌تواند به مکانتان دسترسی داشته باشد. برای تغییر دادن، ضربه بزنید."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"مرور برنامهٔ دارای دسترسی به شنونده اعلان"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> می‌تواند همه اعلان‌هایتان را بخواند."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"این برنامه می‌تواند همه اعلان‌هایتان را بخواند."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"برداشتن دسترسی"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"مرور همه برنامه‌های دارای دسترسی به اعلان"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"دسترسی برداشته شد"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"برای محافظت از حریم‌خصوصی، اجازه‌های برنامه برداشته شدند"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> طی چند ماه استفاده نشده است. برای مرور، ضربه بزنید."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> و ۱ برنامه دیگر طی چند ماه استفاده نشده‌اند. برای مرور، ضربه بزنید."</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"امنیت و حریم‌خصوصی"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"اسکن"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"رد کردن"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"این هشدار رد شود؟"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"رد شدن"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"لغو"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"تنظیمات"</string>
     <string name="security_settings" msgid="3808106921175271317">"تنظیمات امنیتی"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"اجازه‌های حسگر"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"تنظیمات حریم‌خصوصی"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"‏این برنامه از جدیدترین نسخه Android پشتیبانی نمی‌کند. اگر این برنامه نتواند به فایل‌های صوتی و موسیقی دسترسی داشته باشد، اجازه دسترسی به عکس‌ها و ویدیوها را نیز نخواهد داشت."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"‏این برنامه از جدیدترین نسخه Android پشتیبانی نمی‌کند. اگر این برنامه بتواند به عکس‌ها و ویدیوها دسترسی داشته باشد، اجازه دسترسی به فایل‌های صوتی و موسیقی را نیز خواهد داشت."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"‏این برنامه از جدیدترین نسخه Android پشتیبانی نمی‌کند. اگر این برنامه نتواند به فایل‌های صوتی و موسیقی دسترسی داشته باشد، اجازه دسترسی به عکس‌ها و ویدیوها را نیز نخواهد داشت."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"بستن"</string>
 </resources>
