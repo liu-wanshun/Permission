@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Nogle tilladelser blev fjernet for at beskytte dit privatliv"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> har din lokation i baggrunden"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Denne app kan altid få adgang til din lokation. Tryk for at ændre denne indstilling."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Gennemgå app med adgang til at høre notifikationer"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> kan læse alle dine notifikationer."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Denne app kan læse alle dine notifikationer."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Fjern adgang"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"Gennemgå alle apps, der har adgang til notifikationer"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Adgangen er blevet fjernet"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Apptilladelserne blev fjernet for at beskytte dine personlige oplysninger"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> er ikke blevet brugt i et par måneder. Tryk for at gennemgå."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> og 1 anden app er ikke blevet brugt i et par måneder. Tryk for at gennemgå."</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Sikkerhed og privatliv"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"Scan"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Afvis"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Vil du afvise denne underretning?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Afvis"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Annuller"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"Indstillinger"</string>
     <string name="security_settings" msgid="3808106921175271317">"Sikkerhedsindstillinger"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"Sensortilladelser"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"Privatlivsindstillinger"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Denne app understøtter ikke den seneste version af Android. Hvis denne app ikke har adgang til musik og lydfiler, får den heller ikke adgang til billeder og videoer."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Denne app understøtter ikke den seneste version af Android. Hvis denne app har adgang til billeder og videoer, får den også adgang til musik og lydfiler."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Denne app understøtter ikke den seneste version af Android. Hvis denne app ikke har adgang til musik og lydfiler, får den heller ikke adgang til billeder og videoer."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"Luk"</string>
 </resources>

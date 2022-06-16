@@ -21,7 +21,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.android.permissioncontroller.hibernation.HibernationJobService;
-import com.android.permissioncontroller.permission.service.v33.PermissionEventCleanupJobService;
+import com.android.permissioncontroller.permission.service.PermissionEventCleanupJobService;
 
 /**
  * App-global constants
@@ -65,6 +65,13 @@ public class Constants {
     public static final int NOTIFICATION_LISTENER_CHECK_JOB_ID = 5;
 
     /**
+     * ID for the periodic job in
+     * {@link com.android.permissioncontroller.privacysources.AccessibilitySourceService}.
+     */
+    public static final int PERIODIC_ACCESSIBILITY_CHECK_JOB_ID = 6;
+
+
+    /**
      * Name of file to containing the packages we already showed a notification for.
      *
      * @see com.android.permissioncontroller.permission.service.LocationAccessCheck
@@ -79,6 +86,14 @@ public class Constants {
      */
     public static final String NOTIFICATION_LISTENER_CHECK_ALREADY_NOTIFIED_FILE =
             "packages_already_notified_notification_listener";
+
+    /**
+     * Name of file to containing the packages we already showed a notification for.
+     *
+     * @see com.android.permissioncontroller.permission.service.NotificationListenerCheck
+     */
+    public static final String ACCESSIBILITY_SERVICES_ALREADY_NOTIFIED_FILE =
+            "packages_already_notified_accessibility_services";
 
     /**
      * ID for notification shown by
@@ -103,6 +118,12 @@ public class Constants {
      * {@link com.android.permissioncontroller.privacysources.NotificationListenerCheck}.
      */
     public static final int NOTIFICATION_LISTENER_CHECK_NOTIFICATION_ID = 3;
+
+    /**
+     * ID for notification shown by
+     * {@link com.android.permissioncontroller.privacysources.AccessibilitySourceService}.
+     */
+    public static final int ACCESSIBILITY_CHECK_NOTIFICATION_ID = 4;
 
     /**
      * String action for navigating to the auto revoke screen.
