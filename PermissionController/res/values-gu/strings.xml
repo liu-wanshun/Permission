@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"તમારી પ્રાઇવસીનું રક્ષણ કરવા માટે પરવાનગીઓ દૂર કરવામાં આવી"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g>એ બૅકગ્રાઉન્ડમાં તમારું સ્થાન ઍક્સેસ કર્યુ છે"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"આ ઍપ હંમેશાં તમારા સ્થાનને ઍક્સેસ કરી શકે છે. ફેરફાર કરવા માટે ટૅપ કરો."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"નોટિફિકેશન સાંભળવાનો ઍક્સેસ ધરાવતી ઍપનો રિવ્યૂ કરો"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> તમારા બધા નોટિફિકેશન વાંચી શકે છે."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"આ ઍપ તમારા બધા નોટિફિકેશન વાંચી શકે છે."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"ઍક્સેસ કાઢી નાખો"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"નોટિફિકેશનનો ઍક્સેસ ધરાવતી તમામ ઍપનો રિવ્યૂ કરો"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"ઍક્સેસ કાઢી નાખ્યો"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"પ્રાઇવસીની સુરક્ષા કરવા માટે ઍપ્લિકેશન પરવાનગીઓ કાઢી નાખી"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g>નો થોડા મહિનાથી ઉપયોગ કરવામાં આવ્યો નથી. રિવ્યૂ કરવા માટે ટૅપ કરો."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> અને 1 અન્ય ઍપનો થોડા મહિનાથી ઉપયોગ કરવામાં આવ્યો નથી. રિવ્યૂ કરવા માટે ટૅપ કરો."</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"સુરક્ષા અને પ્રાઇવસી"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"સ્કૅન કરો"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"છોડી દો"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"શું આ અલર્ટને છોડી દઈએ?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"છોડી દો"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"રદ કરો"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"સેટિંગ"</string>
     <string name="security_settings" msgid="3808106921175271317">"સુરક્ષા સેટિંગ"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"સેન્સર સંબંધિત પરવાનગીઓ"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"પ્રાઇવસીને લગતાં નિયંત્રણો"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"આ ઍપ Androidના નવીનતમ વર્ઝનને સપોર્ટ કરતી નથી. જો આ ઍપ મ્યુઝિક અને ઑડિયો ફાઇલોને ઍક્સેસ કરી શકતી ન હોય, તો તેને ફોટા અને વીડિયોને પણ ઍક્સેસ કરવાની મંજૂરી આપવામાં આવશે નહીં."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"આ ઍપ Androidના નવીનતમ વર્ઝનને સપોર્ટ કરતી નથી. જો આ ઍપ ફોટા અને વીડિયોને ઍક્સેસ કરી શકતી હોય, તો તેને મ્યુઝિક અને ઑડિયો ફાઇલોને પણ ઍક્સેસ કરવાની મંજૂરી આપવામાં આવશે."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"આ ઍપ Androidના નવીનતમ વર્ઝનને સપોર્ટ કરતી નથી. જો આ ઍપ મ્યુઝિક અને ઑડિયો ફાઇલોને ઍક્સેસ કરી શકતી ન હોય, તો તેને ફોટા અને વીડિયોને પણ ઍક્સેસ કરવાની મંજૂરી આપવામાં આવશે નહીં."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"બંધ કરો"</string>
 </resources>

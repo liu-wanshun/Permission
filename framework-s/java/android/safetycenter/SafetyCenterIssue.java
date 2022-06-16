@@ -219,9 +219,8 @@ public final class SafetyCenterIssue implements Parcelable {
     @Override
     public String toString() {
         return "SafetyCenterIssue{"
-                + "mId='"
+                + "mId="
                 + mId
-                + '\''
                 + ", mTitle="
                 + mTitle
                 + ", mSubtitle="
@@ -378,10 +377,7 @@ public final class SafetyCenterIssue implements Parcelable {
      *
      * <p>When a user initiates an {@link Action}, that action's associated {@link PendingIntent}
      * will be executed, and the {@code successMessage} will be displayed if present.
-     *
-     * @hide
      */
-    @SystemApi
     public static final class Action implements Parcelable {
 
         @NonNull
@@ -628,6 +624,6 @@ public final class SafetyCenterIssue implements Parcelable {
             default:
         }
         throw new IllegalArgumentException(
-                String.format("Unexpected IssueSeverityLevel for SafetyCenterIssue: %s", value));
+                "Unexpected IssueSeverityLevel for SafetyCenterIssue: " + value);
     }
 }
