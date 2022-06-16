@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"ລຶບສິດອະນຸຍາດອອກແລ້ວເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> ໄດ້ຂໍ້ມູນສະຖານທີ່ຂອງທ່ານໃນພື້ນຫຼັງແລ້ວ"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"ແອັບນີ້ສາມາດເຂົ້າເຖິງສະຖານທີ່ຂອງທ່ານໄດ້ຕະຫຼອດເວລາ. ແຕະເພື່ອປ່ຽນແປງ."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"ກວດສອບແອັບທີ່ສິດເຂົ້າເຖິງຕົວຟັງການແຈ້ງເຕືອນ"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> ສາມາດອ່ານການແຈ້ງເຕືອນຂອງທ່ານທັງໝົດໄດ້."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"ແອັບນີ້ສາມາດອ່ານການແຈ້ງເຕືອນຂອງທ່ານທັງໝົດໄດ້."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"ລຶບສິດເຂົ້າເຖິງອອກ"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"ກວດສອບແອັບທັງໝົດທີ່ມີສິດເຂົ້າເຖິງການແຈ້ງເຕືອນ"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"ລຶບສິດເຂົ້າເຖິງອອກແລ້ວ"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"ລຶບສິດອະນຸຍາດແອັບອອກແລ້ວເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວ"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"ບໍ່ໄດ້ໃຊ້ <xliff:g id="APP_NAME">%s</xliff:g> ມາສອງສາມເດືອນແລ້ວ. ແຕະເພື່ອກວດສອບ."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"ບໍ່ໄດ້ໃຊ້ <xliff:g id="APP_NAME">%s</xliff:g> ແລະ ອີກ 1 ແອັບມາສອງສາມເດືອນແລ້ວ. ແຕະເພື່ອກວດສອບ."</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"ຄວາມປອດໄພ ແລະ ຄວາມເປັນສ່ວນຕົວ"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"ສະແກນ"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"ປິດໄວ້"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"ປິດແຈ້ງເຕືອນນີ້ບໍ?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"ປິດໄວ້"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"ຍົກເລີກ"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"ການຕັ້ງຄ່າ"</string>
     <string name="security_settings" msgid="3808106921175271317">"ການຕັ້ງຄ່າຄວາມປອດໄພ"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"ການອະນຸຍາດເຊັນເຊີ"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"ການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"ແອັບນີ້ບໍ່ຮອງຮັບ Android ເວີຊັນຫຼ້າສຸດ. ຫາກແອັບນີ້ບໍ່ສາມາດເຂົ້າເຖິງເພງ ແລະ ໄຟລ໌ສຽງໄດ້, ມັນຈະບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຂົ້າເຖິງຮູບພາບ ແລະ ວິດີໂອນຳ."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"ແອັບນີ້ບໍ່ຮອງຮັບ Android ເວີຊັນຫຼ້າສຸດ. ຫາກແອັບນີ້ສາມາດເຂົ້າເຖິງຮູບພາບ ແລະ ວິດີໂອໄດ້, ມັນຈະໄດ້ຮັບອະນຸຍາດໃຫ້ເຂົ້າເຖິງເພງ ແລະ ໄຟລ໌ສຽງນຳ."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"ແອັບນີ້ບໍ່ຮອງຮັບ Android ເວີຊັນຫຼ້າສຸດ. ຫາກແອັບນີ້ບໍ່ສາມາດເຂົ້າເຖິງເພງ ແລະ ໄຟລ໌ສຽງໄດ້, ມັນຈະບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຂົ້າເຖິງຮູບພາບ ແລະ ວິດີໂອນຳ."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"ປິດ"</string>
 </resources>
