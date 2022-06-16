@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਸੁਰੱਖਿਆ ਲਈ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾਇਆ ਗਿਆ"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> ਨੂੰ ਬੈਕਗ੍ਰਾਉਂਡ ਵਿੱਚ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਦੀ ਜਾਣਕਾਰੀ ਮਿਲੀ"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"ਇਹ ਐਪ ਹਮੇਸ਼ਾਂ ਤੁਹਾਡੀ ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ \'ਤੇ ਪਹੁੰਚ ਕਰ ਸਕਦੀ ਹੈ। ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ।"</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"ਸੂਚਨਾ ਸੁਣਨ ਦੀ ਪਹੁੰਚ ਨਾਲ ਐਪ ਦੀ ਸਮੀਖਿਆ ਕਰੋ"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> ਤੁਹਾਡੀਆਂ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਪੜ੍ਹ ਸਕਦੀ ਹੈ।"</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"ਇਹ ਐਪ ਤੁਹਾਡੀਆਂ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਪੜ੍ਹ ਸਕਦੀ ਹੈ।"</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"ਪਹੁੰਚ ਹਟਾਓ"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"ਸੂਚਨਾ ਪਹੁੰਚ ਵਾਲੀਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"ਪਹੁੰਚ ਹਟਾਈ ਗਈ"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"ਪਰਦੇਦਾਰੀ ਸੁਰੱਖਿਆ ਲਈ ਐਪ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਹਟਾਇਆ ਗਿਆ"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> ਨੂੰ ਕੁਝ ਮਹੀਨਿਆਂ ਤੋਂ ਵਰਤਿਆ ਨਹੀਂ ਗਿਆ। ਸਮੀਖਿਆ ਲਈ ਟੈਪ ਕਰੋ।"</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> ਅਤੇ 1 ਹੋਰ ਐਪ ਨੂੰ ਕੁਝ ਮਹੀਨਿਆਂ ਤੋਂ ਵਰਤਿਆ ਨਹੀਂ ਗਿਆ। ਸਮੀਖਿਆ ਲਈ ਟੈਪ ਕਰੋ।"</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"ਸੁਰੱਖਿਆ ਅਤੇ ਪਰਦੇਦਾਰੀ"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"ਸਕੈਨ ਕਰੋ"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"ਖਾਰਜ ਕਰੋ"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"ਕੀ ਇਸ ਸੁਚੇਤਨਾ ਨੂੰ ਖਾਰਜ ਕਰਨਾ ਹੈ?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"ਖਾਰਜ ਕਰੋ"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"ਰੱਦ ਕਰੋ"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"ਸੈਟਿੰਗਾਂ"</string>
     <string name="security_settings" msgid="3808106921175271317">"ਸੁਰੱਖਿਆ ਸੈਟਿੰਗਾਂ"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"ਸੈਂਸਰ ਇਜਾਜ਼ਤਾਂ"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"ਪਰਦੇਦਾਰੀ ਕੰਟਰੋਲ"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"ਇਹ ਐਪ Android ਦੇ ਨਵੀਨਤਮ ਵਰਜਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ ਹੈ। ਜੇ ਇਹ ਐਪ ਸੰਗੀਤ ਅਤੇ ਆਡੀਓ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਕਰ ਸਕਦੀ, ਤਾਂ ਇਸਨੂੰ ਫ਼ੋਟੋਆਂ ਅਤੇ ਵੀਡੀਓ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਵੀ ਆਗਿਆ ਨਹੀਂ ਦਿੱਤੀ ਜਾਵੇਗੀ।"</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"ਇਹ ਐਪ Android ਦੇ ਨਵੀਨਤਮ ਵਰਜਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ ਹੈ। ਜੇ ਇਹ ਐਪ ਫ਼ੋਟੋਆਂ ਅਤੇ ਵੀਡੀਓ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੀ ਹੈ, ਤਾਂ ਇਸਨੂੰ ਸੰਗੀਤ ਅਤੇ ਆਡੀਓ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਵੀ ਆਗਿਆ ਦਿੱਤੀ ਜਾਵੇਗੀ।"</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"ਇਹ ਐਪ Android ਦੇ ਨਵੀਨਤਮ ਵਰਜਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ ਹੈ। ਜੇ ਇਹ ਐਪ ਸੰਗੀਤ ਅਤੇ ਆਡੀਓ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਕਰ ਸਕਦੀ, ਤਾਂ ਇਸਨੂੰ ਫ਼ੋਟੋਆਂ ਅਤੇ ਵੀਡੀਓ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਵੀ ਆਗਿਆ ਨਹੀਂ ਦਿੱਤੀ ਜਾਵੇਗੀ।"</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"ਬੰਦ ਕਰੋ"</string>
 </resources>
