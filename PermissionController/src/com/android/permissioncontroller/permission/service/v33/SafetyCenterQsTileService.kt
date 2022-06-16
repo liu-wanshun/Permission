@@ -34,7 +34,8 @@ class SafetyCenterQsTileService : TileService() {
     override fun onBind(intent: Intent?): IBinder? {
         val scManager = getSystemService(SafetyCenterManager::class.java)!!
         if (!scManager.isSafetyCenterEnabled) {
-            packageManager.setComponentEnabledSetting(ComponentName(this, this::class.java),
+            packageManager.setComponentEnabledSetting(
+                ComponentName(this, this::class.java),
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED, 0)
             disabled = true
         }

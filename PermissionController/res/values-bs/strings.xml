@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Odobrenja su uklonjena radi zaštite vaše privatnosti"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"Aplikacija <xliff:g id="APP_NAME">%s</xliff:g> pristupa vašoj lokaciji u pozadini"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Ova aplikacija uvijek može pristupiti vašoj lokaciji. Dodirnite da promijenite."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Pregledajte aplikaciju s pristupom za praćenje obavještenja"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"Aplikacija <xliff:g id="APP_NAME">%s</xliff:g> može očitavati sva vaša obavještenja."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Ova aplikacija može očitavati sva vaša obavještenja."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Ukloni pristup"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"Pregledajte sve aplikacije s pristupom obavještenjima"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Pristup je uklonjen"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Uklonjena su odobrenja za aplikaciju zbog zaštite privatn."</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"Aplikacija <xliff:g id="APP_NAME">%s</xliff:g> nije korištena nekoliko mjeseci. Dodirnite za pregled."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"Aplikacija <xliff:g id="APP_NAME">%s</xliff:g> i još jedna aplikacija nisu korištene nekoliko mjeseci. Dodirnite za pregled."</string>
@@ -448,8 +454,8 @@
     <string name="permgrouprequest_calendar" msgid="1493150855673603806">"Dozvoliti aplikaciji &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; da pristupi vašem kalendaru?"</string>
     <string name="permgrouprequest_sms" msgid="5672063688745420991">"Dozvoliti aplikaciji &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; da šalje i pregleda SMS poruke?"</string>
     <string name="permgrouprequest_storage" msgid="8717773092518621602">"Dozvoliti aplikaciji &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; da pristupa fotografijama, medijima i fajlovima na vašem uređaju?"</string>
-    <string name="permgrouprequest_storage_q_to_s" msgid="8213701872983685505">"Dozvoliti da &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; pristupa &lt;b&gt;slikama, video, muzičkim i audio fajlovima&lt;/b&gt; na ovom uređaju?"</string>
-    <string name="permgrouprequest_storage_pre_q" msgid="168130651144569428">"Dozvoliti da &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; pristupa &lt;b&gt;slikama, video, muzičkim, audio i drugim fajlovima&lt;/b&gt; na uređaju?"</string>
+    <string name="permgrouprequest_storage_q_to_s" msgid="8213701872983685505">"Dozvoliti da &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; pristupa &lt;b&gt;foto/video/muzičkim/audio fajlovima&lt;/b&gt; na ovom uređaju?"</string>
+    <string name="permgrouprequest_storage_pre_q" msgid="168130651144569428">"Dozvoliti da &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; pristupa &lt;b&gt;foto/video/muzičkim/audio i drugim fajlovima&lt;/b&gt; na uređaju?"</string>
     <string name="permgrouprequest_read_media_aural" msgid="2593365397347577812">"Dozvoliti da &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; pristupa muzici i zvuku na ovom uređaju?"</string>
     <string name="permgrouprequest_read_media_visual" msgid="5548780620779729975">"Dozvoliti da &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; pristupa fotografijama i videozapisima na ovom uređaju?"</string>
     <string name="permgrouprequest_microphone" msgid="2825208549114811299">"Dozvoliti aplikaciji &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; da snima zvuk?"</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Sigurnost i privatnost"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"Skeniraj"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Odbaci"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Odbaciti ovo upozorenje?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Odbaci"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Otkaži"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"Postavke"</string>
     <string name="security_settings" msgid="3808106921175271317">"Postavke sigurnosti"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"Odobrenja za senzore"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"Kontrole privatnosti"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Ova aplikacija ne podržava najnoviju verziju Androida. Ako ova aplikacija ne može pristupiti muzičkim i audio fajlovima, neće joj biti dozvoljen pristup ni fotografijama i videozapisima."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Ova aplikacija ne podržava najnoviju verziju Androida. Ako ova aplikacija može pristupiti fotografijama i videozapisima, bit će joj također dozvoljen pristup muzičkim i audio fajlovima."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Ova aplikacija ne podržava najnoviju verziju Androida. Ako ova aplikacija ne može pristupiti muzičkim i audio fajlovima, neće joj biti dozvoljen pristup ni fotografijama i videozapisima."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"Zatvaranje"</string>
 </resources>

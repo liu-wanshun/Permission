@@ -19,4 +19,9 @@
     <string name="role_dialer_request_description" msgid="6188305064871543419">"Esta aplicación podrá enviarte notificaciones, y tendrá acceso a la cámara, a los contactos, al micrófono, al teléfono y a los SMS"</string>
     <string name="role_sms_request_description" msgid="1506966389698625395">"Esta aplicación podrá enviarte notificaciones, y tendrá acceso a la cámara, a los contactos, a los archivos, al micrófono, al teléfono y a los SMS"</string>
     <string name="permission_description_summary_storage" msgid="1917071243213043858">"Las aplicaciones que tienen este permiso pueden acceder a todos los archivos de este dispositivo"</string>
+    <string name="work_policy_title" msgid="832967780713677409">"Información de tu política de trabajo"</string>
+    <string name="work_policy_summary" msgid="3886113358084963931">"Ajustes gestionados por tu administrador de TI"</string>
+    <string name="safety_center_more_issues_card_title" msgid="8599419758014246517">"Ver todas las alertas"</string>
+    <string name="safety_center_more_issues_status_icon_content_description" msgid="8597351743567707802">"Ver todas las alertas"</string>
+    <string name="safety_center_more_issues_expand_button_content_description" msgid="8997241228390831958">"Ver todas las alertas"</string>
 </resources>

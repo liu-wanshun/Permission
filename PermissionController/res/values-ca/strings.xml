@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"S\'han suprimit els permisos per protegir la teva privadesa"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> ha obtingut la teva ubicació en segon pla"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Aquesta aplicació pot accedir a la teva ubicació en qualsevol moment. Toca per canviar-ho."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Revisa l\'aplicació amb accés al detector de notificacions"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> pot llegir totes les teves notificacions."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Aquesta aplicació pot llegir totes les teves notificacions."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Suprimeix l\'accés"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"Revisa totes les aplicacions amb accés a les notificacions"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"S\'ha suprimit l\'accés"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"S\'han suprimit permisos d\'aplicació per protegir la privadesa"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"Durant els darrers mesos, no has utilitzat <xliff:g id="APP_NAME">%s</xliff:g>. Toca per revisar-ho."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"Durant els darrers mesos, no has utilitzat <xliff:g id="APP_NAME">%s</xliff:g> ni 1 aplicació més. Toca per revisar-ho."</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Seguretat i privadesa"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"Cerca"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Ignora"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Vols ignorar aquesta alerta?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Ignora"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Cancel·la"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"Configuració"</string>
     <string name="security_settings" msgid="3808106921175271317">"Configuració de seguretat"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"Permisos del sensor"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"Controls de privadesa"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Aquesta aplicació no és compatible amb la darrera versió d\'Android. Si aquesta aplicació no pot accedir a fitxers de música i d\'àudio, tampoc no podrà accedir a fotos i vídeos."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Aquesta aplicació no és compatible amb la darrera versió d\'Android. Si aquesta aplicació pot accedir a fotos i vídeos, també podrà accedir a fitxers de música i d\'àudio."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Aquesta aplicació no és compatible amb la darrera versió d\'Android. Si aquesta aplicació no pot accedir a fitxers de música i d\'àudio, tampoc no podrà accedir a fotos i vídeos."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"Tanca"</string>
 </resources>

@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Οι άδειες καταργήθηκαν για την προστασία του απορρήτου σας"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"Η εφαρμογή <xliff:g id="APP_NAME">%s</xliff:g> έλαβε την τοποθεσία σας στο παρασκήνιο"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Αυτή η εφαρμογή μπορεί να έχει πάντα πρόσβαση στην τοποθεσία σας. Πατήστε για να αλλάξετε τη ρύθμιση."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Έλεγχος εφαρμογής με πρόσβαση σε λειτ. αναμονής ειδοποιήσεων"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"Η εφαρμογή <xliff:g id="APP_NAME">%s</xliff:g> μπορεί να διαβάζει όλες τις ειδοποιήσεις σας."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Αυτή η εφαρμογή μπορεί να διαβάζει όλες τις ειδοποιήσεις σας."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Κατάργηση πρόσβασης"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"Έλεγχος όλων των εφαρμογών με πρόσβαση ειδοποιήσεων"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Η πρόσβαση καταργήθηκε"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Οι άδειες εφαρμογών καταργήθηκαν για προστασία απορρήτου."</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"Η εφαρμογή <xliff:g id="APP_NAME">%s</xliff:g> δεν έχει χρησιμοποιηθεί τους τελευταίους μήνες. Πατήστε για έλεγχο."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"Η εφαρμογή <xliff:g id="APP_NAME">%s</xliff:g> και 1 ακόμη εφαρμογή δεν έχουν χρησιμοποιηθεί τους τελευταίους μήνες. Πατήστε για έλεγχο."</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Ασφάλεια και Απόρρητο"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"Σάρωση"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Παράβλεψη"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Παράβλεψη αυτής της ειδοποίησης;"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Παράβλεψη"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Ακύρωση"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"Ρυθμίσεις"</string>
     <string name="security_settings" msgid="3808106921175271317">"Ρυθμίσεις ασφαλείας"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"Άδειες αισθητήρων"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"Στοιχεία ελέγχου απορρήτου"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Αυτή η εφαρμογή δεν υποστηρίζει την πιο πρόσφατη έκδοση του Android. Εάν αυτή η εφαρμογή δεν έχει πρόσβαση σε αρχεία μουσικής και ήχου, δεν θα έχει επίσης πρόσβαση σε φωτογραφίες και βίντεο."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Αυτή η εφαρμογή δεν υποστηρίζει την πιο πρόσφατη έκδοση του Android. Εάν αυτή η εφαρμογή έχει πρόσβαση σε φωτογραφίες και βίντεο, θα έχει επίσης πρόσβαση σε αρχεία μουσικής και ήχου."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Αυτή η εφαρμογή δεν υποστηρίζει την πιο πρόσφατη έκδοση του Android. Εάν αυτή η εφαρμογή δεν έχει πρόσβαση σε αρχεία μουσικής και ήχου, δεν θα έχει επίσης πρόσβαση σε φωτογραφίες και βίντεο."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"Κλείσιμο"</string>
 </resources>
