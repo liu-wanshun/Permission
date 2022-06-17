@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Berechtigungen zum Schutz deiner Privatsphäre entfernt"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> greift im Hintergrund auf deinen Standort zu"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Diese App kann immer auf deinen Standort zugreifen. Zum Ändern hier tippen."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"App mit Zugriff auf Benachrichtigungs-Listener prüfen"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> kann alle deine Benachrichtigungen lesen."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Diese App kann alle deine Benachrichtigungen lesen."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Zugriff entfernen"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"Alle Apps mit Benachrichtigungszugriff prüfen"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Zugriff entfernt"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"App-Berechtigungen zum Schutz der Privatsphäre entfernt"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> ist seit einigen Monaten nicht genutzt worden. Zum Prüfen tippen."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> und 1 weitere App sind seit einigen Monaten nicht genutzt worden. Zum Prüfen tippen."</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Sicherheit und Datenschutz"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"Scannen"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Schließen"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Diese Warnung schließen?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Schließen"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Abbrechen"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"Einstellungen"</string>
     <string name="security_settings" msgid="3808106921175271317">"Sicherheitseinstellungen"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"Sensorberechtigungen"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"Datenschutzeinstellungen"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Diese App unterstützt nicht die neueste Version von Android. Wenn diese App keinen Zugriff auf Musik- und Audiodateien hat, kann sie auch nicht auf Fotos und Videos zugreifen."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Diese App unterstützt nicht die neueste Version von Android. Wenn diese App Zugriff auf Fotos und Videos hat, kann sie auch auf Musik- und Audiodateien zugreifen."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Diese App unterstützt nicht die neueste Version von Android. Wenn diese App keinen Zugriff auf Musik- und Audiodateien hat, kann sie auch nicht auf Fotos und Videos zugreifen."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"Schließen"</string>
 </resources>

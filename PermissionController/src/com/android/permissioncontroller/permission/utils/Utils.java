@@ -52,6 +52,7 @@ import android.app.Application;
 import android.app.admin.DevicePolicyManager;
 import android.app.role.RoleManager;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -182,7 +183,14 @@ public final class Utils {
     public static final String PROPERTY_PERMISSION_EVENTS_CHECK_OLD_FREQUENCY_MILLIS =
             "permission_events_check_old_frequency_millis";
 
-    /** The time an app needs to be unused in order to be hibernated */
+    /**
+     * Whether to store the exact time for permission changes. Only for use in tests and should
+     * not be modified in prod.
+     */
+    public static final String PROPERTY_PERMISSION_CHANGES_STORE_EXACT_TIME =
+            "permission_changes_store_exact_time";
+
+    /** The max amount of time permission data can stay in the storage before being scrubbed */
     public static final String PROPERTY_PERMISSION_DECISIONS_MAX_DATA_AGE_MILLIS =
             "permission_decisions_max_data_age_millis";
 
@@ -1490,5 +1498,34 @@ public final class Utils {
         DevicePolicyManager dpm = getSystemServiceSafe(context, DevicePolicyManager.class);
         return  dpm.getResources().getString(updatableStringId, () -> context.getString(
                 defaultStringId, formatArgs), formatArgs);
+    }
+
+    /**
+     * Get {@link PackageInfo} for this ComponentName.
+     *
+     * @param context The current Context
+     * @param component component to get package info for
+     * @return The package info
+     *
+     * @throws PackageManager.NameNotFoundException if package does not exist
+     */
+    @NonNull
+    public static PackageInfo getPackageInfoForComponentName(@NonNull Context context,
+            @NonNull ComponentName component) throws PackageManager.NameNotFoundException {
+        return context.getPackageManager().getPackageInfo(component.getPackageName(), 0);
+    }
+
+    /**
+     * Return the label to use for this application.
+     *
+     * @param context The current Context
+     * @param applicationInfo The {@link ApplicationInfo} of the application to get the label of.
+     * @return Returns a {@link CharSequence} containing the label associated with this application,
+     * or its name the  item does not have a label.
+     */
+    @NonNull
+    public static CharSequence getApplicationLabel(@NonNull Context context,
+            @NonNull ApplicationInfo applicationInfo) {
+        return context.getPackageManager().getApplicationLabel(applicationInfo);
     }
 }
