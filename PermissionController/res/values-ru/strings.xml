@@ -276,6 +276,12 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Разрешения отозваны для защиты конфиденциальности ваших данных."</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"Приложению \"<xliff:g id="APP_NAME">%s</xliff:g>\" в фоновом режиме доступны геоданные"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"У этого приложения есть постоянный доступ к сведениям о вашем местоположении. Нажмите, чтобы изменить настройки."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Проверьте прил. с доступом к сервису просмотра уведомлений"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"Приложение \"<xliff:g id="APP_NAME">%s</xliff:g>\" может читать все ваши уведомления."</string>
+    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Этому приложению доступны все ваши уведомления."</string>
+    <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Запретить доступ"</string>
+    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"Посмотреть все приложения с доступом к уведомлениям"</string>
+    <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Доступ закрыт"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Разрешения для приложения отозваны в целях защиты данных"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"Вы уже несколько месяцев не пользовались приложением \"<xliff:g id="APP_NAME">%s</xliff:g>\". Нажмите, чтобы посмотреть подробности."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"Вы уже несколько месяцев не пользовались некоторыми приложениями: \"<xliff:g id="APP_NAME">%s</xliff:g>\" и ещё одним. Нажмите, чтобы посмотреть подробности."</string>
@@ -499,6 +505,10 @@
     <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Защита и конфиденциальность"</string>
     <string name="safety_center_rescan_button" msgid="8047036829052958144">"Сканировать"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Закрыть"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Закрыть оповещение?"</string>
+    <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Закрыть"</string>
+    <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Отмена"</string>
+    <string name="safety_center_entries_category_title" msgid="34356964062813115">"Настройки"</string>
     <string name="security_settings" msgid="3808106921175271317">"Настройки безопасности"</string>
     <string name="sensor_permissions_qs" msgid="4365989229426201877">"Доступ к датчикам"</string>
     <string name="privacy_controls_qs" msgid="471793881466080745">"Настройки конфиденциальности"</string>
@@ -537,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Это приложение не поддерживает последнюю версию Android. Если у него нет доступа к музыке и аудиофайлам, у него также не будет доступа к фотографиям и видео."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Это приложение не поддерживает последнюю версию Android. Если у него есть доступ к фотографиям и видео, ему также будет предоставлен доступ к музыке и аудиофайлам."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Это приложение не поддерживает последнюю версию Android. Если у него нет доступа к музыке и аудиофайлам, у него также не будет доступа к фотографиям и видео."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"Закрыть"</string>
 </resources>
