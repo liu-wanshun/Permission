@@ -113,6 +113,7 @@ import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.SafetySou
 import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.SafetySourceDataKey.Reason.RESOLVING_ACTION
 import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.executeSafetyCenterIssueActionWithReceiverPermissionAndWait
 import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.refreshSafetySourcesWithReceiverPermissionAndWait
+import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.refreshSafetySourcesWithoutReceiverPermissionAndWait
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
@@ -140,6 +141,11 @@ class SafetyCenterManagerTest {
 
     private val safetyCenterStatusOk =
         SafetyCenterStatus.Builder("All good", "No problemo maestro")
+            .setSeverityLevel(OVERALL_SEVERITY_LEVEL_OK)
+            .build()
+
+    private val safetyCenterStatusOkReview =
+        SafetyCenterStatus.Builder("Add more protection", "Review your settings")
             .setSeverityLevel(OVERALL_SEVERITY_LEVEL_OK)
             .build()
 
@@ -244,7 +250,7 @@ class SafetyCenterManagerTest {
 
     private val safetyCenterDataCriticalWithDismissedIssue =
         SafetyCenterData(
-            safetyCenterStatusOk,
+            safetyCenterStatusOkReview,
             emptyList(),
             listOf(safetyCenterEntryOrGroupCritical),
             emptyList())
@@ -852,10 +858,9 @@ class SafetyCenterManagerTest {
     fun safetyCenterEnabledChanged_whenImplicitReceiverDoesntHavePermission_receiverNotCalled() {
         val enabledChangedReceiver = SafetyCenterEnabledChangedReceiver(context)
 
-        SafetyCenterFlags.isEnabled = false
-
         assertFailsWith(TimeoutCancellationException::class) {
-            enabledChangedReceiver.receiveSafetyCenterEnabledChanged(TIMEOUT_SHORT)
+            enabledChangedReceiver.setSafetyCenterEnabledWithoutReceiverPermissionAndWait(
+                false, TIMEOUT_SHORT)
         }
         enabledChangedReceiver.unregister()
     }
@@ -889,10 +894,9 @@ class SafetyCenterManagerTest {
     fun safetyCenterEnabledChanged_whenSourceReceiverDoesntHavePermission_receiverNotCalled() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
 
-        SafetyCenterFlags.isEnabled = false
-
         assertFailsWith(TimeoutCancellationException::class) {
-            SafetySourceReceiver.receiveSafetyCenterEnabledChanged(TIMEOUT_SHORT)
+            SafetySourceReceiver.setSafetyCenterEnabledWithoutReceiverPermissionAndWait(
+                false, TIMEOUT_SHORT)
         }
     }
 
@@ -1020,10 +1024,9 @@ class SafetyCenterManagerTest {
                 SafetySourceDataKey(REFRESH_FETCH_FRESH_DATA, SINGLE_SOURCE_ID)] =
             safetySourceCtsData.criticalWithIssue
 
-        safetyCenterManager.refreshSafetySourcesWithPermission(REFRESH_REASON_RESCAN_BUTTON_CLICK)
-
         assertFailsWith(TimeoutCancellationException::class) {
-            SafetySourceReceiver.receiveRefreshSafetySources(TIMEOUT_SHORT)
+            safetyCenterManager.refreshSafetySourcesWithoutReceiverPermissionAndWait(
+                REFRESH_REASON_RESCAN_BUTTON_CLICK, TIMEOUT_SHORT)
         }
         val apiSafetySourceData =
             safetyCenterManager.getSafetySourceDataWithPermission(SINGLE_SOURCE_ID)
@@ -1697,6 +1700,57 @@ class SafetyCenterManagerTest {
         assertFailsWith(TimeoutCancellationException::class) {
             listener.receiveSafetyCenterData(TIMEOUT_SHORT)
         }
+    }
+
+    @Test
+    fun executeSafetyCenterIssueAction_sourceDoesNotRespond_timesOutAndCallsListener() {
+        SafetyCenterFlags.resolveActionTimeout = TIMEOUT_SHORT
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithIssue)
+        val listener = safetyCenterCtsHelper.addListener()
+
+        safetyCenterManager.executeSafetyCenterIssueActionWithReceiverPermissionAndWait(
+            SafetyCenterCtsData.issueId(SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID),
+            SafetyCenterCtsData.issueActionId(
+                SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID, CRITICAL_ISSUE_ACTION_ID))
+
+        val safetyCenterDataFromListenerDuringInlineAction = listener.receiveSafetyCenterData()
+        assertThat(safetyCenterDataFromListenerDuringInlineAction)
+            .isEqualTo(safetyCenterDataCriticalInFlightAction)
+        val safetyCenterDataFromListenerAfterInlineAction = listener.receiveSafetyCenterData()
+        assertThat(safetyCenterDataFromListenerAfterInlineAction)
+            .isEqualTo(safetyCenterDataCritical)
+        val error = listener.receiveSafetyCenterErrorDetails()
+        assertThat(error).isEqualTo(SafetyCenterErrorDetails("Resolving action timeout"))
+    }
+
+    @Test
+    fun executeSafetyCenterIssueAction_tryAgainAfterTimeout_callsListenerWithInFlightAndExecutes() {
+        SafetyCenterFlags.resolveActionTimeout = TIMEOUT_SHORT
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithIssue)
+        val listener = safetyCenterCtsHelper.addListener()
+        safetyCenterManager.executeSafetyCenterIssueActionWithReceiverPermissionAndWait(
+            SafetyCenterCtsData.issueId(SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID),
+            SafetyCenterCtsData.issueActionId(
+                SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID, CRITICAL_ISSUE_ACTION_ID))
+        listener.receiveSafetyCenterData()
+        listener.receiveSafetyCenterData()
+        listener.receiveSafetyCenterErrorDetails()
+        SafetySourceReceiver.safetySourceData[
+                SafetySourceDataKey(RESOLVING_ACTION, SINGLE_SOURCE_ID)] =
+            safetySourceCtsData.information
+
+        safetyCenterManager.executeSafetyCenterIssueActionWithReceiverPermissionAndWait(
+            SafetyCenterCtsData.issueId(SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID),
+            SafetyCenterCtsData.issueActionId(
+                SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID, CRITICAL_ISSUE_ACTION_ID))
+
+        val safetyCenterDataFromListenerDuringInlineAction = listener.receiveSafetyCenterData()
+        assertThat(safetyCenterDataFromListenerDuringInlineAction)
+            .isEqualTo(safetyCenterDataCriticalInFlightAction)
+        val safetyCenterDataFromListenerAfterInlineAction = listener.receiveSafetyCenterData()
+        assertThat(safetyCenterDataFromListenerAfterInlineAction).isEqualTo(safetyCenterDataOk)
     }
 
     @Test
