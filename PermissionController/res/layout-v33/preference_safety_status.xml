@@ -62,10 +62,11 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="24dp"
         android:text="@string/safety_center_rescan_button"
-        android:background="@color/safety_center_button_info"
+        app:backgroundTint="@color/safety_center_button_info"
         style="@style/SafetyCenter.MaterialActionButton" />
 
     <com.android.permissioncontroller.permission.ui.widget.SafetyProtectionSectionView
+        android:id="@+id/safety_protection_section_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/rescan_button"
