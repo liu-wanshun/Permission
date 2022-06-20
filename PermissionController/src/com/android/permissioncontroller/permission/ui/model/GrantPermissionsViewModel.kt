@@ -67,6 +67,7 @@ import com.android.permissioncontroller.permission.data.get
 import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPackageInfo
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPermGroupInfo
+import com.android.permissioncontroller.permission.service.PermissionChangeStorageImpl
 import com.android.permissioncontroller.permission.service.v33.PermissionDecisionStorageImpl
 import com.android.permissioncontroller.permission.ui.AutoGrantPermissionsNotifier
 import com.android.permissioncontroller.permission.ui.GrantPermissionsActivity
@@ -707,7 +708,7 @@ class GrantPermissionsViewModel(
 
         // Do not attempt to grant background access if foreground access is not either already
         // granted or requested
-        if (isBackground && !group.foreground.isGrantedExcludeRevokeWhenRequestedPermissions &&
+        if (isBackground && !group.foreground.isGrantedExcludingRWROrAllRWR &&
             !hasForegroundRequest) {
             Log.w(LOG_TAG, "Cannot grant $perm as the matching foreground permission is not " +
                 "already granted.")
@@ -719,8 +720,8 @@ class GrantPermissionsViewModel(
             return STATE_SKIPPED
         }
 
-        if ((isBackground && group.background.isGrantedExcludeRevokeWhenRequestedPermissions ||
-            !isBackground && group.foreground.isGrantedExcludeRevokeWhenRequestedPermissions)) {
+        if ((isBackground && group.background.isGrantedExcludingRWROrAllRWR ||
+            !isBackground && group.foreground.isGrantedExcludingRWROrAllRWR)) {
             // If FINE location is not granted, do not grant it automatically when COARSE
             // location is already granted.
             if (group.permGroupName == LOCATION &&
@@ -977,6 +978,7 @@ class GrantPermissionsViewModel(
         requestInfosLiveData.update()
         PermissionDecisionStorageImpl.recordPermissionDecision(app.applicationContext,
             packageName, groupState.group.permGroupName, granted)
+        PermissionChangeStorageImpl.recordPermissionChange(packageName)
         if (granted) {
             startDrivingDecisionReminderServiceIfNecessary(groupState.group.permGroupName)
         }

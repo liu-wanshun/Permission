@@ -17,23 +17,28 @@
 package android.safetycenter.cts.testing
 
 import android.Manifest.permission.READ_SAFETY_CENTER_STATUS
-import android.Manifest.permission.WRITE_DEVICE_CONFIG
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.safetycenter.SafetyCenterManager
 import android.safetycenter.SafetyCenterManager.ACTION_SAFETY_CENTER_ENABLED_CHANGED
 import android.safetycenter.cts.testing.Coroutines.TIMEOUT_LONG
 import android.safetycenter.cts.testing.Coroutines.runBlockingWithTimeout
-import com.android.compatibility.common.util.SystemUtil.callWithShellPermissionIdentity
+import android.safetycenter.cts.testing.ShellPermissions.callWithShellPermissionIdentity
+import android.safetycenter.cts.testing.WaitForBroadcastIdle.waitForBroadcastIdle
 import java.time.Duration
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 
 /** Broadcast receiver used for testing broadcasts sent when the SafetyCenter flag changes. */
-class SafetyCenterEnabledChangedReceiver : BroadcastReceiver() {
+class SafetyCenterEnabledChangedReceiver(private val context: Context) : BroadcastReceiver() {
 
     private val safetyCenterEnabledChangedChannel = Channel<Boolean>(UNLIMITED)
+
+    init {
+        context.registerReceiver(this, IntentFilter(ACTION_SAFETY_CENTER_ENABLED_CHANGED))
+    }
 
     override fun onReceive(context: Context, intent: Intent?) {
         if (intent == null) {
@@ -51,22 +56,30 @@ class SafetyCenterEnabledChangedReceiver : BroadcastReceiver() {
         }
     }
 
-    fun receiveSafetyCenterEnabledChanged(timeout: Duration = TIMEOUT_LONG) =
-        runBlockingWithTimeout(timeout) { safetyCenterEnabledChangedChannel.receive() }
-
     fun setSafetyCenterEnabledWithReceiverPermissionAndWait(
         value: Boolean,
         timeout: Duration = TIMEOUT_LONG
     ) =
         callWithShellPermissionIdentity(
-            {
-                SafetyCenterFlags.setSafetyCenterEnabledWithoutPermission(value)
-                receiveSafetyCenterEnabledChanged(timeout)
-            },
-            READ_SAFETY_CENTER_STATUS,
-            WRITE_DEVICE_CONFIG)
+            { setSafetyCenterEnabledWithoutReceiverPermissionAndWait(value, timeout) },
+            READ_SAFETY_CENTER_STATUS)
 
-    fun reset() {
+    fun setSafetyCenterEnabledWithoutReceiverPermissionAndWait(
+        value: Boolean,
+        timeout: Duration
+    ): Boolean {
+        SafetyCenterFlags.isEnabled = value
+        if (timeout < TIMEOUT_LONG) {
+            context.waitForBroadcastIdle()
+        }
+        return receiveSafetyCenterEnabledChanged(timeout)
+    }
+
+    fun unregister() {
+        context.unregisterReceiver(this)
         safetyCenterEnabledChangedChannel.cancel()
     }
+
+    private fun receiveSafetyCenterEnabledChanged(timeout: Duration = TIMEOUT_LONG): Boolean =
+        runBlockingWithTimeout(timeout) { safetyCenterEnabledChangedChannel.receive() }
 }

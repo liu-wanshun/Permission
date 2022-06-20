@@ -23,23 +23,34 @@ import static java.util.Objects.requireNonNull;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.os.Build;
 import android.safetycenter.SafetyCenterIssue;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.StyleRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.safetycenter.ui.model.SafetyCenterViewModel;
+import com.android.safetycenter.internaldata.SafetyCenterIds;
+import com.android.safetycenter.internaldata.SafetyCenterIssueId;
+import com.android.safetycenter.internaldata.SafetyCenterIssueKey;
+
+import com.google.android.material.button.MaterialButton;
 
 /** A preference that displays a card representing a {@link SafetyCenterIssue}. */
-public class IssueCardPreference extends Preference {
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+public class IssueCardPreference extends Preference implements ComparablePreference {
 
     public static final String TAG = IssueCardPreference.class.getSimpleName();
 
@@ -86,6 +97,16 @@ public class IssueCardPreference extends Preference {
         return mIssue.getSeverityLevel();
     }
 
+    /** Returns the {@link SafetyCenterIssueKey} associated with this {@link IssueCardPreference} */
+    public SafetyCenterIssueKey getIssueKey() {
+        SafetyCenterIssueId safetyCenterIssueId = SafetyCenterIds.issueIdFromString(mIssue.getId());
+        if (!safetyCenterIssueId.hasSafetyCenterIssueKey()) {
+            Log.d(TAG, "preference has no issue key");
+            return null;
+        }
+        return safetyCenterIssueId.getSafetyCenterIssueKey();
+    }
+
     private void configureDismissButton(View dismissButton) {
         if (mIssue.isDismissible()) {
             dismissButton.setOnClickListener(
@@ -96,6 +117,19 @@ public class IssueCardPreference extends Preference {
         } else {
             dismissButton.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public boolean isSameItem(@NonNull Preference preference) {
+        return (preference instanceof IssueCardPreference)
+                && TextUtils.equals(
+                        mIssue.getId(), ((IssueCardPreference) preference).mIssue.getId());
+    }
+
+    @Override
+    public boolean hasSameContents(@NonNull Preference preference) {
+        return (preference instanceof IssueCardPreference)
+                && mIssue.equals(((IssueCardPreference) preference).mIssue);
     }
 
     private class DismissOnClickListener implements View.OnClickListener {
@@ -123,34 +157,55 @@ public class IssueCardPreference extends Preference {
     private Button buildActionButton(
             SafetyCenterIssue.Action action, Context context, boolean isFirstButton) {
         Button button =
-                new Button(
-                        context,
-                        null,
-                        0,
-                        getStyleFromSeverity(mIssue.getSeverityLevel(), isFirstButton));
+                isFirstButton ? createFirstButton(context) : createSubsequentButton(context);
         button.setText(action.getLabel());
-        button.setLayoutParams(new ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         button.setOnClickListener(
                 view -> mSafetyCenterViewModel.executeIssueAction(mIssue, action));
         return button;
     }
 
-    @StyleRes
-    private int getStyleFromSeverity(int issueSeverityLevel, boolean isFirstButton) {
-        if (!isFirstButton) {
-            return R.style.SafetyCenter_ActionButton;
-        }
+    private Button createFirstButton(Context context) {
+        ContextThemeWrapper themedContext =
+                new ContextThemeWrapper(context, R.style.Theme_MaterialComponents_DayNight);
+        Button button = new MaterialButton(themedContext, null, R.attr.scActionButtonStyle);
+        button.setBackgroundTintList(
+                ContextCompat.getColorStateList(
+                        context, getButtonColorFromSeverity(mIssue.getSeverityLevel())));
 
+        button.setLayoutParams(new ViewGroup.MarginLayoutParams(MATCH_PARENT, WRAP_CONTENT));
+        return button;
+    }
+
+    private Button createSubsequentButton(Context context) {
+        ContextThemeWrapper themedContext =
+                new ContextThemeWrapper(context, R.style.Theme_MaterialComponents_DayNight);
+        MaterialButton button =
+                new MaterialButton(themedContext, null, R.attr.scSecondaryActionButtonStyle);
+        button.setStrokeColor(
+                ContextCompat.getColorStateList(
+                        context, getButtonColorFromSeverity(mIssue.getSeverityLevel())));
+
+        int margin =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.safety_center_action_button_list_margin);
+        ViewGroup.MarginLayoutParams layoutParams =
+                new ViewGroup.MarginLayoutParams(MATCH_PARENT, WRAP_CONTENT);
+        layoutParams.setMargins(0, margin, 0, 0);
+        button.setLayoutParams(layoutParams);
+        return button;
+    }
+
+    private static int getButtonColorFromSeverity(int issueSeverityLevel) {
         switch (issueSeverityLevel) {
             case SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_OK:
-                return R.style.SafetyCenter_IssueCard_ActionButton_Info;
+                return R.color.safety_center_button_info;
             case SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_RECOMMENDATION:
-                return R.style.SafetyCenter_IssueCard_ActionButton_Recommendation;
+                return R.color.safety_center_button_recommend;
             case SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_CRITICAL_WARNING:
-                return R.style.SafetyCenter_IssueCard_ActionButton_Critical;
+                return R.color.safety_center_button_warn;
+            default:
+                Log.w(TAG, String.format("Unexpected issueSeverityLevel: %s", issueSeverityLevel));
+                return R.color.safety_center_button_info;
         }
-        throw new IllegalArgumentException(
-                String.format(
-                        "Unexpected SafetyCenterIssue.IssueSeverityLevel: %s", issueSeverityLevel));
     }
 }

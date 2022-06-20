@@ -24,23 +24,13 @@
 
     <ImageView
         android:id="@+id/status_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:scaleType="centerInside"
         android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:src="@drawable/safety_status_info" />
-
-    <ProgressBar
-        android:id="@+id/rescan_progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:layout_constraintTop_toTopOf="@id/status_image"
-        app:layout_constraintBottom_toBottomOf="@id/status_image"
-        app:layout_constraintStart_toStartOf="@id/status_image"
-        app:layout_constraintEnd_toEndOf="@id/status_image"
-        style="?android:attr/progressBarStyle" />
 
     <TextView
         android:id="@+id/status_title"
@@ -64,7 +54,7 @@
         android:text="@string/summary_placeholder"
         android:textAppearance="@style/TextAppearance.SafetyStatusSummary" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/rescan_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -72,9 +62,11 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="24dp"
         android:text="@string/safety_center_rescan_button"
-        style="@style/SafetyCenter.RescanButton"  />
+        app:backgroundTint="@color/safety_center_button_info"
+        style="@style/SafetyCenter.MaterialActionButton" />
 
     <com.android.permissioncontroller.permission.ui.widget.SafetyProtectionSectionView
+        android:id="@+id/safety_protection_section_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/rescan_button"
