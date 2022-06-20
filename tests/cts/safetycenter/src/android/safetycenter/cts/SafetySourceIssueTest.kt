@@ -29,12 +29,12 @@ import android.safetycenter.SafetySourceIssue.Action
 import android.safetycenter.SafetySourceIssue.ISSUE_CATEGORY_ACCOUNT
 import android.safetycenter.SafetySourceIssue.ISSUE_CATEGORY_DEVICE
 import android.safetycenter.SafetySourceIssue.ISSUE_CATEGORY_GENERAL
-import android.safetycenter.cts.testing.EqualsHashCodeToStringTester
 import android.safetycenter.cts.testing.Generic
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.os.ParcelableSubject.assertThat
 import androidx.test.filters.SdkSuppress
+import com.android.permission.testing.EqualsHashCodeToStringTester
 import com.google.common.truth.Truth.assertThat
 import kotlin.test.assertFailsWith
 import org.junit.Test
@@ -534,6 +534,25 @@ class SafetySourceIssueTest {
     }
 
     @Test
+    fun build_withDuplicateActionIds_throwsIllegalArgumentException() {
+        val safetySourceIssueBuilder =
+            SafetySourceIssue.Builder(
+                    "Issue id",
+                    "Issue title",
+                    "Issue summary",
+                    SEVERITY_LEVEL_INFORMATION,
+                    "issue_type_id")
+                .addAction(action1)
+                .addAction(action1)
+
+        val exception =
+            assertFailsWith(IllegalArgumentException::class) { safetySourceIssueBuilder.build() }
+        assertThat(exception)
+            .hasMessageThat()
+            .isEqualTo("Safety source issue cannot have duplicate action ids")
+    }
+
+    @Test
     fun build_withNoActions_throwsIllegalArgumentException() {
         val safetySourceIssueBuilder =
             SafetySourceIssue.Builder(
@@ -561,7 +580,7 @@ class SafetySourceIssueTest {
                     "issue_type_id")
                 .addAction(action1)
                 .addAction(action2)
-                .addAction(action1)
+                .addAction(action3)
 
         val exception =
             assertFailsWith(IllegalArgumentException::class) { safetySourceIssueBuilder.build() }
