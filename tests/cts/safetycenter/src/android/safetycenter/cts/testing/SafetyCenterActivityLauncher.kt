@@ -16,24 +16,37 @@
 
 package android.safetycenter.cts.testing
 
+import android.os.Bundle
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_SAFETY_CENTER
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.safetycenter.cts.testing.WaitForBroadcastIdle.waitForBroadcastIdle
 import com.android.compatibility.common.util.UiAutomatorUtils
 
 /** A class that provides a way to launch the SafetyCenter activity in tests. */
 object SafetyCenterActivityLauncher {
 
     /** Launches the SafetyCenter activity and exits it once [block] completes. */
-    fun Context.launchSafetyCenterActivity(block: () -> Unit) {
+    fun Context.launchSafetyCenterActivity(intentExtras: Bundle? = null, block: () -> Unit) {
         val launchSafetyCenterIntent =
             Intent(ACTION_SAFETY_CENTER)
                 .addFlags(FLAG_ACTIVITY_NEW_TASK)
                 .addFlags(FLAG_ACTIVITY_CLEAR_TASK)
-        startActivity(launchSafetyCenterIntent)
+
+        intentExtras?.let {
+            launchSafetyCenterIntent.putExtras(it)
+        }
+
+        // Wait for the PermissionController's SafetyCenterReceiver broadcast to be fully dispatched
+        // prior to opening the SafetyCenterActivity. This shouldn't be necessary but there seems
+        // to some racyness when enabling the SafetyCenter QS tile while opening the
+        // SafetyCenterActivity which causes the window to be removed.
+        waitForBroadcastIdle()
         val uiDevice = UiAutomatorUtils.getUiDevice()
+        uiDevice.waitForIdle()
+        startActivity(launchSafetyCenterIntent)
         uiDevice.waitForIdle()
         block()
         uiDevice.pressBack()

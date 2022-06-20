@@ -236,7 +236,7 @@
     <string name="permission_description_summary_sensors" msgid="1836045815643119949">"ამ ნებართვის მქონე აპებს შეუძლიათ წვდომა სენსორის მონაცემებზე თქვენი სასიცოცხლო ფუნქციების შესახებ"</string>
     <string name="permission_description_summary_sms" msgid="725999468547768517">"ამ ნებართვის მქონე აპებს შეუძლიათ SMS შეტყობინებების გაგზავნა და ნახვა"</string>
     <string name="permission_description_summary_storage" msgid="6575759089065303346">"ამ ნებართვის მქონე აპებს შეუძლიათ წვდომა თქვენს მოწყობილობაზე არსებულ ფოტოებზე, მედიაზე და ფაილებზე"</string>
-    <string name="permission_description_summary_read_media_aural" msgid="3354728149930482199">"ამ ნებართვის მქონე აპებს შეუძლიათ წვდომა ამ მოწყობილობის მუსიკასა და სხვა აუდიოფაილებზე"</string>
+    <string name="permission_description_summary_read_media_aural" msgid="3354728149930482199">"ამ ნებართვის მქონე აპებს შეუძლიათ წვდომა თქვენი მოწყობილობის მუსიკასა და სხვა აუდიოფაილებზე"</string>
     <string name="permission_description_summary_read_media_visual" msgid="4991801977881732641">"ამ ნებართვის მქონე აპებს შეუძლიათ წვდომა ამ მოწყობილობის ფოტოებსა და ვიდეოებზე"</string>
     <string name="app_permission_most_recent_summary" msgid="4292074449384040590">"ბოლო წვდომა: <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_permission_most_recent_denied_summary" msgid="7659497197737708112">"ამჟამად უარყოფილი / ბოლო წვდომა: <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
@@ -456,7 +456,7 @@
     <string name="permgrouprequest_storage" msgid="8717773092518621602">"გსურთ, მიანიჭოთ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>-ს&lt;/b&gt; თქვენს მოწყობილობაზე არსებულ ფოტოებზე, მედია-კონტენტზე და ფაილებზე წვდომის ნებართვა?"</string>
     <string name="permgrouprequest_storage_q_to_s" msgid="8213701872983685505">"მიანიჭებთ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-ის წვდომას ამ მოწყ. &lt;b&gt;ფოტოებზე, ვიდეოებზე, მუსიკასა და აუდიოფაილებზე&lt;/b&gt;?"</string>
     <string name="permgrouprequest_storage_pre_q" msgid="168130651144569428">"მიანიჭებთ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-ის წვდომას თქვენი მოწყ. &lt;b&gt;ფოტოებზე, ვიდეოებზე, მუსიკაზე, აუდიო და სხვა &lt;/b&gt;?"</string>
-    <string name="permgrouprequest_read_media_aural" msgid="2593365397347577812">"მიანიჭებთ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-ის წვდომას თქვენი მოწყობილობის მუსიკასა და აუდიოფაილებზე?"</string>
+    <string name="permgrouprequest_read_media_aural" msgid="2593365397347577812">"მიანიჭებთ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-ს წვდომას თქვენი მოწყობილობის მუსიკასა და აუდიოფაილებზე?"</string>
     <string name="permgrouprequest_read_media_visual" msgid="5548780620779729975">"მიანიჭებთ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;-ის წვდომას თქვენი მოწყობილობის ფოტოებსა და ვიდეოებზე?"</string>
     <string name="permgrouprequest_microphone" msgid="2825208549114811299">"გსურთ, მიანიჭოთ &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>-ს&lt;/b&gt; აუდიოს ჩაწერის ნებართვა?"</string>
     <string name="permgrouprequestdetail_microphone" msgid="8510456971528228861">"ეს აპი აუდიოს ჩაწერას მხოლოდ მაშინ შეძლებს, როცა მას იყენებთ"</string>
@@ -494,8 +494,8 @@
     <string name="privdash_label_none" msgid="5991866260360484858">"არცერთი"</string>
     <string name="privdash_label_24h" msgid="1512532123865375319">"გასული\n24 საათი"</string>
     <string name="privdash_label_7d" msgid="5645301995348656931">\n"ბოლო 7 დღე"</string>
-    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g> დაცულია Android-ის მიერ. ვინაიდან თქვენი მონაცემები მუშავდება ამ მოწყობილობაზე, ამ აპის ნებართვის გამოყენება არ აისახება სტატუსის ზოლში ან კონფიდენციალურობის საინფორმაციო დაფაზე."</string>
-    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g> დაცულია Android-ის მიერ. ვინაიდან თქვენი მონაცემები მუშავდება ამ მოწყობილობაზე, ამ აპის ნებართვის გამოყენება არ აისახება კონფიდენციალურობის საინფორმაციო დაფაზე."</string>
+    <string name="exempt_mic_camera_info_label" msgid="6273581737010902815">"<xliff:g id="APP_NAME">%1$s</xliff:g>-ს იცავს Android. ვინაიდან თქვენი მონაცემები მუშავდება ამ მოწყობილობაზე, ამ აპის ნებართვის გამოყენება არ აისახება სტატუსის ზოლში ან კონფიდენციალურობის საინფორმაციო დაფაზე."</string>
+    <string name="exempt_info_label" msgid="6286190981253476699">"<xliff:g id="APP_NAME">%1$s</xliff:g>-ს იცავს Android. ვინაიდან თქვენი მონაცემები მუშავდება ამ მოწყობილობაზე, ამ აპის ნებართვის გამოყენება არ აისახება კონფიდენციალურობის საინფორმაციო დაფაზე."</string>
     <string name="blocked_camera_title" msgid="1128510551791284384">"მოწყობილობის კამერა დაბლოკილია"</string>
     <string name="blocked_microphone_title" msgid="1631517143648232585">"მოწყობილობის მიკროფონი დაბლოკილია"</string>
     <string name="blocked_location_title" msgid="2005608279812892383">"მოწყობილობის მდებარეობა გამორთულია"</string>
@@ -547,4 +547,5 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"ამ აპის მიერ Android-ის ბოლო ვერსია მხარდაჭერილი არ არის. თუ ამ აპს არ შეუძლია მუსიკასა და აუდიოფაილებზე წვდომა, ის ვერც ფოტოებსა და ვიდეოებზე წვდომას შეძლებს."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"ამ აპის მიერ Android-ის ბოლო ვერსია მხარდაჭერილი არ არის. თუ ამ აპს შეუძლია ფოტოებსა და ვიდეოებზე წვდომა, ის მუსიკასა და აუდიოფაილებზე წვდომასაც შეძლებს."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"ამ აპის მიერ Android-ის ბოლო ვერსია მხარდაჭერილი არ არის. თუ ამ აპს არ შეუძლია მუსიკასა და აუდიოფაილებზე წვდომა, ის ვერც ფოტოებსა და ვიდეოებზე წვდომას შეძლებს."</string>
+    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"დახურვა"</string>
 </resources>

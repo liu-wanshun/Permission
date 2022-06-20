@@ -22,15 +22,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_BOOT_COMPLETED
 import android.content.pm.PackageManager
+import android.os.Build
 import android.safetycenter.SafetyCenterManager
 import android.safetycenter.SafetyCenterManager.ACTION_REFRESH_SAFETY_SOURCES
 import android.safetycenter.SafetyCenterManager.ACTION_SAFETY_CENTER_ENABLED_CHANGED
 import android.safetycenter.SafetyCenterManager.EXTRA_REFRESH_SAFETY_SOURCE_IDS
+import androidx.annotation.RequiresApi
 import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.PermissionControllerApplication
+import com.android.permissioncontroller.permission.service.LocationAccessCheck
 import com.android.permissioncontroller.permission.service.v33.SafetyCenterQsTileService
 import com.android.permissioncontroller.permission.utils.Utils
 import com.android.permissioncontroller.privacysources.WorkPolicyInfo.Companion.WORK_POLICY_INFO_SOURCE_ID
+
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
@@ -41,10 +45,14 @@ private fun createMapOfSourceIdsToSources(context: Context): Map<String, Privacy
         return emptyMap()
     }
     return mapOf(
-        SC_NLS_SOURCE_ID to NotificationListenerPrivacySource(),
-        WORK_POLICY_INFO_SOURCE_ID to WorkPolicyInfo.create(context))
+            SC_NLS_SOURCE_ID to NotificationListenerPrivacySource(),
+            WORK_POLICY_INFO_SOURCE_ID to WorkPolicyInfo.create(context),
+            SC_ACCESSIBILITY_SOURCE_ID to AccessibilitySourceService(context),
+            LocationAccessCheck.BG_LOCATION_SOURCE_ID to LocationAccessPrivacySource()
+    )
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class SafetyCenterReceiver(
     private val getMapOfSourceIdsToSources: (Context) -> Map<String, PrivacySource> =
         ::createMapOfSourceIdsToSources,
@@ -109,7 +117,9 @@ class SafetyCenterReceiver(
     ) {
         privacySources.forEach { source ->
             CoroutineScope(dispatcher).launch {
-                source.safetyCenterEnabledChanged(context, enabled)
+                if (source.shouldProcessRequest(context)) {
+                    source.safetyCenterEnabledChanged(context, enabled)
+                }
             }
         }
         updateTileVisibility(context, enabled)
@@ -121,10 +131,8 @@ class SafetyCenterReceiver(
             context.packageManager?.getComponentEnabledSetting(tileComponent) !=
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED
         if (enabled && !wasEnabled) {
-            // Toggling the flag on and off quickly creates an NPE in CustomTile due to the icon
-            // being null, which causes failures in SafetyCenterActivityTest.
-            // context.packageManager.setComponentEnabledSetting(
-            //    tileComponent, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 0)
+            context.packageManager.setComponentEnabledSetting(
+                tileComponent, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 0)
         } else if (!enabled && wasEnabled) {
             context.packageManager.setComponentEnabledSetting(
                 tileComponent, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, 0)
@@ -140,9 +148,18 @@ class SafetyCenterReceiver(
     ) {
         for (sourceId in sourceIdsToRefresh) {
             CoroutineScope(dispatcher).launch {
-                mapOfSourceIdsToSources[sourceId]?.rescanAndPushSafetyCenterData(
-                    context, intent, refreshEvent)
+                val privacySource = mapOfSourceIdsToSources[sourceId] ?: return@launch
+                if (privacySource.shouldProcessRequest(context)) {
+                    privacySource.rescanAndPushSafetyCenterData(context, intent, refreshEvent)
+                }
             }
         }
+    }
+
+    private fun PrivacySource.shouldProcessRequest(context: Context): Boolean {
+        if (!isProfile(context)) {
+            return true
+        }
+        return shouldProcessProfileRequest
     }
 }
