@@ -19,20 +19,29 @@ package com.android.permissioncontroller.safetycenter.ui
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_SAFETY_CENTER
+import android.os.Build
 import android.os.Bundle
 import android.safetycenter.SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_OK
+import androidx.annotation.RequiresApi
 import androidx.preference.PreferenceGroup
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.safetycenter.SafetyCenterConstants.EXPAND_ISSUE_GROUP_QS_FRAGMENT_KEY
+import com.android.safetycenter.internaldata.SafetyCenterIssueKey
 import kotlin.math.max
 
 /**
  * Helper class to hide issue cards if over a predefined limit and handle revealing hidden issue
  * cards when the more issues preference is clicked
  */
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class CollapsableIssuesCardHelper {
     private var isQuickSettingsFragment: Boolean = false
     private var issueCardsExpanded: Boolean = false
+    private var focusedSafetyCenterIssueKey: SafetyCenterIssueKey? = null
+
+    fun setFocusedIssueKey(safetyCenterIssueKey: SafetyCenterIssueKey?) {
+        focusedSafetyCenterIssueKey = safetyCenterIssueKey
+    }
 
     /**
      * Sets QuickSetting specific state for use to determine correct issue section expansion state
@@ -77,25 +86,99 @@ class CollapsableIssuesCardHelper {
         issuesPreferenceGroup: PreferenceGroup,
         issueCardPreferences: List<IssueCardPreference>
     ) {
+        val (reorderedIssueCardPreferences, numberOfIssuesToShowWhenCollapsed) =
+            maybeReorderFocusedSafetyCenterIssueInList(issueCardPreferences)
         val moreIssuesCardPreference =
-            createMoreIssuesCardPreference(context, issuesPreferenceGroup, issueCardPreferences)
+            createMoreIssuesCardPreference(
+                context,
+                issuesPreferenceGroup,
+                reorderedIssueCardPreferences,
+                numberOfIssuesToShowWhenCollapsed)
         addIssuesToPreferenceGroupAndSetVisibility(
             issuesPreferenceGroup,
-            issueCardPreferences,
+            reorderedIssueCardPreferences,
             moreIssuesCardPreference,
+            numberOfIssuesToShowWhenCollapsed,
             issueCardsExpanded)
+    }
+
+    data class ReorderedSafetyCenterIssueList(
+        val issueCardPreferences: List<IssueCardPreference>,
+        val numberOfIssuesToShowWhenCollapsed: Int
+    )
+    private fun maybeReorderFocusedSafetyCenterIssueInList(
+        issueCardPreferences: List<IssueCardPreference>
+    ): ReorderedSafetyCenterIssueList {
+        focusedSafetyCenterIssueKey?.let { focusedIssueKey ->
+            val mutablePreferencesList = issueCardPreferences.toMutableList()
+            val focusedIssueCardPreference: IssueCardPreference? =
+                findAndRemovePreferenceInList(focusedIssueKey, mutablePreferencesList)
+
+            // If focused issue preference found, place at/near top of list and return new list and
+            // correct number of issue to show while collapsed
+            focusedIssueCardPreference?.let { issueCardPreference ->
+                val focusedIssuePlacement =
+                    getFocusedIssuePlacement(issueCardPreference, mutablePreferencesList)
+                mutablePreferencesList.add(focusedIssuePlacement.index, issueCardPreference)
+                return ReorderedSafetyCenterIssueList(
+                    mutablePreferencesList.toList(),
+                    focusedIssuePlacement.numberForShownIssuesCollapsed)
+            }
+        }
+
+        return ReorderedSafetyCenterIssueList(
+            issueCardPreferences, DEFAULT_NUMBER_SHOWN_ISSUES_COLLAPSED)
+    }
+
+    private fun findAndRemovePreferenceInList(
+        focusedIssueKey: SafetyCenterIssueKey,
+        issueCardPreferences: MutableList<IssueCardPreference>
+    ): IssueCardPreference? {
+        issueCardPreferences.forEachIndexed { index, issueCardPreference ->
+            if (focusedIssueKey == issueCardPreference.issueKey) {
+                // Remove focused issue from current placement in list and exit loop
+                issueCardPreferences.removeAt(index)
+                return issueCardPreference
+            }
+        }
+
+        return null
+    }
+
+    /** Defines indices and number of shown issues for use when prioritizing focused issues */
+    private enum class FocusedIssuePlacement(
+        val index: Int,
+        val numberForShownIssuesCollapsed: Int
+    ) {
+        FOCUSED_ISSUE_INDEX_0(0, DEFAULT_NUMBER_SHOWN_ISSUES_COLLAPSED),
+        FOCUSED_ISSUE_INDEX_1(1, DEFAULT_NUMBER_SHOWN_ISSUES_COLLAPSED + 1)
+    }
+
+    private fun getFocusedIssuePlacement(
+        issueCardPreference: IssueCardPreference,
+        issueCardPreferenceList: List<IssueCardPreference>
+    ): FocusedIssuePlacement {
+        return if (issueCardPreferenceList.isEmpty() ||
+            issueCardPreferenceList[0].severityLevel <= issueCardPreference.severityLevel) {
+            FocusedIssuePlacement.FOCUSED_ISSUE_INDEX_0
+        } else {
+            FocusedIssuePlacement.FOCUSED_ISSUE_INDEX_1
+        }
     }
 
     private fun createMoreIssuesCardPreference(
         context: Context,
         issuesPreferenceGroup: PreferenceGroup,
-        issueCardPreferences: List<IssueCardPreference>
+        issueCardPreferences: List<IssueCardPreference>,
+        numberOfIssuesToShowWhenCollapsed: Int
     ): MoreIssuesCardPreference {
         val prefIconResourceId =
             if (isQuickSettingsFragment) R.drawable.ic_chevron_right else R.drawable.ic_expand_more
-        val numberOfHiddenIssue: Int = getNumberOfHiddenIssues(issueCardPreferences)
+        val numberOfHiddenIssue: Int =
+            getNumberOfHiddenIssues(issueCardPreferences, numberOfIssuesToShowWhenCollapsed)
         val firstHiddenIssueSeverityLevel: Int =
-            getFirstHiddenIssueSeverityLevel(issueCardPreferences)
+            getFirstHiddenIssueSeverityLevel(
+                issueCardPreferences, numberOfIssuesToShowWhenCollapsed)
 
         return MoreIssuesCardPreference(
             context, prefIconResourceId, numberOfHiddenIssue, firstHiddenIssueSeverityLevel) {
@@ -115,15 +198,13 @@ class CollapsableIssuesCardHelper {
 
         val numberOfPreferences = issuesPreferenceGroup.preferenceCount
         for (i in 0 until numberOfPreferences) {
-            val preference = issuesPreferenceGroup.getPreference(i)
-            when {
-                // preferences with index under MAX_SHOWN_ISSUES_COLLAPSED are already visible
-                i < MAX_SHOWN_ISSUES_COLLAPSED -> continue
-                // "more issues" preference has index of MAX_SHOWN_ISSUES_COLLAPSED and must be
-                // hidden after expansion of issues
-                i == MAX_SHOWN_ISSUES_COLLAPSED -> preference.isVisible = false
-                // All further issue preferences must be shown
-                else -> preference.isVisible = true
+            when (val preference = issuesPreferenceGroup.getPreference(i)) {
+                // IssueCardPreference can all be visible now
+                is IssueCardPreference -> preference.isVisible = true
+                // MoreIssuesCardPreference must be hidden after expansion of issues
+                is MoreIssuesCardPreference -> preference.isVisible = false
+                // Other types are undefined, no-op
+                else -> continue
             }
         }
         issueCardsExpanded = true
@@ -139,16 +220,22 @@ class CollapsableIssuesCardHelper {
     companion object {
         private const val EXPAND_ISSUE_GROUP_SAVED_INSTANCE_STATE_KEY =
             "expand_issue_group_saved_instance_state_key"
-        private const val MAX_SHOWN_ISSUES_COLLAPSED = 1
+        private const val DEFAULT_NUMBER_SHOWN_ISSUES_COLLAPSED = 1
 
-        private fun getNumberOfHiddenIssues(issueCardPreferences: List<IssueCardPreference>): Int =
-            max(0, issueCardPreferences.size - MAX_SHOWN_ISSUES_COLLAPSED)
+        private fun getNumberOfHiddenIssues(
+            issueCardPreferences: List<IssueCardPreference>,
+            numberOfIssuesToShowWhenCollapsed: Int
+        ): Int = max(0, issueCardPreferences.size - numberOfIssuesToShowWhenCollapsed)
 
         private fun getFirstHiddenIssueSeverityLevel(
-            issueCardPreferences: List<IssueCardPreference>
+            issueCardPreferences: List<IssueCardPreference>,
+            numberOfIssuesToShowWhenCollapsed: Int
         ): Int {
+            // Index of first hidden issue (zero based) is equal to number of shown issues when
+            // collapsed
+            val indexOfFirstHiddenIssue: Int = numberOfIssuesToShowWhenCollapsed
             val firstHiddenIssue: IssueCardPreference? =
-                issueCardPreferences.getOrNull(MAX_SHOWN_ISSUES_COLLAPSED)
+                issueCardPreferences.getOrNull(indexOfFirstHiddenIssue)
             // If no first hidden issue, default to ISSUE_SEVERITY_LEVEL_OK
             return firstHiddenIssue?.severityLevel ?: ISSUE_SEVERITY_LEVEL_OK
         }
@@ -157,14 +244,18 @@ class CollapsableIssuesCardHelper {
             issuesPreferenceGroup: PreferenceGroup,
             issueCardPreferences: List<IssueCardPreference>,
             moreIssuesCardPreference: MoreIssuesCardPreference,
+            numberOfIssuesToShowWhenCollapsed: Int,
             issueCardsExpanded: Boolean
         ) {
+            // Index of first hidden issue (zero based) is equal to number of shown issues when
+            // collapsed
+            val indexOfFirstHiddenIssue: Int = numberOfIssuesToShowWhenCollapsed
             issueCardPreferences.forEachIndexed { index, issueCardPreference ->
-                if (index == MAX_SHOWN_ISSUES_COLLAPSED && !issueCardsExpanded) {
+                if (index == indexOfFirstHiddenIssue && !issueCardsExpanded) {
                     issuesPreferenceGroup.addPreference(moreIssuesCardPreference)
                 }
                 issueCardPreference.isVisible =
-                    index < MAX_SHOWN_ISSUES_COLLAPSED || issueCardsExpanded
+                    index < indexOfFirstHiddenIssue || issueCardsExpanded
                 issuesPreferenceGroup.addPreference(issueCardPreference)
             }
         }
