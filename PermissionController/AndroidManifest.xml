@@ -101,6 +101,9 @@
 
         <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$NotificationClickHandler" />
 
+        <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$SafetyCenterPrimaryActionHandler"
+                  android:enabled="@bool/is_at_least_t" />
+
         <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$PackageResetHandler"
                   android:exported="true">
             <intent-filter>
@@ -399,6 +402,17 @@
                   android:exported="true"
                   android:grantUriPermissions="true"
                   android:permission="android.permission.READ_SEARCH_INDEXABLES">
+            <intent-filter>
+                <action android:name="android.content.action.SEARCH_INDEXABLES_PROVIDER" />
+            </intent-filter>
+        </provider>
+
+        <provider android:name="com.android.permissioncontroller.safetycenter.service.SafetyCenterSearchIndexablesProvider"
+            android:authorities="com.android.permissioncontroller.safetycenter"
+            android:multiprocess="false"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.READ_SEARCH_INDEXABLES">
             <intent-filter>
                 <action android:name="android.content.action.SEARCH_INDEXABLES_PROVIDER" />
             </intent-filter>
