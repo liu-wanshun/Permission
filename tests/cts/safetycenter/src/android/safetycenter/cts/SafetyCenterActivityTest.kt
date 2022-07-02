@@ -17,7 +17,6 @@
 package android.safetycenter.cts
 
 import android.content.Context
-import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.safetycenter.SafetyCenterManager.EXTRA_SAFETY_SOURCE_ID
 import android.safetycenter.SafetyCenterManager.EXTRA_SAFETY_SOURCE_ISSUE_ID
@@ -47,17 +46,17 @@ import android.support.test.uiautomator.By
 import android.support.test.uiautomator.UiDevice
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SdkSuppress
 import com.android.compatibility.common.util.UiAutomatorUtils.getUiDevice
 import com.android.compatibility.common.util.UiAutomatorUtils.waitFindObject
+import java.time.Duration
 import org.junit.After
 import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/** CTS tests for the Safety Center Activity. */
 @RunWith(AndroidJUnit4::class)
-@SdkSuppress(minSdkVersion = TIRAMISU, codeName = "Tiramisu")
 class SafetyCenterActivityTest {
     private val context: Context = getApplicationContext()
 
@@ -142,6 +141,60 @@ class SafetyCenterActivityTest {
     }
 
     @Test
+    fun updatingSafetySourceData_withoutSubtitle_newIssueWithSubtitle() {
+        val initialDataToDisplay = safetySourceCtsData.informationWithIssue
+        val updatedDataToDisplay = safetySourceCtsData.informationWithSubtitleIssue
+
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, initialDataToDisplay)
+
+        context.launchSafetyCenterActivity {
+            assertSourceIssueDisplayed(safetySourceCtsData.informationIssue)
+
+            safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, updatedDataToDisplay)
+            getUiDevice()
+                .waitForWindowUpdate(/* from any window*/ null, DATA_UPDATE_TIMEOUT.toMillis())
+
+            assertSourceIssueDisplayed(safetySourceCtsData.informationIssueWithSubtitle)
+        }
+    }
+
+    @Test
+    fun updatingSafetySourceData_withSubtitle_newIssueWithoutSubtitle() {
+        val initialDataToDisplay = safetySourceCtsData.informationWithSubtitleIssue
+        val updatedDataToDisplay = safetySourceCtsData.informationWithIssue
+
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, initialDataToDisplay)
+
+        context.launchSafetyCenterActivity {
+            assertSourceIssueDisplayed(safetySourceCtsData.informationIssueWithSubtitle)
+
+            safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, updatedDataToDisplay)
+            getUiDevice()
+                .waitForWindowUpdate(/* from any window*/ null, DATA_UPDATE_TIMEOUT.toMillis())
+
+            waitTextNotDisplayed(
+                safetySourceCtsData.informationIssueWithSubtitle.subtitle.toString())
+            assertSourceIssueDisplayed(safetySourceCtsData.informationIssue)
+        }
+    }
+
+    @Test
+    fun issueCard_greenIssue_noDismissalConfirmationAndDismisses() {
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.informationWithIssue)
+
+        context.launchSafetyCenterActivity {
+            waitFindObject(By.desc("Dismiss")).click()
+
+            assertSourceIssueNotDisplayed(safetySourceCtsData.informationIssue)
+            assertSourceDataDisplayed(safetySourceCtsData.information)
+            findButton("Scan")
+        }
+    }
+
+    @Test
     fun issueCard_confirmsDismissal_dismisses() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(
@@ -158,6 +211,28 @@ class SafetyCenterActivityTest {
     }
 
     @Test
+    fun issueCard_confirmsDismissal_afterRotation_dismisses() {
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(
+            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingIssue)
+
+        context.launchSafetyCenterActivity {
+            waitFindObject(By.desc("Dismiss")).click()
+            waitFindObject(By.text("Dismiss this alert?"))
+
+            getUiDevice().rotate()
+            getUiDevice()
+                .waitForWindowUpdate(/* from any window*/ null, DIALOG_ROTATION_TIMEOUT.toMillis())
+
+            waitFindObject(By.text("Dismiss this alert?"))
+            findButton("Dismiss").click()
+
+            assertSourceIssueNotDisplayed(safetySourceCtsData.criticalResolvingIssue)
+            findButton("Scan")
+        }
+    }
+
+    @Test
     fun issueCard_confirmsDismissal_cancels() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(
@@ -165,6 +240,27 @@ class SafetyCenterActivityTest {
 
         context.launchSafetyCenterActivity {
             waitFindObject(By.desc("Dismiss")).click()
+            waitFindObject(By.text("Dismiss this alert?"))
+            findButton("Cancel").click()
+
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
+        }
+    }
+
+    @Test
+    fun issueCard_confirmsDismissal_afterRotation_cancels() {
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(
+            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingIssue)
+
+        context.launchSafetyCenterActivity {
+            waitFindObject(By.desc("Dismiss")).click()
+            waitFindObject(By.text("Dismiss this alert?"))
+
+            getUiDevice().rotate()
+            getUiDevice()
+                .waitForWindowUpdate(/* from any window*/ null, DIALOG_ROTATION_TIMEOUT.toMillis())
+
             waitFindObject(By.text("Dismiss this alert?"))
             findButton("Cancel").click()
 
@@ -383,6 +479,8 @@ class SafetyCenterActivityTest {
 
     companion object {
         private const val EXPAND_ISSUE_GROUP_QS_FRAGMENT_KEY = "expand_issue_group_qs_fragment_key"
+        private val DIALOG_ROTATION_TIMEOUT = Duration.ofSeconds(1)
+        private val DATA_UPDATE_TIMEOUT = Duration.ofSeconds(1)
 
         private fun UiDevice.rotate() {
             if (isNaturalOrientation) {
