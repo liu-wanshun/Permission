@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package android.safetycenter.cts.testing
+package com.android.permissioncontroller.privacysources
 
-import android.Manifest.permission.DUMP
-import android.app.ActivityManager
-import android.content.Context
-import android.safetycenter.cts.testing.ShellPermissions.callWithShellPermissionIdentity
+interface PrivacySourceStorageRepository {
 
-/** A class that allows waiting for the broadcast queue to be idle. */
-object WaitForBroadcastIdle {
+    fun persistData(dataList: List<PrivacySourceData>)
 
-    /** Waits for the broadcast queue to be idle. */
-    fun Context.waitForBroadcastIdle() {
-        val activityManager = getSystemService(ActivityManager::class.java)!!
-        callWithShellPermissionIdentity({ activityManager.waitForBroadcastIdle() }, DUMP)
-    }
+    fun <T> readData(creator: PrivacySourceData.Creator<T>): List<T>
 }
