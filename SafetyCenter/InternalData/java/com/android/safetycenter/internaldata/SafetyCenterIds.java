@@ -18,9 +18,9 @@ package com.android.safetycenter.internaldata;
 
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 
-import android.annotation.NonNull;
 import android.util.Base64;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -66,6 +66,17 @@ public final class SafetyCenterIds {
     @NonNull
     public static SafetyCenterIssueId issueIdFromString(@NonNull String encoded) {
         return decodeToProto(SafetyCenterIssueId.parser(), encoded);
+    }
+
+    /**
+     * Converts a String to a {@link SafetyCenterIssueKey}.
+     *
+     * <p>Throws an {@link IllegalArgumentException} if the String couldn't be converted to a {@link
+     * SafetyCenterIssueKey}.
+     */
+    @NonNull
+    public static SafetyCenterIssueKey issueKeyFromString(@NonNull String encoded) {
+        return decodeToProto(SafetyCenterIssueKey.parser(), encoded);
     }
 
     /**

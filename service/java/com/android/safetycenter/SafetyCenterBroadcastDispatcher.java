@@ -116,20 +116,51 @@ final class SafetyCenterBroadcastDispatcher {
     //  rely on SafetyCenterManager#isSafetyCenterEnabled()?
     void sendEnabledChanged(@NonNull List<Broadcast> broadcasts) {
         BroadcastOptions broadcastOptions = createBroadcastOptions();
+        List<UserProfileGroup> userProfileGroups =
+                UserProfileGroup.getAllUserProfileGroups(mContext);
 
         for (int i = 0; i < broadcasts.size(); i++) {
             Broadcast broadcast = broadcasts.get(i);
+            Intent broadcastIntent =
+                    createEnabledChangedBroadcastIntent(broadcast.getPackageName());
 
-            sendBroadcast(
-                    createEnabledChangedBroadcastIntent(broadcast.getPackageName()),
-                    UserHandle.ALL,
-                    SEND_SAFETY_CENTER_UPDATE,
-                    broadcastOptions);
+            for (int j = 0; j < userProfileGroups.size(); j++) {
+                UserProfileGroup userProfileGroup = userProfileGroups.get(j);
+
+                List<String> profileParentSourceIds =
+                        broadcast.getSourceIdsForProfileParent(
+                                REFRESH_REASON_SAFETY_CENTER_ENABLED);
+                if (!profileParentSourceIds.isEmpty()) {
+                    int profileParentUserId = userProfileGroup.getProfileParentUserId();
+
+                    sendBroadcast(
+                            broadcastIntent,
+                            UserHandle.of(profileParentUserId),
+                            SEND_SAFETY_CENTER_UPDATE,
+                            broadcastOptions);
+                }
+
+                List<String> managedProfilesSourceIds =
+                        broadcast.getSourceIdsForManagedProfiles(
+                                REFRESH_REASON_SAFETY_CENTER_ENABLED);
+                if (!managedProfilesSourceIds.isEmpty()) {
+                    int[] managedRunningProfilesUserIds =
+                            userProfileGroup.getManagedRunningProfilesUserIds();
+                    for (int k = 0; k < managedRunningProfilesUserIds.length; k++) {
+                        int managedRunningProfileUserId = managedRunningProfilesUserIds[k];
+                        sendBroadcast(
+                                broadcastIntent,
+                                UserHandle.of(managedRunningProfileUserId),
+                                SEND_SAFETY_CENTER_UPDATE,
+                                broadcastOptions);
+                    }
+                }
+            }
         }
 
         sendBroadcast(
                 createEnabledChangedBroadcastIntent(),
-                UserHandle.ALL,
+                UserHandle.SYSTEM,
                 READ_SAFETY_CENTER_STATUS,
                 null);
     }
@@ -150,6 +181,7 @@ final class SafetyCenterBroadcastDispatcher {
                             broadcast.getPackageName(),
                             profileParentSourceIds,
                             broadcastId);
+
             sendBroadcast(
                     broadcastIntent,
                     UserHandle.of(profileParentUserId),
@@ -159,9 +191,10 @@ final class SafetyCenterBroadcastDispatcher {
         List<String> managedProfilesSourceIds =
                 broadcast.getSourceIdsForManagedProfiles(refreshReason);
         if (!managedProfilesSourceIds.isEmpty()) {
-            int[] managedProfilesUserIds = userProfileGroup.getManagedProfilesUserIds();
-            for (int i = 0; i < managedProfilesUserIds.length; i++) {
-                int managedProfileUserId = managedProfilesUserIds[i];
+            int[] managedRunningProfilesUserIds =
+                    userProfileGroup.getManagedRunningProfilesUserIds();
+            for (int i = 0; i < managedRunningProfilesUserIds.length; i++) {
+                int managedRunningProfilesUserId = managedRunningProfilesUserIds[i];
                 Intent broadcastIntent =
                         createRefreshSafetySourcesBroadcastIntent(
                                 requestType,
@@ -171,7 +204,7 @@ final class SafetyCenterBroadcastDispatcher {
 
                 sendBroadcast(
                         broadcastIntent,
-                        UserHandle.of(managedProfileUserId),
+                        UserHandle.of(managedRunningProfilesUserId),
                         SEND_SAFETY_CENTER_UPDATE,
                         broadcastOptions);
             }

@@ -16,7 +16,8 @@
 
 package com.android.permissioncontroller.safetycenter.ui;
 
-import static com.android.permissioncontroller.safetycenter.SafetyCenterConstants.EXPAND_ISSUE_GROUP_QS_FRAGMENT_KEY;
+import static android.os.Build.VERSION_CODES.TIRAMISU;
+
 import static com.android.permissioncontroller.safetycenter.SafetyCenterConstants.QUICK_SETTINGS_SAFETY_CENTER_FRAGMENT;
 
 import static java.util.Objects.requireNonNull;
@@ -37,6 +38,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceCategory;
@@ -53,6 +55,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /** Dashboard fragment for the Safety Center. */
+@RequiresApi(TIRAMISU)
 public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompat {
 
     private static final String TAG = SafetyCenterDashboardFragment.class.getSimpleName();
@@ -121,20 +124,21 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        setPreferencesFromResource(R.xml.safety_center_dashboard, rootKey);
+
         if (getArguments() != null) {
             mIsQuickSettingsFragment =
                     getArguments().getBoolean(QUICK_SETTINGS_SAFETY_CENTER_FRAGMENT, false);
         }
-        setPreferencesFromResource(R.xml.safety_center_dashboard, rootKey);
-        // Check if we've navigated from QS and issues should be expanded
-        boolean expandIssuesGroup =
-                getActivity()
-                        .getIntent()
-                        .getBooleanExtra(EXPAND_ISSUE_GROUP_QS_FRAGMENT_KEY, false);
+
+        ParsedSafetyCenterIntent parsedSafetyCenterIntent =
+                ParsedSafetyCenterIntent.toSafetyCenterIntent(getActivity().getIntent());
+        mCollapsableIssuesCardHelper
+                .setFocusedIssueKey(parsedSafetyCenterIntent.getSafetyCenterIssueKey());
 
         // Set quick settings state first and allow restored state to override if necessary
         mCollapsableIssuesCardHelper.setQuickSettingsState(
-                mIsQuickSettingsFragment, expandIssuesGroup);
+                mIsQuickSettingsFragment, parsedSafetyCenterIntent.getShouldExpandIssuesGroup());
         mCollapsableIssuesCardHelper.restoreState(savedInstanceState);
 
         mViewModel =
@@ -174,6 +178,10 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
         mCollapsableIssuesCardHelper.saveState(outState);
     }
 
+    SafetyCenterViewModel getSafetyCenterViewModel() {
+        return mViewModel;
+    }
+
     private void renderSafetyCenterData(@Nullable SafetyCenterData data) {
         if (data == null) return;
 
@@ -193,7 +201,27 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
         if (!mIsQuickSettingsFragment) {
             updateSafetyEntries(context, data.getEntriesOrGroups());
             updateStaticSafetyEntries(context, data.getStaticEntryGroups());
+        } else {
+            setPendingActionState(data);
         }
+    }
+
+    /**
+     * Determine if there are pending actions and set pending actions state
+     */
+    private void setPendingActionState(SafetyCenterData data) {
+        int overallSeverityLevel = data.getStatus().getSeverityLevel();
+        // LINT.IfChange(pendingActionsQs)
+        int maxEntrySeverityLevel = getMaxSeverityLevel(data.getEntriesOrGroups());
+        if (overallSeverityLevel == SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK
+                && maxEntrySeverityLevel > SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_OK) {
+            mSafetyStatusPreference.setHasPendingActions(
+                    true, l -> mViewModel.navigateToSafetyCenter(this));
+        } else {
+            mSafetyStatusPreference.setHasPendingActions(
+                    false, null);
+        }
+        // LINT.ThenChange(packages/modules/Permission/service/java/com/android/safetycenter/SafetyCenterDataTracker.java:pendingActions)
     }
 
     private void displayErrorDetails(@Nullable SafetyCenterErrorDetails errorDetails) {
@@ -207,7 +235,13 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
         mIssuesGroup.removeAll();
         List<IssueCardPreference> issueCardPreferenceList =
                 issues.stream()
-                        .map(issue -> new IssueCardPreference(context, mViewModel, issue))
+                        .map(
+                                issue ->
+                                        new IssueCardPreference(
+                                                context,
+                                                mViewModel,
+                                                issue,
+                                                getChildFragmentManager()))
                         .collect(Collectors.toUnmodifiableList());
         mCollapsableIssuesCardHelper.addIssues(context, mIssuesGroup, issueCardPreferenceList);
     }
@@ -231,6 +265,28 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
                 addGroupEntries(context, group, isFirstElement, isLastElement);
             }
         }
+    }
+
+    private int getMaxSeverityLevel(List<SafetyCenterEntryOrGroup> entriesOrGroups) {
+        int maxEntrySeverityLevel = SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNKNOWN;
+        // LINT.IfChange(maxSeverityCalculationQs)
+        for (int i = 0, size = entriesOrGroups.size(); i < size; i++) {
+            SafetyCenterEntryOrGroup entryOrGroup = entriesOrGroups.get(i);
+            SafetyCenterEntry entry = entryOrGroup.getEntry();
+            SafetyCenterEntryGroup group = entryOrGroup.getEntryGroup();
+
+            if (entry != null) {
+                maxEntrySeverityLevel = Math.max(maxEntrySeverityLevel, entry.getSeverityLevel());
+            } else if (group != null) {
+                List<SafetyCenterEntry> entries = group.getEntries();
+                for (SafetyCenterEntry groupEntry : entries) {
+                    maxEntrySeverityLevel =
+                            Math.max(maxEntrySeverityLevel, groupEntry.getSeverityLevel());
+                }
+            }
+        }
+        return maxEntrySeverityLevel;
+        // LINT.ThenChange(packages/modules/Permission/service/java/com/android/safetycenter/SafetyCenterDataTracker.java:maxSeverityCalculation)
     }
 
     private void addTopLevelEntry(
@@ -259,8 +315,8 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
                                 : PositionInCardList.CARD_START));
 
         List<SafetyCenterEntry> entries = group.getEntries();
-        for (int j = 0, last = entries.size() - 1; j <= last; j++) {
-            boolean isCardEnd = j == last;
+        for (int i = 0, last = entries.size() - 1; i <= last; i++) {
+            boolean isCardEnd = i == last;
             boolean isListEnd = isLastCard && isCardEnd;
             PositionInCardList positionInCardList =
                     PositionInCardList.calculate(
@@ -269,7 +325,7 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
                             /* isCardStart= */ false,
                             isCardEnd);
             mEntriesGroup.addPreference(
-                    new SafetyEntryPreference(context, entries.get(j), positionInCardList));
+                    new SafetyEntryPreference(context, entries.get(i), positionInCardList));
         }
     }
 
