@@ -20,24 +20,33 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.android.permissioncontroller.Constants
+import com.android.permissioncontroller.hibernation.cancelUnusedAppsNotification
+import com.android.permissioncontroller.hibernation.rescanAndPushDataToSafetyCenter
+import java.util.Random
 
-import com.android.permissioncontroller.permission.service.LocationAccessCheck
-import com.android.permissioncontroller.privacysources.SafetyCenterReceiver.RefreshEvent
-
+/**
+ * Privacy source for auto-revoked permissions.
+ */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-class LocationAccessPrivacySource : PrivacySource {
+class AutoRevokePrivacySource : PrivacySource {
     override val shouldProcessProfileRequest: Boolean = false
 
     override fun safetyCenterEnabledChanged(context: Context, enabled: Boolean) {
-        LocationAccessCheck(context, null).cancelBackgroundAccessWarningNotification()
+        cancelUnusedAppsNotification(context)
     }
 
     override fun rescanAndPushSafetyCenterData(
         context: Context,
         intent: Intent,
-        refreshEvent: RefreshEvent
+        refreshEvent: SafetyCenterReceiver.RefreshEvent
     ) {
+        var sessionId = Constants.INVALID_SESSION_ID
+        while (sessionId == Constants.INVALID_SESSION_ID) {
+            sessionId = Random().nextLong()
+        }
+
         val safetyRefreshEvent = getSafetyCenterEvent(refreshEvent, intent)
-        LocationAccessCheck(context, null).rescanAndPushSafetyCenterData(safetyRefreshEvent, null)
+        rescanAndPushDataToSafetyCenter(context, sessionId, safetyRefreshEvent)
     }
 }
