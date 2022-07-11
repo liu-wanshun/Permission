@@ -16,10 +16,8 @@
   -->
 <configuration description="Config for CTS SafetyCenter test cases">
 
-    <!-- TODO(b/207111503): Use Sdk33ModuleController once available, and remove @SdkSuppress
-         annotations -->
     <object
-        class="com.android.tradefed.testtype.suite.module.Sdk31ModuleController"
+        class="com.android.tradefed.testtype.suite.module.Sdk33ModuleController"
         type="module_controller"/>
 
     <option name="config-descriptor:metadata" key="component" value="framework"/>
@@ -34,8 +32,10 @@
     <option name="test-suite-tag" value="cts"/>
 
     <target_preparer class="com.android.tradefed.targetprep.DeviceSetup">
-        <option name="force-skip-system-props"
-                value="true"/> <!-- avoid restarting device -->
+        <!-- Avoid restarting device. -->
+        <option name="force-skip-system-props" value="true"/>
+        <!-- Disable syncing to prevent overwriting flags during testing. -->
+        <option name="disable-device-config-sync" value="true" />
     </target_preparer>
 
     <target_preparer
@@ -44,10 +44,16 @@
         <option name="test-file-name" value="CtsSafetyCenterTestCases.apk"/>
     </target_preparer>
 
+    <target_preparer class="com.android.tradefed.targetprep.RunCommandTargetPreparer">
+        <!-- Ensure all broadcasts are dispatched prior to running our tests, to make sure they
+             aren't polluted by `BOOT_COMPLETED` or similar broadcasts still being delivered, which
+             causes our `ActivityManager#waitForBroadcastIdle()` calls to timeout. -->
+        <option name="run-command" value="am wait-for-broadcast-idle" />
+    </target_preparer>
+
     <test class="com.android.tradefed.testtype.AndroidJUnitTest">
         <option name="package" value="android.safetycenter.cts"/>
         <option name="exclude-annotation" value="org.junit.Ignore"/>
         <option name="runtime-hint" value="5m"/>
-        <option name="test-timeout" value="300000" />
     </test>
 </configuration>
