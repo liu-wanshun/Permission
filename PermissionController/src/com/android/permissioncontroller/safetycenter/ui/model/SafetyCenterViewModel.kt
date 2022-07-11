@@ -17,19 +17,20 @@
 package com.android.permissioncontroller.safetycenter.ui.model
 
 import android.app.Application
+import android.os.Build
 import android.safetycenter.SafetyCenterData
 import android.safetycenter.SafetyCenterErrorDetails
 import android.safetycenter.SafetyCenterIssue
+import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 abstract class SafetyCenterViewModel(protected val app: Application) : AndroidViewModel(app) {
 
     abstract val safetyCenterLiveData: LiveData<SafetyCenterData>
     abstract val errorLiveData: LiveData<SafetyCenterErrorDetails>
-    val autoRefreshManager = AutoRefreshManager()
 
     abstract fun dismissIssue(issue: SafetyCenterIssue)
 
@@ -39,13 +40,9 @@ abstract class SafetyCenterViewModel(protected val app: Application) : AndroidVi
 
     abstract fun clearError()
 
-    protected abstract fun refresh()
+    abstract fun navigateToSafetyCenter(fragment: Fragment)
 
-    inner class AutoRefreshManager : DefaultLifecycleObserver {
-        // TODO(b/222323674): We may need to do this in onResume to cover certain edge cases.
-        // i.e. FMD changed from quick settings while SC is open
-        override fun onStart(owner: LifecycleOwner) {
-            refresh()
-        }
-    }
+    abstract fun pageOpen()
+
+    abstract fun changingConfigurations()
 }
