@@ -19,19 +19,17 @@ package android.safetycenter.cts
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build.VERSION_CODES.TIRAMISU
 import android.safetycenter.SafetyCenterStaticEntry
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.os.ParcelableSubject.assertThat
-import androidx.test.filters.SdkSuppress
 import com.android.permission.testing.EqualsHashCodeToStringTester
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/** CTS tests for [SafetyCenterStaticEntry]. */
 @RunWith(AndroidJUnit4::class)
-@SdkSuppress(minSdkVersion = TIRAMISU, codeName = "Tiramisu")
 class SafetyCenterStaticEntryTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
@@ -63,6 +61,8 @@ class SafetyCenterStaticEntryTest {
     fun getTitle_returnsTitle() {
         assertThat(staticEntry1.title).isEqualTo(title1)
         assertThat(staticEntry2.title).isEqualTo(title2)
+        assertThat(SafetyCenterStaticEntry.Builder(staticEntry1).setTitle(title2).build().title)
+            .isEqualTo(title2)
     }
 
     @Test
@@ -115,18 +115,13 @@ class SafetyCenterStaticEntryTest {
                     .setPendingIntent(pendingIntent1)
                     .build())
             .addEqualityGroup(
-                SafetyCenterStaticEntry.Builder("a different title")
-                    .setSummary("a summary")
-                    .setPendingIntent(pendingIntent1)
-                    .build())
+                SafetyCenterStaticEntry.Builder(staticEntry1).setTitle("a different title").build())
             .addEqualityGroup(
-                SafetyCenterStaticEntry.Builder("a title")
+                SafetyCenterStaticEntry.Builder(staticEntry1)
                     .setSummary("a different summary")
-                    .setPendingIntent(pendingIntent1)
                     .build())
             .addEqualityGroup(
-                SafetyCenterStaticEntry.Builder("a title")
-                    .setSummary("a summary")
+                SafetyCenterStaticEntry.Builder(staticEntry1)
                     .setPendingIntent(pendingIntent2)
                     .build())
             .test()
