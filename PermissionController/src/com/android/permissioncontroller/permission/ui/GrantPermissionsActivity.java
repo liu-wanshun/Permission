@@ -565,7 +565,7 @@ public class GrantPermissionsActivity extends SettingsActivity
             return;
         }
 
-        if (name.equals(mPreMergeShownGroupName)) {
+        if (name != null && name.equals(mPreMergeShownGroupName)) {
             mPreMergeShownGroupName = null;
         }
 
@@ -579,6 +579,9 @@ public class GrantPermissionsActivity extends SettingsActivity
 
     @Override
     public void onBackPressed() {
+        if (mViewHandler == null) {
+            return;
+        }
         mViewHandler.onBackPressed();
     }
 

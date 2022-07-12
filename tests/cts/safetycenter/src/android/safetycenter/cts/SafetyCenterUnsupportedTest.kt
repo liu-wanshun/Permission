@@ -17,53 +17,95 @@
 package android.safetycenter.cts
 
 import android.content.Context
-import android.content.Intent
-import android.content.Intent.ACTION_SAFETY_CENTER
-import android.content.pm.PackageManager.FEATURE_AUTOMOTIVE
-import android.content.pm.PackageManager.FEATURE_LEANBACK
-import android.os.Build.VERSION_CODES.TIRAMISU
 import android.safetycenter.SafetyCenterManager
+import android.safetycenter.SafetyCenterManager.REFRESH_REASON_PAGE_OPEN
+import android.safetycenter.SafetyCenterManager.REFRESH_REASON_RESCAN_BUTTON_CLICK
+import android.safetycenter.SafetySourceErrorDetails
+import android.safetycenter.cts.testing.Coroutines.TIMEOUT_SHORT
+import android.safetycenter.cts.testing.SafetyCenterActivityLauncher.launchSafetyCenterActivity
+import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.addOnSafetyCenterDataChangedListenerWithPermission
+import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.clearAllSafetySourceDataForTestsWithPermission
+import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.clearSafetyCenterConfigForTestsWithPermission
+import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.dismissSafetyCenterIssueWithPermission
+import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.getSafetyCenterConfigWithPermission
+import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.getSafetyCenterDataWithPermission
+import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.getSafetySourceDataWithPermission
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.isSafetyCenterEnabledWithPermission
-import android.safetycenter.cts.testing.SafetyCenterFlags
+import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.removeOnSafetyCenterDataChangedListenerWithPermission
+import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.reportSafetySourceErrorWithPermission
+import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.setSafetyCenterConfigForTestsWithPermission
+import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.setSafetySourceDataWithPermission
+import android.safetycenter.cts.testing.SafetyCenterCtsConfigs.SINGLE_SOURCE_CONFIG
+import android.safetycenter.cts.testing.SafetyCenterCtsConfigs.SINGLE_SOURCE_ID
+import android.safetycenter.cts.testing.SafetyCenterCtsData
+import android.safetycenter.cts.testing.SafetyCenterCtsHelper
+import android.safetycenter.cts.testing.SafetyCenterCtsListener
+import android.safetycenter.cts.testing.SafetyCenterEnabledChangedReceiver
 import android.safetycenter.cts.testing.SafetyCenterFlags.deviceSupportsSafetyCenter
+import android.safetycenter.cts.testing.SafetySourceCtsData
+import android.safetycenter.cts.testing.SafetySourceCtsData.Companion.CRITICAL_ISSUE_ACTION_ID
+import android.safetycenter.cts.testing.SafetySourceCtsData.Companion.CRITICAL_ISSUE_ID
+import android.safetycenter.cts.testing.SafetySourceCtsData.Companion.EVENT_SOURCE_STATE_CHANGED
+import android.safetycenter.cts.testing.SafetySourceReceiver
+import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.executeSafetyCenterIssueActionWithPermissionAndWait
+import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.refreshSafetySourcesWithReceiverPermissionAndWait
+import android.safetycenter.cts.testing.SettingsPackage.getSettingsPackageName
 import android.support.test.uiautomator.By
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SdkSuppress
 import com.android.compatibility.common.util.UiAutomatorUtils.waitFindObject
 import com.google.common.truth.Truth.assertThat
-import org.junit.Assume.assumeFalse
+import com.google.common.util.concurrent.MoreExecutors.directExecutor
+import kotlin.test.assertFailsWith
+import kotlinx.coroutines.TimeoutCancellationException
+import org.junit.After
+import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/** CTS tests for our APIs and UI on devices that do not support Safety Center. */
 @RunWith(AndroidJUnit4::class)
-@SdkSuppress(minSdkVersion = TIRAMISU, codeName = "Tiramisu")
 class SafetyCenterUnsupportedTest {
     private val context: Context = getApplicationContext()
     private val packageManager = context.packageManager
+    private val safetyCenterCtsHelper = SafetyCenterCtsHelper(context)
+    private val safetySourceCtsData = SafetySourceCtsData(context)
     private val safetyCenterManager = context.getSystemService(SafetyCenterManager::class.java)!!
+    // JUnit's Assume is not supported in @BeforeClass by the CTS tests runner, so this is used to
+    // manually skip the setup and teardown methods.
+    private val shouldRunTests = !context.deviceSupportsSafetyCenter()
 
     @Before
     fun assumeDeviceDoesntSupportSafetyCenterToRunTests() {
-        assumeFalse(context.deviceSupportsSafetyCenter())
+        assumeTrue(shouldRunTests)
+    }
+
+    @Before
+    fun enableSafetyCenterBeforeTest() {
+        if (!shouldRunTests) {
+            return
+        }
+        safetyCenterCtsHelper.setup()
+    }
+
+    @After
+    fun clearDataAfterTest() {
+        if (!shouldRunTests) {
+            return
+        }
+        safetyCenterCtsHelper.reset()
     }
 
     @Test
-    fun launchActivity_showsSecurityTitle() {
-        // TODO(b/232284056): Check if we can remove these test restrictions
-        assumeFalse(packageManager.hasSystemFeature(FEATURE_AUTOMOTIVE))
-        assumeFalse(packageManager.hasSystemFeature(FEATURE_LEANBACK))
-
-        startSafetyCenterActivity()
-
-        waitFindObject(By.text("Settings"))
+    fun launchActivity_opensSettings() {
+        context.launchSafetyCenterActivity {
+            waitFindObject(By.pkg(context.getSettingsPackageName()))
+        }
     }
 
     @Test
     fun isSafetyCenterEnabled_withFlagEnabled_returnsFalse() {
-        SafetyCenterFlags.setSafetyCenterEnabled(true)
-
         val isSafetyCenterEnabled = safetyCenterManager.isSafetyCenterEnabledWithPermission()
 
         assertThat(isSafetyCenterEnabled).isFalse()
@@ -71,17 +113,289 @@ class SafetyCenterUnsupportedTest {
 
     @Test
     fun isSafetyCenterEnabled_withFlagDisabled_returnsFalse() {
-        SafetyCenterFlags.setSafetyCenterEnabled(false)
+        safetyCenterCtsHelper.setEnabled(false)
 
         val isSafetyCenterEnabled = safetyCenterManager.isSafetyCenterEnabledWithPermission()
 
         assertThat(isSafetyCenterEnabled).isFalse()
     }
 
-    private fun startSafetyCenterActivity() {
-        context.startActivity(
-            Intent(ACTION_SAFETY_CENTER)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
+    @Test
+    fun isSafetyCenterEnabled_withoutPermission_throwsSecurityException() {
+        assertFailsWith(SecurityException::class) { safetyCenterManager.isSafetyCenterEnabled }
+    }
+
+    @Test
+    fun setAndGetSafetySourceData_doesntSetData() {
+        safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
+        safetyCenterManager.setSafetySourceDataWithPermission(
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingIssue,
+            EVENT_SOURCE_STATE_CHANGED)
+
+        val apiSafetySourceData =
+            safetyCenterManager.getSafetySourceDataWithPermission(SINGLE_SOURCE_ID)
+
+        assertThat(apiSafetySourceData).isNull()
+    }
+
+    @Test
+    fun setSafetySourceData_withoutPermission_throwsSecurityException() {
+        assertFailsWith(SecurityException::class) {
+            safetyCenterManager.setSafetySourceData(
+                SINGLE_SOURCE_ID, safetySourceCtsData.unspecified, EVENT_SOURCE_STATE_CHANGED)
+        }
+    }
+
+    @Test
+    fun getSafetySourceData_withoutPermission_throwsSecurityException() {
+        assertFailsWith(SecurityException::class) {
+            safetyCenterManager.getSafetySourceData(SINGLE_SOURCE_ID)
+        }
+    }
+
+    @Test
+    fun reportSafetySourceError_doesntCallListener() {
+        safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
+        val listener = SafetyCenterCtsListener()
+        safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
+            directExecutor(), listener)
+
+        safetyCenterManager.reportSafetySourceErrorWithPermission(
+            SINGLE_SOURCE_ID, SafetySourceErrorDetails(EVENT_SOURCE_STATE_CHANGED))
+
+        assertFailsWith(TimeoutCancellationException::class) {
+            listener.receiveSafetyCenterData(TIMEOUT_SHORT)
+        }
+    }
+
+    @Test
+    fun reportSafetySourceError_withoutPermission_throwsSecurityException() {
+        assertFailsWith(SecurityException::class) {
+            safetyCenterManager.reportSafetySourceError(
+                SINGLE_SOURCE_ID, SafetySourceErrorDetails(EVENT_SOURCE_STATE_CHANGED))
+        }
+    }
+
+    @Test
+    fun safetyCenterEnabledChanged_withImplicitReceiver_doesntCallReceiver() {
+        val enabledChangedReceiver = SafetyCenterEnabledChangedReceiver(context)
+
+        assertFailsWith(TimeoutCancellationException::class) {
+            enabledChangedReceiver.setSafetyCenterEnabledWithReceiverPermissionAndWait(
+                false, TIMEOUT_SHORT)
+        }
+        enabledChangedReceiver.unregister()
+    }
+
+    @Test
+    fun safetyCenterEnabledChanged_withSourceReceiver_doesntCallReceiver() {
+        safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
+
+        assertFailsWith(TimeoutCancellationException::class) {
+            SafetySourceReceiver.setSafetyCenterEnabledWithReceiverPermissionAndWait(
+                false, TIMEOUT_SHORT)
+        }
+    }
+
+    @Test
+    fun refreshSafetySources_doesntRefreshSources() {
+        safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
+
+        assertFailsWith(TimeoutCancellationException::class) {
+            safetyCenterManager.refreshSafetySourcesWithReceiverPermissionAndWait(
+                REFRESH_REASON_PAGE_OPEN, TIMEOUT_SHORT)
+        }
+    }
+
+    @Test
+    fun refreshSafetySources_withoutPermission_throwsSecurityException() {
+        assertFailsWith(SecurityException::class) {
+            safetyCenterManager.refreshSafetySources(REFRESH_REASON_RESCAN_BUTTON_CLICK)
+        }
+    }
+
+    @Test
+    fun getSafetyCenterConfig_isNull() {
+        val config = safetyCenterManager.getSafetyCenterConfigWithPermission()
+
+        assertThat(config).isNull()
+    }
+
+    @Test
+    fun getSafetyCenterConfig_withoutPermission_throwsSecurityException() {
+        assertFailsWith(SecurityException::class) { safetyCenterManager.safetyCenterConfig }
+    }
+
+    @Test
+    fun getSafetyCenterData_returnsDefaultData() {
+        val apiSafetyCenterData = safetyCenterManager.getSafetyCenterDataWithPermission()
+
+        assertThat(apiSafetyCenterData).isEqualTo(SafetyCenterCtsData.DEFAULT)
+    }
+
+    @Test
+    fun getSafetyCenterData_withoutPermission_throwsSecurityException() {
+        assertFailsWith(SecurityException::class) { safetyCenterManager.safetyCenterData }
+    }
+
+    @Test
+    fun addOnSafetyCenterDataChangedListener_listenerNotCalled() {
+        safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
+        val listener = SafetyCenterCtsListener()
+
+        safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
+            directExecutor(), listener)
+
+        assertFailsWith(TimeoutCancellationException::class) {
+            listener.receiveSafetyCenterData(TIMEOUT_SHORT)
+        }
+    }
+
+    @Test
+    fun addOnSafetyCenterDataChangedListener_withoutPermission_throwsSecurityException() {
+        val listener = SafetyCenterCtsListener()
+
+        assertFailsWith(SecurityException::class) {
+            safetyCenterManager.addOnSafetyCenterDataChangedListener(directExecutor(), listener)
+        }
+    }
+
+    @Test
+    fun removeOnSafetyCenterDataChangedListener_listenerNotCalled() {
+        safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
+        val listener = SafetyCenterCtsListener()
+        safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
+            directExecutor(), listener)
+
+        safetyCenterManager.removeOnSafetyCenterDataChangedListenerWithPermission(listener)
+
+        assertFailsWith(TimeoutCancellationException::class) {
+            listener.receiveSafetyCenterData(TIMEOUT_SHORT)
+        }
+    }
+
+    @Test
+    fun removeOnSafetyCenterDataChangedListener_withoutPermission_throwsSecurityException() {
+        val listener = SafetyCenterCtsListener()
+        safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
+            directExecutor(), listener)
+
+        assertFailsWith(SecurityException::class) {
+            safetyCenterManager.removeOnSafetyCenterDataChangedListener(listener)
+        }
+    }
+
+    @Test
+    fun dismissSafetyCenterIssue_doesntCallListenerOrDismiss() {
+        safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
+        safetyCenterManager.setSafetySourceDataWithPermission(
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingIssue,
+            EVENT_SOURCE_STATE_CHANGED)
+        val listener = SafetyCenterCtsListener()
+        safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
+            directExecutor(), listener)
+
+        safetyCenterManager.dismissSafetyCenterIssueWithPermission(
+            SafetyCenterCtsData.issueId(SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID))
+
+        assertFailsWith(TimeoutCancellationException::class) {
+            listener.receiveSafetyCenterData(TIMEOUT_SHORT)
+        }
+    }
+
+    @Test
+    fun dismissSafetyCenterIssue_withoutPermission_throwsSecurityException() {
+        assertFailsWith(SecurityException::class) {
+            safetyCenterManager.dismissSafetyCenterIssue("bleh")
+        }
+    }
+
+    @Test
+    fun executeSafetyCenterIssueAction_doesntCallListenerOrExecute() {
+        safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
+        safetyCenterManager.setSafetySourceDataWithPermission(
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingIssue,
+            EVENT_SOURCE_STATE_CHANGED)
+        val listener = SafetyCenterCtsListener()
+        safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
+            directExecutor(), listener)
+
+        assertFailsWith(TimeoutCancellationException::class) {
+            safetyCenterManager.executeSafetyCenterIssueActionWithPermissionAndWait(
+                SafetyCenterCtsData.issueId(SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID),
+                SafetyCenterCtsData.issueActionId(
+                    SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID, CRITICAL_ISSUE_ACTION_ID),
+                TIMEOUT_SHORT)
+        }
+        assertFailsWith(TimeoutCancellationException::class) {
+            listener.receiveSafetyCenterData(TIMEOUT_SHORT)
+        }
+    }
+
+    @Test
+    fun executeSafetyCenterIssueAction_withoutPermission_throwsSecurityException() {
+        assertFailsWith(SecurityException::class) {
+            safetyCenterManager.executeSafetyCenterIssueAction("bleh", "blah")
+        }
+    }
+
+    @Test
+    fun clearAllSafetySourceDataForTests_doesntClearData() {
+        safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
+        safetyCenterManager.setSafetySourceDataWithPermission(
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingIssue,
+            EVENT_SOURCE_STATE_CHANGED)
+        val apiSafetySourceDataBeforeClearing =
+            safetyCenterManager.getSafetySourceDataWithPermission(SINGLE_SOURCE_ID)
+
+        safetyCenterManager.clearAllSafetySourceDataForTestsWithPermission()
+
+        val apiSafetySourceDataAfterClearing =
+            safetyCenterManager.getSafetySourceDataWithPermission(SINGLE_SOURCE_ID)
+        assertThat(apiSafetySourceDataAfterClearing).isEqualTo(apiSafetySourceDataBeforeClearing)
+    }
+
+    @Test
+    fun clearAllSafetySourceDataForTests_withoutPermission_throwsSecurityException() {
+        assertFailsWith(SecurityException::class) {
+            safetyCenterManager.clearAllSafetySourceDataForTests()
+        }
+    }
+
+    @Test
+    fun setSafetyCenterConfigForTests_doesntSetConfig() {
+        safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
+
+        val config = safetyCenterManager.getSafetyCenterConfigWithPermission()
+        assertThat(config).isNull()
+    }
+
+    @Test
+    fun setSafetyCenterConfigForTests_withoutPermission_throwsSecurityException() {
+        assertFailsWith(SecurityException::class) {
+            safetyCenterManager.setSafetyCenterConfigForTests(SINGLE_SOURCE_CONFIG)
+        }
+    }
+
+    @Test
+    fun clearSafetyCenterConfigForTests_doesntClearConfig() {
+        safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
+        val configBeforeClearing = safetyCenterManager.getSafetyCenterConfigWithPermission()
+
+        safetyCenterManager.clearSafetyCenterConfigForTestsWithPermission()
+
+        val configAfterClearing = safetyCenterManager.getSafetyCenterConfigWithPermission()
+        assertThat(configAfterClearing).isEqualTo(configBeforeClearing)
+    }
+
+    @Test
+    fun clearSafetyCenterConfigForTests_withoutPermission_throwsSecurityException() {
+        assertFailsWith(SecurityException::class) {
+            safetyCenterManager.clearSafetyCenterConfigForTests()
+        }
     }
 }
