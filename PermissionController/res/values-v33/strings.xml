@@ -23,4 +23,22 @@
 
     <!-- Label for showing a permission group's description in the header of the list of apps that have the Storage permission [CHAR LIMIT=none] -->
     <string name="permission_description_summary_storage">Apps with this permission can access all files on this device</string>
+
+    <!-- Title for the "Your Work Policy" under Advanced Settings in Safety Center for managed devices. [CHAR LIMIT=NONE]-->
+    <string name="work_policy_title" >Your work policy info</string>
+    <!-- Summary for the "Your Work Policy" for Advanced Settings in Safety Center for managed devices. [CHAR LIMIT=NONE]-->
+    <string name="work_policy_summary">Settings managed by your IT admin</string>
+
+    <!-- Title for the "See all alerts"/"More issues" card in Safety Center [CHAR LIMIT=NONE]-->
+    <string name="safety_center_more_issues_card_title">See all alerts</string>
+    <!-- TODO(b/222126828): Update More Issues card status icon content description -->
+    <!-- Content description for the "See all alerts"/"More issues" card overall status icon in Safety Center[CHAR LIMIT=NONE] -->
+    <string name="safety_center_more_issues_status_icon_content_description">See all alerts</string>
+    <!-- Content description for the "See all alerts"/"More issues" card buttons and icons in Safety Center[CHAR LIMIT=NONE] -->
+    <string name="safety_center_more_issues_expand_button_content_description">See all alerts</string>
+
+    <!--Summary for safety center status card QS in case of pending actions [CHAR LIMIT=NONE] -->
+    <string name="safety_center_qs_status_summary">Review your settings</string>
+    <!--Label for the button that takes the user to Safety center in case of pending actions [CHAR LIMIT=NONE] -->
+    <string name="safety_center_review_settings_button">Review settings</string>
 </resources>

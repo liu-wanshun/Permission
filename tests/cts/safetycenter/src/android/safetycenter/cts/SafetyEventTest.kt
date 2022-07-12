@@ -16,7 +16,6 @@
 
 package android.safetycenter.cts
 
-import android.os.Build
 import android.safetycenter.SafetyEvent
 import android.safetycenter.SafetyEvent.SAFETY_EVENT_TYPE_DEVICE_LOCALE_CHANGED
 import android.safetycenter.SafetyEvent.SAFETY_EVENT_TYPE_DEVICE_REBOOTED
@@ -24,10 +23,9 @@ import android.safetycenter.SafetyEvent.SAFETY_EVENT_TYPE_REFRESH_REQUESTED
 import android.safetycenter.SafetyEvent.SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED
 import android.safetycenter.SafetyEvent.SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED
 import android.safetycenter.SafetyEvent.SAFETY_EVENT_TYPE_SOURCE_STATE_CHANGED
-import android.safetycenter.cts.testing.EqualsHashCodeToStringTester
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.os.ParcelableSubject.assertThat
-import androidx.test.filters.SdkSuppress
+import com.android.permission.testing.EqualsHashCodeToStringTester
 import com.google.common.truth.Truth.assertThat
 import kotlin.test.assertFailsWith
 import org.junit.Test
@@ -35,7 +33,6 @@ import org.junit.runner.RunWith
 
 /** CTS tests for [SafetyEvent]. */
 @RunWith(AndroidJUnit4::class)
-@SdkSuppress(minSdkVersion = Build.VERSION_CODES.TIRAMISU, codeName = "Tiramisu")
 class SafetyEventTest {
     @Test
     fun getType_returnsType() {
@@ -88,8 +85,8 @@ class SafetyEventTest {
         assertThat(exception)
             .hasMessageThat()
             .isEqualTo(
-                "Missing issue action id for resolving action safety event " +
-                    "($SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED)")
+                "Missing issue action id for resolving action safety event: " +
+                    SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED)
     }
 
     @Test
@@ -104,8 +101,8 @@ class SafetyEventTest {
         assertThat(exception)
             .hasMessageThat()
             .isEqualTo(
-                "Missing issue id for resolving action safety event " +
-                    "($SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED)")
+                "Missing issue id for resolving action safety event: " +
+                    SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED)
     }
 
     @Test
@@ -120,8 +117,8 @@ class SafetyEventTest {
         assertThat(exception)
             .hasMessageThat()
             .isEqualTo(
-                "Missing issue action id for resolving action safety event " +
-                    "($SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED)")
+                "Missing issue action id for resolving action safety event: " +
+                    SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED)
     }
 
     @Test
@@ -136,8 +133,8 @@ class SafetyEventTest {
         assertThat(exception)
             .hasMessageThat()
             .isEqualTo(
-                "Missing issue id for resolving action safety event " +
-                    "($SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED)")
+                "Missing issue id for resolving action safety event: " +
+                    SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED)
     }
 
     @Test

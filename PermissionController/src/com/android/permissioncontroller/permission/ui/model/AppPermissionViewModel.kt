@@ -32,6 +32,7 @@ import android.os.Bundle
 import android.os.UserHandle
 import android.util.Log
 import androidx.annotation.ChecksSdkIntAtLeast
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -50,6 +51,7 @@ import com.android.permissioncontroller.permission.data.SmartUpdateMediatorLiveD
 import com.android.permissioncontroller.permission.data.get
 import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPermission
+import com.android.permissioncontroller.permission.service.PermissionChangeStorageImpl
 import com.android.permissioncontroller.permission.service.v33.PermissionDecisionStorageImpl
 import com.android.permissioncontroller.permission.ui.AdvancedConfirmDialogArgs
 
@@ -688,6 +690,7 @@ class AppPermissionViewModel(
         }
     }
 
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
     private fun expandsToStorageSupergroup(group: LightAppPermGroup): Boolean {
         return group.packageInfo.targetSdkVersion <= Build.VERSION_CODES.S_V2 &&
             group.permGroupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS
@@ -703,7 +706,7 @@ class AppPermissionViewModel(
         }
     }
 
-    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun showMediaConfirmDialog(
         setOneTime: Boolean,
         confirmDialog: ConfirmDialogShowingFragment,
@@ -943,6 +946,7 @@ class AppPermissionViewModel(
                 logAppPermissionFragmentActionReported(changeId, newPermission, buttonPressed)
                 PermissionDecisionStorageImpl.recordPermissionDecision(app.applicationContext,
                     packageName, permGroupName, newPermission.isGrantedIncludingAppOp)
+                PermissionChangeStorageImpl.recordPermissionChange(packageName)
             }
         }
     }
