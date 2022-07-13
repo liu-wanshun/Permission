@@ -819,6 +819,15 @@
     <!-- The notification content for the hibernation reminder notification [CHAR LIMIT=none] -->
     <string name="unused_apps_notification_content">Permissions and temporary files have been removed and notifications were stopped. Tap to review.</string>
 
+    <!-- TODO(b/237446729): The safety center card title for apps being auto-revoked [DO NOT TRANSLATE] [CHAR LIMIT=60] -->
+    <string name="unused_apps_safety_center_card_title">App permissions removed</string>
+
+    <!-- TODO(b/237446729): The safety center card summary for apps being auto-revoked [DO NOT TRANSLATE] [CHAR LIMIT=60] -->
+    <string name="unused_apps_safety_center_card_content">To protect your privacy, permissions from some apps that you haven\u2019t used in a few months have been removed.</string>
+
+    <!-- TODO(b/237446729): The action on the auto-revoked card to see unused apps [DO NOT TRANSLATE] [CHAR LIMIT=60] -->
+    <string name="unused_apps_safety_center_action_title">See unused apps</string>
+
     <!-- The notification title for the notification that shows up at the end of a drive where the user made a permission decision [CHAR LIMIT=60] -->
     <string name="post_drive_permission_decision_reminder_title">Check recent permissions</string>
 
@@ -1534,6 +1543,8 @@ Allow <xliff:g id="app_name" example="Gmail">%4$s</xliff:g> to upload a bug repo
     <string name="safety_center_issue_card_cancel_dismiss_button">Cancel</string>
     <!-- Title for a section that contains security and privacy related settings on the Security and Privacy page [CHAR LIMIT=60] -->
     <string name="safety_center_entries_category_title">Settings</string>
+    <!-- Content description for the safety status preference title and summary in the Safety Center [CHAR LIMIT=NONE]-->
+    <string name="safety_status_preference_title_and_summary_content_description">Security and privacy status. <xliff:g id="overall safety status" example="Looks Good">%1$s</xliff:g>. <xliff:g id="summary of device status" example="This device is up to date">%2$s</xliff:g></string>
     <!-- Label for the button that takes the user to the settings page for Android Security  [CHAR LIMIT=60] -->
     <string name="security_settings">Security Settings</string>
     <!-- Label for the permission usage section of safety center QS page[CHAR LIMIT=30] -->
@@ -1612,9 +1623,6 @@ Allow <xliff:g id="app_name" example="Gmail">%4$s</xliff:g> to upload a bug repo
     <string name="media_confirm_dialog_message_q_to_s_visual_allow">This app doesn\u2019t support the latest version of Android. If this app can access photos and videos, it will also be allowed to access music and audio files.</string>
     <!-- Message for media confirm dialog (when user denies visual group of q_to_s app) [CHAR LIMIT=NONE] -->
     <string name="media_confirm_dialog_message_q_to_s_visual_deny">This app doesn\u2019t support the latest version of Android. If this app can\u2019t access music and audio files, it also won\u2019t be allowed to access photos and videos.</string>
-
-    <!-- Content description for close button of the security and privacy quick settings [CHAR LIMIT=NONE] -->
-    <string name="security_privacy_qs_close_button">Close</string>
 
     <!-- TODO: b/231974769: Title for background location access reminder notification [CHAR LIMIT=60] [DO NOT TRANSLATE] -->
     <string name="safety_center_background_location_access_notification_title">Review app with background location access</string>
