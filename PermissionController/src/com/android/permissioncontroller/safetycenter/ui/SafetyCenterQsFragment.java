@@ -49,6 +49,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -58,6 +60,7 @@ import com.android.permissioncontroller.permission.ui.model.v33.SafetyCenterQsVi
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
 import com.android.permissioncontroller.permission.utils.Utils;
 import com.android.permissioncontroller.safetycenter.ui.SafetyCenterDashboardFragment;
+import com.android.permissioncontroller.safetycenter.ui.SafetyCenterTouchTarget;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -150,18 +153,26 @@ public class SafetyCenterQsFragment extends Fragment {
             mRootView.setVisibility(View.GONE);
         }
         root.setBackgroundColor(android.R.color.background_dark);
-        root.findViewById(R.id.close_button).setOnClickListener((v) -> requireActivity().finish());
+        View closeButton = root.findViewById(R.id.close_button);
+        closeButton.setOnClickListener((v) -> requireActivity().finish());
+        SafetyCenterTouchTarget.configureSize(
+                closeButton, R.dimen.safety_center_icon_button_touch_target_size);
 
         View securitySettings = root.findViewById(R.id.security_settings_button);
         securitySettings.setOnClickListener((v) -> mViewModel.navigateToSecuritySettings(this));
         ((TextView) securitySettings.findViewById(R.id.toggle_sensor_name))
-                .setText(R.string.settings);
+                .setText(R.string.security_settings_button_label_qs);
         securitySettings.findViewById(R.id.toggle_sensor_status).setVisibility(View.GONE);
         ((ImageView) securitySettings.findViewById(R.id.toggle_sensor_icon))
                 .setImageDrawable(mContext.getDrawable(R.drawable.settings_gear));
         securitySettings.findViewById(R.id.arrow_icon).setVisibility(View.VISIBLE);
         ((ImageView) securitySettings.findViewById(R.id.arrow_icon))
                 .setImageDrawable(mContext.getDrawable(R.drawable.forward_arrow));
+        ViewCompat.replaceAccessibilityAction(
+                securitySettings,
+                AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLICK,
+                mContext.getString(R.string.safety_center_qs_open_action),
+                null);
 
         getChildFragmentManager()
                 .beginTransaction()
@@ -503,7 +514,7 @@ public class SafetyCenterQsFragment extends Fragment {
             }
 
             TextView groupLabel = toggle.findViewById(R.id.toggle_sensor_name);
-            groupLabel.setText(KotlinUtils.INSTANCE.getPermGroupLabel(mContext, groupName));
+            groupLabel.setText(getToggleLabel(groupName));
             TextView blockedStatus = toggle.findViewById(R.id.toggle_sensor_status);
             ImageView iconView = toggle.findViewById(R.id.toggle_sensor_icon);
             boolean sensorEnabled =
@@ -525,6 +536,18 @@ public class SafetyCenterQsFragment extends Fragment {
             blockedStatus.setTextColor(colorSecondary);
             groupLabel.setTextColor(colorPrimary);
             iconView.setImageDrawable(icon);
+
+            int contentDescriptionResId = R.string.safety_center_qs_privacy_control;
+            toggle.setContentDescription(
+                    mContext.getString(
+                            contentDescriptionResId,
+                            groupLabel.getText(),
+                            blockedStatus.getText()));
+            ViewCompat.replaceAccessibilityAction(
+                    toggle,
+                    AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLICK,
+                    mContext.getString(R.string.safety_center_qs_toggle_action),
+                    null);
         }
     }
 
@@ -541,6 +564,16 @@ public class SafetyCenterQsFragment extends Fragment {
         mContext.getTheme().resolveAttribute(attribute, value, true);
         int colorRes = value.resourceId != 0 ? value.resourceId : value.data;
         return mContext.getColor(colorRes);
+    }
+
+    private CharSequence getToggleLabel(String permissionGroup) {
+        switch (permissionGroup) {
+            case MICROPHONE:
+                return mContext.getString(R.string.microphone_toggle_label_qs);
+            case CAMERA:
+                return mContext.getString(R.string.camera_toggle_label_qs);
+        }
+        return KotlinUtils.INSTANCE.getPermGroupLabel(mContext, permissionGroup);
     }
 
     private static int getRemovePermissionText(String permissionGroup) {
