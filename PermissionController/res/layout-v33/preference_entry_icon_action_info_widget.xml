@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright (C) 2022 The Android Open Source Project
   ~
@@ -15,13 +14,9 @@
   ~ limitations under the License.
   -->
 
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="20dp"
-    android:height="20dp"
-    android:viewportWidth="20"
-    android:viewportHeight="20">
-  <path
-      android:fillColor="?attr/colorScIconRecommend"
-      android:pathData="M10,2a8,8 0,1 0,8 8,8 8,0 0,0 -8,-8ZM9.2,14L9.2,12.4h1.6L10.8,14ZM9.2,6v4.76h1.6L10.8,6Z"
-      android:fillType="evenOdd"/>
-</vector>
+<ImageButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/icon_action_button"
+    android:src="@drawable/ic_settings_info"
+    android:contentDescription="@string/safety_center_info_label"
+    style="@style/SafetyCenter.EntryCard.IconAction"/>

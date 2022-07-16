@@ -24,9 +24,11 @@ import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.annotation.UserIdInt;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
 import android.icu.text.ListFormatter;
 import android.icu.text.MessageFormat;
 import android.icu.util.ULocale;
@@ -87,7 +89,9 @@ final class SafetyCenterDataTracker {
 
     private static final String TAG = "SafetyCenterDataTracker";
 
-    private static final String ANDROID_LOCK_SCREEN_SOURCES_ID = "AndroidLockScreenSources";
+    private static final String ANDROID_LOCK_SCREEN_SOURCES_GROUP_ID = "AndroidLockScreenSources";
+    private static final String ANDROID_LOCK_SCREEN_SOURCE_ID = "AndroidLockScreen";
+    private static final int ANDROID_LOCK_SCREEN_ICON_ACTION_REQ_CODE = 86;
 
     private static final SafetyCenterIssuesBySeverityDescending
             SAFETY_CENTER_ISSUES_BY_SEVERITY_DESCENDING =
@@ -300,11 +304,17 @@ final class SafetyCenterDataTracker {
     }
 
     /**
-     * Clears all safety source errors received so far, this is useful e.g. when starting a new
-     * broadcast.
+     * Clears all safety source errors received so far for the given {@link UserProfileGroup}, this
+     * is useful e.g. when starting a new broadcast.
      */
-    void clearSafetySourceErrors() {
-        mSafetySourceErrors.clear();
+    void clearSafetySourceErrors(@NonNull UserProfileGroup userProfileGroup) {
+        // Loop in reverse index order to be able to remove entries while iterating.
+        for (int i = mSafetySourceErrors.size() - 1; i >= 0; i--) {
+            SafetySourceKey sourceKey = mSafetySourceErrors.valueAt(i);
+            if (userProfileGroup.contains(sourceKey.getUserId())) {
+                mSafetySourceErrors.removeAt(i);
+            }
+        }
     }
 
     /**
@@ -430,6 +440,7 @@ final class SafetyCenterDataTracker {
                                 getSafetyCenterStatusTitle(
                                         SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN,
                                         SafetyCenterStatus.REFRESH_STATUS_NONE,
+                                        new ArraySet<>(),
                                         false),
                                 getSafetyCenterStatusSummary(
                                         SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN,
@@ -473,6 +484,13 @@ final class SafetyCenterDataTracker {
             SafetySourceKey sourceKey = mSafetySourceDataForKey.keyAt(i);
             if (sourceKey.getUserId() == userId) {
                 mSafetySourceDataForKey.removeAt(i);
+            }
+        }
+        // Loop in reverse index order to be able to remove entries while iterating.
+        for (int i = mSafetySourceErrors.size() - 1; i >= 0; i--) {
+            SafetySourceKey sourceKey = mSafetySourceErrors.valueAt(i);
+            if (sourceKey.getUserId() == userId) {
+                mSafetySourceErrors.removeAt(i);
             }
         }
         // Loop in reverse index order to be able to remove entries while iterating.
@@ -703,6 +721,7 @@ final class SafetyCenterDataTracker {
         int safetyCenterOverallSeverityLevel = SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK;
         int safetyCenterEntriesSeverityLevel = SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK;
         List<SafetyCenterIssue> safetyCenterIssues = new ArrayList<>();
+        ArraySet<Integer> allCurrentIssueCategories = new ArraySet<>();
         List<SafetyCenterEntryOrGroup> safetyCenterEntryOrGroups = new ArrayList<>();
         List<SafetyCenterStaticEntryGroup> safetyCenterStaticEntryGroups = new ArrayList<>();
         SafetyCenterOverallStatusErrorState safetyCenterOverallStatusErrorState =
@@ -715,7 +734,10 @@ final class SafetyCenterDataTracker {
                     Math.max(
                             safetyCenterOverallSeverityLevel,
                             addSafetyCenterIssues(
-                                    safetyCenterIssues, safetySourcesGroup, userProfileGroup));
+                                    safetyCenterIssues,
+                                    allCurrentIssueCategories,
+                                    safetySourcesGroup,
+                                    userProfileGroup));
             int safetySourcesGroupType = safetySourcesGroup.getType();
             switch (safetySourcesGroupType) {
                 case SafetySourcesGroup.SAFETY_SOURCES_GROUP_TYPE_COLLAPSIBLE:
@@ -755,6 +777,7 @@ final class SafetyCenterDataTracker {
                                 getSafetyCenterStatusTitle(
                                         safetyCenterOverallSeverityLevel,
                                         refreshStatus,
+                                        allCurrentIssueCategories,
                                         hasSettingsToReview),
                                 getSafetyCenterStatusSummary(
                                         safetyCenterOverallSeverityLevel,
@@ -772,6 +795,7 @@ final class SafetyCenterDataTracker {
     @SafetyCenterStatus.OverallSeverityLevel
     private int addSafetyCenterIssues(
             @NonNull List<SafetyCenterIssue> safetyCenterIssues,
+            @NonNull ArraySet<Integer> allCurrentIssueCategories,
             @NonNull SafetySourcesGroup safetySourcesGroup,
             @NonNull UserProfileGroup userProfileGroup) {
         int safetyCenterIssuesOverallSeverityLevel = SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK;
@@ -788,6 +812,7 @@ final class SafetyCenterDataTracker {
                             safetyCenterIssuesOverallSeverityLevel,
                             addSafetyCenterIssues(
                                     safetyCenterIssues,
+                                    allCurrentIssueCategories,
                                     safetySource,
                                     userProfileGroup.getProfileParentUserId()));
 
@@ -805,6 +830,7 @@ final class SafetyCenterDataTracker {
                                 safetyCenterIssuesOverallSeverityLevel,
                                 addSafetyCenterIssues(
                                         safetyCenterIssues,
+                                        allCurrentIssueCategories,
                                         safetySource,
                                         managedRunningProfileUserId));
             }
@@ -816,6 +842,7 @@ final class SafetyCenterDataTracker {
     @SafetyCenterStatus.OverallSeverityLevel
     private int addSafetyCenterIssues(
             @NonNull List<SafetyCenterIssue> safetyCenterIssues,
+            @NonNull ArraySet<Integer> allCurrentIssueCategories,
             @NonNull SafetySource safetySource,
             @UserIdInt int userId) {
         SafetySourceKey key = SafetySourceKey.of(safetySource.getId(), userId);
@@ -841,6 +868,8 @@ final class SafetyCenterDataTracker {
                             toSafetyCenterStatusOverallSeverityLevel(
                                     safetySourceIssue.getSeverityLevel()));
             safetyCenterIssues.add(safetyCenterIssue);
+
+            allCurrentIssueCategories.add(safetySourceIssue.getIssueCategory());
         }
 
         return safetyCenterIssuesOverallSeverityLevel;
@@ -982,7 +1011,7 @@ final class SafetyCenterDataTracker {
                         break;
                     }
                 }
-            } else if (safetySourcesGroup.getId().equals(ANDROID_LOCK_SCREEN_SOURCES_ID)
+            } else if (safetySourcesGroup.getId().equals(ANDROID_LOCK_SCREEN_SOURCES_GROUP_ID)
                     && TextUtils.isEmpty(groupSummary)) {
                 List<CharSequence> titles = new ArrayList<>();
                 for (int i = 0; i < entries.size(); i++) {
@@ -1085,12 +1114,16 @@ final class SafetyCenterDataTracker {
                                     .setSeverityUnspecifiedIconType(severityUnspecifiedIconType)
                                     .setPendingIntent(pendingIntent);
                     SafetySourceStatus.IconAction iconAction = safetySourceStatus.getIconAction();
-                    if (iconAction != null) {
-                        builder.setIconAction(
-                                new SafetyCenterEntry.IconAction(
-                                        toSafetyCenterEntryIconActionType(iconAction.getIconType()),
-                                        iconAction.getPendingIntent()));
+                    if (iconAction == null) {
+                        return builder.build();
                     }
+                    PendingIntent iconActionPendingIntent =
+                            toIconActionPendingIntent(
+                                    safetySource.getId(), iconAction.getPendingIntent());
+                    builder.setIconAction(
+                            new SafetyCenterEntry.IconAction(
+                                    toSafetyCenterEntryIconActionType(iconAction.getIconType()),
+                                    iconActionPendingIntent));
                     return builder.build();
                 }
                 return toDefaultSafetyCenterEntry(
@@ -1340,6 +1373,79 @@ final class SafetyCenterDataTracker {
         }
     }
 
+    /**
+     * Potentially overrides the Settings IconAction PendingIntent for the AndroidLockScreen source.
+     *
+     * <p>This is done because of a bug in the Settings app where the PendingIntent created ends up
+     * referencing the one from the main entry. The reason for this is that PendingIntent instances
+     * are cached and keyed by an object which does not take into account the underlying intent
+     * extras; and these two intents only differ by the extras that they set. We fix this issue by
+     * recreating the desired Intent and PendingIntent here, using a specific request code for the
+     * PendingIntent to ensure a new instance is created (the key does take into account the request
+     * code).
+     */
+    @NonNull
+    private PendingIntent toIconActionPendingIntent(
+            @NonNull String sourceId, @NonNull PendingIntent pendingIntent) {
+        if (!ANDROID_LOCK_SCREEN_SOURCE_ID.equals(sourceId)) {
+            return pendingIntent;
+        }
+        if (!SafetyCenterFlags.getReplaceLockScreenIconAction()) {
+            return pendingIntent;
+        }
+        String packageName = pendingIntent.getCreatorPackage();
+        UserHandle userHandle = pendingIntent.getCreatorUserHandle();
+        PendingIntent pendingIntentOverride =
+                createLockScreenIconActionPendingIntentOverride(
+                        packageName, userHandle.getIdentifier());
+        if (pendingIntentOverride == null) {
+            return pendingIntent;
+        }
+        return pendingIntentOverride;
+    }
+
+    @Nullable
+    private PendingIntent createLockScreenIconActionPendingIntentOverride(
+            @NonNull String settingsPackageName, @UserIdInt int userId) {
+        Context packageContext = toPackageContextAsUser(settingsPackageName, userId);
+        if (packageContext == null) {
+            return null;
+        }
+        Resources settingsResources = packageContext.getResources();
+        int hasSettingsFixedIssueResourceId =
+                settingsResources.getIdentifier(
+                        "config_isSafetyCenterLockScreenPendingIntentFixed",
+                        "bool",
+                        settingsPackageName);
+        if (hasSettingsFixedIssueResourceId != Resources.ID_NULL) {
+            boolean hasSettingsFixedIssue =
+                    settingsResources.getBoolean(hasSettingsFixedIssueResourceId);
+            if (hasSettingsFixedIssue) {
+                return null;
+            }
+        }
+        Intent intent =
+                new Intent(Intent.ACTION_MAIN)
+                        .setComponent(
+                                new ComponentName(
+                                        settingsPackageName, settingsPackageName + ".SubSettings"))
+                        .putExtra(
+                                ":settings:show_fragment",
+                                settingsPackageName + ".security.screenlock.ScreenLockSettings")
+                        .putExtra(":settings:source_metrics", 1917)
+                        .putExtra("page_transition_type", 0);
+        final long callingId = Binder.clearCallingIdentity();
+        try {
+            return PendingIntent.getActivity(
+                    packageContext,
+                    ANDROID_LOCK_SCREEN_ICON_ACTION_REQ_CODE,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE);
+        } finally {
+            Binder.restoreCallingIdentity(callingId);
+        }
+    }
+
     @Nullable
     private Context toPackageContextAsUser(@NonNull String packageName, @UserIdInt int userId) {
         // This call requires the INTERACT_ACROSS_USERS permission.
@@ -1483,11 +1589,16 @@ final class SafetyCenterDataTracker {
     private String getSafetyCenterStatusTitle(
             @SafetyCenterStatus.OverallSeverityLevel int overallSeverityLevel,
             @SafetyCenterStatus.RefreshStatus int refreshStatus,
+            @NonNull ArraySet<Integer> allCurrentIssueCategories,
             boolean hasSettingsToReview) {
         String refreshStatusTitle = getSafetyCenterRefreshStatusTitle(refreshStatus);
         if (refreshStatusTitle != null) {
             return refreshStatusTitle;
         }
+        boolean onlyAccountIssuesPresent =
+                allCurrentIssueCategories.size() == 1
+                        && allCurrentIssueCategories.contains(
+                                SafetySourceIssue.ISSUE_CATEGORY_ACCOUNT);
         switch (overallSeverityLevel) {
             case SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN:
             case SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK:
@@ -1498,9 +1609,17 @@ final class SafetyCenterDataTracker {
                 return mSafetyCenterResourcesContext.getStringByName(
                         "overall_severity_level_ok_title");
             case SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_RECOMMENDATION:
+                if (onlyAccountIssuesPresent) {
+                    return mSafetyCenterResourcesContext.getStringByName(
+                            "overall_severity_level_account_recommendation_title");
+                }
                 return mSafetyCenterResourcesContext.getStringByName(
                         "overall_severity_level_recommendation_title");
             case SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_CRITICAL_WARNING:
+                if (onlyAccountIssuesPresent) {
+                    return mSafetyCenterResourcesContext.getStringByName(
+                            "overall_severity_level_critical_account_warning_title");
+                }
                 return mSafetyCenterResourcesContext.getStringByName(
                         "overall_severity_level_critical_warning_title");
         }
