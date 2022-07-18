@@ -17,7 +17,6 @@
 package android.safetycenter.cts
 
 import android.content.Context
-import android.os.Build.VERSION_CODES.TIRAMISU
 import android.os.Bundle
 import android.safetycenter.SafetyCenterManager.EXTRA_SAFETY_SOURCE_ID
 import android.safetycenter.SafetyCenterManager.EXTRA_SAFETY_SOURCE_ISSUE_ID
@@ -34,11 +33,11 @@ import android.safetycenter.cts.testing.SafetyCenterCtsHelper
 import android.safetycenter.cts.testing.SafetyCenterFlags.deviceSupportsSafetyCenter
 import android.safetycenter.cts.testing.SafetySourceCtsData
 import android.safetycenter.cts.testing.SafetySourceCtsData.Companion.CRITICAL_ISSUE_ID
-import android.safetycenter.cts.testing.SafetySourceCtsData.Companion.CRITICAL_ISSUE_ID_2
 import android.safetycenter.cts.testing.SafetySourceCtsData.Companion.RECOMMENDATION_ISSUE_ID
+import android.safetycenter.cts.testing.SettingsPackage.getSettingsPackageName
+import android.safetycenter.cts.testing.UiTestHelper.assertSourceDataDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.assertSourceIssueDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.assertSourceIssueNotDisplayed
-import android.safetycenter.cts.testing.UiTestHelper.assertSourceDataDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.expandMoreIssuesCard
 import android.safetycenter.cts.testing.UiTestHelper.findAllText
 import android.safetycenter.cts.testing.UiTestHelper.findButton
@@ -48,17 +47,17 @@ import android.support.test.uiautomator.By
 import android.support.test.uiautomator.UiDevice
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SdkSuppress
 import com.android.compatibility.common.util.UiAutomatorUtils.getUiDevice
 import com.android.compatibility.common.util.UiAutomatorUtils.waitFindObject
+import java.time.Duration
 import org.junit.After
 import org.junit.Assume.assumeTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/** CTS tests for the Safety Center Activity. */
 @RunWith(AndroidJUnit4::class)
-@SdkSuppress(minSdkVersion = TIRAMISU, codeName = "Tiramisu")
 class SafetyCenterActivityTest {
     private val context: Context = getApplicationContext()
 
@@ -78,7 +77,7 @@ class SafetyCenterActivityTest {
         if (!shouldRunTests) {
             return
         }
-        safetyCenterCtsHelper.setEnabled(true)
+        safetyCenterCtsHelper.setup()
     }
 
     @After
@@ -94,15 +93,17 @@ class SafetyCenterActivityTest {
     fun launchActivity_withFlagEnabled_showsSecurityAndPrivacyTitle() {
         context.launchSafetyCenterActivity {
             // CollapsingToolbar title can't be found by text, so using description instead.
-            waitFindObject(By.desc("Security & Privacy"))
+            waitFindObject(By.desc("Security & privacy"))
         }
     }
 
     @Test
-    fun launchActivity_withFlagDisabled_showsSettingsTitle() {
+    fun launchActivity_withFlagDisabled_opensSettings() {
         safetyCenterCtsHelper.setEnabled(false)
 
-        context.launchSafetyCenterActivity { waitFindObject(By.text("Settings")) }
+        context.launchSafetyCenterActivity {
+            waitFindObject(By.pkg(context.getSettingsPackageName()))
+        }
     }
 
     @Test
@@ -123,7 +124,7 @@ class SafetyCenterActivityTest {
     @Test
     fun launchActivity_displaysSafetyData() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        val dataToDisplay = safetySourceCtsData.criticalWithIssue
+        val dataToDisplay = safetySourceCtsData.criticalWithResolvingIssue
         safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, dataToDisplay)
 
         context.launchSafetyCenterActivity { assertSourceDataDisplayed(dataToDisplay) }
@@ -143,31 +144,130 @@ class SafetyCenterActivityTest {
     }
 
     @Test
+    fun updatingSafetySourceData_withoutSubtitle_newIssueWithSubtitle() {
+        val initialDataToDisplay = safetySourceCtsData.informationWithIssue
+        val updatedDataToDisplay = safetySourceCtsData.informationWithSubtitleIssue
+
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, initialDataToDisplay)
+
+        context.launchSafetyCenterActivity {
+            assertSourceIssueDisplayed(safetySourceCtsData.informationIssue)
+
+            safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, updatedDataToDisplay)
+            getUiDevice()
+                .waitForWindowUpdate(/* from any window*/ null, DATA_UPDATE_TIMEOUT.toMillis())
+
+            assertSourceIssueDisplayed(safetySourceCtsData.informationIssueWithSubtitle)
+        }
+    }
+
+    @Test
+    fun updatingSafetySourceData_withSubtitle_newIssueWithoutSubtitle() {
+        val initialDataToDisplay = safetySourceCtsData.informationWithSubtitleIssue
+        val updatedDataToDisplay = safetySourceCtsData.informationWithIssue
+
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, initialDataToDisplay)
+
+        context.launchSafetyCenterActivity {
+            assertSourceIssueDisplayed(safetySourceCtsData.informationIssueWithSubtitle)
+
+            safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, updatedDataToDisplay)
+            getUiDevice()
+                .waitForWindowUpdate(/* from any window*/ null, DATA_UPDATE_TIMEOUT.toMillis())
+
+            waitTextNotDisplayed(
+                safetySourceCtsData.informationIssueWithSubtitle.subtitle.toString())
+            assertSourceIssueDisplayed(safetySourceCtsData.informationIssue)
+        }
+    }
+
+    @Test
+    fun issueCard_greenIssue_noDismissalConfirmationAndDismisses() {
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.informationWithIssue)
+
+        context.launchSafetyCenterActivity {
+            waitFindObject(By.desc("Dismiss")).click()
+
+            assertSourceIssueNotDisplayed(safetySourceCtsData.informationIssue)
+            assertSourceDataDisplayed(safetySourceCtsData.information)
+            findButton("Scan device")
+        }
+    }
+
+    @Test
     fun issueCard_confirmsDismissal_dismisses() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithIssue)
+        safetyCenterCtsHelper.setData(
+            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingIssue)
 
         context.launchSafetyCenterActivity {
             waitFindObject(By.desc("Dismiss")).click()
             waitFindObject(By.text("Dismiss this alert?"))
             findButton("Dismiss").click()
 
-            assertSourceIssueNotDisplayed(safetySourceCtsData.criticalIssue)
-            findButton("Scan")
+            assertSourceIssueNotDisplayed(safetySourceCtsData.criticalResolvingIssue)
+            findButton("Scan device")
+        }
+    }
+
+    @Test
+    fun issueCard_confirmsDismissal_afterRotation_dismisses() {
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(
+            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingIssue)
+
+        context.launchSafetyCenterActivity {
+            waitFindObject(By.desc("Dismiss")).click()
+            waitFindObject(By.text("Dismiss this alert?"))
+
+            getUiDevice().rotate()
+            getUiDevice()
+                .waitForWindowUpdate(/* from any window*/ null, DIALOG_ROTATION_TIMEOUT.toMillis())
+
+            waitFindObject(By.text("Dismiss this alert?"))
+            findButton("Dismiss").click()
+
+            assertSourceIssueNotDisplayed(safetySourceCtsData.criticalResolvingIssue)
+            findButton("Scan device")
         }
     }
 
     @Test
     fun issueCard_confirmsDismissal_cancels() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithIssue)
+        safetyCenterCtsHelper.setData(
+            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingIssue)
 
         context.launchSafetyCenterActivity {
             waitFindObject(By.desc("Dismiss")).click()
             waitFindObject(By.text("Dismiss this alert?"))
             findButton("Cancel").click()
 
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
+        }
+    }
+
+    @Test
+    fun issueCard_confirmsDismissal_afterRotation_cancels() {
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(
+            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingIssue)
+
+        context.launchSafetyCenterActivity {
+            waitFindObject(By.desc("Dismiss")).click()
+            waitFindObject(By.text("Dismiss this alert?"))
+
+            getUiDevice().rotate()
+            getUiDevice()
+                .waitForWindowUpdate(/* from any window*/ null, DIALOG_ROTATION_TIMEOUT.toMillis())
+
+            waitFindObject(By.text("Dismiss this alert?"))
+            findButton("Cancel").click()
+
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
         }
     }
 
@@ -176,7 +276,7 @@ class SafetyCenterActivityTest {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.information)
 
-        context.launchSafetyCenterActivity { findButton("Scan") }
+        context.launchSafetyCenterActivity { findButton("Scan device") }
     }
 
     @Test
@@ -184,13 +284,13 @@ class SafetyCenterActivityTest {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.informationWithIssue)
 
-        context.launchSafetyCenterActivity { waitButtonNotDisplayed("Scan") }
+        context.launchSafetyCenterActivity { waitButtonNotDisplayed("Scan device") }
     }
 
     @Test
     fun launchActivity_fromQuickSettings_issuesExpanded() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
-        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithIssue)
+        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.recommendationWithIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
@@ -199,7 +299,7 @@ class SafetyCenterActivityTest {
         context.launchSafetyCenterActivity(bundle) {
             // Verify cards expanded
             waitTextNotDisplayed("See all alerts")
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
             assertSourceIssueDisplayed(safetySourceCtsData.recommendationIssue)
             assertSourceIssueDisplayed(safetySourceCtsData.informationIssue)
         }
@@ -208,7 +308,7 @@ class SafetyCenterActivityTest {
     @Test
     fun launchActivity_fromNotification_targetIssueAlreadyFirstIssue() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
-        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithIssue)
+        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.recommendationWithIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
@@ -216,7 +316,7 @@ class SafetyCenterActivityTest {
         bundle.putString(EXTRA_SAFETY_SOURCE_ID, SOURCE_ID_1)
         bundle.putString(EXTRA_SAFETY_SOURCE_ISSUE_ID, CRITICAL_ISSUE_ID)
         context.launchSafetyCenterActivity(bundle) {
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
             waitFindObject(By.text("See all alerts"))
             assertSourceIssueNotDisplayed(safetySourceCtsData.recommendationIssue)
             assertSourceIssueNotDisplayed(safetySourceCtsData.informationIssue)
@@ -226,17 +326,17 @@ class SafetyCenterActivityTest {
     @Test
     fun launchActivity_fromNotification_targetIssueSamePriorityAsFirstIssue_reorderedFirstIssue() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
-        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithIssue)
-        safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.criticalWithIssue2)
+        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingIssue)
+        safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.criticalWithRedirectingIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
         val bundle = Bundle()
         bundle.putString(EXTRA_SAFETY_SOURCE_ID, SOURCE_ID_2)
-        bundle.putString(EXTRA_SAFETY_SOURCE_ISSUE_ID, CRITICAL_ISSUE_ID_2)
+        bundle.putString(EXTRA_SAFETY_SOURCE_ISSUE_ID, CRITICAL_ISSUE_ID)
         context.launchSafetyCenterActivity(bundle) {
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue2)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalRedirectingIssue)
             waitFindObject(By.text("See all alerts"))
-            assertSourceIssueNotDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueNotDisplayed(safetySourceCtsData.criticalResolvingIssue)
             assertSourceIssueNotDisplayed(safetySourceCtsData.informationIssue)
         }
     }
@@ -244,7 +344,7 @@ class SafetyCenterActivityTest {
     @Test
     fun launchActivity_fromNotification_targetLowerPriorityAsFirstIssue_reorderedSecondIssue() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
-        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithIssue)
+        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.recommendationWithIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
@@ -252,7 +352,7 @@ class SafetyCenterActivityTest {
         bundle.putString(EXTRA_SAFETY_SOURCE_ID, SOURCE_ID_2)
         bundle.putString(EXTRA_SAFETY_SOURCE_ISSUE_ID, RECOMMENDATION_ISSUE_ID)
         context.launchSafetyCenterActivity(bundle) {
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
             assertSourceIssueDisplayed(safetySourceCtsData.recommendationIssue)
             waitFindObject(By.text("See all alerts"))
             assertSourceIssueNotDisplayed(safetySourceCtsData.informationIssue)
@@ -262,15 +362,15 @@ class SafetyCenterActivityTest {
     @Test
     fun launchActivity_fromNotification_targetIssueNotFound() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
-        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithIssue)
+        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.recommendationWithIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
         val bundle = Bundle()
         bundle.putString(EXTRA_SAFETY_SOURCE_ID, SOURCE_ID_2)
-        bundle.putString(EXTRA_SAFETY_SOURCE_ISSUE_ID, CRITICAL_ISSUE_ID_2)
+        bundle.putString(EXTRA_SAFETY_SOURCE_ISSUE_ID, CRITICAL_ISSUE_ID)
         context.launchSafetyCenterActivity(bundle) {
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
             waitFindObject(By.text("See all alerts"))
             assertSourceIssueNotDisplayed(safetySourceCtsData.recommendationIssue)
             assertSourceIssueNotDisplayed(safetySourceCtsData.informationIssue)
@@ -280,10 +380,11 @@ class SafetyCenterActivityTest {
     @Test
     fun moreIssuesCard_underMaxShownIssues_noMoreIssuesCard() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithIssue)
+        safetyCenterCtsHelper.setData(
+            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingIssue)
 
         context.launchSafetyCenterActivity {
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
             waitTextNotDisplayed("See all alerts")
         }
     }
@@ -291,12 +392,12 @@ class SafetyCenterActivityTest {
     @Test
     fun moreIssuesCard_moreIssuesCardShown_additionalIssueCardsCollapsed() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
-        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithIssue)
+        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.recommendationWithIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
         context.launchSafetyCenterActivity {
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
             waitFindObject(By.text("See all alerts"))
             assertSourceIssueNotDisplayed(safetySourceCtsData.recommendationIssue)
             assertSourceIssueNotDisplayed(safetySourceCtsData.informationIssue)
@@ -306,18 +407,18 @@ class SafetyCenterActivityTest {
     @Test
     fun moreIssuesCard_expandAdditionalIssueCards() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
-        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithIssue)
+        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.recommendationWithIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
         context.launchSafetyCenterActivity {
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
 
             expandMoreIssuesCard()
 
             // Verify cards expanded
             waitTextNotDisplayed("See all alerts")
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
             assertSourceIssueDisplayed(safetySourceCtsData.recommendationIssue)
             assertSourceIssueDisplayed(safetySourceCtsData.informationIssue)
         }
@@ -326,7 +427,7 @@ class SafetyCenterActivityTest {
     @Test
     fun moreIssuesCard_rotation_cardsStillExpanded() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
-        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithIssue)
+        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.recommendationWithIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
@@ -338,7 +439,7 @@ class SafetyCenterActivityTest {
 
             // Verify cards initially expanded
             waitTextNotDisplayed("See all alerts")
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
             assertSourceIssueDisplayed(safetySourceCtsData.recommendationIssue)
             assertSourceIssueDisplayed(safetySourceCtsData.informationIssue)
 
@@ -347,7 +448,7 @@ class SafetyCenterActivityTest {
 
             // Verify cards remain expanded
             waitTextNotDisplayed("See all alerts")
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
             assertSourceIssueDisplayed(safetySourceCtsData.recommendationIssue)
             assertSourceIssueDisplayed(safetySourceCtsData.informationIssue)
         }
@@ -356,7 +457,7 @@ class SafetyCenterActivityTest {
     @Test
     fun moreIssuesCard_twoIssuesAlreadyShown_expandAdditionalIssueCards() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
-        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithIssue)
+        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.recommendationWithIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
@@ -364,7 +465,7 @@ class SafetyCenterActivityTest {
         bundle.putString(EXTRA_SAFETY_SOURCE_ID, SOURCE_ID_2)
         bundle.putString(EXTRA_SAFETY_SOURCE_ISSUE_ID, RECOMMENDATION_ISSUE_ID)
         context.launchSafetyCenterActivity(bundle) {
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
             assertSourceIssueDisplayed(safetySourceCtsData.recommendationIssue)
             waitFindObject(By.text("See all alerts"))
             assertSourceIssueNotDisplayed(safetySourceCtsData.informationIssue)
@@ -373,7 +474,7 @@ class SafetyCenterActivityTest {
 
             // Verify cards expanded
             waitTextNotDisplayed("See all alerts")
-            assertSourceIssueDisplayed(safetySourceCtsData.criticalIssue)
+            assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingIssue)
             assertSourceIssueDisplayed(safetySourceCtsData.recommendationIssue)
             assertSourceIssueDisplayed(safetySourceCtsData.informationIssue)
         }
@@ -381,6 +482,8 @@ class SafetyCenterActivityTest {
 
     companion object {
         private const val EXPAND_ISSUE_GROUP_QS_FRAGMENT_KEY = "expand_issue_group_qs_fragment_key"
+        private val DIALOG_ROTATION_TIMEOUT = Duration.ofSeconds(1)
+        private val DATA_UPDATE_TIMEOUT = Duration.ofSeconds(1)
 
         private fun UiDevice.rotate() {
             if (isNaturalOrientation) {
