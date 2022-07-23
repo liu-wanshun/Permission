@@ -59,8 +59,11 @@ import com.android.permissioncontroller.permission.ui.model.v33.SafetyCenterQsVi
 import com.android.permissioncontroller.permission.ui.model.v33.SafetyCenterQsViewModelFactory;
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
 import com.android.permissioncontroller.permission.utils.Utils;
+import com.android.permissioncontroller.safetycenter.ui.NavigationSource;
 import com.android.permissioncontroller.safetycenter.ui.SafetyCenterDashboardFragment;
 import com.android.permissioncontroller.safetycenter.ui.SafetyCenterTouchTarget;
+import com.android.permissioncontroller.safetycenter.ui.model.LiveSafetyCenterViewModelFactory;
+import com.android.permissioncontroller.safetycenter.ui.model.SafetyCenterViewModel;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -158,8 +161,15 @@ public class SafetyCenterQsFragment extends Fragment {
         SafetyCenterTouchTarget.configureSize(
                 closeButton, R.dimen.safety_center_icon_button_touch_target_size);
 
+        SafetyCenterViewModel safetyCenterViewModel =
+                new ViewModelProvider(
+                        requireActivity(),
+                        new LiveSafetyCenterViewModelFactory(requireActivity().getApplication()))
+                        .get(SafetyCenterViewModel.class);
         View securitySettings = root.findViewById(R.id.security_settings_button);
-        securitySettings.setOnClickListener((v) -> mViewModel.navigateToSecuritySettings(this));
+        securitySettings.setOnClickListener(
+                (v) -> safetyCenterViewModel.navigateToSafetyCenter(
+                        this, NavigationSource.QUICK_SETTINGS_TILE));
         ((TextView) securitySettings.findViewById(R.id.toggle_sensor_name))
                 .setText(R.string.security_settings_button_label_qs);
         securitySettings.findViewById(R.id.toggle_sensor_status).setVisibility(View.GONE);
@@ -179,7 +189,7 @@ public class SafetyCenterQsFragment extends Fragment {
                 .add(
                         R.id.safety_center_prefs,
                         SafetyCenterDashboardFragment.newInstance(
-                                /* isQuickSettingsFragment= */ true))
+                                mSessionId, /* isQuickSettingsFragment= */ true))
                 .commitNow();
         return root;
     }
@@ -365,7 +375,6 @@ public class SafetyCenterQsFragment extends Fragment {
             ImageView expandView) {
         parentIndicatorLayout.setOnClickListener(
                 createExpansionListener(expandedLayout, expandView));
-        expandView.setOnClickListener(createExpansionListener(expandedLayout, expandView));
     }
 
     private View.OnClickListener createExpansionListener(ConstraintLayout expandedLayout,
@@ -376,17 +385,33 @@ public class SafetyCenterQsFragment extends Fragment {
         ViewGroup indicatorCardViewGroup = (ViewGroup) mRootView;
         return v -> {
             if (expandedLayout.getVisibility() == View.VISIBLE) {
-                TransitionManager.beginDelayedTransition(indicatorCardViewGroup, transition);
+                // Enable -> Press -> Hide the expanded card for a continuous ripple effect
+                expandedLayout.setEnabled(true);
+                pressButton(expandedLayout);
                 expandedLayout.setVisibility(View.GONE);
+                TransitionManager.beginDelayedTransition(indicatorCardViewGroup, transition);
                 expandView.setImageDrawable(
                         constructExpandButton(mContext.getDrawable(R.drawable.ic_expand_more)));
             } else {
-                TransitionManager.beginDelayedTransition(indicatorCardViewGroup, transition);
+                // Show -> Press -> Disable the expanded card for a continuous ripple effect
                 expandedLayout.setVisibility(View.VISIBLE);
+                pressButton(expandedLayout);
+                expandedLayout.setEnabled(false);
+                TransitionManager.beginDelayedTransition(indicatorCardViewGroup, transition);
                 expandView.setImageDrawable(
                         constructExpandButton(mContext.getDrawable(R.drawable.ic_expand_less)));
             }
         };
+    }
+
+    /**
+     * To get the expanded card to ripple at the same time as the parent card we must simulate a
+     * user press on the expanded card
+     */
+    private void pressButton(View buttonToBePressed) {
+        buttonToBePressed.setPressed(true);
+        buttonToBePressed.setPressed(false);
+        buttonToBePressed.performClick();
     }
 
     private String generateUsageLabel(PermissionGroupUsage usage) {
@@ -435,8 +460,7 @@ public class SafetyCenterQsFragment extends Fragment {
             String permGroupName,
             String usageText,
             boolean isActiveUsage) {
-        CharSequence permGroupLabel =
-                KotlinUtils.INSTANCE.getPermGroupLabel(mContext, permGroupName);
+        CharSequence permGroupLabel = getPermGroupLabel(permGroupName);
         ImageView iconView = indicatorParentLayout.findViewById(R.id.indicator_icon);
 
         Drawable background = mContext.getDrawable(R.drawable.indicator_background_circle);
@@ -514,7 +538,7 @@ public class SafetyCenterQsFragment extends Fragment {
             }
 
             TextView groupLabel = toggle.findViewById(R.id.toggle_sensor_name);
-            groupLabel.setText(getToggleLabel(groupName));
+            groupLabel.setText(getPermGroupLabel(groupName));
             TextView blockedStatus = toggle.findViewById(R.id.toggle_sensor_status);
             ImageView iconView = toggle.findViewById(R.id.toggle_sensor_icon);
             boolean sensorEnabled =
@@ -566,7 +590,7 @@ public class SafetyCenterQsFragment extends Fragment {
         return mContext.getColor(colorRes);
     }
 
-    private CharSequence getToggleLabel(String permissionGroup) {
+    private CharSequence getPermGroupLabel(String permissionGroup) {
         switch (permissionGroup) {
             case MICROPHONE:
                 return mContext.getString(R.string.microphone_toggle_label_qs);
