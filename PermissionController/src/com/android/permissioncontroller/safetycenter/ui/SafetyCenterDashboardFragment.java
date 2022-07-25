@@ -16,12 +16,16 @@
 
 package com.android.permissioncontroller.safetycenter.ui;
 
+import static android.os.Build.VERSION_CODES.TIRAMISU;
+
+import static com.android.permissioncontroller.Constants.EXTRA_SESSION_ID;
 import static com.android.permissioncontroller.safetycenter.SafetyCenterConstants.QUICK_SETTINGS_SAFETY_CENTER_FRAGMENT;
 
 import static java.util.Objects.requireNonNull;
 
+import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
 import android.safetycenter.SafetyCenterData;
 import android.safetycenter.SafetyCenterEntry;
@@ -46,15 +50,17 @@ import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.permissioncontroller.Constants;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.safetycenter.ui.model.LiveSafetyCenterViewModelFactory;
 import com.android.permissioncontroller.safetycenter.ui.model.SafetyCenterViewModel;
+import com.android.safetycenter.resources.SafetyCenterResourcesContext;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 /** Dashboard fragment for the Safety Center. */
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@RequiresApi(TIRAMISU)
 public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompat {
 
     private static final String TAG = SafetyCenterDashboardFragment.class.getSimpleName();
@@ -101,9 +107,12 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
      * @param isQuickSettingsFragment Denoting if it is the quick settings fragment
      * @return SafetyCenterDashboardFragment with the arguments set
      */
-    public static SafetyCenterDashboardFragment newInstance(boolean isQuickSettingsFragment) {
+    public static SafetyCenterDashboardFragment newInstance(
+            long sessionId, boolean isQuickSettingsFragment) {
         Bundle args = new Bundle();
+        args.putLong(EXTRA_SESSION_ID, sessionId);
         args.putBoolean(QUICK_SETTINGS_SAFETY_CENTER_FRAGMENT, isQuickSettingsFragment);
+
         SafetyCenterDashboardFragment frag = new SafetyCenterDashboardFragment();
         frag.setArguments(args);
         return frag;
@@ -132,8 +141,8 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
 
         ParsedSafetyCenterIntent parsedSafetyCenterIntent =
                 ParsedSafetyCenterIntent.toSafetyCenterIntent(getActivity().getIntent());
-        mCollapsableIssuesCardHelper
-                .setFocusedIssueKey(parsedSafetyCenterIntent.getSafetyCenterIssueKey());
+        mCollapsableIssuesCardHelper.setFocusedIssueKey(
+                parsedSafetyCenterIntent.getSafetyCenterIssueKey());
 
         // Set quick settings state first and allow restored state to override if necessary
         mCollapsableIssuesCardHelper.setQuickSettingsState(
@@ -151,7 +160,7 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
                 new SafetyCenterStatus.Builder("Looks good", "")
                         .setSeverityLevel(SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN)
                         .build());
-        mSafetyStatusPreference.setRescanButtonOnClickListener(unused -> mViewModel.rescan());
+        mSafetyStatusPreference.setViewModel(mViewModel);
 
         mIssuesGroup = getPreferenceScreen().findPreference(ISSUES_GROUP_KEY);
         mEntriesGroup = getPreferenceScreen().findPreference(ENTRIES_GROUP_KEY);
@@ -165,16 +174,52 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
 
         mViewModel.getSafetyCenterLiveData().observe(this, this::renderSafetyCenterData);
         mViewModel.getErrorLiveData().observe(this, this::displayErrorDetails);
-        getLifecycle().addObserver(mViewModel.getAutoRefreshManager());
 
         getPreferenceManager()
                 .setPreferenceComparisonCallback(new SafetyPreferenceComparisonCallback());
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        // TODO(b/222323674): We may need to do this in onResume to cover certain edge cases.
+        // i.e. FMD changed from quick settings while SC is open
+        mViewModel.pageOpen();
+
+        configureInteractionLogger();
+        mViewModel.getInteractionLogger().record(Action.SAFETY_CENTER_VIEWED);
+    }
+
+    private void configureInteractionLogger() {
+        InteractionLogger logger = mViewModel.getInteractionLogger();
+
+        logger.setSessionId(
+                requireArguments()
+                        .getLong(Constants.EXTRA_SESSION_ID, Constants.INVALID_SESSION_ID));
+        logger.setViewType(mIsQuickSettingsFragment ? ViewType.QUICK_SETTINGS : ViewType.FULL);
+
+        Intent intent = requireActivity().getIntent();
+        logger.setNavigationSource(NavigationSource.fromIntent(intent));
+        logger.setNavigationSensor(Sensor.fromIntent(intent));
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         mCollapsableIssuesCardHelper.saveState(outState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Activity activity = getActivity();
+        if (activity != null && activity.isChangingConfigurations()) {
+            mViewModel.changingConfigurations();
+        }
+    }
+
+    SafetyCenterViewModel getSafetyCenterViewModel() {
+        return mViewModel;
     }
 
     private void renderSafetyCenterData(@Nullable SafetyCenterData data) {
@@ -196,6 +241,27 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
         if (!mIsQuickSettingsFragment) {
             updateSafetyEntries(context, data.getEntriesOrGroups());
             updateStaticSafetyEntries(context, data.getStaticEntryGroups());
+        } else {
+            SafetyCenterResourcesContext safetyCenterResourcesContext =
+                    new SafetyCenterResourcesContext(context);
+            boolean hasSettingsToReview =
+                    safetyCenterResourcesContext
+                            .getStringByName("overall_severity_level_ok_review_summary")
+                            .equals(data.getStatus().getSummary().toString());
+            setPendingActionState(hasSettingsToReview);
+        }
+    }
+
+    /** Determine if there are pending actions and set pending actions state */
+    private void setPendingActionState(boolean hasSettingsToReview) {
+        if (hasSettingsToReview) {
+            mSafetyStatusPreference.setHasPendingActions(
+                    true,
+                    l ->
+                            mViewModel.navigateToSafetyCenter(
+                                    this, NavigationSource.QUICK_SETTINGS_TILE));
+        } else {
+            mSafetyStatusPreference.setHasPendingActions(false, null);
         }
     }
 
@@ -210,7 +276,13 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
         mIssuesGroup.removeAll();
         List<IssueCardPreference> issueCardPreferenceList =
                 issues.stream()
-                        .map(issue -> new IssueCardPreference(context, mViewModel, issue))
+                        .map(
+                                issue ->
+                                        new IssueCardPreference(
+                                                context,
+                                                mViewModel,
+                                                issue,
+                                                getChildFragmentManager()))
                         .collect(Collectors.toUnmodifiableList());
         mCollapsableIssuesCardHelper.addIssues(context, mIssuesGroup, issueCardPreferenceList);
     }
@@ -262,8 +334,8 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
                                 : PositionInCardList.CARD_START));
 
         List<SafetyCenterEntry> entries = group.getEntries();
-        for (int j = 0, last = entries.size() - 1; j <= last; j++) {
-            boolean isCardEnd = j == last;
+        for (int i = 0, last = entries.size() - 1; i <= last; i++) {
+            boolean isCardEnd = i == last;
             boolean isListEnd = isLastCard && isCardEnd;
             PositionInCardList positionInCardList =
                     PositionInCardList.calculate(
@@ -272,7 +344,7 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
                             /* isCardStart= */ false,
                             isCardEnd);
             mEntriesGroup.addPreference(
-                    new SafetyEntryPreference(context, entries.get(j), positionInCardList));
+                    new SafetyEntryPreference(context, entries.get(i), positionInCardList));
         }
     }
 

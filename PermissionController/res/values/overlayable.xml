@@ -58,6 +58,7 @@
 
             <item type="style" name="PermissionGrantButtonAllow" />
             <item type="style" name="PermissionGrantButtonAllowForeground" />
+            <item type="style" name="PermissionGrantButtonAllowOneTime" />
             <item type="style" name="PermissionGrantButtonDeny" />
             <item type="style" name="PermissionGrantButtonNoUpgrade" />
             <!-- END PERMISSION GRANT DIALOG -->
@@ -292,18 +293,12 @@
             <item type="style" name="WarningBannerWidgetFrame" />
             <!-- END WARNING BANNER PREFERENCE STYLE -->
 
-            <!-- START STORAGE PERMISSION DIALOG -->
-            <item type="style" name="StoragePermissionDialogPositiveButton" />
-            <item type="style" name="StoragePermissionDialogNegativeButton" />
-            <item type="style" name="StoragePermissionDialogButtonBar" />
-
-            <item type="style" name="StorageDialogHeaderStyle" />
-            <item type="style" name="StorageDialogHeaderIconStyle" />
-            <item type="style" name="StorageDialogHeaderTitleStyle" />
-
-            <!-- dialog theme -->
-            <item type="style" name="StoragePermissionDialog" />
-            <!-- END STORAGE PERMISSION DIALOG -->
+            <!-- START PRIVACY CONTROLS CONFIGS -->
+            <item type="string" name="camera_toggle_enable_config"/>
+            <item type="string" name="mic_toggle_enable_config"/>
+            <item type="string" name="clipboard_show_access_notifications_config"/>
+            <item type="string" name="show_access_notifications_default_config"/>
+            <!-- END PRIVACY CONTROLS CONFIGS -->
 
         </policy>
 
