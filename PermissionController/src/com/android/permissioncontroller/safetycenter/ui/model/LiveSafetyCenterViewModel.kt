@@ -17,9 +17,9 @@
 package com.android.permissioncontroller.safetycenter.ui.model
 
 import android.app.Application
-import android.os.Build
 import android.content.Intent
 import android.content.Intent.ACTION_SAFETY_CENTER
+import android.os.Build
 import android.safetycenter.SafetyCenterData
 import android.safetycenter.SafetyCenterErrorDetails
 import android.safetycenter.SafetyCenterIssue
@@ -27,12 +27,12 @@ import android.safetycenter.SafetyCenterManager
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getMainExecutor
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.android.permissioncontroller.safetycenter.ui.NavigationSource
+import java.util.concurrent.atomic.AtomicBoolean
 
 /* A SafetyCenterViewModel that talks to the real backing service for Safety Center. */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -45,6 +45,8 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
 
     private val _safetyCenterLiveData = SafetyCenterLiveData()
     private val _errorLiveData = MutableLiveData<SafetyCenterErrorDetails>()
+
+    private var changingConfigurations = AtomicBoolean(false)
 
     private val safetyCenterManager = app.getSystemService(SafetyCenterManager::class.java)!!
 
@@ -65,12 +67,25 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
         _errorLiveData.value = null
     }
 
-    override fun navigateToSafetyCenter(fragment: Fragment) {
-        fragment.startActivity(Intent(ACTION_SAFETY_CENTER))
+    override fun navigateToSafetyCenter(fragment: Fragment, navigationSource: NavigationSource?) {
+        val intent = Intent(ACTION_SAFETY_CENTER)
+
+        if (navigationSource != null) {
+            navigationSource.addToIntent(intent)
+        }
+
+        fragment.startActivity(intent)
     }
 
-    override fun refresh() {
-        safetyCenterManager.refreshSafetySources(SafetyCenterManager.REFRESH_REASON_PAGE_OPEN)
+    override fun pageOpen() {
+        if (!changingConfigurations.getAndSet(false)) {
+            // Refresh unless this is a config change
+            safetyCenterManager.refreshSafetySources(SafetyCenterManager.REFRESH_REASON_PAGE_OPEN)
+        }
+    }
+
+    override fun changingConfigurations() {
+        changingConfigurations.set(true)
     }
 
     inner class SafetyCenterLiveData :
@@ -93,14 +108,6 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
 
         override fun onError(errorDetails: SafetyCenterErrorDetails) {
             _errorLiveData.value = errorDetails
-        }
-    }
-
-    inner class AutoRefreshManager : DefaultLifecycleObserver {
-        // TODO(b/222323674): We may need to do this in onResume to cover certain edge cases.
-        // i.e. FMD changed from quick settings while SC is open
-        override fun onStart(owner: LifecycleOwner) {
-            refresh()
         }
     }
 }
