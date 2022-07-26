@@ -4,8 +4,8 @@
   xmlns:tools="http://schemas.android.com/tools"
   package="com.android.permissioncontroller"
   coreApp="true"
-  android:versionCode="330912000"
-  android:versionName="aml_per_330912000"
+  android:versionCode="331010000"
+  android:versionName="aml_per_331010000"
 >
 
     <original-package android:name="com.android.permissioncontroller" />
@@ -516,6 +516,11 @@
             <intent-filter android:priority="1">
                 <action android:name="android.intent.action.SAFETY_CENTER"/>
                 <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <!-- Higher priority than the settings version of controls, so this should handle it -->
+            <intent-filter android:priority="100">
+                <action android:name="android.settings.PRIVACY_CONTROLS"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
