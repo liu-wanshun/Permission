@@ -4,8 +4,8 @@
   xmlns:tools="http://schemas.android.com/tools"
   package="com.android.permissioncontroller"
   coreApp="true"
-  android:versionCode="330912000"
-  android:versionName="aml_per_330912000"
+  android:versionCode="330912010"
+  android:versionName="aml_per_330912010"
 >
 
     <original-package android:name="com.android.permissioncontroller" />
@@ -416,6 +416,7 @@
 
         <provider android:name="com.android.permissioncontroller.safetycenter.service.SafetyCenterSearchIndexablesProvider"
             android:authorities="com.android.permissioncontroller.safetycenter"
+            android:enabled="@bool/is_at_least_t"
             android:multiprocess="false"
             android:exported="true"
             android:grantUriPermissions="true"
