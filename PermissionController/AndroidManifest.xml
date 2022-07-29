@@ -4,8 +4,8 @@
   xmlns:tools="http://schemas.android.com/tools"
   package="com.android.permissioncontroller"
   coreApp="true"
-  android:versionCode="331011000"
-  android:versionName="aml_per_331011000"
+  android:versionCode="331012000"
+  android:versionName="aml_per_331012000"
 >
 
     <original-package android:name="com.android.permissioncontroller" />
@@ -78,6 +78,7 @@
                   android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.android.permissioncontroller.action.SET_UP_LOCATION_ACCESS_CHECK" />
             </intent-filter>
         </receiver>
 
@@ -87,6 +88,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.android.permissioncontroller.action.SET_UP_NOTIFICATION_LISTENER_CHECK" />
             </intent-filter>
         </receiver>
 
@@ -94,6 +96,7 @@
                   android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.android.permissioncontroller.action.SET_UP_HIBERNATION" />
             </intent-filter>
         </receiver>
 
@@ -173,6 +176,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.android.permissioncontroller.action.SET_UP_ACCESSIBILITY_CHECK" />
             </intent-filter>
         </receiver>
 
