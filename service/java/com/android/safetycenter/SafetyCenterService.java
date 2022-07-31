@@ -20,6 +20,7 @@ import static android.Manifest.permission.MANAGE_SAFETY_CENTER;
 import static android.Manifest.permission.READ_SAFETY_CENTER_STATUS;
 import static android.Manifest.permission.SEND_SAFETY_CENTER_UPDATE;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
+import static android.safetycenter.SafetyCenterManager.REFRESH_REASON_OTHER;
 import static android.safetycenter.SafetyCenterManager.RefreshReason;
 import static android.safetycenter.SafetyEvent.SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED;
 
@@ -42,6 +43,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Binder;
 import android.os.Handler;
+import android.os.ParcelFileDescriptor;
 import android.os.UserHandle;
 import android.provider.DeviceConfig;
 import android.provider.DeviceConfig.OnPropertiesChangedListener;
@@ -78,10 +80,16 @@ import com.android.safetycenter.resources.SafetyCenterResourcesContext;
 import com.android.server.SystemService;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -645,6 +653,62 @@ public final class SafetyCenterService extends SystemService {
                 return false;
             }
         }
+
+        @Override
+        public int handleShellCommand(
+                @NonNull ParcelFileDescriptor in,
+                @NonNull ParcelFileDescriptor out,
+                @NonNull ParcelFileDescriptor err,
+                @NonNull String[] args) {
+            return new SafetyCenterShellCommandHandler(this)
+                    .exec(
+                            this,
+                            in.getFileDescriptor(),
+                            out.getFileDescriptor(),
+                            err.getFileDescriptor(),
+                            args);
+        }
+
+        /**
+         * Dumps state for debugging purposes.
+         *
+         * @param fout {@link PrintWriter} to write to
+         */
+        @Override
+        protected void dump(
+                @NonNull FileDescriptor fd, @NonNull PrintWriter fout, @Nullable String[] args) {
+            if (!checkDumpPermission(fout)) {
+                return;
+            }
+            synchronized (mApiLock) {
+                SafetyCenterService.this.dumpLocked(fd, fout);
+                SafetyCenterFlags.dump(fout);
+                mSafetyCenterConfigReader.dump(fout);
+                mSafetyCenterDataTracker.dump(fout);
+                mSafetyCenterRefreshTracker.dump(fout);
+                mSafetyCenterTimeouts.dump(fout);
+                mSafetyCenterListeners.dump(fout);
+            }
+        }
+
+        private boolean checkDumpPermission(@NonNull PrintWriter writer) {
+            if (getContext().checkCallingOrSelfPermission(android.Manifest.permission.DUMP)
+                    != PackageManager.PERMISSION_GRANTED) {
+                writer.println(
+                        "Permission Denial: can't dump "
+                                + "safety_center"
+                                + " from from pid="
+                                + Binder.getCallingPid()
+                                + ", uid="
+                                + Binder.getCallingUid()
+                                + " due to missing "
+                                + android.Manifest.permission.DUMP
+                                + " permission");
+                return false;
+            } else {
+                return true;
+            }
+        }
     }
 
     /**
@@ -749,6 +813,17 @@ public final class SafetyCenterService extends SystemService {
                     TAG,
                     "Cleared refresh with broadcastId:" + mRefreshBroadcastId + " after a timeout");
         }
+
+        @Override
+        public String toString() {
+            return "RefreshTimeout{"
+                    + "mRefreshBroadcastId='"
+                    + mRefreshBroadcastId
+                    + '\''
+                    + ", mUserProfileGroup="
+                    + mUserProfileGroup
+                    + '}';
+        }
     }
 
     /** A {@link Runnable} that is called to signal a resolving action timeout. */
@@ -781,6 +856,16 @@ public final class SafetyCenterService extends SystemService {
                                 mSafetyCenterResourcesContext.getStringByName(
                                         "resolving_action_error")));
             }
+        }
+
+        @Override
+        public String toString() {
+            return "ResolvingActionTimeout{"
+                    + "mSafetyCenterIssueActionId="
+                    + mSafetyCenterIssueActionId
+                    + ", mUserProfileGroup="
+                    + mUserProfileGroup
+                    + '}';
         }
     }
 
@@ -821,6 +906,22 @@ public final class SafetyCenterService extends SystemService {
             while (!mTimeouts.isEmpty()) {
                 mForegroundHandler.removeCallbacks(mTimeouts.pollFirst());
             }
+        }
+
+        /**
+         * Dumps state for debugging purposes.
+         *
+         * @param fout {@link PrintWriter} to write to
+         */
+        void dump(@NonNull PrintWriter fout) {
+            int count = mTimeouts.size();
+            fout.println("TIMEOUTS (" + count + ")");
+            Iterator<Runnable> it = mTimeouts.iterator();
+            int i = 0;
+            while (it.hasNext()) {
+                fout.println("\t[" + i++ + "] " + it.next());
+            }
+            fout.println();
         }
     }
 
@@ -885,11 +986,11 @@ public final class SafetyCenterService extends SystemService {
 
     private void onEnableQuietMode(@UserIdInt int userId) {
         onRemoveUser(userId);
-        startRefreshingSafetySources(SafetyCenterManager.REFRESH_REASON_OTHER, userId);
+        startRefreshingSafetySources(REFRESH_REASON_OTHER, userId);
     }
 
     private void onDisableQuietMode(@UserIdInt int userId) {
-        startRefreshingSafetySources(SafetyCenterManager.REFRESH_REASON_OTHER, userId);
+        startRefreshingSafetySources(REFRESH_REASON_OTHER, userId);
     }
 
     private void startRefreshingSafetySources(
@@ -971,5 +1072,37 @@ public final class SafetyCenterService extends SystemService {
         mSafetyCenterTimeouts.clear();
         mSafetyCenterRefreshTracker.clearRefresh();
         scheduleWriteSafetyCenterIssueCacheFileIfNeededLocked();
+    }
+
+    /**
+     * Dumps state for debugging purposes.
+     *
+     * @param fd underlying {@link FileDescriptor} being written
+     * @param fout {@link PrintWriter} to write to
+     */
+    @GuardedBy("mApiLock")
+    void dumpLocked(@NonNull FileDescriptor fd, @NonNull PrintWriter fout) {
+        fout.println("SERVICE");
+        fout.println(
+                "\tSafetyCenterService{"
+                        + "mSafetyCenterIssueCacheWriteScheduled="
+                        + mSafetyCenterIssueCacheWriteScheduled
+                        + ", mDeviceSupportsSafetyCenter="
+                        + mDeviceSupportsSafetyCenter
+                        + ", mConfigAvailable="
+                        + mConfigAvailable
+                        + '}');
+        fout.println();
+
+        File issueCacheFile = getSafetyCenterIssueCacheFile();
+        fout.println("ISSUE CACHE FILE (" + issueCacheFile.getAbsolutePath() + ")");
+        fout.flush();
+        try {
+            Files.copy(issueCacheFile.toPath(), new FileOutputStream(fd));
+        } catch (IOException e) {
+            e.printStackTrace(fout);
+        }
+        fout.println();
+        fout.println();
     }
 }
