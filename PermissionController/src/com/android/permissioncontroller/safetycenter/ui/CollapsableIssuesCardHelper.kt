@@ -26,6 +26,7 @@ import androidx.annotation.RequiresApi
 import androidx.preference.PreferenceGroup
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.safetycenter.SafetyCenterConstants.EXPAND_ISSUE_GROUP_QS_FRAGMENT_KEY
+import com.android.permissioncontroller.safetycenter.ui.model.SafetyCenterViewModel
 import com.android.safetycenter.internaldata.SafetyCenterIssueKey
 import kotlin.math.max
 
@@ -34,7 +35,7 @@ import kotlin.math.max
  * cards when the more issues preference is clicked
  */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-class CollapsableIssuesCardHelper {
+class CollapsableIssuesCardHelper(val safetyCenterViewModel: SafetyCenterViewModel) {
     private var isQuickSettingsFragment: Boolean = false
     private var issueCardsExpanded: Boolean = false
     private var focusedSafetyCenterIssueKey: SafetyCenterIssueKey? = null
@@ -187,6 +188,8 @@ class CollapsableIssuesCardHelper {
             } else {
                 expand(issuesPreferenceGroup)
             }
+            safetyCenterViewModel.interactionLogger.record(Action.MORE_ISSUES_CLICKED)
+
             true
         }
     }
@@ -214,6 +217,7 @@ class CollapsableIssuesCardHelper {
         // Navigate to Safety center with issues expanded
         val safetyCenterIntent = Intent(ACTION_SAFETY_CENTER)
         safetyCenterIntent.putExtra(EXPAND_ISSUE_GROUP_QS_FRAGMENT_KEY, true)
+        NavigationSource.QUICK_SETTINGS_TILE.addToIntent(safetyCenterIntent)
         context.startActivity(safetyCenterIntent)
     }
 
