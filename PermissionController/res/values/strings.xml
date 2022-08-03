@@ -873,14 +873,14 @@
     <!-- The notification content for background location access reminder notification [CHAR LIMIT=none] -->
     <string name="background_location_access_reminder_notification_content">This app can always access your location. Tap to change.</string>
 
-    <!-- The notification title for background location access reminder notification [CHAR LIMIT=60] -->
+    <!-- The notification title for notification listener reminder notification [CHAR LIMIT=60] -->
     <string name="notification_listener_reminder_notification_title">Review app with access to your notifications</string>
 
-    <!-- The notification content for background location access reminder notification [CHAR LIMIT=none] -->
-    <string name="notification_listener_reminder_notification_content"><xliff:g id="app_name" example="Gmail">%s</xliff:g> can access the content of all your notifications</string>
+    <!-- The notification content for notification listener reminder notification [CHAR LIMIT=none] -->
+    <string name="notification_listener_reminder_notification_content"><xliff:g id="app_name" example="Gmail">%s</xliff:g> can dismiss, act on, and access content inside your notifications</string>
 
     <!-- The warning card (in safety center) content for notification listener access [CHAR LIMIT=none] -->
-    <string name="notification_listener_warning_card_content">This app can access the content of all of your notifications. Some apps require this access to function as intended.</string>
+    <string name="notification_listener_warning_card_content">This app can dismiss, act on, and access content inside your notifications. Some apps require this access to function as intended.</string>
 
     <!-- The label for remove access button on safety center warning card [CHAR LIMIT=60] -->
     <string name="notification_listener_remove_access_button_label">Remove access</string>
@@ -1537,6 +1537,8 @@ Allow <xliff:g id="app_name" example="Gmail">%4$s</xliff:g> to upload a bug repo
     <string name="safety_center_issue_card_dismiss_button">Dismiss</string>
     <!-- Title for a dialog confirming if a user wants to dismiss a safety center issue [CHAR LIMIT=NONE] -->
     <string name="safety_center_issue_card_dismiss_confirmation_title">Dismiss this alert?</string>
+    <!-- Message for a dialog confirming if a user wants to dismiss a safety center issue [CHAR LIMIT=NONE] -->
+    <string name="safety_center_issue_card_dismiss_confirmation_message">Review your security and privacy settings any time to add more protection</string>
     <!-- Label for a button to dismiss a safety center issue in a confirmation dialog [CHAR LIMIT=30] -->
     <string name="safety_center_issue_card_confirm_dismiss_button">Dismiss</string>
     <!-- Label for a button to cancel dismissing a safety center issue in a confirmation dialog [CHAR LIMIT=30] -->
@@ -1563,10 +1565,10 @@ Allow <xliff:g id="app_name" example="Gmail">%4$s</xliff:g> to upload a bug repo
     <string name="microphone_toggle_label_qs">Mic access</string>
     <!-- Label when permissions were removed via safety center QS page [CHAR LIMIT=30] -->
     <string name="permissions_removed_qs">Permission removed</string>
-    <!-- Label to see apps with camera access in safety center QS page [CHAR LIMIT=50] -->
-    <string name="camera_usage_qs">See apps with camera access</string>
-    <!-- Label to see apps with microphone access in safety center QS page [CHAR LIMIT=50] -->
-    <string name="microphone_usage_qs">See apps with mic access</string>
+    <!-- Label to see camera usage in safety center QS page [CHAR LIMIT=50] -->
+    <string name="camera_usage_qs">See recent camera usage</string>
+    <!-- Label to see microphone usage in safety center QS page [CHAR LIMIT=50] -->
+    <string name="microphone_usage_qs">See recent mic usage</string>
     <!-- Label to remove camera permission for an app in safety center QS page [CHAR LIMIT=50] -->
     <string name="remove_camera_qs">Remove permission for this app</string>
     <!-- Label to remove microphone permission for an app in safety center QS page [CHAR LIMIT=50] -->
@@ -1667,5 +1669,9 @@ Allow <xliff:g id="app_name" example="Gmail">%4$s</xliff:g> to upload a bug repo
     <string name="show_clip_access_notification_title">Show clipboard access</string>
     <!-- Summary for toggle controlling whether notifications are shown when an app pastes from clipboard. [CHAR LIMIT=NONE] -->
     <string name="show_clip_access_notification_summary">Show a message when apps access text, images, or other content you\u2019ve copied</string>
+    <!-- Title for toggle controlling whether to show the first letter while typing passwords. [CHAR LIMIT=50]-->
+    <string name="show_password_title">Show passwords</string>
+    <!-- Summary for toggle controlling whether to show the first letter while typing passwords. [CHAR LIMIT=NONE] -->
+    <string name="show_password_summary">Display characters briefly as you type</string>
 
 </resources>
