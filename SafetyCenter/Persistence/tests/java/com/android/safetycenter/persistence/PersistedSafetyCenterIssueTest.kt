@@ -16,30 +16,21 @@
 
 package com.android.safetycenter.persistence
 
-import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SdkSuppress
 import com.android.permission.testing.EqualsHashCodeToStringTester
 import com.google.common.truth.Truth.assertThat
+import java.time.Instant
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.time.Instant
 
 /** CTS tests for [PersistedSafetyCenterIssue]. */
 @RunWith(AndroidJUnit4::class)
-@SdkSuppress(minSdkVersion = TIRAMISU, codeName = "Tiramisu")
 class PersistedSafetyCenterIssueTest {
 
     @Test
-    fun getSourceId_returnsSourceId() {
-        assertThat(ACTIVE_ISSUE.sourceId).isEqualTo(ACTIVE_ISSUE_SOURCE_ID)
-        assertThat(DISMISSED_ISSUE.sourceId).isEqualTo(DISMISSED_ISSUE_SOURCE_ID)
-    }
-
-    @Test
-    fun getIssueId_returnsIssueId() {
-        assertThat(ACTIVE_ISSUE.issueId).isEqualTo(ACTIVE_ISSUE_ISSUE_ID)
-        assertThat(DISMISSED_ISSUE.issueId).isEqualTo(DISMISSED_ISSUE_ISSUE_ID)
+    fun getKey_returnsKey() {
+        assertThat(ACTIVE_ISSUE.key).isEqualTo(ACTIVE_ISSUE_KEY)
+        assertThat(DISMISSED_ISSUE.key).isEqualTo(DISMISSED_ISSUE_KEY)
     }
 
     @Test
@@ -55,68 +46,69 @@ class PersistedSafetyCenterIssueTest {
     }
 
     @Test
+    fun getDismissCount_returnsDismissCount() {
+        assertThat(ACTIVE_ISSUE.dismissCount).isEqualTo(0)
+        assertThat(DISMISSED_ISSUE.dismissCount).isEqualTo(1)
+    }
+
+    @Test
     fun equalsHashCodeToString_usingEqualsHashCodeToStringTester() {
         EqualsHashCodeToStringTester()
             .addEqualityGroup(
                 ACTIVE_ISSUE,
                 PersistedSafetyCenterIssue.Builder()
-                    .setSourceId(ACTIVE_ISSUE_SOURCE_ID)
-                    .setIssueId(ACTIVE_ISSUE_ISSUE_ID)
+                    .setKey(ACTIVE_ISSUE_KEY)
                     .setFirstSeenAt(INSTANT)
                     .build())
             .addEqualityGroup(DISMISSED_ISSUE)
             .addEqualityGroup(
                 PersistedSafetyCenterIssue.Builder()
-                    .setSourceId("other")
-                    .setIssueId(DISMISSED_ISSUE_ISSUE_ID)
+                    .setKey("other")
                     .setFirstSeenAt(INSTANT)
                     .setDismissedAt(INSTANT)
+                    .setDismissCount(1)
                     .build())
             .addEqualityGroup(
                 PersistedSafetyCenterIssue.Builder()
-                    .setSourceId(DISMISSED_ISSUE_SOURCE_ID)
-                    .setIssueId("other")
-                    .setFirstSeenAt(INSTANT)
-                    .setDismissedAt(INSTANT)
-                    .build())
-            .addEqualityGroup(
-                PersistedSafetyCenterIssue.Builder()
-                    .setSourceId(DISMISSED_ISSUE_SOURCE_ID)
-                    .setIssueId(DISMISSED_ISSUE_ISSUE_ID)
+                    .setKey(DISMISSED_ISSUE_KEY)
                     .setFirstSeenAt(Instant.ofEpochMilli(0))
                     .setDismissedAt(INSTANT)
+                    .setDismissCount(1)
                     .build())
             .addEqualityGroup(
                 PersistedSafetyCenterIssue.Builder()
-                    .setSourceId(DISMISSED_ISSUE_SOURCE_ID)
-                    .setIssueId(DISMISSED_ISSUE_ISSUE_ID)
+                    .setKey(DISMISSED_ISSUE_KEY)
                     .setFirstSeenAt(INSTANT)
                     .setDismissedAt(Instant.ofEpochMilli(0))
+                    .setDismissCount(1)
+                    .build())
+            .addEqualityGroup(
+                PersistedSafetyCenterIssue.Builder()
+                    .setKey(DISMISSED_ISSUE_KEY)
+                    .setFirstSeenAt(INSTANT)
+                    .setDismissedAt(INSTANT)
+                    .setDismissCount(99)
                     .build())
             .test()
     }
 
     companion object {
-        private const val ACTIVE_ISSUE_SOURCE_ID = "active_source"
-        private const val ACTIVE_ISSUE_ISSUE_ID = "active_issue"
-        private const val DISMISSED_ISSUE_SOURCE_ID = "dismissed_source"
-        private const val DISMISSED_ISSUE_ISSUE_ID = "dismissed_issue"
+        private const val ACTIVE_ISSUE_KEY = "active_key"
+        private const val DISMISSED_ISSUE_KEY = "dismissed_key"
         private val INSTANT = Instant.ofEpochMilli(1654041600000)
 
-        // TODO(b/230078826): Consider extracting shared constants to a separate file.
         private val ACTIVE_ISSUE =
             PersistedSafetyCenterIssue.Builder()
-                .setSourceId(ACTIVE_ISSUE_SOURCE_ID)
-                .setIssueId(ACTIVE_ISSUE_ISSUE_ID)
+                .setKey(ACTIVE_ISSUE_KEY)
                 .setFirstSeenAt(INSTANT)
                 .build()
 
         private val DISMISSED_ISSUE =
             PersistedSafetyCenterIssue.Builder()
-                .setSourceId(DISMISSED_ISSUE_SOURCE_ID)
-                .setIssueId(DISMISSED_ISSUE_ISSUE_ID)
+                .setKey(DISMISSED_ISSUE_KEY)
                 .setFirstSeenAt(INSTANT)
                 .setDismissedAt(INSTANT)
+                .setDismissCount(1)
                 .build()
     }
 }
