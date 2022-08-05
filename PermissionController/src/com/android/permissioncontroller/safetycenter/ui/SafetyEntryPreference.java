@@ -16,6 +16,8 @@
 
 package com.android.permissioncontroller.safetycenter.ui;
 
+import static android.os.Build.VERSION_CODES.TIRAMISU;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.safetycenter.SafetyCenterEntry;
@@ -25,25 +27,33 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import com.android.permissioncontroller.R;
+import com.android.permissioncontroller.safetycenter.ui.model.SafetyCenterViewModel;
 
 /** A preference that displays a visual representation of a {@link SafetyCenterEntry}. */
+@RequiresApi(TIRAMISU)
 public final class SafetyEntryPreference extends Preference implements ComparablePreference {
 
     private static final String TAG = SafetyEntryPreference.class.getSimpleName();
 
     private final PositionInCardList mPosition;
     private final SafetyCenterEntry mEntry;
+    private final SafetyCenterViewModel mViewModel;
 
     public SafetyEntryPreference(
-            Context context, SafetyCenterEntry entry, PositionInCardList position) {
+            Context context,
+            SafetyCenterEntry entry,
+            PositionInCardList position,
+            SafetyCenterViewModel viewModel) {
         super(context);
 
         mEntry = entry;
         mPosition = position;
+        mViewModel = viewModel;
 
         setLayoutResource(R.layout.preference_entry);
         setTitle(entry.getTitle());
@@ -57,6 +67,9 @@ public final class SafetyEntryPreference extends Preference implements Comparabl
                     unused -> {
                         try {
                             pendingIntent.send();
+                            mViewModel
+                                    .getInteractionLogger()
+                                    .recordForEntry(Action.ENTRY_CLICKED, mEntry);
                         } catch (Exception ex) {
                             Log.e(
                                     TAG,
@@ -67,6 +80,14 @@ public final class SafetyEntryPreference extends Preference implements Comparabl
                         }
                         return true;
                     });
+        }
+
+        SafetyCenterEntry.IconAction iconAction = entry.getIconAction();
+        if (iconAction != null) {
+            setWidgetLayoutResource(
+                    iconAction.getType() == SafetyCenterEntry.IconAction.ICON_ACTION_TYPE_GEAR
+                            ? R.layout.preference_entry_icon_action_gear_widget
+                            : R.layout.preference_entry_icon_action_info_widget);
         }
     }
 
@@ -87,10 +108,44 @@ public final class SafetyEntryPreference extends Preference implements Comparabl
                 mEntry.getSeverityLevel() == SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNSPECIFIED
                         && mEntry.getSeverityUnspecifiedIconType()
                                 == SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_ICON;
-        holder.findViewById(R.id.icon_frame)
-                .setVisibility(hideIcon ? View.GONE : View.VISIBLE);
-        holder.findViewById(R.id.empty_space)
-                .setVisibility(hideIcon ? View.VISIBLE : View.GONE);
+        holder.findViewById(R.id.icon_frame).setVisibility(hideIcon ? View.GONE : View.VISIBLE);
+        holder.findViewById(R.id.empty_space).setVisibility(hideIcon ? View.VISIBLE : View.GONE);
+
+        SafetyCenterEntry.IconAction iconAction = mEntry.getIconAction();
+        if (iconAction != null) {
+            holder.findViewById(R.id.icon_action_button)
+                    .setOnClickListener(
+                            view -> {
+                                sendIconActionIntent(iconAction);
+                                mViewModel
+                                        .getInteractionLogger()
+                                        .recordForEntry(Action.ENTRY_ICON_ACTION_CLICKED, mEntry);
+                            });
+            holder.itemView.setPaddingRelative(
+                    holder.itemView.getPaddingStart(),
+                    holder.itemView.getPaddingTop(),
+                    /* end= */ 0,
+                    holder.itemView.getPaddingBottom());
+        } else {
+            holder.itemView.setPaddingRelative(
+                    holder.itemView.getPaddingStart(),
+                    holder.itemView.getPaddingTop(),
+                    /* end= */ getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.safety_center_entry_padding_end),
+                    holder.itemView.getPaddingBottom());
+        }
+    }
+
+    private void sendIconActionIntent(SafetyCenterEntry.IconAction iconAction) {
+        try {
+            iconAction.getPendingIntent().send();
+        } catch (Exception ex) {
+            Log.e(
+                    TAG,
+                    String.format("Failed to execute icon action intent for entry: %s", mEntry),
+                    ex);
+        }
     }
 
     private static int selectIconResId(SafetyCenterEntry entry) {
@@ -106,9 +161,7 @@ public final class SafetyEntryPreference extends Preference implements Comparabl
             case SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_CRITICAL_WARNING:
                 return R.drawable.ic_safety_warn;
         }
-        Log.e(TAG,
-                String.format(
-                        "Unexpected SafetyCenterEntry.EntrySeverityLevel: %s", entry));
+        Log.e(TAG, String.format("Unexpected SafetyCenterEntry.EntrySeverityLevel: %s", entry));
         return R.drawable.ic_safety_null_state;
     }
 
@@ -121,9 +174,7 @@ public final class SafetyEntryPreference extends Preference implements Comparabl
             case SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_RECOMMENDATION:
                 return R.drawable.ic_safety_null_state;
         }
-        Log.e(TAG,
-                String.format(
-                        "Unexpected SafetyCenterEntry.SeverityNoneIconType: %s", entry));
+        Log.e(TAG, String.format("Unexpected SafetyCenterEntry.SeverityNoneIconType: %s", entry));
         return R.drawable.ic_safety_null_state;
     }
 

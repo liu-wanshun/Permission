@@ -16,26 +16,32 @@
 package com.android.permissioncontroller.safetycenter.ui;
 
 import static android.content.Intent.FLAG_ACTIVITY_FORWARD_RESULT;
+import static android.os.Build.VERSION_CODES.TIRAMISU;
+
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_NOTIFICATION_INTERACTION;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__ACTION__NOTIFICATION_CLICKED;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.safetycenter.SafetyCenterManager;
 import android.util.Log;
 
-import androidx.annotation.Keep;
 import androidx.annotation.RequiresApi;
+import androidx.preference.PreferenceFragmentCompat;
 
+import com.android.permissioncontroller.Constants;
+import com.android.permissioncontroller.PermissionControllerStatsLog;
 import com.android.permissioncontroller.R;
+import com.android.permissioncontroller.permission.utils.Utils;
 import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseActivity;
 
 /** Entry-point activity for SafetyCenter. */
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@Keep
+@RequiresApi(TIRAMISU)
 public final class SafetyCenterActivity extends CollapsingToolbarBaseActivity {
 
     private static final String TAG = SafetyCenterActivity.class.getSimpleName();
+    private static final String PRIVACY_CONTROLS_ACTION = "android.settings.PRIVACY_CONTROLS";
     private SafetyCenterManager mSafetyCenterManager;
 
     @Override
@@ -45,14 +51,21 @@ public final class SafetyCenterActivity extends CollapsingToolbarBaseActivity {
 
         if (maybeRedirectIfDisabled()) return;
 
-        setTitle(getString(R.string.safety_center_dashboard_page_title));
+        PreferenceFragmentCompat frag;
+        if (getIntent().getAction().equals(PRIVACY_CONTROLS_ACTION)) {
+            setTitle(R.string.privacy_controls_title);
+            frag = PrivacyControlsFragment.newInstance();
+        } else {
+            logPrivacySourceMetric();
+            setTitle(getString(R.string.safety_center_dashboard_page_title));
+            frag = SafetyCenterDashboardFragment.newInstance(
+                    Utils.getOrGenerateSessionId(getIntent()),
+                    /* isQuickSettingsFragment= */ false);
+        }
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(
-                            R.id.content_frame,
-                            SafetyCenterDashboardFragment.newInstance(
-                                    /* isQuickSettingsFragment= */ false))
+                    .add(R.id.content_frame, frag)
                     .commitNow();
         }
     }
@@ -72,5 +85,23 @@ public final class SafetyCenterActivity extends CollapsingToolbarBaseActivity {
             return true;
         }
         return false;
+    }
+
+    private void logPrivacySourceMetric() {
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(Constants.EXTRA_PRIVACY_SOURCE)) {
+            int privacySource = intent.getIntExtra(Constants.EXTRA_PRIVACY_SOURCE, -1);
+            int uid = intent.getIntExtra(Intent.EXTRA_UID, -1);
+            long sessionId =
+                    intent.getLongExtra(Constants.EXTRA_SESSION_ID, Constants.INVALID_SESSION_ID);
+            Log.v(TAG, "privacy source notification metric, source " + privacySource + " uid "
+                    + uid + " sessionId " + sessionId);
+            PermissionControllerStatsLog.write(
+                    PRIVACY_SIGNAL_NOTIFICATION_INTERACTION,
+                    privacySource,
+                    uid,
+                    PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__ACTION__NOTIFICATION_CLICKED,
+                    sessionId);
+        }
     }
 }

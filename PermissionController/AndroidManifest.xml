@@ -78,6 +78,7 @@
                   android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.android.permissioncontroller.action.SET_UP_LOCATION_ACCESS_CHECK" />
             </intent-filter>
         </receiver>
 
@@ -87,6 +88,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.android.permissioncontroller.action.SET_UP_NOTIFICATION_LISTENER_CHECK" />
             </intent-filter>
         </receiver>
 
@@ -94,8 +96,12 @@
                   android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.android.permissioncontroller.action.SET_UP_HIBERNATION" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name="com.android.permissioncontroller.hibernation.DismissHandler"
+            android:enabled="@bool/is_at_least_t"/>
 
         <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$NotificationDeleteHandler" />
 
@@ -103,6 +109,9 @@
 
         <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$SafetyCenterPrimaryActionHandler"
                   android:enabled="@bool/is_at_least_t" />
+
+        <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$WarningCardDismissalHandler"
+                  android:enabled="@bool/is_at_least_t"/>
 
         <receiver android:name="com.android.permissioncontroller.permission.service.LocationAccessCheck$PackageResetHandler"
                   android:exported="true">
@@ -167,6 +176,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.android.permissioncontroller.action.SET_UP_ACCESSIBILITY_CHECK" />
             </intent-filter>
         </receiver>
 
@@ -268,6 +278,7 @@
 
         <activity android:name="com.android.permissioncontroller.permission.ui.SafetyCenterQsActivity"
                   android:excludeFromRecents="true"
+                  android:launchMode="singleInstance"
                   android:exported="true"
                   android:theme="@style/Theme.SafetyCenterQs"
                   android:permission="android.permission.REVOKE_RUNTIME_PERMISSIONS">
@@ -409,6 +420,7 @@
 
         <provider android:name="com.android.permissioncontroller.safetycenter.service.SafetyCenterSearchIndexablesProvider"
             android:authorities="com.android.permissioncontroller.safetycenter"
+            android:enabled="@bool/is_at_least_t"
             android:multiprocess="false"
             android:exported="true"
             android:grantUriPermissions="true"
@@ -446,7 +458,7 @@
             android:enabled="@bool/is_at_least_t"
             android:exported="true"
             android:label="@string/safety_privacy_qs_tile_title"
-            android:icon ="@drawable/safety_shield"
+            android:icon ="@drawable/ic_safety_center_shield"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -509,6 +521,11 @@
             <intent-filter android:priority="1">
                 <action android:name="android.intent.action.SAFETY_CENTER"/>
                 <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <!-- Higher priority than the settings version of controls, so this should handle it -->
+            <intent-filter android:priority="100">
+                <action android:name="android.settings.PRIVACY_CONTROLS"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
