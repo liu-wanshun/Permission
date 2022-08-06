@@ -32,13 +32,13 @@
     android:baselineAligned="false">
 
     <ImageView
+        android:id="@android:id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:maxWidth="24dp"
         android:maxHeight="24dp"
-        android:paddingEnd="24dp"
-        android:src="@drawable/ic_expand_more" />
+        android:paddingEnd="24dp" />
 
     <RelativeLayout
         android:layout_width="0dp"
