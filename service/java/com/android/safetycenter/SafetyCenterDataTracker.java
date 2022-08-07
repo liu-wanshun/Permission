@@ -69,6 +69,7 @@ import com.android.safetycenter.persistence.PersistedSafetyCenterIssue;
 import com.android.safetycenter.resources.SafetyCenterResourcesContext;
 
 import java.io.PrintWriter;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -159,6 +160,7 @@ final class SafetyCenterDataTracker {
                             .setKey(encodedKey)
                             .setFirstSeenAt(issueData.getFirstSeenAt())
                             .setDismissedAt(issueData.getDismissedAt())
+                            .setDismissCount(issueData.getDismissCount())
                             .build());
         }
 
@@ -190,6 +192,7 @@ final class SafetyCenterDataTracker {
 
             IssueData issueData = new IssueData(persistedSafetyCenterIssue.getFirstSeenAt());
             issueData.setDismissedAt(persistedSafetyCenterIssue.getDismissedAt());
+            issueData.setDismissCount(persistedSafetyCenterIssue.getDismissCount());
             mSafetyCenterIssueCache.put(key, issueData);
         }
     }
@@ -356,10 +359,18 @@ final class SafetyCenterDataTracker {
      */
     void dismissSafetyCenterIssue(@NonNull SafetyCenterIssueKey safetyCenterIssueKey) {
         IssueData issueData = mSafetyCenterIssueCache.get(safetyCenterIssueKey);
-        if (issueData != null) {
-            issueData.setDismissedAt(Instant.now());
-            mSafetyCenterIssueCacheDirty = true;
+        if (issueData == null) {
+            Log.w(
+                    TAG,
+                    "Issue missing when writing to cache: "
+                            + safetyCenterIssueKey.getSafetySourceIssueId()
+                            + ", of source: "
+                            + safetyCenterIssueKey.getSafetySourceId());
+            return;
         }
+        issueData.setDismissedAt(Instant.now());
+        issueData.setDismissCount(issueData.getDismissCount() + 1);
+        mSafetyCenterIssueCacheDirty = true;
     }
 
     /**
@@ -370,10 +381,6 @@ final class SafetyCenterDataTracker {
      */
     @Nullable
     SafetySourceIssue getSafetySourceIssue(@NonNull SafetyCenterIssueKey safetyCenterIssueKey) {
-        if (isDismissed(safetyCenterIssueKey)) {
-            return null;
-        }
-
         SafetySourceKey key =
                 SafetySourceKey.of(
                         safetyCenterIssueKey.getSafetySourceId(), safetyCenterIssueKey.getUserId());
@@ -383,15 +390,24 @@ final class SafetyCenterDataTracker {
         }
         List<SafetySourceIssue> safetySourceIssues = safetySourceData.getIssues();
 
+        SafetySourceIssue targetIssue = null;
         for (int i = 0; i < safetySourceIssues.size(); i++) {
             SafetySourceIssue safetySourceIssue = safetySourceIssues.get(i);
 
             if (safetyCenterIssueKey.getSafetySourceIssueId().equals(safetySourceIssue.getId())) {
-                return safetySourceIssue;
+                targetIssue = safetySourceIssue;
+                break;
             }
         }
+        if (targetIssue == null) {
+            return null;
+        }
 
-        return null;
+        if (isDismissed(safetyCenterIssueKey, targetIssue.getSeverityLevel())) {
+            return null;
+        }
+
+        return targetIssue;
     }
 
     /**
@@ -440,8 +456,8 @@ final class SafetyCenterDataTracker {
                 new SafetyCenterStatus.Builder(
                                 getSafetyCenterStatusTitle(
                                         SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN,
+                                        new ArrayList<>(),
                                         SafetyCenterStatus.REFRESH_STATUS_NONE,
-                                        new ArraySet<>(),
                                         false),
                                 getSafetyCenterStatusSummary(
                                         SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN,
@@ -557,12 +573,42 @@ final class SafetyCenterDataTracker {
         }
     }
 
-    private boolean isDismissed(@NonNull SafetyCenterIssueKey safetyCenterIssueKey) {
+    private boolean isDismissed(
+            @NonNull SafetyCenterIssueKey safetyCenterIssueKey,
+            @SafetySourceData.SeverityLevel int safetySourceIssueSeverityLevel) {
         IssueData issueData = mSafetyCenterIssueCache.get(safetyCenterIssueKey);
         if (issueData == null) {
+            Log.w(
+                    TAG,
+                    "Issue missing when reading from cache: "
+                            + safetyCenterIssueKey.getSafetySourceIssueId()
+                            + ", of source: "
+                            + safetyCenterIssueKey.getSafetySourceId());
             return false;
         }
-        return issueData.getDismissedAt() != null;
+
+        Instant dismissedAt = issueData.getDismissedAt();
+        boolean hasNeverBeenDismissed = dismissedAt == null;
+        if (hasNeverBeenDismissed) {
+            return false;
+        }
+
+        long maxCount = SafetyCenterFlags.getResurfaceIssueMaxCount(safetySourceIssueSeverityLevel);
+        Duration delay = SafetyCenterFlags.getResurfaceIssueDelay(safetySourceIssueSeverityLevel);
+
+        boolean hasAlreadyResurfacedTheMaxAllowedNumberOfTimes =
+                issueData.getDismissCount() > maxCount;
+        if (hasAlreadyResurfacedTheMaxAllowedNumberOfTimes) {
+            return true;
+        }
+
+        Duration timeSinceLastDismissal = Duration.between(dismissedAt, Instant.now());
+        boolean isTimeToResurface = timeSinceLastDismissal.compareTo(delay) >= 0;
+        if (isTimeToResurface) {
+            return false;
+        }
+
+        return true;
     }
 
     private boolean isInFlight(@NonNull SafetyCenterIssueActionId safetyCenterIssueActionId) {
@@ -767,8 +813,7 @@ final class SafetyCenterDataTracker {
             @NonNull UserProfileGroup userProfileGroup) {
         int safetyCenterOverallSeverityLevel = SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK;
         int safetyCenterEntriesSeverityLevel = SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK;
-        List<SafetyCenterIssue> safetyCenterIssues = new ArrayList<>();
-        ArraySet<Integer> allCurrentIssueCategories = new ArraySet<>();
+        List<SafetyCenterIssueWithCategory> safetyCenterIssuesWithCategories = new ArrayList<>();
         List<SafetyCenterEntryOrGroup> safetyCenterEntryOrGroups = new ArrayList<>();
         List<SafetyCenterStaticEntryGroup> safetyCenterStaticEntryGroups = new ArrayList<>();
         SafetyCenterOverallStatusErrorState safetyCenterOverallStatusErrorState =
@@ -781,8 +826,7 @@ final class SafetyCenterDataTracker {
                     Math.max(
                             safetyCenterOverallSeverityLevel,
                             addSafetyCenterIssues(
-                                    safetyCenterIssues,
-                                    allCurrentIssueCategories,
+                                    safetyCenterIssuesWithCategories,
                                     safetySourcesGroup,
                                     userProfileGroup));
             int safetySourcesGroupType = safetySourcesGroup.getType();
@@ -817,14 +861,21 @@ final class SafetyCenterDataTracker {
         boolean hasSettingsToReview =
                 safetyCenterEntriesSeverityLevel > safetyCenterOverallSeverityLevel
                         || safetyCenterOverallStatusErrorState.mHasAtLeastOneUserVisibleError;
-        safetyCenterIssues.sort(SAFETY_CENTER_ISSUES_BY_SEVERITY_DESCENDING);
+        safetyCenterIssuesWithCategories.sort(SAFETY_CENTER_ISSUES_BY_SEVERITY_DESCENDING);
+
+        List<SafetyCenterIssue> safetyCenterIssues =
+                new ArrayList<>(safetyCenterIssuesWithCategories.size());
+        for (int i = 0; i < safetyCenterIssuesWithCategories.size(); i++) {
+            safetyCenterIssues.add(safetyCenterIssuesWithCategories.get(i).getSafetyCenterIssue());
+        }
+
         int refreshStatus = mSafetyCenterRefreshTracker.getRefreshStatus();
         return new SafetyCenterData(
                 new SafetyCenterStatus.Builder(
                                 getSafetyCenterStatusTitle(
                                         safetyCenterOverallSeverityLevel,
+                                        safetyCenterIssuesWithCategories,
                                         refreshStatus,
-                                        allCurrentIssueCategories,
                                         hasSettingsToReview),
                                 getSafetyCenterStatusSummary(
                                         safetyCenterOverallSeverityLevel,
@@ -841,8 +892,7 @@ final class SafetyCenterDataTracker {
 
     @SafetyCenterStatus.OverallSeverityLevel
     private int addSafetyCenterIssues(
-            @NonNull List<SafetyCenterIssue> safetyCenterIssues,
-            @NonNull ArraySet<Integer> allCurrentIssueCategories,
+            @NonNull List<SafetyCenterIssueWithCategory> safetyCenterIssuesWithCategories,
             @NonNull SafetySourcesGroup safetySourcesGroup,
             @NonNull UserProfileGroup userProfileGroup) {
         int safetyCenterIssuesOverallSeverityLevel = SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK;
@@ -858,8 +908,7 @@ final class SafetyCenterDataTracker {
                     Math.max(
                             safetyCenterIssuesOverallSeverityLevel,
                             addSafetyCenterIssues(
-                                    safetyCenterIssues,
-                                    allCurrentIssueCategories,
+                                    safetyCenterIssuesWithCategories,
                                     safetySource,
                                     userProfileGroup.getProfileParentUserId()));
 
@@ -876,8 +925,7 @@ final class SafetyCenterDataTracker {
                         Math.max(
                                 safetyCenterIssuesOverallSeverityLevel,
                                 addSafetyCenterIssues(
-                                        safetyCenterIssues,
-                                        allCurrentIssueCategories,
+                                        safetyCenterIssuesWithCategories,
                                         safetySource,
                                         managedRunningProfileUserId));
             }
@@ -888,8 +936,7 @@ final class SafetyCenterDataTracker {
 
     @SafetyCenterStatus.OverallSeverityLevel
     private int addSafetyCenterIssues(
-            @NonNull List<SafetyCenterIssue> safetyCenterIssues,
-            @NonNull ArraySet<Integer> allCurrentIssueCategories,
+            @NonNull List<SafetyCenterIssueWithCategory> safetyCenterIssuesWithCategories,
             @NonNull SafetySource safetySource,
             @UserIdInt int userId) {
         SafetySourceKey key = SafetySourceKey.of(safetySource.getId(), userId);
@@ -914,9 +961,9 @@ final class SafetyCenterDataTracker {
                             safetyCenterIssuesOverallSeverityLevel,
                             toSafetyCenterStatusOverallSeverityLevel(
                                     safetySourceIssue.getSeverityLevel()));
-            safetyCenterIssues.add(safetyCenterIssue);
-
-            allCurrentIssueCategories.add(safetySourceIssue.getIssueCategory());
+            safetyCenterIssuesWithCategories.add(
+                    SafetyCenterIssueWithCategory.create(
+                            safetyCenterIssue, safetySourceIssue.getIssueCategory()));
         }
 
         return safetyCenterIssuesOverallSeverityLevel;
@@ -938,7 +985,9 @@ final class SafetyCenterDataTracker {
                         .setIssueTypeId(safetySourceIssue.getIssueTypeId())
                         .build();
 
-        if (isDismissed(safetyCenterIssueId.getSafetyCenterIssueKey())) {
+        if (isDismissed(
+                safetyCenterIssueId.getSafetyCenterIssueKey(),
+                safetySourceIssue.getSeverityLevel())) {
             return null;
         }
 
@@ -1044,10 +1093,9 @@ final class SafetyCenterDataTracker {
                     SafetyCenterEntryGroupId.newBuilder()
                             .setSafetySourcesGroupId(safetySourcesGroup.getId())
                             .build();
-            CharSequence groupSummary = getSafetyCenterEntryGroupSummary(
-                    safetySourcesGroup,
-                    groupSafetyCenterEntryLevel,
-                    entries);
+            CharSequence groupSummary =
+                    getSafetyCenterEntryGroupSummary(
+                            safetySourcesGroup, groupSafetyCenterEntryLevel, entries);
             safetyCenterEntryOrGroups.add(
                     new SafetyCenterEntryOrGroup(
                             new SafetyCenterEntryGroup.Builder(
@@ -1685,17 +1733,13 @@ final class SafetyCenterDataTracker {
 
     private String getSafetyCenterStatusTitle(
             @SafetyCenterStatus.OverallSeverityLevel int overallSeverityLevel,
+            @NonNull List<SafetyCenterIssueWithCategory> safetyCenterIssuesWithCategories,
             @SafetyCenterStatus.RefreshStatus int refreshStatus,
-            @NonNull ArraySet<Integer> allCurrentIssueCategories,
             boolean hasSettingsToReview) {
         String refreshStatusTitle = getSafetyCenterRefreshStatusTitle(refreshStatus);
         if (refreshStatusTitle != null) {
             return refreshStatusTitle;
         }
-        boolean onlyAccountIssuesPresent =
-                allCurrentIssueCategories.size() == 1
-                        && allCurrentIssueCategories.contains(
-                                SafetySourceIssue.ISSUE_CATEGORY_ACCOUNT);
         switch (overallSeverityLevel) {
             case SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN:
             case SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK:
@@ -1706,23 +1750,46 @@ final class SafetyCenterDataTracker {
                 return mSafetyCenterResourcesContext.getStringByName(
                         "overall_severity_level_ok_title");
             case SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_RECOMMENDATION:
-                if (onlyAccountIssuesPresent) {
-                    return mSafetyCenterResourcesContext.getStringByName(
-                            "overall_severity_level_account_recommendation_title");
-                }
-                return mSafetyCenterResourcesContext.getStringByName(
-                        "overall_severity_level_recommendation_title");
+                return getStatusTitleFromIssueCategories(
+                        safetyCenterIssuesWithCategories,
+                        "overall_severity_level_device_recommendation_title",
+                        "overall_severity_level_account_recommendation_title",
+                        "overall_severity_level_safety_recommendation_title");
             case SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_CRITICAL_WARNING:
-                if (onlyAccountIssuesPresent) {
-                    return mSafetyCenterResourcesContext.getStringByName(
-                            "overall_severity_level_critical_account_warning_title");
-                }
-                return mSafetyCenterResourcesContext.getStringByName(
-                        "overall_severity_level_critical_warning_title");
+                return getStatusTitleFromIssueCategories(
+                        safetyCenterIssuesWithCategories,
+                        "overall_severity_level_critical_device_warning_title",
+                        "overall_severity_level_critical_account_warning_title",
+                        "overall_severity_level_critical_safety_warning_title");
         }
 
         Log.w(TAG, "Unexpected SafetyCenterStatus.OverallSeverityLevel: " + overallSeverityLevel);
         return "";
+    }
+
+    @NonNull
+    private String getStatusTitleFromIssueCategories(
+            @NonNull List<SafetyCenterIssueWithCategory> safetyCenterIssuesWithCategories,
+            @NonNull String deviceResourceName,
+            @NonNull String accountResourceName,
+            @NonNull String generalResourceName) {
+        String generalString = mSafetyCenterResourcesContext.getStringByName(generalResourceName);
+        if (safetyCenterIssuesWithCategories.isEmpty()) {
+            Log.w(TAG, "No safety center issues found in a non-green status");
+            return generalString;
+        }
+        int issueCategory = safetyCenterIssuesWithCategories.get(0).getSafetyCenterIssueCategory();
+        switch (issueCategory) {
+            case SafetySourceIssue.ISSUE_CATEGORY_DEVICE:
+                return mSafetyCenterResourcesContext.getStringByName(deviceResourceName);
+            case SafetySourceIssue.ISSUE_CATEGORY_ACCOUNT:
+                return mSafetyCenterResourcesContext.getStringByName(accountResourceName);
+            case SafetySourceIssue.ISSUE_CATEGORY_GENERAL:
+                return generalString;
+        }
+
+        Log.w(TAG, "Unexpected issueCategory found: " + issueCategory);
+        return generalString;
     }
 
     private String getSafetyCenterStatusSummary(
@@ -1831,15 +1898,48 @@ final class SafetyCenterDataTracker {
         return SafetySourceKey.of(id.getSafetySourceId(), id.getUserId());
     }
 
-    /** A comparator to order {@link SafetyCenterIssue}s by severity level descending. */
+    /** Wrapper that encapsulates both {@link SafetyCenterIssue} and its category. */
+    private static final class SafetyCenterIssueWithCategory {
+        @NonNull private final SafetyCenterIssue mSafetyCenterIssue;
+        @SafetySourceIssue.IssueCategory private final int mSafetyCenterIssueCategory;
+
+        private SafetyCenterIssueWithCategory(
+                @NonNull SafetyCenterIssue safetyCenterIssue,
+                @SafetySourceIssue.IssueCategory int safetyCenterIssueCategory) {
+            this.mSafetyCenterIssue = safetyCenterIssue;
+            this.mSafetyCenterIssueCategory = safetyCenterIssueCategory;
+        }
+
+        @NonNull
+        public SafetyCenterIssue getSafetyCenterIssue() {
+            return mSafetyCenterIssue;
+        }
+
+        @SafetySourceIssue.IssueCategory
+        public int getSafetyCenterIssueCategory() {
+            return mSafetyCenterIssueCategory;
+        }
+
+        public static SafetyCenterIssueWithCategory create(
+                @NonNull SafetyCenterIssue safetyCenterIssue,
+                @SafetySourceIssue.IssueCategory int safetyCenterIssueCategory) {
+            return new SafetyCenterIssueWithCategory(safetyCenterIssue, safetyCenterIssueCategory);
+        }
+    }
+
+    /** A comparator to order {@link SafetyCenterIssueWithCategory} by severity level descending. */
     private static final class SafetyCenterIssuesBySeverityDescending
-            implements Comparator<SafetyCenterIssue> {
+            implements Comparator<SafetyCenterIssueWithCategory> {
 
         SafetyCenterIssuesBySeverityDescending() {}
 
         @Override
-        public int compare(@NonNull SafetyCenterIssue left, @NonNull SafetyCenterIssue right) {
-            return Integer.compare(right.getSeverityLevel(), left.getSeverityLevel());
+        public int compare(
+                @NonNull SafetyCenterIssueWithCategory left,
+                @NonNull SafetyCenterIssueWithCategory right) {
+            return Integer.compare(
+                    right.getSafetyCenterIssue().getSeverityLevel(),
+                    left.getSafetyCenterIssue().getSeverityLevel());
         }
     }
 
@@ -1850,6 +1950,7 @@ final class SafetyCenterDataTracker {
     private static final class IssueData {
         @NonNull private final Instant mFirstSeenAt;
         @Nullable private Instant mDismissedAt;
+        private int mDismissCount;
 
         private IssueData(@NonNull Instant firstSeenAt) {
             mFirstSeenAt = firstSeenAt;
@@ -1869,6 +1970,14 @@ final class SafetyCenterDataTracker {
             mDismissedAt = dismissedAt;
         }
 
+        public int getDismissCount() {
+            return mDismissCount;
+        }
+
+        public void setDismissCount(int dismissCount) {
+            mDismissCount = dismissCount;
+        }
+
         @Override
         public String toString() {
             return "IssueData{"
@@ -1876,6 +1985,8 @@ final class SafetyCenterDataTracker {
                     + mFirstSeenAt
                     + ", mDismissedAt="
                     + mDismissedAt
+                    + ", mDismissCount="
+                    + mDismissCount
                     + '}';
         }
     }
