@@ -50,9 +50,13 @@ class SafetyCenterCtsHelper(private val context: Context) {
      */
     fun setup() {
         SafetyCenterFlags.showErrorEntriesOnTimeout = false
+        SafetyCenterFlags.replaceLockScreenIconAction = true
         SafetyCenterFlags.resolveActionTimeout = TIMEOUT_LONG
         SafetyCenterFlags.refreshTimeout = TIMEOUT_LONG
         SafetyCenterFlags.untrackedSources = emptySet()
+        SafetyCenterFlags.resurfaceIssueMaxCounts = emptyMap()
+        SafetyCenterFlags.resurfaceIssueDelays = emptyMap()
+        SafetyCenterFlags.noBackgroundRefreshSources = emptySet()
         setEnabled(true)
     }
 
