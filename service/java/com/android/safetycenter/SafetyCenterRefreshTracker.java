@@ -30,10 +30,9 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.android.safetycenter.SafetyCenterConfigReader.Broadcast;
-
+import java.io.PrintWriter;
 import java.util.List;
-import java.util.Objects;
+import java.util.UUID;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -47,22 +46,15 @@ import javax.annotation.concurrent.NotThreadSafe;
 final class SafetyCenterRefreshTracker {
     private static final String TAG = "SafetyCenterRefreshTrac";
 
-    @NonNull private final SafetyCenterConfigReader mSafetyCenterConfigReader;
-
     @Nullable
     // TODO(b/229060064): Should we allow one refresh at a time per UserProfileGroup rather than
     //  one global refresh?
     private RefreshInProgress mRefreshInProgress = null;
 
-    /**
-     * Creates a {@link SafetyCenterRefreshTracker} using the given {@link
-     * SafetyCenterConfigReader}.
-     */
-    SafetyCenterRefreshTracker(@NonNull SafetyCenterConfigReader safetyCenterConfigReader) {
-        mSafetyCenterConfigReader = safetyCenterConfigReader;
-    }
-
     private int mRefreshCounter = 0;
+
+    /** Creates a {@link SafetyCenterRefreshTracker}. */
+    SafetyCenterRefreshTracker() {}
 
     /**
      * Reports that a new refresh is in progress and returns the broadcast id associated with this
@@ -75,9 +67,7 @@ final class SafetyCenterRefreshTracker {
             Log.w(TAG, "Replacing an ongoing refresh");
         }
 
-        List<Broadcast> broadcasts = mSafetyCenterConfigReader.getBroadcasts();
-        String refreshBroadcastId =
-                Objects.hash(refreshReason, broadcasts, userProfileGroup) + "_" + mRefreshCounter++;
+        String refreshBroadcastId = UUID.randomUUID() + "_" + mRefreshCounter++;
         Log.v(
                 TAG,
                 "Starting a new refresh with refreshReason:"
@@ -91,31 +81,6 @@ final class SafetyCenterRefreshTracker {
                         refreshReason,
                         userProfileGroup,
                         SafetyCenterFlags.getUntrackedSourceIds());
-
-        for (int i = 0; i < broadcasts.size(); i++) {
-            Broadcast broadcast = broadcasts.get(i);
-            List<String> profileParentSourceIds =
-                    broadcast.getSourceIdsForProfileParent(refreshReason);
-            for (int j = 0; j < profileParentSourceIds.size(); j++) {
-                String profileParentSourceId = profileParentSourceIds.get(j);
-                mRefreshInProgress.addSourceRefreshInFlight(
-                        SafetySourceKey.of(
-                                profileParentSourceId, userProfileGroup.getProfileParentUserId()));
-            }
-            List<String> managedProfilesSourceIds =
-                    broadcast.getSourceIdsForManagedProfiles(refreshReason);
-            for (int j = 0; j < managedProfilesSourceIds.size(); j++) {
-                String managedProfilesSourceId = managedProfilesSourceIds.get(j);
-                int[] managedRunningProfilesUserIds =
-                        userProfileGroup.getManagedRunningProfilesUserIds();
-                for (int k = 0; k < managedRunningProfilesUserIds.length; k++) {
-                    int managedRunningProfileUserId = managedRunningProfilesUserIds[k];
-                    mRefreshInProgress.addSourceRefreshInFlight(
-                            SafetySourceKey.of(
-                                    managedProfilesSourceId, managedRunningProfileUserId));
-                }
-            }
-        }
 
         return refreshBroadcastId;
     }
@@ -134,6 +99,25 @@ final class SafetyCenterRefreshTracker {
     }
 
     /**
+     * Reports that refresh requests have been sent to a collection of sources.
+     *
+     * <p>When those sources respond call {@link #reportSourceRefreshCompleted} to mark the request
+     * as complete.
+     */
+    void reportSourceRefreshesInFlight(
+            @NonNull String refreshBroadcastId,
+            @NonNull List<String> sourceIds,
+            @UserIdInt int userId) {
+        if (!checkMethodValid("reportSourceRefreshesInFlight", refreshBroadcastId)) {
+            return;
+        }
+        for (int i = 0; i < sourceIds.size(); i++) {
+            SafetySourceKey key = SafetySourceKey.of(sourceIds.get(i), userId);
+            mRefreshInProgress.addSourceRefreshInFlight(key);
+        }
+    }
+
+    /**
      * Reports that a source has completed its refresh, and returns whether this caused the refresh
      * to complete.
      *
@@ -141,7 +125,7 @@ final class SafetyCenterRefreshTracker {
      * the refresh as completed.
      */
     boolean reportSourceRefreshCompleted(
-            @NonNull String sourceId, @NonNull String refreshBroadcastId, @UserIdInt int userId) {
+            @NonNull String refreshBroadcastId, @NonNull String sourceId, @UserIdInt int userId) {
         if (!checkMethodValid("reportSourceRefreshCompleted", refreshBroadcastId)) {
             return false;
         }
@@ -191,9 +175,15 @@ final class SafetyCenterRefreshTracker {
         }
 
         Log.v(TAG, "Clearing refresh with refreshBroadcastId:" + refreshBroadcastId);
-        ArraySet<SafetySourceKey> stillInFlight = mRefreshInProgress.getSourceRefreshInFlight();
+
+        RefreshInProgress clearedRefresh = mRefreshInProgress;
         mRefreshInProgress = null;
-        return stillInFlight;
+
+        if (clearedRefresh.isComplete()) {
+            return null;
+        } else {
+            return clearedRefresh.getSourceRefreshInFlight();
+        }
     }
 
     /**
@@ -232,6 +222,24 @@ final class SafetyCenterRefreshTracker {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Dumps state for debugging purposes.
+     *
+     * @param fout {@link PrintWriter} to write to
+     */
+    void dump(@NonNull PrintWriter fout) {
+        fout.println(
+                "REFRESH IN PROGRESS ("
+                        + (mRefreshInProgress != null)
+                        + ", counter="
+                        + mRefreshCounter
+                        + ")");
+        if (mRefreshInProgress != null) {
+            fout.println("\t" + mRefreshInProgress);
+        }
+        fout.println();
     }
 
     /** Class representing the state of a refresh in progress. */
@@ -337,6 +345,23 @@ final class SafetyCenterRefreshTracker {
 
         private boolean isComplete() {
             return mSourceRefreshInFlight.isEmpty();
+        }
+
+        @Override
+        public String toString() {
+            return "RefreshInProgress{"
+                    + "mId='"
+                    + mId
+                    + '\''
+                    + ", mReason="
+                    + mReason
+                    + ", mUserProfileGroup="
+                    + mUserProfileGroup
+                    + ", mUntrackedSourcesIds="
+                    + mUntrackedSourcesIds
+                    + ", mSourceRefreshInFlight="
+                    + mSourceRefreshInFlight
+                    + '}';
         }
     }
 }

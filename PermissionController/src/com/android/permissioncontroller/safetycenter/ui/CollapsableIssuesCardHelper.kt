@@ -21,11 +21,16 @@ import android.content.Intent
 import android.content.Intent.ACTION_SAFETY_CENTER
 import android.os.Build
 import android.os.Bundle
+import android.safetycenter.SafetyCenterIssue
 import android.safetycenter.SafetyCenterIssue.ISSUE_SEVERITY_LEVEL_OK
 import androidx.annotation.RequiresApi
+import androidx.fragment.app.FragmentManager
 import androidx.preference.PreferenceGroup
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.safetycenter.SafetyCenterConstants.EXPAND_ISSUE_GROUP_QS_FRAGMENT_KEY
+import com.android.permissioncontroller.safetycenter.ui.model.ActionId
+import com.android.permissioncontroller.safetycenter.ui.model.IssueId
+import com.android.permissioncontroller.safetycenter.ui.model.SafetyCenterViewModel
 import com.android.safetycenter.internaldata.SafetyCenterIssueKey
 import kotlin.math.max
 
@@ -34,7 +39,7 @@ import kotlin.math.max
  * cards when the more issues preference is clicked
  */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-class CollapsableIssuesCardHelper {
+class CollapsableIssuesCardHelper(val safetyCenterViewModel: SafetyCenterViewModel) {
     private var isQuickSettingsFragment: Boolean = false
     private var issueCardsExpanded: Boolean = false
     private var focusedSafetyCenterIssueKey: SafetyCenterIssueKey? = null
@@ -77,17 +82,29 @@ class CollapsableIssuesCardHelper {
      * Add the [IssueCardPreference] managed by this helper to the specified [PreferenceGroup]
      *
      * @param context Current context
+     * @param safetyCenterViewModel {@link SafetyCenterViewModel} used when executing issue actions
+     * @param dialogFragmentManager fragment manager use for issue dismissal
      * @param issuesPreferenceGroup Preference group to add preference to
-     * @param issueCardPreferences {@link List} of {@link IssueCardPreference} to add to the
-     * preference fragment
+     * @param issues {@link List} of {@link SafetyCenterIssue} to add to the preference fragment
+     * @param resolvedIssues {@link Map} of issue id to action ids of resolved issues
      */
     fun addIssues(
         context: Context,
+        safetyCenterViewModel: SafetyCenterViewModel,
+        dialogFragmentManager: FragmentManager,
         issuesPreferenceGroup: PreferenceGroup,
-        issueCardPreferences: List<IssueCardPreference>
+        issues: List<SafetyCenterIssue>,
+        resolvedIssues: Map<IssueId, ActionId>
     ) {
+        val issueCardPreferenceList: List<IssueCardPreference> =
+            issues.map { issue: SafetyCenterIssue ->
+                val resolvedActionId: ActionId? = resolvedIssues[issue.id]
+                IssueCardPreference(
+                    context, safetyCenterViewModel, issue, resolvedActionId, dialogFragmentManager)
+            }
+
         val (reorderedIssueCardPreferences, numberOfIssuesToShowWhenCollapsed) =
-            maybeReorderFocusedSafetyCenterIssueInList(issueCardPreferences)
+            maybeReorderFocusedSafetyCenterIssueInList(issueCardPreferenceList)
         val moreIssuesCardPreference =
             createMoreIssuesCardPreference(
                 context,
@@ -187,6 +204,8 @@ class CollapsableIssuesCardHelper {
             } else {
                 expand(issuesPreferenceGroup)
             }
+            safetyCenterViewModel.interactionLogger.record(Action.MORE_ISSUES_CLICKED)
+
             true
         }
     }
@@ -214,6 +233,7 @@ class CollapsableIssuesCardHelper {
         // Navigate to Safety center with issues expanded
         val safetyCenterIntent = Intent(ACTION_SAFETY_CENTER)
         safetyCenterIntent.putExtra(EXPAND_ISSUE_GROUP_QS_FRAGMENT_KEY, true)
+        NavigationSource.QUICK_SETTINGS_TILE.addToIntent(safetyCenterIntent)
         context.startActivity(safetyCenterIntent)
     }
 
