@@ -22,6 +22,8 @@ import android.content.Context;
 import android.graphics.drawable.Animatable2;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.safetycenter.SafetyCenterData;
 import android.safetycenter.SafetyCenterStatus;
 import android.text.TextUtils;
@@ -107,11 +109,12 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
         View safetyProtectionSectionView = holder.findViewById(R.id.safety_protection_section_view);
         safetyProtectionSectionView.setVisibility(mHasIssues ? View.GONE : View.VISIBLE);
 
-        rescanButton.setOnClickListener(unused -> {
-            SafetyCenterViewModel viewModel = requireViewModel();
-            viewModel.rescan();
-            viewModel.getInteractionLogger().record(Action.SCAN_INITIATED);
-        });
+        rescanButton.setOnClickListener(
+                unused -> {
+                    SafetyCenterViewModel viewModel = requireViewModel();
+                    viewModel.rescan();
+                    viewModel.getInteractionLogger().record(Action.SCAN_INITIATED);
+                });
 
         updateStatusIcon(statusImage, rescanButton);
     }
@@ -125,9 +128,13 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
         boolean shouldChangeIcon = mSettledSeverityLevel != severityLevel;
 
         if (shouldStartScanAnimation && !mIsIconChangeAnimationRunning) {
+            mSettledSeverityLevel = severityLevel;
             startScanningAnimation(statusImage);
         } else if (shouldStartScanAnimation) {
             mQueuedScanAnimationSeverityLevel = severityLevel;
+        } else if (mIsScanAnimationRunning && shouldChangeIcon) {
+            mSettledSeverityLevel = severityLevel;
+            continueScanningAnimation(statusImage);
         } else if (shouldEndScanAnimation) {
             endScanningAnimation(statusImage, rescanButton);
         } else if (shouldChangeIcon && !mIsScanAnimationRunning) {
@@ -142,39 +149,47 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
     private boolean isRefreshInProgress() {
         int refreshStatus = mStatus.getRefreshStatus();
         return refreshStatus == SafetyCenterStatus.REFRESH_STATUS_FULL_RESCAN_IN_PROGRESS
-                || refreshStatus
-                == SafetyCenterStatus.REFRESH_STATUS_DATA_FETCH_IN_PROGRESS;
+                || refreshStatus == SafetyCenterStatus.REFRESH_STATUS_DATA_FETCH_IN_PROGRESS;
     }
 
     private void startScanningAnimation(ImageView statusImage) {
         mIsScanAnimationRunning = true;
-        int currentSeverityLevel = mStatus.getSeverityLevel();
         statusImage.setImageResource(
-                StatusAnimationResolver.getScanningStartAnimation(currentSeverityLevel));
+                StatusAnimationResolver.getScanningStartAnimation(mSettledSeverityLevel));
         AnimatedVectorDrawable animation = (AnimatedVectorDrawable) statusImage.getDrawable();
         animation.registerAnimationCallback(
                 new Animatable2.AnimationCallback() {
                     @Override
                     public void onAnimationEnd(Drawable drawable) {
-                        statusImage.setImageResource(
-                                StatusAnimationResolver.getScanningAnimation(currentSeverityLevel));
-                        AnimatedVectorDrawable scanningAnim =
-                                (AnimatedVectorDrawable) statusImage.getDrawable();
-                        scanningAnim.registerAnimationCallback(
-                                new Animatable2.AnimationCallback() {
-                                    @Override
-                                    public void onAnimationEnd(Drawable drawable) {
-                                        if (mIsScanAnimationRunning && isRefreshInProgress()) {
-                                            scanningAnim.start();
-                                        } else {
-                                            scanningAnim.clearAnimationCallbacks();
-                                        }
-                                    }
-                                });
-                        scanningAnim.start();
+                        continueScanningAnimation(statusImage);
                     }
                 });
         animation.start();
+    }
+
+    private void continueScanningAnimation(ImageView statusImage) {
+        // clear previous scan animation in case we need to continue with different severity level
+        Drawable statusDrawable = statusImage.getDrawable();
+        if (statusDrawable instanceof AnimatedVectorDrawable) {
+            ((AnimatedVectorDrawable) statusDrawable).clearAnimationCallbacks();
+        }
+
+        statusImage.setImageResource(
+                StatusAnimationResolver.getScanningAnimation(mSettledSeverityLevel));
+        AnimatedVectorDrawable scanningAnim =
+                (AnimatedVectorDrawable) statusImage.getDrawable();
+        scanningAnim.registerAnimationCallback(
+                new Animatable2.AnimationCallback() {
+                    @Override
+                    public void onAnimationEnd(Drawable drawable) {
+                        if (mIsScanAnimationRunning && isRefreshInProgress()) {
+                            scanningAnim.start();
+                        } else {
+                            scanningAnim.clearAnimationCallbacks();
+                        }
+                    }
+                });
+        scanningAnim.start();
     }
 
     private void endScanningAnimation(ImageView statusImage, View rescanButton) {
@@ -224,8 +239,7 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
     private void startIconChangeAnimation(ImageView statusImage) {
         int changeAnimationResId =
                 StatusAnimationResolver.getStatusChangeAnimation(
-                        mSettledSeverityLevel,
-                        mStatus.getSeverityLevel());
+                        mSettledSeverityLevel, mStatus.getSeverityLevel());
         if (changeAnimationResId == 0) {
             setSettledStatus(statusImage);
             return;
@@ -279,13 +293,13 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
 
     void setSafetyStatus(SafetyCenterStatus status) {
         mStatus = status;
-        notifyChanged();
+        safeNotifyChanged();
     }
 
     void setSafetyData(SafetyCenterData data) {
         mHasIssues = data.getIssues().size() > 0;
         mStatus = data.getStatus();
-        notifyChanged();
+        safeNotifyChanged();
     }
 
     void setViewModel(SafetyCenterViewModel viewModel) {
@@ -303,16 +317,22 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
     void setHasPendingActions(boolean hasPendingActions, View.OnClickListener listener) {
         mHasPendingActions = hasPendingActions;
         mReviewSettingsOnClickListener = listener;
-        notifyChanged();
+        safeNotifyChanged();
     }
 
     private void setRescanButtonState(View rescanButton) {
         rescanButton.setVisibility(
                 mStatus.getSeverityLevel() != SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK
-                        || mHasIssues
+                                || mHasIssues
                         ? View.GONE
                         : View.VISIBLE);
         rescanButton.setEnabled(!isRefreshInProgress());
+    }
+
+    // Calling notifyChanged while recyclerview is scrolling or computing layout will result in an
+    // IllegalStateException. Post to handler to wait for UI to settle.
+    private void safeNotifyChanged() {
+        new Handler(Looper.getMainLooper()).post(() -> notifyChanged());
     }
 
     private static int toStatusImageResId(int overallSeverityLevel) {
@@ -344,7 +364,6 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
             return false;
         }
         SafetyStatusPreference other = (SafetyStatusPreference) preference;
-        return Objects.equals(mStatus, other.mStatus)
-                && mHasIssues == other.mHasIssues;
+        return Objects.equals(mStatus, other.mStatus) && mHasIssues == other.mHasIssues;
     }
 }

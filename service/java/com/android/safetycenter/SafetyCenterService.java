@@ -24,6 +24,7 @@ import static android.safetycenter.SafetyCenterManager.REFRESH_REASON_OTHER;
 import static android.safetycenter.SafetyCenterManager.RefreshReason;
 import static android.safetycenter.SafetyEvent.SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED;
 
+import static com.android.permission.PermissionStatsLog.SAFETY_STATE;
 import static com.android.safetycenter.SafetyCenterFlags.PROPERTY_SAFETY_CENTER_ENABLED;
 
 import static java.util.Objects.requireNonNull;
@@ -34,6 +35,9 @@ import android.annotation.UserIdInt;
 import android.annotation.WorkerThread;
 import android.app.AppOpsManager;
 import android.app.PendingIntent;
+import android.app.StatsManager;
+import android.app.StatsManager.PullAtomMetadata;
+import android.app.StatsManager.StatsPullAtomCallback;
 import android.content.ApexEnvironment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -59,12 +63,14 @@ import android.safetycenter.SafetySourceIssue;
 import android.safetycenter.config.SafetyCenterConfig;
 import android.util.ArraySet;
 import android.util.Log;
+import android.util.StatsEvent;
 
 import androidx.annotation.Keep;
 import androidx.annotation.RequiresApi;
 
 import com.android.internal.annotations.GuardedBy;
 import com.android.modules.utils.BackgroundThread;
+import com.android.permission.PermissionStatsLog;
 import com.android.permission.util.ForegroundThread;
 import com.android.permission.util.UserUtils;
 import com.android.safetycenter.SafetyCenterConfigReader.Broadcast;
@@ -84,11 +90,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.time.Duration;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -191,13 +194,29 @@ public final class SafetyCenterService extends SystemService {
     @Override
     public void onBootPhase(int phase) {
         if (phase == SystemService.PHASE_BOOT_COMPLETED && canUseSafetyCenter()) {
-            Executor foregroundThreadExecutor = ForegroundThread.getExecutor();
-            SafetyCenterEnabledListener listener = new SafetyCenterEnabledListener();
-            // Ensure the listener is called first with the current state on the same thread.
-            foregroundThreadExecutor.execute(listener::setInitialState);
-            DeviceConfig.addOnPropertiesChangedListener(
-                    DeviceConfig.NAMESPACE_PRIVACY, foregroundThreadExecutor, listener);
+            registerSafetyCenterEnabledListener();
+            registerSafetyCenterPullAtomCallback();
         }
+    }
+
+    private void registerSafetyCenterEnabledListener() {
+        Executor foregroundThreadExecutor = ForegroundThread.getExecutor();
+        SafetyCenterEnabledListener listener = new SafetyCenterEnabledListener();
+        // Ensure the listener is called first with the current state on the same thread.
+        foregroundThreadExecutor.execute(listener::setInitialState);
+        DeviceConfig.addOnPropertiesChangedListener(
+                DeviceConfig.NAMESPACE_PRIVACY, foregroundThreadExecutor, listener);
+    }
+
+    private void registerSafetyCenterPullAtomCallback() {
+        StatsManager statsManager =
+                requireNonNull(getContext().getSystemService(StatsManager.class));
+        PullAtomMetadata defaultMetadata = null;
+        statsManager.setPullAtomCallback(
+                SAFETY_STATE,
+                defaultMetadata,
+                BackgroundThread.getExecutor(),
+                new SafetyCenterPullAtomCallback());
     }
 
     /** Service implementation of {@link ISafetyCenterManager.Stub}. */
@@ -587,7 +606,7 @@ public final class SafetyCenterService extends SystemService {
         }
 
         private void enforceAnyCallingOrSelfPermissions(
-                @NonNull String message, String... permissions) {
+                @NonNull String message, @NonNull String... permissions) {
             if (permissions.length == 0) {
                 throw new IllegalArgumentException("Must check at least one permission");
             }
@@ -770,6 +789,48 @@ public final class SafetyCenterService extends SystemService {
         }
     }
 
+    /**
+     * A {@link StatsPullAtomCallback} that provides data for {@link
+     * PermissionStatsLog#SAFETY_STATE} when called by the {@link StatsManager}.
+     */
+    private final class SafetyCenterPullAtomCallback implements StatsPullAtomCallback {
+
+        private SafetyCenterPullAtomCallback() {}
+
+        @Override
+        public int onPullAtom(int atomTag, @NonNull List<StatsEvent> statsEvents) {
+            if (atomTag != SAFETY_STATE) {
+                Log.w(
+                        TAG,
+                        "Attempt to pull atom: "
+                                + atomTag
+                                + ", but only SAFETY_STATE is supported");
+                return StatsManager.PULL_SKIP;
+            }
+            if (!SafetyCenterFlags.getSafetyCenterEnabled()) {
+                Log.w(TAG, "Attempt to pull SAFETY_STATE, but Safety Center is disabled");
+                return StatsManager.PULL_SKIP;
+            }
+            List<UserProfileGroup> userProfileGroups =
+                    UserProfileGroup.getAllUserProfileGroups(getContext());
+            synchronized (mApiLock) {
+                if (mSafetyCenterConfigReader.isOverrideForTestsActive()) {
+                    Log.i(TAG, "Pulling and writing atoms with a test config override…");
+                    // We only log this and proceed with the call here, as we still want to be able
+                    // to assert the content of the logs in CTS tests. We may want to filter this
+                    // out in the future if this turns out to skew the collected events.
+                } else {
+                    Log.i(TAG, "Pulling and writing atoms…");
+                }
+                for (int i = 0; i < userProfileGroups.size(); i++) {
+                    mSafetyCenterDataTracker.pullAndWriteAtoms(
+                            userProfileGroups.get(i), statsEvents);
+                }
+            }
+            return StatsManager.PULL_SUCCESS;
+        }
+    }
+
     /** A {@link Runnable} that is called to signal a refresh timeout. */
     private final class RefreshTimeout implements Runnable {
 
@@ -868,62 +929,6 @@ public final class SafetyCenterService extends SystemService {
         }
     }
 
-    /**
-     * A wrapper class to track the timeouts that are currently in flight.
-     *
-     * <p>This class isn't thread safe. Thread safety must be handled by the caller.
-     */
-    @NotThreadSafe
-    private static final class SafetyCenterTimeouts {
-
-        /**
-         * The maximum number of timeouts we are tracking at a given time. This is to avoid having
-         * the {@code mTimeouts} queue grow unbounded. In practice, we should never have more than 1
-         * or 2 timeouts in flight.
-         */
-        private static final int MAX_TRACKED = 10;
-
-        private final ArrayDeque<Runnable> mTimeouts = new ArrayDeque<>(MAX_TRACKED);
-        private final Handler mForegroundHandler = ForegroundThread.getHandler();
-
-        SafetyCenterTimeouts() {}
-
-        private void add(@NonNull Runnable timeoutAction, @NonNull Duration timeoutDuration) {
-            if (mTimeouts.size() + 1 >= MAX_TRACKED) {
-                remove(mTimeouts.pollFirst());
-            }
-            mTimeouts.addLast(timeoutAction);
-            mForegroundHandler.postDelayed(timeoutAction, timeoutDuration.toMillis());
-        }
-
-        private void remove(@NonNull Runnable timeoutAction) {
-            mTimeouts.remove(timeoutAction);
-            mForegroundHandler.removeCallbacks(timeoutAction);
-        }
-
-        private void clear() {
-            while (!mTimeouts.isEmpty()) {
-                mForegroundHandler.removeCallbacks(mTimeouts.pollFirst());
-            }
-        }
-
-        /**
-         * Dumps state for debugging purposes.
-         *
-         * @param fout {@link PrintWriter} to write to
-         */
-        void dump(@NonNull PrintWriter fout) {
-            int count = mTimeouts.size();
-            fout.println("TIMEOUTS (" + count + ")");
-            Iterator<Runnable> it = mTimeouts.iterator();
-            int i = 0;
-            while (it.hasNext()) {
-                fout.println("\t[" + i++ + "] " + it.next());
-            }
-            fout.println();
-        }
-    }
-
     private boolean canUseSafetyCenter() {
         return mDeviceSupportsSafetyCenter && mConfigAvailable;
     }
@@ -1006,7 +1011,8 @@ public final class SafetyCenterService extends SystemService {
 
             RefreshTimeout refreshTimeout =
                     new RefreshTimeout(refreshBroadcastId, userProfileGroup);
-            mSafetyCenterTimeouts.add(refreshTimeout, SafetyCenterFlags.getRefreshTimeout());
+            mSafetyCenterTimeouts.add(
+                    refreshTimeout, SafetyCenterFlags.getRefreshSourcesTimeout(refreshReason));
 
             mSafetyCenterListeners.deliverUpdateForUserProfileGroup(userProfileGroup, true, null);
 
