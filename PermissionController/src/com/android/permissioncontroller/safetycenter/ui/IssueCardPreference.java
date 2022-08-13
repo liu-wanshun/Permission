@@ -53,20 +53,27 @@ import com.android.safetycenter.internaldata.SafetyCenterIssueKey;
 
 import com.google.android.material.button.MaterialButton;
 
+import java.util.Objects;
+
 /** A preference that displays a card representing a {@link SafetyCenterIssue}. */
 @RequiresApi(TIRAMISU)
 public class IssueCardPreference extends Preference implements ComparablePreference {
 
     public static final String TAG = IssueCardPreference.class.getSimpleName();
 
+    private final IssueCardAnimator mIssueCardAnimator = new IssueCardAnimator(
+            this::markIssueResolvedUiCompleted);
     private final SafetyCenterViewModel mSafetyCenterViewModel;
     private final SafetyCenterIssue mIssue;
     private final FragmentManager mDialogFragmentManager;
+    private final SafetyCenterIssueId mDecodedIssueId;
+    @Nullable private String mResolvedIssueActionId;
 
     public IssueCardPreference(
             Context context,
             SafetyCenterViewModel safetyCenterViewModel,
             SafetyCenterIssue issue,
+            @Nullable String resolvedIssueActionId,
             FragmentManager dialogFragmentManager) {
         super(context);
         setLayoutResource(R.layout.preference_issue_card);
@@ -74,11 +81,17 @@ public class IssueCardPreference extends Preference implements ComparablePrefere
         mSafetyCenterViewModel = requireNonNull(safetyCenterViewModel);
         mIssue = requireNonNull(issue);
         mDialogFragmentManager = dialogFragmentManager;
+        mDecodedIssueId = SafetyCenterIds.issueIdFromString(mIssue.getId());
+        mResolvedIssueActionId = resolvedIssueActionId;
     }
 
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
+
+        // Set default group visibility in case view is being reused
+        holder.findViewById(R.id.default_issue_content).setVisibility(View.VISIBLE);
+        holder.findViewById(R.id.resolved_issue_content).setVisibility(View.GONE);
 
         configureDismissButton(holder.findViewById(R.id.issue_card_dismiss_btn));
 
@@ -87,12 +100,30 @@ public class IssueCardPreference extends Preference implements ComparablePrefere
 
         CharSequence subtitle = mIssue.getSubtitle();
         TextView subtitleTextView = (TextView) holder.findViewById(R.id.issue_card_subtitle);
+        CharSequence contentDescription;
         if (TextUtils.isEmpty(subtitle)) {
             subtitleTextView.setVisibility(View.GONE);
+            contentDescription =
+                    getContext()
+                            .getString(
+                                    R.string.safety_center_issue_card_content_description,
+                                    mIssue.getTitle(),
+                                    mIssue.getSummary());
         } else {
             subtitleTextView.setText(subtitle);
             subtitleTextView.setVisibility(View.VISIBLE);
+            int contentDescriptionResId =
+                    R.string.safety_center_issue_card_content_description_with_subtitle;
+            contentDescription =
+                    getContext()
+                            .getString(
+                                    contentDescriptionResId,
+                                    mIssue.getTitle(),
+                                    mIssue.getSubtitle(),
+                                    mIssue.getSummary());
         }
+        holder.itemView.setContentDescription(contentDescription);
+        holder.itemView.setClickable(false);
 
         LinearLayout buttonList =
                 ((LinearLayout) holder.findViewById(R.id.issue_card_action_button_list));
@@ -102,7 +133,18 @@ public class IssueCardPreference extends Preference implements ComparablePrefere
             buttonList.addView(
                     buildActionButton(action, holder.itemView.getContext(), isFirstButton));
             isFirstButton = false;
+
+            if (mResolvedIssueActionId != null && mResolvedIssueActionId.equals(action.getId())) {
+                mIssueCardAnimator.transitionToIssueResolvedThenMarkComplete(
+                        getContext(),
+                        holder,
+                        action);
+            }
         }
+
+        mSafetyCenterViewModel
+                .getInteractionLogger()
+                .recordForIssue(Action.SAFETY_ISSUE_VIEWED, mIssue);
     }
 
     public int getSeverityLevel() {
@@ -111,12 +153,7 @@ public class IssueCardPreference extends Preference implements ComparablePrefere
 
     /** Returns the {@link SafetyCenterIssueKey} associated with this {@link IssueCardPreference} */
     public SafetyCenterIssueKey getIssueKey() {
-        SafetyCenterIssueId safetyCenterIssueId = SafetyCenterIds.issueIdFromString(mIssue.getId());
-        if (!safetyCenterIssueId.hasSafetyCenterIssueKey()) {
-            Log.d(TAG, "preference has no issue key");
-            return null;
-        }
-        return safetyCenterIssueId.getSafetyCenterIssueKey();
+        return mDecodedIssueId.getSafetyCenterIssueKey();
     }
 
     private void configureDismissButton(View dismissButton) {
@@ -128,8 +165,7 @@ public class IssueCardPreference extends Preference implements ComparablePrefere
             dismissButton.setVisibility(View.VISIBLE);
 
             SafetyCenterTouchTarget.configureSize(
-                    dismissButton,
-                    R.dimen.safety_center_icon_button_touch_target_size);
+                    dismissButton, R.dimen.safety_center_icon_button_touch_target_size);
         } else {
             dismissButton.setVisibility(View.GONE);
         }
@@ -145,13 +181,19 @@ public class IssueCardPreference extends Preference implements ComparablePrefere
     @Override
     public boolean hasSameContents(@NonNull Preference preference) {
         return (preference instanceof IssueCardPreference)
-                && mIssue.equals(((IssueCardPreference) preference).mIssue);
+                && mIssue.equals(((IssueCardPreference) preference).mIssue)
+                && Objects.equals(
+                        mResolvedIssueActionId,
+                        ((IssueCardPreference) preference).mResolvedIssueActionId);
     }
 
     private class DismissOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
             mSafetyCenterViewModel.dismissIssue(mIssue);
+            mSafetyCenterViewModel
+                    .getInteractionLogger()
+                    .recordForIssue(Action.ISSUE_DISMISS_CLICKED, mIssue);
         }
     }
 
@@ -187,9 +229,15 @@ public class IssueCardPreference extends Preference implements ComparablePrefere
                             requireArguments().getParcelable(ISSUE_KEY, SafetyCenterIssue.class));
             return new AlertDialog.Builder(getContext())
                     .setTitle(R.string.safety_center_issue_card_dismiss_confirmation_title)
+                    .setMessage(R.string.safety_center_issue_card_dismiss_confirmation_message)
                     .setPositiveButton(
                             R.string.safety_center_issue_card_confirm_dismiss_button,
-                            (dialog, which) -> safetyCenterViewModel.dismissIssue(issue))
+                            (dialog, which) -> {
+                                safetyCenterViewModel.dismissIssue(issue);
+                                safetyCenterViewModel
+                                        .getInteractionLogger()
+                                        .recordForIssue(Action.ISSUE_DISMISS_CLICKED, issue);
+                            })
                     .setNegativeButton(
                             R.string.safety_center_issue_card_cancel_dismiss_button, null)
                     .create();
@@ -202,17 +250,26 @@ public class IssueCardPreference extends Preference implements ComparablePrefere
                 isFirstButton ? createFirstButton(context) : createSubsequentButton(context);
         button.setText(action.getLabel());
         button.setEnabled(!action.isInFlight());
-        button.setOnClickListener((view) -> {
-            if (action.willResolve()) {
-                // Disable the button to prevent double-taps.
-                // We ideally want to do this on any button press, however out of an abundance of
-                // caution we only do it with actions that indicate they will resolve (and therefore
-                // we can rely on a model update to redraw state). We expect the model to update
-                // with either isInFlight() or simply removing/updating the issue.
-                button.setEnabled(false);
-            }
-            mSafetyCenterViewModel.executeIssueAction(mIssue, action);
-        });
+        button.setOnClickListener(
+                (view) -> {
+                    if (action.willResolve()) {
+                        // Disable the button to prevent double-taps.
+                        // We ideally want to do this on any button press, however out of an
+                        // abundance of caution we only do it with actions that indicate they will
+                        // resolve (and therefore we can rely on a model update to redraw state).
+                        // We expect the model to update with either isInFlight() or simply
+                        // removing/updating the issue.
+                        button.setEnabled(false);
+                    }
+                    mSafetyCenterViewModel.executeIssueAction(mIssue, action);
+                    mSafetyCenterViewModel
+                            .getInteractionLogger()
+                            .recordForIssue(
+                                    isFirstButton
+                                            ? Action.ISSUE_PRIMARY_ACTION_CLICKED
+                                            : Action.ISSUE_SECONDARY_ACTION_CLICKED,
+                                    mIssue);
+                });
         return button;
     }
 
@@ -258,6 +315,13 @@ public class IssueCardPreference extends Preference implements ComparablePrefere
             default:
                 Log.w(TAG, String.format("Unexpected issueSeverityLevel: %s", issueSeverityLevel));
                 return R.color.safety_center_button_info;
+        }
+    }
+
+    private void markIssueResolvedUiCompleted() {
+        if (mResolvedIssueActionId != null) {
+            mResolvedIssueActionId = null;
+            mSafetyCenterViewModel.markIssueResolvedUiCompleted(mIssue.getId());
         }
     }
 }
