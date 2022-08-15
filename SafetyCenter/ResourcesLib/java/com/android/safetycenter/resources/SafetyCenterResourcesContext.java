@@ -18,8 +18,6 @@ package com.android.safetycenter.resources;
 
 import static java.util.Objects.requireNonNull;
 
-import android.annotation.NonNull;
-import android.annotation.Nullable;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -29,7 +27,10 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.util.Log;
 
-import com.android.internal.annotations.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import java.io.File;
 import java.io.InputStream;
@@ -70,6 +71,12 @@ public class SafetyCenterResourcesContext extends ContextWrapper {
     /** Specific flags used for retrieving resolve info */
     private final int mFlags;
 
+    /**
+     * Whether we should fallback with an empty string when calling {@link #getStringByName} for a
+     * string resource that does not exist.
+     */
+    private final boolean mShouldFallbackIfNamedResourceNotFound;
+
     // Cached package name and resources from the resources APK
     @Nullable private String mResourcesApkPkgName;
     @Nullable private AssetManager mAssetsFromApk;
@@ -77,24 +84,41 @@ public class SafetyCenterResourcesContext extends ContextWrapper {
     @Nullable private Resources.Theme mThemeFromApk;
 
     public SafetyCenterResourcesContext(@NonNull Context contextBase) {
-        super(contextBase);
-        mResourcesApkAction = RESOURCES_APK_ACTION;
-        mResourcesApkPath = APEX_MODULE_PATH;
-        mConfigName = CONFIG_NAME;
-        mFlags = PackageManager.MATCH_SYSTEM_ONLY;
+        this(contextBase, /* shouldFallbackIfNamedResourceNotFound */ true);
     }
 
+    private SafetyCenterResourcesContext(
+            @NonNull Context contextBase, boolean shouldFallbackIfNamedResourceNotFound) {
+        this(
+                contextBase,
+                RESOURCES_APK_ACTION,
+                APEX_MODULE_PATH,
+                CONFIG_NAME,
+                PackageManager.MATCH_SYSTEM_ONLY,
+                shouldFallbackIfNamedResourceNotFound);
+    }
+
+    @VisibleForTesting
     SafetyCenterResourcesContext(
             @NonNull Context contextBase,
             @NonNull String resourcesApkAction,
             @Nullable String resourcesApkPath,
             @NonNull String configName,
-            int flags) {
+            int flags,
+            boolean shouldFallbackIfNamedResourceNotFound) {
         super(contextBase);
         mResourcesApkAction = requireNonNull(resourcesApkAction);
         mResourcesApkPath = resourcesApkPath;
         mConfigName = requireNonNull(configName);
         mFlags = flags;
+        mShouldFallbackIfNamedResourceNotFound = shouldFallbackIfNamedResourceNotFound;
+    }
+
+    /** Creates a new {@link SafetyCenterResourcesContext} for testing. */
+    @VisibleForTesting
+    public static SafetyCenterResourcesContext forTests(@NonNull Context contextBase) {
+        return new SafetyCenterResourcesContext(
+                contextBase, /* shouldFallbackIfNamedResourceNotFound */ false);
     }
 
     /** Get the package name of the Safety Center resources APK. */
@@ -173,24 +197,73 @@ public class SafetyCenterResourcesContext extends ContextWrapper {
         return resources.openRawResource(id);
     }
 
-    /** Gets a string resource by name from the Safety Center resources APK. */
+    /**
+     * Returns an optional {@link String} resource from the given {@code stringId}.
+     *
+     * <p>Returns {@code null} if {@code stringId} is equal to {@link Resources#ID_NULL}. Otherwise,
+     * throws a {@link Resources.NotFoundException} if the resource cannot be accessed.
+     */
     @Nullable
+    public String getOptionalString(@StringRes int stringId) {
+        if (stringId == Resources.ID_NULL) {
+            return null;
+        }
+        return getString(stringId);
+    }
+
+    /** Same as {@link #getOptionalString(int)} but with the given {@code formatArgs}. */
+    @Nullable
+    public String getOptionalString(@StringRes int stringId, @NonNull Object... formatArgs) {
+        if (stringId == Resources.ID_NULL) {
+            return null;
+        }
+        return getString(stringId, formatArgs);
+    }
+
+    /**
+     * Gets a string resource by name from the Safety Center resources APK, and returns an empty
+     * string if the resource does not exist (or throws a {@link Resources.NotFoundException} if
+     * {@link #mShouldFallbackIfNamedResourceNotFound} is {@code false}).
+     */
+    @NonNull
     public String getStringByName(@NonNull String name) {
+        int id = getStringRes(name);
+        return maybeFallbackIfNamedResourceIsNull(name, getOptionalString(id));
+    }
+
+    /** Same as {@link #getStringByName(String)} but with the given {@code formatArgs}. */
+    @NonNull
+    public String getStringByName(@NonNull String name, Object... formatArgs) {
+        int id = getStringRes(name);
+        return maybeFallbackIfNamedResourceIsNull(name, getOptionalString(id, formatArgs));
+    }
+
+    @NonNull
+    private String maybeFallbackIfNamedResourceIsNull(
+            @NonNull String name, @Nullable String value) {
+        if (value != null) {
+            return value;
+        }
+        if (!mShouldFallbackIfNamedResourceNotFound) {
+            throw new Resources.NotFoundException();
+        }
+        Log.w(TAG, "String resource " + name + " not found");
+        return "";
+    }
+
+    @StringRes
+    private int getStringRes(@NonNull String name) {
         String resourcePkgName = getResourcesApkPkgName();
         if (resourcePkgName == null) {
-            return null;
+            return Resources.ID_NULL;
         }
         Resources resources = getResources();
         if (resources == null) {
-            return null;
+            return Resources.ID_NULL;
         }
         // TODO(b/227738283): profile the performance of this operation and consider adding caching
         //  or finding some alternative solution.
-        int id = resources.getIdentifier(name, "string", resourcePkgName);
-        if (id == Resources.ID_NULL) {
-            return null;
-        }
-        return resources.getString(id);
+        return resources.getIdentifier(name, "string", resourcePkgName);
     }
 
     @Nullable

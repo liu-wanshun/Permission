@@ -17,13 +17,12 @@
 package android.safetycenter.cts.testing
 
 import android.content.Context
-import android.content.IntentFilter
 import android.safetycenter.SafetyCenterManager
-import android.safetycenter.SafetyCenterManager.ACTION_SAFETY_CENTER_ENABLED_CHANGED
 import android.safetycenter.SafetyEvent
 import android.safetycenter.SafetySourceData
 import android.safetycenter.config.SafetyCenterConfig
 import android.safetycenter.config.SafetySource.SAFETY_SOURCE_TYPE_STATIC
+import android.safetycenter.cts.testing.Coroutines.TIMEOUT_LONG
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.addOnSafetyCenterDataChangedListenerWithPermission
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.clearAllSafetySourceDataForTestsWithPermission
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.clearSafetyCenterConfigForTestsWithPermission
@@ -35,6 +34,7 @@ import android.safetycenter.cts.testing.SafetyCenterFlags.deviceSupportsSafetyCe
 import android.safetycenter.cts.testing.SafetyCenterFlags.isSafetyCenterEnabled
 import android.safetycenter.cts.testing.SafetySourceCtsData.Companion.EVENT_SOURCE_STATE_CHANGED
 import com.google.common.util.concurrent.MoreExecutors.directExecutor
+import java.time.Duration
 
 /** A class that facilitates settings up Safety Center in tests. */
 class SafetyCenterCtsHelper(private val context: Context) {
@@ -42,9 +42,25 @@ class SafetyCenterCtsHelper(private val context: Context) {
     private val safetyCenterManager = context.getSystemService(SafetyCenterManager::class.java)!!
     private val safetyCenterFlagsSnapshot = SafetyCenterFlags.snapshot
     private val listeners = mutableListOf<SafetyCenterCtsListener>()
-    private val enabledChangedReceivers = mutableListOf<SafetyCenterEnabledChangedReceiver>()
 
     private var currentConfigContainsCtsSource = false
+
+    /**
+     * Sets up the state of Safety Center by enabling it on the device and setting default flag
+     * values. To be called before each test.
+     */
+    fun setup() {
+        SafetyCenterFlags.showErrorEntriesOnTimeout = false
+        SafetyCenterFlags.replaceLockScreenIconAction = true
+        SafetyCenterFlags.resolveActionTimeout = TIMEOUT_LONG
+        SafetyCenterFlags.untrackedSources = emptySet()
+        SafetyCenterFlags.resurfaceIssueMaxCounts = emptyMap()
+        SafetyCenterFlags.resurfaceIssueDelays = emptyMap()
+        SafetyCenterFlags.backgroundRefreshDeniedSources = emptySet()
+        SafetyCenterFlags.issueCategoryAllowlists = emptyMap()
+        setAllRefreshTimeoutsTo(TIMEOUT_LONG)
+        setEnabled(true)
+    }
 
     /** Resets the state of Safety Center. To be called after each test. */
     fun reset() {
@@ -59,11 +75,6 @@ class SafetyCenterCtsHelper(private val context: Context) {
         currentConfigContainsCtsSource = false
         resetFlags()
         SafetySourceReceiver.reset()
-        enabledChangedReceivers.forEach {
-            context.unregisterReceiver(it)
-            it.reset()
-        }
-        enabledChangedReceivers.clear()
     }
 
     /** Enables or disables SafetyCenter based on [value]. */
@@ -79,15 +90,6 @@ class SafetyCenterCtsHelper(private val context: Context) {
             // supported by the device.
             SafetyCenterFlags.isEnabled = value
         }
-    }
-
-    /** Adds and returns a runtime-registered [SafetyCenterEnabledChangedReceiver]. */
-    fun addEnabledChangedReceiver(): SafetyCenterEnabledChangedReceiver {
-        val enabledChangedReceiver = SafetyCenterEnabledChangedReceiver()
-        context.registerReceiver(
-            enabledChangedReceiver, IntentFilter(ACTION_SAFETY_CENTER_ENABLED_CHANGED))
-        enabledChangedReceivers.add(enabledChangedReceiver)
-        return enabledChangedReceiver
     }
 
     /** Sets the given [SafetyCenterConfig]. */
@@ -130,6 +132,17 @@ class SafetyCenterCtsHelper(private val context: Context) {
             safetySourceId, safetySourceData, safetyEvent)
     }
 
+    fun setAllRefreshTimeoutsTo(refreshTimeout: Duration) {
+        SafetyCenterFlags.refreshTimeouts =
+            mapOf(
+                SafetyCenterManager.REFRESH_REASON_PAGE_OPEN to refreshTimeout,
+                SafetyCenterManager.REFRESH_REASON_RESCAN_BUTTON_CLICK to refreshTimeout,
+                SafetyCenterManager.REFRESH_REASON_DEVICE_REBOOT to refreshTimeout,
+                SafetyCenterManager.REFRESH_REASON_DEVICE_LOCALE_CHANGE to refreshTimeout,
+                SafetyCenterManager.REFRESH_REASON_SAFETY_CENTER_ENABLED to refreshTimeout,
+                SafetyCenterManager.REFRESH_REASON_OTHER to refreshTimeout)
+    }
+
     private fun resetFlags() {
         setEnabled(safetyCenterFlagsSnapshot.isSafetyCenterEnabled())
         SafetyCenterFlags.reset(safetyCenterFlagsSnapshot)
@@ -145,7 +158,9 @@ class SafetyCenterCtsHelper(private val context: Context) {
             // broadcasts are dispatched asynchronously, a wrong sequencing could still cause
             // failures (e.g: 1: flag switched, 2: test finishes, 3: new test starts, 4: a CTS
             // config is set, 5: broadcast from 1 dispatched).
-            addEnabledChangedReceiver().setSafetyCenterEnabledWithReceiverPermissionAndWait(value)
+            val enabledChangedReceiver = SafetyCenterEnabledChangedReceiver(context)
+            enabledChangedReceiver.setSafetyCenterEnabledWithReceiverPermissionAndWait(value)
+            enabledChangedReceiver.unregister()
         }
         // NOTE: We could be using ActivityManager#waitForBroadcastIdle() to achieve the same thing.
         // However:

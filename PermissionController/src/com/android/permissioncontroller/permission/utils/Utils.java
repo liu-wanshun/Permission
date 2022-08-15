@@ -42,6 +42,7 @@ import static android.content.pm.PackageManager.FLAG_PERMISSION_USER_SENSITIVE_W
 import static android.content.pm.PackageManager.MATCH_SYSTEM_ONLY;
 import static android.os.UserHandle.myUserId;
 
+import static com.android.permissioncontroller.Constants.EXTRA_SESSION_ID;
 import static com.android.permissioncontroller.Constants.INVALID_SESSION_ID;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
@@ -85,6 +86,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -101,6 +103,7 @@ import com.android.permissioncontroller.PermissionControllerApplication;
 import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.permission.model.AppPermissionGroup;
 import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup;
+import com.android.permissioncontroller.permission.model.livedatatypes.LightPackageInfo;
 
 import java.lang.annotation.Retention;
 import java.time.ZonedDateTime;
@@ -850,6 +853,19 @@ public final class Utils {
         return applyTint(context, context.getDrawable(iconResId), attr);
     }
 
+    /**
+     * Get the color resource id based on the attribute
+     *
+     * @return Resource id for the color
+     */
+    @ColorRes
+    public static int getColorResId(Context context, int attr) {
+        Theme theme = context.getTheme();
+        TypedValue typedValue = new TypedValue();
+        theme.resolveAttribute(attr, typedValue, true);
+        return typedValue.resourceId;
+    }
+
     public static List<ApplicationInfo> getAllInstalledApplications(Context context) {
         return context.getPackageManager().getInstalledApplications(0);
     }
@@ -958,6 +974,38 @@ public final class Utils {
                 || (packageInfo.applicationInfo.targetSdkVersion < Build.VERSION_CODES.R
                 && manager.unsafeCheckOpNoThrow(OPSTR_LEGACY_STORAGE,
                 packageInfo.applicationInfo.uid, packageInfo.packageName) == MODE_ALLOWED);
+    }
+
+    /**
+     * Gets whether the STORAGE group should be hidden from the UI for this package. This is true
+     * when the platform is T+, and the package has legacy storage access (i.e., either the package
+     * has a targetSdk less than Q, or has a targetSdk equal to Q and has OPSTR_LEGACY_STORAGE).
+     *
+     * TODO jaysullivan: This is always calling AppOpsManager; not taking advantage of LiveData
+     *
+     * @param pkg The package to check
+     */
+    public static boolean shouldShowStorage(LightPackageInfo pkg) {
+        if (!SdkLevel.isAtLeastT()) {
+            return true;
+        }
+        int targetSdkVersion = pkg.getTargetSdkVersion();
+        PermissionControllerApplication app = PermissionControllerApplication.get();
+        Context context = null;
+        try {
+            context = Utils.getUserContext(app, UserHandle.getUserHandleForUid(pkg.getUid()));
+        } catch (NameNotFoundException e) {
+            return true;
+        }
+        AppOpsManager appOpsManager = context.getSystemService(AppOpsManager.class);
+        if (appOpsManager == null) {
+            return true;
+        }
+
+        return targetSdkVersion < Build.VERSION_CODES.Q
+                || (targetSdkVersion == Build.VERSION_CODES.Q
+                && appOpsManager.unsafeCheckOpNoThrow(OPSTR_LEGACY_STORAGE, pkg.getUid(),
+                pkg.getPackageName()) == MODE_ALLOWED);
     }
 
     /**
@@ -1277,6 +1325,20 @@ public final class Utils {
     }
 
     /**
+     * Retrieves an existing session ID from the given intent or generates a new one if none is
+     * present.
+     *
+     * @return A valid session ID.
+     */
+    public static long getOrGenerateSessionId(Intent intent) {
+        long sessionId = intent.getLongExtra(EXTRA_SESSION_ID, INVALID_SESSION_ID);
+        if (sessionId == INVALID_SESSION_ID) {
+            sessionId = getValidSessionId();
+        }
+        return sessionId;
+    }
+
+    /**
      * Gets the label of the Settings application
      *
      * @param pm The packageManager used to get the activity resolution
@@ -1305,7 +1367,18 @@ public final class Utils {
         // In android TV, parental control accounts are managed profiles
         return !userManager.getEnabledProfiles().contains(user)
                 || (userManager.isManagedProfile(user.getIdentifier())
-                && !DeviceUtils.isTelevision(app));
+                    && !DeviceUtils.isTelevision(app));
+    }
+
+    /**
+     * Determines if a given user ID belongs to a managed profile user.
+     * @param userId The user ID to check
+     * @return true if the user is a managed profile
+     */
+    public static boolean isUserManagedProfile(int userId) {
+        return PermissionControllerApplication.get()
+                .getSystemService(UserManager.class)
+                .isManagedProfile(userId);
     }
 
     /**
