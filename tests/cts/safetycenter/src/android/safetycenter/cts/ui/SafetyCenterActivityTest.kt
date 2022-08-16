@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2022 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package android.safetycenter.cts
+package android.safetycenter.cts.ui
 
 import android.Manifest.permission.SEND_SAFETY_CENTER_UPDATE
 import android.content.Context
 import android.os.Bundle
 import android.safetycenter.SafetyCenterManager.EXTRA_SAFETY_SOURCE_ID
 import android.safetycenter.SafetyCenterManager.EXTRA_SAFETY_SOURCE_ISSUE_ID
+import android.safetycenter.cts.testing.Coroutines.TIMEOUT_LONG
 import android.safetycenter.cts.testing.Coroutines.TIMEOUT_SHORT
 import android.safetycenter.cts.testing.SafetyCenterActivityLauncher.launchSafetyCenterActivity
 import android.safetycenter.cts.testing.SafetyCenterCtsConfigs
@@ -32,6 +33,7 @@ import android.safetycenter.cts.testing.SafetyCenterCtsConfigs.SOURCE_ID_2
 import android.safetycenter.cts.testing.SafetyCenterCtsConfigs.SOURCE_ID_3
 import android.safetycenter.cts.testing.SafetyCenterCtsConfigs.STATIC_SOURCES_CONFIG
 import android.safetycenter.cts.testing.SafetyCenterCtsHelper
+import android.safetycenter.cts.testing.SafetyCenterCtsHelper.Companion.STATUS_CARD_RESCAN_BUTTON_LABEL
 import android.safetycenter.cts.testing.SafetyCenterFlags
 import android.safetycenter.cts.testing.SafetyCenterFlags.deviceSupportsSafetyCenter
 import android.safetycenter.cts.testing.SafetySourceCtsData
@@ -48,7 +50,6 @@ import android.safetycenter.cts.testing.UiTestHelper.assertSourceIssueNotDisplay
 import android.safetycenter.cts.testing.UiTestHelper.expandMoreIssuesCard
 import android.safetycenter.cts.testing.UiTestHelper.findAllText
 import android.safetycenter.cts.testing.UiTestHelper.findButton
-import android.safetycenter.cts.testing.UiTestHelper.waitButtonNotDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.waitNotDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.waitTextNotDisplayed
 import android.support.test.uiautomator.By
@@ -256,7 +257,7 @@ class SafetyCenterActivityTest {
             findButton("Dismiss").click()
 
             assertSourceIssueNotDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
-            findButton("Scan device")
+            findButton(STATUS_CARD_RESCAN_BUTTON_LABEL)
         }
     }
 
@@ -284,7 +285,7 @@ class SafetyCenterActivityTest {
             findButton("Dismiss").click()
 
             assertSourceIssueNotDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
-            findButton("Scan device")
+            findButton(STATUS_CARD_RESCAN_BUTTON_LABEL)
         }
     }
 
@@ -326,6 +327,7 @@ class SafetyCenterActivityTest {
 
     @Test
     fun issueCard_resolveIssue_successConfirmationShown_issueDismisses() {
+        SafetyCenterFlags.hideResolvedIssueUiTransitionDelay = TIMEOUT_LONG
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
 
         // Set the initial data for the source
@@ -357,6 +359,7 @@ class SafetyCenterActivityTest {
 
     @Test
     fun issueCard_resolveIssue_noSuccessMessage_defaultSuccessMessageShown_issueDismisses() {
+        SafetyCenterFlags.hideResolvedIssueUiTransitionDelay = TIMEOUT_LONG
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
 
         // Set the initial data for the source
@@ -435,22 +438,6 @@ class SafetyCenterActivityTest {
                 },
                 SEND_SAFETY_CENTER_UPDATE)
         }
-    }
-
-    @Test
-    fun launchActivity_withNoIssues_hasRescanButton() {
-        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.information)
-
-        context.launchSafetyCenterActivity { findButton("Scan device") }
-    }
-
-    @Test
-    fun launchActivity_withIssue_doesNotHaveRescanButton() {
-        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.informationWithIssue)
-
-        context.launchSafetyCenterActivity { waitButtonNotDisplayed("Scan device") }
     }
 
     @Test
