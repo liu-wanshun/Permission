@@ -40,11 +40,11 @@
     <color name="gm_yellow_100">#FEEFC3</color>
     <color name="gm_red_100">#FAD2CF</color>
 
+    <color name="sc_shield_accent">#FFFFFF</color>
+
     <!-- DEPRECATED: use theme attributes instead -->
     <color name="safety_center_info">@color/gm_green_500</color>
     <color name="safety_center_recommend">@color/gm_yellow_500</color>
     <color name="safety_center_warn">@color/gm_red_500</color>
 
-    <color name="safety_center_done">#767676</color>
-    <color name="safety_center_qs_background">#2f3133</color>
 </resources>

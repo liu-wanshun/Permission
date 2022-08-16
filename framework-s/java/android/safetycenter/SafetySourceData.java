@@ -35,8 +35,10 @@ import androidx.annotation.RequiresApi;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Data class used by safety sources to propagate safety information such as their safety status and
@@ -254,23 +256,34 @@ public final class SafetySourceData implements Parcelable {
         @NonNull
         public SafetySourceData build() {
             List<SafetySourceIssue> issues = unmodifiableList(new ArrayList<>(mIssues));
-            if (mStatus != null) {
-                int issuesMaxSeverityLevel = getIssuesMaxSeverityLevel(issues);
-                if (issuesMaxSeverityLevel > SafetySourceData.SEVERITY_LEVEL_INFORMATION) {
-                    checkArgument(
-                            issuesMaxSeverityLevel <= mStatus.getSeverityLevel(),
-                            "Safety source data must not contain any issue with a severity level "
-                                    + "both greater than SEVERITY_LEVEL_INFORMATION and greater "
-                                    + "than the status severity level");
-                }
+            int issuesMaxSeverityLevel = getIssuesMaxSeverityLevelEnforcingUniqueIds(issues);
+            if (mStatus == null) {
+                return new SafetySourceData(null, issues);
+            }
+            int statusSeverityLevel = mStatus.getSeverityLevel();
+            boolean requiresAttention = issuesMaxSeverityLevel > SEVERITY_LEVEL_INFORMATION;
+            if (requiresAttention) {
+                checkArgument(
+                        statusSeverityLevel >= issuesMaxSeverityLevel,
+                        "Safety source data cannot have issues that are more severe than its"
+                                + " status");
             }
             return new SafetySourceData(mStatus, issues);
         }
 
-        private static int getIssuesMaxSeverityLevel(@NonNull List<SafetySourceIssue> issues) {
+        private static int getIssuesMaxSeverityLevelEnforcingUniqueIds(
+                @NonNull List<SafetySourceIssue> issues) {
             int max = Integer.MIN_VALUE;
+            Set<String> issueIds = new HashSet<>();
             for (int i = 0; i < issues.size(); i++) {
-                max = Math.max(max, issues.get(i).getSeverityLevel());
+                SafetySourceIssue safetySourceIssue = issues.get(i);
+
+                String issueId = safetySourceIssue.getId();
+                checkArgument(
+                        !issueIds.contains(issueId),
+                        "Safety source data cannot have duplicate issue ids");
+                max = Math.max(max, safetySourceIssue.getSeverityLevel());
+                issueIds.add(issueId);
             }
             return max;
         }

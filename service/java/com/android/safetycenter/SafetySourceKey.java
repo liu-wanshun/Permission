@@ -33,6 +33,7 @@ import java.util.Objects;
 // TODO(b/219697341): Look into using AutoValue for this data class.
 @RequiresApi(TIRAMISU)
 final class SafetySourceKey {
+
     @NonNull private final String mSourceId;
     @UserIdInt private final int mUserId;
 
@@ -41,8 +42,8 @@ final class SafetySourceKey {
         mUserId = userId;
     }
 
-    @NonNull
     /** Creates a {@link SafetySourceKey}. */
+    @NonNull
     static SafetySourceKey of(@NonNull String sourceId, @UserIdInt int userId) {
         return new SafetySourceKey(sourceId, userId);
     }
@@ -57,6 +58,16 @@ final class SafetySourceKey {
                 + mUserId
                 + '\''
                 + '}';
+    }
+
+    @NonNull
+    public String getSourceId() {
+        return mSourceId;
+    }
+
+    @UserIdInt
+    public int getUserId() {
+        return mUserId;
     }
 
     @Override

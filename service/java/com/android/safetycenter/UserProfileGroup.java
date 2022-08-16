@@ -28,77 +28,104 @@ import android.os.Binder;
 import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
-import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.android.permission.util.UserUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * A class that represent all the enabled profiles (profile owner and managed profile(s)) associated
- * with a user id.
+ * A class that represent all the enabled profiles (profile parent and managed profile(s))
+ * associated with a user id.
  */
 @RequiresApi(TIRAMISU)
 final class UserProfileGroup {
 
-    private static final String TAG = "UserProfileGroup";
-
-    @UserIdInt
-    // TODO(b/223126212): Don't fork this — is there another value we could use?
-    private static final int USER_NULL = -10000;
-
-    @UserIdInt private final int mProfileOwnerUserId;
-
+    @UserIdInt private final int mProfileParentUserId;
     @NonNull private final int[] mManagedProfilesUserIds;
+    @NonNull private final int[] mManagedRunningProfilesUserIds;
 
     private UserProfileGroup(
-            @UserIdInt int profileOwnerUserId, @NonNull int[] managedProfilesUserIds) {
-        mProfileOwnerUserId = profileOwnerUserId;
+            @UserIdInt int profileParentUserId,
+            @NonNull int[] managedProfilesUserIds,
+            int[] managedRunningProfilesUserIds) {
+        mProfileParentUserId = profileParentUserId;
         mManagedProfilesUserIds = managedProfilesUserIds;
+        mManagedRunningProfilesUserIds = managedRunningProfilesUserIds;
+    }
+
+    /** Returns all the alive {@link UserProfileGroup}s. */
+    static List<UserProfileGroup> getAllUserProfileGroups(@NonNull Context context) {
+        List<UserProfileGroup> userProfileGroups = new ArrayList<>();
+        List<UserHandle> userHandles = UserUtils.getUserHandles(context);
+        for (int i = 0; i < userHandles.size(); i++) {
+            UserHandle userHandle = userHandles.get(i);
+            int userId = userHandle.getIdentifier();
+
+            if (userProfileGroupsContain(userProfileGroups, userId)) {
+                continue;
+            }
+
+            UserProfileGroup userProfileGroup = UserProfileGroup.from(context, userId);
+            userProfileGroups.add(userProfileGroup);
+        }
+        return userProfileGroups;
+    }
+
+    private static boolean userProfileGroupsContain(
+            @NonNull List<UserProfileGroup> userProfileGroups, @UserIdInt int userId) {
+        for (int i = 0; i < userProfileGroups.size(); i++) {
+            UserProfileGroup userProfileGroup = userProfileGroups.get(i);
+
+            if (userProfileGroup.contains(userId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
      * Returns the {@link UserProfileGroup} associated with the given {@code userId}.
      *
-     * <p>The given {@code userId} could be related to the profile owner or any of its associated
+     * <p>The given {@code userId} could be related to the profile parent or any of its associated
      * managed profile(s).
      */
     static UserProfileGroup from(@NonNull Context context, @UserIdInt int userId) {
         UserManager userManager = getUserManagerForUser(userId, context);
         List<UserHandle> userProfiles = getEnabledUserProfiles(userManager);
-        int profileOwnerUserId = USER_NULL;
+        UserHandle profileParent = getProfileParent(userManager, userId);
+        int profileParentUserId = userId;
+        if (profileParent != null) {
+            profileParentUserId = profileParent.getIdentifier();
+        }
+
         int[] managedProfilesUserIds = new int[userProfiles.size()];
+        int[] managedRunningProfilesUserIds = new int[userProfiles.size()];
         int managedProfilesUserIdsLen = 0;
+        int managedRunningProfilesUserIdsLen = 0;
         for (int i = 0; i < userProfiles.size(); i++) {
             UserHandle userProfileHandle = userProfiles.get(i);
             int userProfileId = userProfileHandle.getIdentifier();
 
-            // TODO(b/223132917): Check if user running and/or if quiet mode is enabled?
             if (UserUtils.isManagedProfile(userProfileId, context)) {
                 managedProfilesUserIds[managedProfilesUserIdsLen++] = userProfileId;
-            } else if (profileOwnerUserId == USER_NULL) {
-                profileOwnerUserId = userProfileId;
-            } else {
-                Log.w(
-                        TAG,
-                        "Found multiple profile owner user ids: "
-                                + profileOwnerUserId
-                                + ", "
-                                + userProfileId);
+                if (UserUtils.isProfileRunning(userProfileId, context)) {
+                    managedRunningProfilesUserIds[managedRunningProfilesUserIdsLen++] =
+                            userProfileId;
+                }
             }
         }
 
-        if (profileOwnerUserId == USER_NULL) {
-            throw new IllegalStateException("Could not find profile owner user id");
-        }
-
         return new UserProfileGroup(
-                profileOwnerUserId,
-                Arrays.copyOf(managedProfilesUserIds, managedProfilesUserIdsLen));
+                profileParentUserId,
+                Arrays.copyOf(managedProfilesUserIds, managedProfilesUserIdsLen),
+                Arrays.copyOf(managedRunningProfilesUserIds, managedRunningProfilesUserIdsLen));
     }
 
     @NonNull
@@ -133,9 +160,21 @@ final class UserProfileGroup {
         }
     }
 
-    /** Returns the profile owner user id of the {@link UserProfileGroup}. */
-    int getProfileOwnerUserId() {
-        return mProfileOwnerUserId;
+    @Nullable
+    private static UserHandle getProfileParent(
+            @NonNull UserManager userManager, @UserIdInt int userId) {
+        // This call requires the INTERACT_ACROSS_USERS permission.
+        final long callingIdentity = Binder.clearCallingIdentity();
+        try {
+            return userManager.getProfileParent(UserHandle.of(userId));
+        } finally {
+            Binder.restoreCallingIdentity(callingIdentity);
+        }
+    }
+
+    /** Returns the profile parent user id of the {@link UserProfileGroup}. */
+    int getProfileParentUserId() {
+        return mProfileParentUserId;
     }
 
     /** Returns the managed profile user ids of the {@link UserProfileGroup}. */
@@ -143,9 +182,14 @@ final class UserProfileGroup {
         return mManagedProfilesUserIds;
     }
 
+    /** Returns the running managed profile user ids of the {@link UserProfileGroup}. */
+    int[] getManagedRunningProfilesUserIds() {
+        return mManagedRunningProfilesUserIds;
+    }
+
     /** Returns whether the {@link UserProfileGroup} contains the given {@code userId}. */
     boolean contains(@UserIdInt int userId) {
-        if (userId == mProfileOwnerUserId) {
+        if (userId == mProfileParentUserId) {
             return true;
         }
 
@@ -158,29 +202,44 @@ final class UserProfileGroup {
         return false;
     }
 
+    /** Returns whether the given {@code userId} is associated with a running managed profile. */
+    boolean isManagedUserRunning(@UserIdInt int userId) {
+        for (int i = 0; i < mManagedRunningProfilesUserIds.length; i++) {
+            if (userId == mManagedRunningProfilesUserIds[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserProfileGroup)) return false;
         UserProfileGroup that = (UserProfileGroup) o;
-        return mProfileOwnerUserId == that.mProfileOwnerUserId
-                && Arrays.equals(mManagedProfilesUserIds, that.mManagedProfilesUserIds);
+        return mProfileParentUserId == that.mProfileParentUserId
+                && Arrays.equals(mManagedProfilesUserIds, that.mManagedProfilesUserIds)
+                && Arrays.equals(
+                        mManagedRunningProfilesUserIds, that.mManagedRunningProfilesUserIds);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(mProfileOwnerUserId);
-        result = 31 * result + Arrays.hashCode(mManagedProfilesUserIds);
-        return result;
+        return Objects.hash(
+                mProfileParentUserId,
+                Arrays.hashCode(mManagedProfilesUserIds),
+                Arrays.hashCode(mManagedRunningProfilesUserIds));
     }
 
     @Override
     public String toString() {
         return "UserProfiles{"
-                + "mProfileOwnerUserId="
-                + mProfileOwnerUserId
+                + "mProfileParentUserId="
+                + mProfileParentUserId
                 + ", mManagedProfilesUserIds="
                 + Arrays.toString(mManagedProfilesUserIds)
+                + ", mManagedRunningProfilesUserIds="
+                + Arrays.toString(mManagedRunningProfilesUserIds)
                 + '}';
     }
 }

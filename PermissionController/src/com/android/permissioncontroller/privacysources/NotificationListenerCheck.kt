@@ -27,6 +27,7 @@ import android.app.job.JobInfo
 import android.app.job.JobParameters
 import android.app.job.JobScheduler
 import android.app.job.JobService
+import android.app.role.RoleManager
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
@@ -40,9 +41,9 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.UserManager
 import android.provider.DeviceConfig
-import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+import android.provider.Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS
+import android.provider.Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME
 import android.safetycenter.SafetyCenterManager
 import android.safetycenter.SafetyCenterManager.EXTRA_SAFETY_SOURCE_ID
 import android.safetycenter.SafetyCenterManager.EXTRA_SAFETY_SOURCE_ISSUE_ID
@@ -66,13 +67,30 @@ import com.android.permissioncontroller.Constants.NOTIFICATION_LISTENER_CHECK_AL
 import com.android.permissioncontroller.Constants.NOTIFICATION_LISTENER_CHECK_NOTIFICATION_ID
 import com.android.permissioncontroller.Constants.PERIODIC_NOTIFICATION_LISTENER_CHECK_JOB_ID
 import com.android.permissioncontroller.Constants.PREFERENCES_FILE
+import com.android.permissioncontroller.PermissionControllerStatsLog
+import com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION
+import com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__ACTION__CARD_DISMISSED
+import com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__ACTION__CLICKED_CTA1
+import com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__PRIVACY_SOURCE__NOTIFICATION_LISTENER
+import com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_NOTIFICATION_INTERACTION
+import com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__ACTION__DISMISSED
+import com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__ACTION__NOTIFICATION_SHOWN
+import com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__PRIVACY_SOURCE__NOTIFICATION_LISTENER
 import com.android.permissioncontroller.R
+import com.android.permissioncontroller.permission.utils.KotlinUtils
 import com.android.permissioncontroller.permission.utils.Utils
 import com.android.permissioncontroller.permission.utils.Utils.getSystemServiceSafe
 import com.android.permissioncontroller.privacysources.SafetyCenterReceiver.RefreshEvent
-import com.android.permissioncontroller.privacysources.SafetyCenterReceiver.RefreshEvent.EVENT_DEVICE_REBOOTED
-import com.android.permissioncontroller.privacysources.SafetyCenterReceiver.RefreshEvent.EVENT_REFRESH_REQUESTED
-import com.android.permissioncontroller.privacysources.SafetyCenterReceiver.RefreshEvent.UNKNOWN
+import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.lang.System.currentTimeMillis
+import java.util.Random
+import java.util.concurrent.TimeUnit.DAYS
+import java.util.function.BooleanSupplier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.GlobalScope
@@ -81,27 +99,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import java.io.BufferedReader
-import java.io.BufferedWriter
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
-import java.lang.System.currentTimeMillis
-import java.util.concurrent.TimeUnit.DAYS
-import java.util.function.BooleanSupplier
-import java.util.Random
 
 private val TAG = "NotificationListenerCheck"
 private const val DEBUG = false
 
 const val SC_NLS_SOURCE_ID = "AndroidNotificationListener"
-@VisibleForTesting
-const val SC_NLS_DISABLE_ACTION_ID = "disable_nls_component"
+@VisibleForTesting const val SC_NLS_DISABLE_ACTION_ID = "disable_nls_component"
 
-/**
- * Device config property for whether notification listener check is enabled on the device
- */
+/** Device config property for whether notification listener check is enabled on the device */
 @VisibleForTesting
 const val PROPERTY_NOTIFICATION_LISTENER_CHECK_ENABLED = "notification_listener_check_enabled"
 
@@ -125,9 +130,7 @@ private val DEFAULT_NOTIFICATION_LISTENER_CHECK_PACKAGE_INTERVAL_MILLIS = DAYS.t
 
 private fun isNotificationListenerCheckFlagEnabled(): Boolean {
     return DeviceConfig.getBoolean(
-        DeviceConfig.NAMESPACE_PRIVACY,
-        PROPERTY_NOTIFICATION_LISTENER_CHECK_ENABLED,
-        false)
+        DeviceConfig.NAMESPACE_PRIVACY, PROPERTY_NOTIFICATION_LISTENER_CHECK_ENABLED, false)
 }
 
 /**
@@ -141,13 +144,11 @@ private fun getPeriodicCheckIntervalMillis(): Long {
     return DeviceConfig.getLong(
         DeviceConfig.NAMESPACE_PRIVACY,
         PROPERTY_NOTIFICATION_LISTENER_CHECK_INTERVAL_MILLIS,
-        DEFAULT_NOTIFICATION_LISTENER_CHECK_INTERVAL_MILLIS
-    )
+        DEFAULT_NOTIFICATION_LISTENER_CHECK_INTERVAL_MILLIS)
 }
 
 /**
  * Flexibility of the periodic check.
- *
  *
  * 10% of [.getPeriodicCheckIntervalMillis]
  *
@@ -159,7 +160,6 @@ private fun getFlexForPeriodicCheckMillis(): Long {
 
 /**
  * Minimum time in between showing two notifications.
- *
  *
  * This is just small enough so that the periodic check can always show a notification.
  *
@@ -180,29 +180,24 @@ private fun getPackageNotificationIntervalMillis(): Long {
     return DeviceConfig.getLong(
         DeviceConfig.NAMESPACE_PRIVACY,
         PROPERTY_NOTIFICATION_LISTENER_CHECK_PACKAGE_INTERVAL_MILLIS,
-        DEFAULT_NOTIFICATION_LISTENER_CHECK_PACKAGE_INTERVAL_MILLIS
-    )
+        DEFAULT_NOTIFICATION_LISTENER_CHECK_PACKAGE_INTERVAL_MILLIS)
 }
 
-/** Notification Listener Check requires Android T or later*/
+/** Notification Listener Check requires Android T or later */
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
 private fun checkNotificationListenerCheckSupported(): Boolean {
     return SdkLevel.isAtLeastT()
 }
 
-/** Returns {@code true} when Notification listener check is supported, feature flag enabled and
- *  Safety Center enabled */
+/**
+ * Returns {@code true} when Notification listener check is supported, feature flag enabled and
+ * Safety Center enabled
+ */
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
 private fun checkNotificationListenerCheckEnabled(context: Context): Boolean {
     return checkNotificationListenerCheckSupported() &&
         isNotificationListenerCheckFlagEnabled() &&
         getSystemServiceSafe(context, SafetyCenterManager::class.java).isSafetyCenterEnabled
-}
-
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-private fun isProfile(context: Context): Boolean {
-    val userManager = getSystemServiceSafe(context, UserManager::class.java)
-    return userManager.isProfile
 }
 
 private fun getSafetySourceIssueIdFromComponentName(componentName: ComponentName): String {
@@ -218,8 +213,8 @@ private fun getSafetySourceIssueIdFromComponentName(componentName: ComponentName
  * <p>We rate limit the number of notification we show and only ever show one notification at a
  * time.
  *
- * <p>As there are many cases why a notification should not been shown, we always schedule a
- * {@link #addNotificationListenerNotificationIfNeeded check} which then might add a notification.
+ * <p>As there are many cases why a notification should not been shown, we always schedule a {@link
+ * #addNotificationListenerNotificationIfNeeded check} which then might add a notification.
  *
  * @param context Used to resolve managers
  * @param shouldCancel If supplied, can be used to interrupt long-running operations
@@ -232,13 +227,34 @@ internal class NotificationListenerCheckInternal(
 ) {
     private val parentUserContext = Utils.getParentUserContext(context)
     private val random = Random()
+    private val exemptPackages: Set<String> =
+        getExemptedPackages(getSystemServiceSafe(parentUserContext, RoleManager::class.java))
 
     companion object {
+        @VisibleForTesting const val SC_NLS_ISSUE_TYPE_ID = "notification_listener_privacy_issue"
         @VisibleForTesting
-        const val SC_NLS_ISSUE_TYPE_ID = "notification_listener_privacy_issue"
-        @VisibleForTesting
-        const val SC_SHOW_NLS_SETTINGS_ACTION_ID =
-            "show_notification_listener_settings"
+        const val SC_SHOW_NLS_SETTINGS_ACTION_ID = "show_notification_listener_settings"
+
+        private const val SYSTEM_PKG = "android"
+
+        private const val SYSTEM_AMBIENT_AUDIO_INTELLIGENCE =
+            "android.app.role.SYSTEM_AMBIENT_AUDIO_INTELLIGENCE"
+        private const val SYSTEM_UI_INTELLIGENCE = "android.app.role.SYSTEM_UI_INTELLIGENCE"
+        private const val SYSTEM_AUDIO_INTELLIGENCE = "android.app.role.SYSTEM_AUDIO_INTELLIGENCE"
+        private const val SYSTEM_NOTIFICATION_INTELLIGENCE =
+            "android.app.role.SYSTEM_NOTIFICATION_INTELLIGENCE"
+        private const val SYSTEM_TEXT_INTELLIGENCE = "android.app.role.SYSTEM_TEXT_INTELLIGENCE"
+        private const val SYSTEM_VISUAL_INTELLIGENCE = "android.app.role.SYSTEM_VISUAL_INTELLIGENCE"
+
+        // This excludes System intelligence roles
+        private val EXEMPTED_ROLES =
+            arrayOf(
+                SYSTEM_AMBIENT_AUDIO_INTELLIGENCE,
+                SYSTEM_UI_INTELLIGENCE,
+                SYSTEM_AUDIO_INTELLIGENCE,
+                SYSTEM_NOTIFICATION_INTELLIGENCE,
+                SYSTEM_TEXT_INTELLIGENCE,
+                SYSTEM_VISUAL_INTELLIGENCE)
 
         /** Lock required for all public methods */
         private val nlsLock = Mutex()
@@ -277,28 +293,34 @@ internal class NotificationListenerCheckInternal(
         // Load already notified components
         // Filter to only those that still have enabled listeners
         // Filter to those within notification interval (e.g. 90 days)
-        val notifiedComponents = loadNotifiedComponentsLocked()
-            .filterTo(ArraySet()) { componentHasBeenNotifiedWithinInterval(it) }
-            .map { it.componentName }
+        val notifiedComponents =
+            loadNotifiedComponentsLocked()
+                .filterTo(ArraySet()) { componentHasBeenNotifiedWithinInterval(it) }
+                .map { it.componentName }
 
         // Filter to unnotified components
         val unNotifiedComponents = enabledComponents.filter { it !in notifiedComponents }
-
+        var sessionId = Constants.INVALID_SESSION_ID
+        while (sessionId == Constants.INVALID_SESSION_ID) {
+            sessionId = random.nextLong()
+        }
         if (DEBUG) {
-            Log.v(TAG, "Found ${enabledComponents.size} enabled notification listeners. " +
-                "${notifiedComponents.size} already notified. ${unNotifiedComponents.size} " +
-                "unnotified")
+            Log.v(
+                TAG,
+                "Found ${enabledComponents.size} enabled notification listeners. " +
+                    "${notifiedComponents.size} already notified. ${unNotifiedComponents.size} " +
+                    "unnotified, sessionId = $sessionId")
         }
 
         throwInterruptedExceptionIfTaskIsCanceled()
 
-        postSystemNotificationIfNeeded(unNotifiedComponents)
-        sendIssuesToSafetyCenter(enabledComponents)
+        postSystemNotificationIfNeeded(unNotifiedComponents, sessionId)
+        sendIssuesToSafetyCenter(enabledComponents, sessionId)
     }
 
     /**
      * Get the [components][ComponentName] which have enabled notification listeners for the
-     * parent/context user
+     * parent/context user. Excludes exempt packages.
      *
      * @throws InterruptedException If [.shouldCancel]
      */
@@ -310,20 +332,37 @@ internal class NotificationListenerCheckInternal(
             getSystemServiceSafe(parentUserContext, NotificationManager::class.java)
                 .enabledNotificationListeners
 
+        // Filter to components not in exempt packages
+        val enabledNotificationListenersExcludingExemptPackages =
+            enabledNotificationListeners.filter { !exemptPackages.contains(it.packageName) }
+
         if (DEBUG) {
-            Log.d(TAG, "enabledNotificationListeners = " +
-                "$enabledNotificationListeners")
+            Log.d(
+                TAG,
+                "enabledNotificationListeners=$enabledNotificationListeners\n" +
+                    "enabledNotificationListenersExcludingExemptPackages=" +
+                    "$enabledNotificationListenersExcludingExemptPackages")
         }
 
         throwInterruptedExceptionIfTaskIsCanceled()
-        return enabledNotificationListeners
+        return enabledNotificationListenersExcludingExemptPackages
+    }
+
+    /** Get all the exempted packages. */
+    fun getExemptedPackages(roleManager: RoleManager): Set<String> {
+        val exemptedPackages: MutableSet<String> = HashSet()
+        exemptedPackages.add(SYSTEM_PKG)
+        EXEMPTED_ROLES.forEach { role -> exemptedPackages.addAll(roleManager.getRoleHolders(role)) }
+        return exemptedPackages
     }
 
     private fun componentHasBeenNotifiedWithinInterval(component: NlsComponent): Boolean {
         val interval = currentTimeMillis() - component.notificationShownTime
         if (DEBUG) {
-            Log.v(TAG, "$interval ms since last notification of ${component.componentName}. " +
-                "pkgInterval=${getPackageNotificationIntervalMillis()}")
+            Log.v(
+                TAG,
+                "$interval ms since last notification of ${component.componentName}. " +
+                    "pkgInterval=${getPackageNotificationIntervalMillis()}")
         }
         return interval < getPackageNotificationIntervalMillis()
     }
@@ -339,46 +378,37 @@ internal class NotificationListenerCheckInternal(
         return withContext(Dispatchers.IO) {
             try {
                 BufferedReader(
-                    InputStreamReader(
-                        parentUserContext.openFileInput(
-                            NOTIFICATION_LISTENER_CHECK_ALREADY_NOTIFIED_FILE
-                        )
-                    )
-                ).use { reader ->
-                    val nlsComponents = ArraySet<NlsComponent>()
+                        InputStreamReader(
+                            parentUserContext.openFileInput(
+                                NOTIFICATION_LISTENER_CHECK_ALREADY_NOTIFIED_FILE)))
+                    .use { reader ->
+                        val nlsComponents = ArraySet<NlsComponent>()
 
-                    /*
-                     * The format of the file is
-                     * <flattened component> <time of notification> <time resolved>
-                     * e.g.
-                     *
-                     * com.one.package/Class 1234567890 1234567890
-                     * com.two.package/Class 1234567890 1234567890
-                     * com.three.package/Class 1234567890 1234567890
-                     */
-                    while (true) {
-                        val line = reader.readLine() ?: break
-                        val lineComponents = line.split(" ".toRegex()).toTypedArray()
-                        val componentName = ComponentName.unflattenFromString(lineComponents[0])
-                        val notificationShownTime: Long = lineComponents[1].toLong()
-                        val signalResolvedTime: Long = lineComponents[2].toLong()
-                        if (componentName != null) {
-                            nlsComponents.add(
-                                NlsComponent(
-                                    componentName,
-                                    notificationShownTime,
-                                    signalResolvedTime
-                                )
-                            )
-                        } else {
-                            Log.i(
-                                TAG,
-                                "Not restoring state \"$line\" as component is unknown"
-                            )
+                        /*
+                         * The format of the file is
+                         * <flattened component> <time of notification> <time resolved>
+                         * e.g.
+                         *
+                         * com.one.package/Class 1234567890 1234567890
+                         * com.two.package/Class 1234567890 1234567890
+                         * com.three.package/Class 1234567890 1234567890
+                         */
+                        while (true) {
+                            val line = reader.readLine() ?: break
+                            val lineComponents = line.split(" ".toRegex()).toTypedArray()
+                            val componentName = ComponentName.unflattenFromString(lineComponents[0])
+                            val notificationShownTime: Long = lineComponents[1].toLong()
+                            val signalResolvedTime: Long = lineComponents[2].toLong()
+                            if (componentName != null) {
+                                nlsComponents.add(
+                                    NlsComponent(
+                                        componentName, notificationShownTime, signalResolvedTime))
+                            } else {
+                                Log.i(TAG, "Not restoring state \"$line\" as component is unknown")
+                            }
                         }
+                        return@withContext nlsComponents
                     }
-                    return@withContext nlsComponents
-                }
             } catch (ignored: FileNotFoundException) {
                 return@withContext ArraySet<NlsComponent>()
             } catch (e: Exception) {
@@ -394,37 +424,33 @@ internal class NotificationListenerCheckInternal(
      * @param nlsComponents The list of packages we have already shown a notification for.
      */
     @WorkerThread
-    private suspend fun persistNotifiedComponentsLocked(
-        nlsComponents: Collection<NlsComponent>
-    ) {
+    private suspend fun persistNotifiedComponentsLocked(nlsComponents: Collection<NlsComponent>) {
         withContext(Dispatchers.IO) {
             try {
                 BufferedWriter(
-                    OutputStreamWriter(
-                        parentUserContext.openFileOutput(
-                            NOTIFICATION_LISTENER_CHECK_ALREADY_NOTIFIED_FILE,
-                            MODE_PRIVATE
-                        )
-                    )
-                ).use { writer ->
-                    /*
-                     * The format of the file is
-                     * <flattened component> <time of notification> <time resolved>
-                     * e.g.
-                     *
-                     * com.one.package/Class 1234567890 1234567890
-                     * com.two.package/Class 1234567890 1234567890
-                     * com.three.package/Class 1234567890 1234567890
-                     */
-                    for (nlsComponent in nlsComponents) {
-                        writer.append(nlsComponent.componentName.flattenToString())
-                            .append(' ')
-                            .append(nlsComponent.notificationShownTime.toString())
-                            .append(' ')
-                            .append(nlsComponent.signalResolvedTime.toString())
-                        writer.newLine()
+                        OutputStreamWriter(
+                            parentUserContext.openFileOutput(
+                                NOTIFICATION_LISTENER_CHECK_ALREADY_NOTIFIED_FILE, MODE_PRIVATE)))
+                    .use { writer ->
+                        /*
+                         * The format of the file is
+                         * <flattened component> <time of notification> <time resolved>
+                         * e.g.
+                         *
+                         * com.one.package/Class 1234567890 1234567890
+                         * com.two.package/Class 1234567890 1234567890
+                         * com.three.package/Class 1234567890 1234567890
+                         */
+                        for (nlsComponent in nlsComponents) {
+                            writer
+                                .append(nlsComponent.componentName.flattenToString())
+                                .append(' ')
+                                .append(nlsComponent.notificationShownTime.toString())
+                                .append(' ')
+                                .append(nlsComponent.signalResolvedTime.toString())
+                            writer.newLine()
+                        }
                     }
-                }
             } catch (e: IOException) {
                 Log.e(TAG, "Could not write $NOTIFICATION_LISTENER_CHECK_ALREADY_NOTIFIED_FILE", e)
             }
@@ -440,8 +466,10 @@ internal class NotificationListenerCheckInternal(
         nlsLock.withLock {
             // There can be multiple NLS components per package
             // Remove all known NLS components for the specified package
-            val notifiedComponents: ArraySet<NlsComponent> = loadNotifiedComponentsLocked()
-                .filterNotTo(ArraySet()) { it.componentName.packageName == pkg }
+            val notifiedComponents: ArraySet<NlsComponent> =
+                loadNotifiedComponentsLocked().filterNotTo(ArraySet()) {
+                    it.componentName.packageName == pkg
+                }
 
             // Persist the resulting set
             persistNotifiedComponentsLocked(notifiedComponents)
@@ -454,16 +482,12 @@ internal class NotificationListenerCheckInternal(
      * @param componentName The [ComponentName] we notified for
      */
     internal suspend fun markAsNotified(componentName: ComponentName) {
-        nlsLock.withLock {
-            markAsNotifiedLocked(componentName)
-        }
+        nlsLock.withLock { markAsNotifiedLocked(componentName) }
     }
 
     private suspend fun markAsNotifiedLocked(componentName: ComponentName) {
         val notifiedComponentsMap: MutableMap<ComponentName, NlsComponent> =
-            loadNotifiedComponentsLocked()
-                .associateBy({ it.componentName }, { it })
-                .toMutableMap()
+            loadNotifiedComponentsLocked().associateBy({ it.componentName }, { it }).toMutableMap()
 
         // NlsComponent don't compare timestamps, so remove existing NlsComponent if present and
         // then add again
@@ -481,19 +505,22 @@ internal class NotificationListenerCheckInternal(
     }
 
     @Throws(InterruptedException::class)
-    private suspend fun postSystemNotificationIfNeeded(components: List<ComponentName>) {
+    private suspend fun postSystemNotificationIfNeeded(
+        components: List<ComponentName>,
+        sessionId: Long
+    ) {
         val componentsInternal = components.toMutableList()
 
         // Don't show too many notification within certain timespan
         val sharedPrefs: SharedPreferences =
             parentUserContext.getSharedPreferences(PREFERENCES_FILE, MODE_PRIVATE)
-        if (currentTimeMillis() - sharedPrefs.getLong(
-                KEY_LAST_NOTIFICATION_LISTENER_NOTIFICATION_SHOWN, 0
-            )
-            < getInBetweenNotificationsMillis()
-        ) {
-            Log.v(TAG, "Notification not posted, within " +
-                "$DEFAULT_NOTIFICATION_LISTENER_CHECK_INTERVAL_MILLIS ms")
+        if (currentTimeMillis() -
+            sharedPrefs.getLong(KEY_LAST_NOTIFICATION_LISTENER_NOTIFICATION_SHOWN, 0) <
+            getInBetweenNotificationsMillis()) {
+            Log.v(
+                TAG,
+                "Notification not posted, within " +
+                    "$DEFAULT_NOTIFICATION_LISTENER_CHECK_INTERVAL_MILLIS ms")
             return
         }
 
@@ -517,9 +544,9 @@ internal class NotificationListenerCheckInternal(
             componentToNotifyFor = componentsInternal[random.nextInt(componentsInternal.size)]
             try {
                 if (DEBUG) {
-                    Log.v(TAG, "Attempting to get PackageInfo for " +
-                        componentToNotifyFor.packageName
-                    )
+                    Log.v(
+                        TAG,
+                        "Attempting to get PackageInfo for " + componentToNotifyFor.packageName)
                 }
                 pkgInfo =
                     Utils.getPackageInfoForComponentName(parentUserContext, componentToNotifyFor)
@@ -532,22 +559,20 @@ internal class NotificationListenerCheckInternal(
         }
 
         createPermissionReminderChannel()
-        createNotificationForNotificationListener(componentToNotifyFor, pkgInfo)
+        createNotificationForNotificationListener(componentToNotifyFor, pkgInfo, sessionId)
         markAsNotifiedLocked(componentToNotifyFor)
     }
 
     /** Create the channel the notification listener notifications should be posted to. */
     private fun createPermissionReminderChannel() {
-        val permissionReminderChannel = NotificationChannel(
-            Constants.PERMISSION_REMINDER_CHANNEL_ID,
-            parentUserContext.getString(R.string.permission_reminders),
-            NotificationManager.IMPORTANCE_LOW
-        )
+        val permissionReminderChannel =
+            NotificationChannel(
+                Constants.PERMISSION_REMINDER_CHANNEL_ID,
+                parentUserContext.getString(R.string.permission_reminders),
+                NotificationManager.IMPORTANCE_LOW)
 
-        val notificationManager = getSystemServiceSafe(
-            parentUserContext,
-            NotificationManager::class.java
-        )
+        val notificationManager =
+            getSystemServiceSafe(parentUserContext, NotificationManager::class.java)
 
         notificationManager.createNotificationChannel(permissionReminderChannel)
     }
@@ -561,40 +586,39 @@ internal class NotificationListenerCheckInternal(
      */
     private fun createNotificationForNotificationListener(
         componentName: ComponentName,
-        pkg: PackageInfo
+        pkg: PackageInfo,
+        sessionId: Long
     ) {
         val pkgLabel: CharSequence =
             Utils.getApplicationLabel(parentUserContext, pkg.applicationInfo)
+        val uid = pkg.applicationInfo.uid
 
         val deletePendingIntent =
-            getNotificationDeleteBroadcastPendingIntent(parentUserContext, componentName)
+            getNotificationDeletePendingIntent(parentUserContext, componentName, uid, sessionId)
         val clickPendingIntent =
-            getSafetyCenterActivityPendingIntent(parentUserContext, componentName)
+            getSafetyCenterActivityPendingIntent(parentUserContext, componentName, uid, sessionId)
 
         val title =
             parentUserContext.getString(R.string.notification_listener_reminder_notification_title)
         val text =
             parentUserContext.getString(
-                R.string.notification_listener_reminder_notification_content,
-                pkgLabel
-            )
+                R.string.notification_listener_reminder_notification_content, pkgLabel)
 
         // Use PbA branding if available, otherwise default to more generic branding
-        val pbaLabel = Html.fromHtml(
-            parentUserContext.getString(android.R.string.safety_protection_display_text), 0)
-            .toString()
         val appLabel: CharSequence?
         val smallIconResId: Int
         val colorResId: Int
-        if (pbaLabel != null && pbaLabel.isNotEmpty()) {
+        if (KotlinUtils.shouldShowSafetyProtectionResources(parentUserContext)) {
             // PbA branding and colors
-            appLabel = pbaLabel
+            val pbaHtmlString =
+                parentUserContext.getString(android.R.string.safety_protection_display_text)
+            appLabel = Html.fromHtml(pbaHtmlString, 0).toString()
             smallIconResId = android.R.drawable.ic_safety_protection
             colorResId = R.color.safety_center_info
         } else {
             // Generic branding. Settings label, gear icon, and system accent color
-            appLabel = Utils.getSettingsLabelForNotifications(parentUserContext.packageManager)
-            smallIconResId = R.drawable.ic_settings_24dp
+            appLabel = parentUserContext.getString(R.string.safety_center_notification_app_label)
+            smallIconResId = R.drawable.ic_settings_notification
             colorResId = android.R.color.system_notification_accent_color
         }
 
@@ -620,63 +644,70 @@ internal class NotificationListenerCheckInternal(
         val notificationManager =
             getSystemServiceSafe(parentUserContext, NotificationManager::class.java)
         notificationManager.notify(
-            componentName.flattenToString(),
-            NOTIFICATION_LISTENER_CHECK_NOTIFICATION_ID,
-            b.build())
+            componentName.flattenToString(), NOTIFICATION_LISTENER_CHECK_NOTIFICATION_ID, b.build())
 
-        Log.v(TAG, "Notification listener check notification shown with component=" +
-            "${componentName.flattenToString()}")
+        Log.v(
+            TAG,
+            "Notification listener check notification shown with component=" +
+                "${componentName.flattenToString()}, uid=$uid, sessionId=$sessionId")
 
+        PermissionControllerStatsLog.write(
+            PRIVACY_SIGNAL_NOTIFICATION_INTERACTION,
+            PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__PRIVACY_SOURCE__NOTIFICATION_LISTENER,
+            uid,
+            PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__ACTION__NOTIFICATION_SHOWN,
+            sessionId)
         val sharedPrefs: SharedPreferences =
             parentUserContext.getSharedPreferences(PREFERENCES_FILE, MODE_PRIVATE)
-        sharedPrefs.edit().putLong(
-            KEY_LAST_NOTIFICATION_LISTENER_NOTIFICATION_SHOWN,
-            currentTimeMillis()
-        ).apply()
+        sharedPrefs
+            .edit()
+            .putLong(KEY_LAST_NOTIFICATION_LISTENER_NOTIFICATION_SHOWN, currentTimeMillis())
+            .apply()
     }
 
-    /**
-     * @return [PendingIntent] to safety center
-     */
-    private fun getNotificationDeleteBroadcastPendingIntent(
+    /** @return [PendingIntent] to safety center */
+    private fun getNotificationDeletePendingIntent(
         context: Context,
-        componentName: ComponentName
+        componentName: ComponentName,
+        uid: Int,
+        sessionId: Long
     ): PendingIntent {
-        val intent = Intent(parentUserContext,
-            NotificationListenerCheckNotificationDeleteHandler::class.java).apply {
-            putExtra(EXTRA_COMPONENT_NAME, componentName)
-            flags = FLAG_RECEIVER_FOREGROUND
-            identifier = componentName.flattenToString()
-        }
+        val intent =
+            Intent(
+                    parentUserContext,
+                    NotificationListenerCheckNotificationDeleteHandler::class.java)
+                .apply {
+                    putExtra(EXTRA_COMPONENT_NAME, componentName)
+                    putExtra(Constants.EXTRA_SESSION_ID, sessionId)
+                    putExtra(Intent.EXTRA_UID, uid)
+                    flags = FLAG_RECEIVER_FOREGROUND
+                    identifier = componentName.flattenToString()
+                }
         return PendingIntent.getBroadcast(
-            context,
-            0,
-            intent,
-            FLAG_ONE_SHOT or FLAG_UPDATE_CURRENT or FLAG_IMMUTABLE
-        )
+            context, 0, intent, FLAG_ONE_SHOT or FLAG_UPDATE_CURRENT or FLAG_IMMUTABLE)
     }
 
-    /**
-     * @return [PendingIntent] to safety center
-     */
+    /** @return [PendingIntent] to safety center */
     private fun getSafetyCenterActivityPendingIntent(
         context: Context,
-        componentName: ComponentName
+        componentName: ComponentName,
+        uid: Int,
+        sessionId: Long
     ): PendingIntent {
-        val intent = Intent(Intent.ACTION_SAFETY_CENTER).apply {
-            putExtra(EXTRA_SAFETY_SOURCE_ID, SC_NLS_SOURCE_ID)
-            putExtra(EXTRA_SAFETY_SOURCE_ISSUE_ID,
-                getSafetySourceIssueIdFromComponentName(componentName))
-            putExtra(EXTRA_COMPONENT_NAME, componentName)
-            flags = FLAG_ACTIVITY_NEW_TASK
-            identifier = componentName.flattenToString()
-        }
+        val intent =
+            Intent(Intent.ACTION_SAFETY_CENTER).apply {
+                putExtra(EXTRA_SAFETY_SOURCE_ID, SC_NLS_SOURCE_ID)
+                putExtra(
+                    EXTRA_SAFETY_SOURCE_ISSUE_ID,
+                    getSafetySourceIssueIdFromComponentName(componentName))
+                putExtra(EXTRA_COMPONENT_NAME, componentName)
+                putExtra(Constants.EXTRA_SESSION_ID, sessionId)
+                putExtra(Intent.EXTRA_UID, uid)
+                flags = FLAG_ACTIVITY_NEW_TASK
+                identifier = componentName.flattenToString()
+            }
         return PendingIntent.getActivity(
-            context,
-            0,
-            intent,
-            FLAG_ONE_SHOT or FLAG_UPDATE_CURRENT or FLAG_IMMUTABLE
-        )
+            context, 0, intent, FLAG_ONE_SHOT or FLAG_UPDATE_CURRENT or FLAG_IMMUTABLE)
     }
 
     /**
@@ -733,141 +764,156 @@ internal class NotificationListenerCheckInternal(
         safetyEvent: SafetyEvent = sourceStateChangedSafetyEvent
     ) {
         val enabledComponents = getEnabledNotificationListeners()
-        sendIssuesToSafetyCenter(enabledComponents, safetyEvent)
+        var sessionId = Constants.INVALID_SESSION_ID
+        while (sessionId == Constants.INVALID_SESSION_ID) {
+            sessionId = random.nextLong()
+        }
+        sendIssuesToSafetyCenter(enabledComponents, sessionId, safetyEvent)
     }
 
     private fun sendIssuesToSafetyCenter(
         enabledComponents: List<ComponentName>,
+        sessionId: Long,
         safetyEvent: SafetyEvent = sourceStateChangedSafetyEvent
     ) {
-        val pendingIssues = enabledComponents.map { createSafetySourceIssue(it) }
+        val pendingIssues = enabledComponents.mapNotNull { createSafetySourceIssue(it, sessionId) }
         val dataBuilder = SafetySourceData.Builder()
         pendingIssues.forEach { dataBuilder.addIssue(it) }
         val safetySourceData = dataBuilder.build()
         val safetyCenterManager =
             getSystemServiceSafe(parentUserContext, SafetyCenterManager::class.java)
-        safetyCenterManager.setSafetySourceData(
-            SC_NLS_SOURCE_ID,
-            safetySourceData,
-            safetyEvent
-        )
+        safetyCenterManager.setSafetySourceData(SC_NLS_SOURCE_ID, safetySourceData, safetyEvent)
     }
 
     /**
      * @param componentName enabled [NotificationListenerService]
-     * @return safety source issue, shown as the warning card in safety center
+     * @return safety source issue, shown as the warning card in safety center. Null if unable to
+     * create safety source issue
      */
     @VisibleForTesting
-    fun createSafetySourceIssue(componentName: ComponentName): SafetySourceIssue {
-        val pkgInfo = Utils.getPackageInfoForComponentName(parentUserContext, componentName)
+    fun createSafetySourceIssue(componentName: ComponentName, sessionId: Long): SafetySourceIssue? {
+        val pkgInfo: PackageInfo
+        try {
+            pkgInfo = Utils.getPackageInfoForComponentName(parentUserContext, componentName)
+        } catch (e: PackageManager.NameNotFoundException) {
+            if (DEBUG) {
+                Log.w(TAG, "${componentName.packageName} not found")
+            }
+            return null
+        }
         val pkgLabel: CharSequence =
             Utils.getApplicationLabel(parentUserContext, pkgInfo.applicationInfo)
         val safetySourceIssueId = getSafetySourceIssueIdFromComponentName(componentName)
+        val uid = pkgInfo.applicationInfo.uid
 
         val disableNlsPendingIntent =
-            getDisableNlsPendingIntent(parentUserContext, safetySourceIssueId, componentName)
+            getDisableNlsPendingIntent(
+                parentUserContext, safetySourceIssueId, componentName, uid, sessionId)
 
-        val disableNlsAction = SafetySourceIssue.Action.Builder(
-            SC_NLS_DISABLE_ACTION_ID,
-            parentUserContext.getString(R.string.notification_listener_remove_access_button_label),
-            disableNlsPendingIntent
-        )
-            .setWillResolve(true)
-            .setSuccessMessage(parentUserContext.getString(
-                R.string.notification_listener_remove_access_success_label))
-            .build()
+        val disableNlsAction =
+            SafetySourceIssue.Action.Builder(
+                    SC_NLS_DISABLE_ACTION_ID,
+                    parentUserContext.getString(
+                        R.string.notification_listener_remove_access_button_label),
+                    disableNlsPendingIntent)
+                .setWillResolve(true)
+                .setSuccessMessage(
+                    parentUserContext.getString(
+                        R.string.notification_listener_remove_access_success_label))
+                .build()
 
-        val notificationListenerSettingsPendingIntent =
-            getNotificationListenerSettingsPendingIntent(parentUserContext)
+        val notificationListenerDetailSettingsPendingIntent =
+            getNotificationListenerDetailSettingsPendingIntent(
+                parentUserContext, componentName, uid, sessionId)
 
         val showNotificationListenerSettingsAction =
             SafetySourceIssue.Action.Builder(
-                SC_SHOW_NLS_SETTINGS_ACTION_ID,
-                parentUserContext.getString(R.string.notification_listener_review_app_button_label),
-                notificationListenerSettingsPendingIntent
-        ).build()
+                    SC_SHOW_NLS_SETTINGS_ACTION_ID,
+                    parentUserContext.getString(
+                        R.string.notification_listener_review_app_button_label),
+                    notificationListenerDetailSettingsPendingIntent)
+                .build()
 
         val actionCardDismissPendingIntent =
-            getActionCardDismissalPendingIntent(parentUserContext, componentName)
+            getActionCardDismissalPendingIntent(parentUserContext, componentName, uid, sessionId)
 
-        val title = parentUserContext.getString(
-            R.string.notification_listener_reminder_notification_title)
-        val summary = parentUserContext.getString(
-            R.string.notification_listener_warning_card_content)
+        val title =
+            parentUserContext.getString(R.string.notification_listener_reminder_notification_title)
+        val summary =
+            parentUserContext.getString(R.string.notification_listener_warning_card_content)
 
-        return SafetySourceIssue
-            .Builder(
+        return SafetySourceIssue.Builder(
                 safetySourceIssueId,
                 title,
                 summary,
                 SafetySourceData.SEVERITY_LEVEL_INFORMATION,
-                SC_NLS_ISSUE_TYPE_ID
-            )
+                SC_NLS_ISSUE_TYPE_ID)
             .setSubtitle(pkgLabel)
             .addAction(disableNlsAction)
             .addAction(showNotificationListenerSettingsAction)
             .setOnDismissPendingIntent(actionCardDismissPendingIntent)
+            .setIssueCategory(SafetySourceIssue.ISSUE_CATEGORY_DEVICE)
             .build()
     }
 
-    /**
-     * @return [PendingIntent] for remove access button on the warning card.
-     */
+    /** @return [PendingIntent] for remove access button on the warning card. */
     private fun getDisableNlsPendingIntent(
         context: Context,
         safetySourceIssueId: String,
-        componentName: ComponentName
+        componentName: ComponentName,
+        uid: Int,
+        sessionId: Long
     ): PendingIntent {
-        val intent = Intent(context,
-                DisableNotificationListenerComponentHandler::class.java).apply {
+        val intent =
+            Intent(context, DisableNotificationListenerComponentHandler::class.java).apply {
                 putExtra(EXTRA_SAFETY_SOURCE_ISSUE_ID, safetySourceIssueId)
                 putExtra(EXTRA_COMPONENT_NAME, componentName)
+                putExtra(Constants.EXTRA_SESSION_ID, sessionId)
+                putExtra(Intent.EXTRA_UID, uid)
                 flags = FLAG_RECEIVER_FOREGROUND
                 identifier = componentName.flattenToString()
             }
 
-        return PendingIntent.getBroadcast(
-            context,
-            0,
-            intent,
-            FLAG_IMMUTABLE
-        )
+        return PendingIntent.getBroadcast(context, 0, intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
     }
 
-    /** @return [PendingIntent] to Notification Listener Settings page */
-    private fun getNotificationListenerSettingsPendingIntent(context: Context): PendingIntent {
-        val intent = Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS).apply {
-            flags = FLAG_ACTIVITY_NEW_TASK
-        }
-        return PendingIntent.getActivity(
-            context,
-            0,
-            intent,
-            FLAG_IMMUTABLE
-        )
+    /** @return [PendingIntent] to Notification Listener Detail Settings page */
+    private fun getNotificationListenerDetailSettingsPendingIntent(
+        context: Context,
+        componentName: ComponentName,
+        uid: Int,
+        sessionId: Long
+    ): PendingIntent {
+        val intent =
+            Intent(ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS).apply {
+                flags = FLAG_ACTIVITY_NEW_TASK
+                identifier = componentName.flattenToString()
+                putExtra(
+                    EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME, componentName.flattenToString())
+                putExtra(Constants.EXTRA_SESSION_ID, sessionId)
+                putExtra(Intent.EXTRA_UID, uid)
+            }
+        return PendingIntent.getActivity(context, 0, intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
     }
 
     private fun getActionCardDismissalPendingIntent(
         context: Context,
-        componentName: ComponentName
+        componentName: ComponentName,
+        uid: Int,
+        sessionId: Long
     ): PendingIntent {
-        val intent = Intent(context,
-            NotificationListenerActionCardDismissalReceiver::class.java).apply {
+        val intent =
+            Intent(context, NotificationListenerActionCardDismissalReceiver::class.java).apply {
                 putExtra(EXTRA_COMPONENT_NAME, componentName)
+                putExtra(Constants.EXTRA_SESSION_ID, sessionId)
+                putExtra(Intent.EXTRA_UID, uid)
                 flags = FLAG_RECEIVER_FOREGROUND
                 identifier = componentName.flattenToString()
             }
-        return PendingIntent.getBroadcast(
-            context,
-            0,
-            intent,
-            FLAG_IMMUTABLE
-        )
+        return PendingIntent.getBroadcast(context, 0, intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
     }
 
-    /**
-     * If [.shouldCancel] throw an [InterruptedException].
-     */
+    /** If [.shouldCancel] throw an [InterruptedException]. */
     @Throws(InterruptedException::class)
     private fun throwInterruptedExceptionIfTaskIsCanceled() {
         if (shouldCancel != null && shouldCancel.asBoolean) {
@@ -891,17 +937,14 @@ internal class NotificationListenerCheckInternal(
     )
 }
 
-/**
- * Checks if a new notification should be shown.
- */
+/** Checks if a new notification should be shown. */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class NotificationListenerCheckJobService : JobService() {
     private var notificationListenerCheckInternal: NotificationListenerCheckInternal? = null
     private val jobLock = Object()
 
-    /** We currently check if we should show a notification, the task executing the check  */
-    @GuardedBy("jobLock")
-    private var addNotificationListenerNotificationIfNeededJob: Job? = null
+    /** We currently check if we should show a notification, the task executing the check */
+    @GuardedBy("jobLock") private var addNotificationListenerNotificationIfNeededJob: Job? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -912,12 +955,14 @@ class NotificationListenerCheckJobService : JobService() {
         }
 
         notificationListenerCheckInternal =
-            NotificationListenerCheckInternal(this, BooleanSupplier {
-                synchronized(jobLock) {
-                    val job = addNotificationListenerNotificationIfNeededJob
-                    return@BooleanSupplier job?.isCancelled ?: false
-                }
-            })
+            NotificationListenerCheckInternal(
+                this,
+                BooleanSupplier {
+                    synchronized(jobLock) {
+                        val job = addNotificationListenerNotificationIfNeededJob
+                        return@BooleanSupplier job?.isCancelled ?: false
+                    }
+                })
     }
 
     /**
@@ -938,13 +983,13 @@ class NotificationListenerCheckJobService : JobService() {
                 if (DEBUG) Log.d(TAG, "Job already running")
                 return false
             }
-            addNotificationListenerNotificationIfNeededJob = GlobalScope.launch(Default) {
-                notificationListenerCheckInternal
-                    ?.getEnabledNotificationListenersAndNotifyIfNeeded(
-                        params,
-                        this@NotificationListenerCheckJobService
-                    ) ?: jobFinished(params, true)
-            }
+            addNotificationListenerNotificationIfNeededJob =
+                GlobalScope.launch(Default) {
+                    notificationListenerCheckInternal
+                        ?.getEnabledNotificationListenersAndNotifyIfNeeded(
+                            params, this@NotificationListenerCheckJobService)
+                        ?: jobFinished(params, true)
+                }
         }
         return true
     }
@@ -959,26 +1004,23 @@ class NotificationListenerCheckJobService : JobService() {
     override fun onStopJob(params: JobParameters): Boolean {
         var job: Job?
         synchronized(jobLock) {
-            job = if (addNotificationListenerNotificationIfNeededJob == null) {
-                return false
-            } else {
-                addNotificationListenerNotificationIfNeededJob
-            }
+            job =
+                if (addNotificationListenerNotificationIfNeededJob == null) {
+                    return false
+                } else {
+                    addNotificationListenerNotificationIfNeededJob
+                }
         }
         job?.cancel()
         return false
     }
 
     fun clearJob() {
-        synchronized(jobLock) {
-            addNotificationListenerNotificationIfNeededJob = null
-        }
+        synchronized(jobLock) { addNotificationListenerNotificationIfNeededJob = null }
     }
 }
 
-/**
- * On boot set up a periodic job that starts checks.
- */
+/** On boot set up a periodic job that starts checks. */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class SetupPeriodicNotificationListenerCheck : BroadcastReceiver() {
 
@@ -997,18 +1039,14 @@ class SetupPeriodicNotificationListenerCheck : BroadcastReceiver() {
         if (jobScheduler.getPendingJob(PERIODIC_NOTIFICATION_LISTENER_CHECK_JOB_ID) == null) {
             val job =
                 JobInfo.Builder(
-                    PERIODIC_NOTIFICATION_LISTENER_CHECK_JOB_ID,
-                    ComponentName(context, NotificationListenerCheckJobService::class.java)
-                ).setPeriodic(
-                    getPeriodicCheckIntervalMillis(),
-                    getFlexForPeriodicCheckMillis()
-                ).build()
+                        PERIODIC_NOTIFICATION_LISTENER_CHECK_JOB_ID,
+                        ComponentName(context, NotificationListenerCheckJobService::class.java))
+                    .setPeriodic(getPeriodicCheckIntervalMillis(), getFlexForPeriodicCheckMillis())
+                    .build()
             val scheduleResult = jobScheduler.schedule(job)
             if (scheduleResult != JobScheduler.RESULT_SUCCESS) {
                 Log.e(
-                    TAG,
-                    "Could not schedule periodic notification listener check $scheduleResult"
-                )
+                    TAG, "Could not schedule periodic notification listener check $scheduleResult")
             } else if (DEBUG) {
                 Log.i(TAG, "Scheduled periodic notification listener check")
             }
@@ -1016,9 +1054,7 @@ class SetupPeriodicNotificationListenerCheck : BroadcastReceiver() {
     }
 }
 
-/**
- * Handle the case where the notification is swiped away without further interaction.
- */
+/** Handle the case where the notification is swiped away without further interaction. */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class NotificationListenerCheckNotificationDeleteHandler : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -1028,14 +1064,23 @@ class NotificationListenerCheckNotificationDeleteHandler : BroadcastReceiver() {
 
         val componentName =
             Utils.getParcelableExtraSafe<ComponentName>(intent, EXTRA_COMPONENT_NAME)
+        val sessionId =
+            intent.getLongExtra(Constants.EXTRA_SESSION_ID, Constants.INVALID_SESSION_ID)
+        val uid = intent.getIntExtra(Intent.EXTRA_UID, -1)
+
         GlobalScope.launch(Default) {
             NotificationListenerCheckInternal(context, null).markAsNotified(componentName)
         }
         Log.v(
             TAG,
             "Notification listener check notification declined with component=" +
-                "${componentName.flattenToString()}"
-        )
+                "${componentName.flattenToString()} , uid=$uid, sessionId=$sessionId")
+        PermissionControllerStatsLog.write(
+            PRIVACY_SIGNAL_NOTIFICATION_INTERACTION,
+            PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__PRIVACY_SOURCE__NOTIFICATION_LISTENER,
+            uid,
+            PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__ACTION__DISMISSED,
+            sessionId)
     }
 }
 
@@ -1046,39 +1091,48 @@ class DisableNotificationListenerComponentHandler : BroadcastReceiver() {
         if (DEBUG) Log.d(TAG, "DisableComponentHandler.onReceive $intent")
         val componentName =
             Utils.getParcelableExtraSafe<ComponentName>(intent, EXTRA_COMPONENT_NAME)
+        val sessionId =
+            intent.getLongExtra(Constants.EXTRA_SESSION_ID, Constants.INVALID_SESSION_ID)
+        val uid = intent.getIntExtra(Intent.EXTRA_UID, -1)
 
         GlobalScope.launch(Default) {
             if (DEBUG) {
-                Log.v(TAG, "DisableComponentHandler: disabling $componentName")
+                Log.v(
+                    TAG,
+                    "DisableComponentHandler: disabling $componentName," +
+                        "uid=$uid, sessionId=$sessionId")
             }
 
-            val safetyEventBuilder = try {
-                val notificationManager = getSystemServiceSafe(
-                    context,
-                    NotificationManager::class.java
-                )
-                notificationManager.setNotificationListenerAccessGranted(
-                    componentName,
-                    /* granted= */ false,
-                    /* userSet= */ true)
+            val safetyEventBuilder =
+                try {
+                    val notificationManager =
+                        getSystemServiceSafe(context, NotificationManager::class.java)
+                    notificationManager.setNotificationListenerAccessGranted(
+                        componentName, /* granted= */ false, /* userSet= */ true)
 
-                SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED)
-            } catch (e: Exception) {
-                Log.w(TAG, "error occurred in disabling notification listener service.", e)
-                SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED)
-            }
+                    SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_RESOLVING_ACTION_SUCCEEDED)
+                } catch (e: Exception) {
+                    Log.w(TAG, "error occurred in disabling notification listener service.", e)
+                    SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED)
+                }
 
-            val safetySourceIssueId: String? =
-                intent.getStringExtra(EXTRA_SAFETY_SOURCE_ISSUE_ID)
-            val safetyEvent = safetyEventBuilder
-                .setSafetySourceIssueId(safetySourceIssueId)
-                .setSafetySourceIssueActionId(SC_NLS_DISABLE_ACTION_ID)
-                .build()
+            val safetySourceIssueId: String? = intent.getStringExtra(EXTRA_SAFETY_SOURCE_ISSUE_ID)
+            val safetyEvent =
+                safetyEventBuilder
+                    .setSafetySourceIssueId(safetySourceIssueId)
+                    .setSafetySourceIssueActionId(SC_NLS_DISABLE_ACTION_ID)
+                    .build()
 
             NotificationListenerCheckInternal(context, null).run {
                 removeNotificationsForComponent(componentName)
                 sendIssuesToSafetyCenter(safetyEvent)
             }
+            PermissionControllerStatsLog.write(
+                PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION,
+                PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__PRIVACY_SOURCE__NOTIFICATION_LISTENER,
+                uid,
+                PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__ACTION__CLICKED_CTA1,
+                sessionId)
         }
     }
 }
@@ -1090,9 +1144,16 @@ class NotificationListenerActionCardDismissalReceiver : BroadcastReceiver() {
         if (DEBUG) Log.d(TAG, "ActionCardDismissalReceiver.onReceive $intent")
         val componentName =
             Utils.getParcelableExtraSafe<ComponentName>(intent, EXTRA_COMPONENT_NAME)
+        val sessionId =
+            intent.getLongExtra(Constants.EXTRA_SESSION_ID, Constants.INVALID_SESSION_ID)
+        val uid = intent.getIntExtra(Intent.EXTRA_UID, -1)
+
         GlobalScope.launch(Default) {
             if (DEBUG) {
-                Log.v(TAG, "ActionCardDismissalReceiver: $componentName dismissed")
+                Log.v(
+                    TAG,
+                    "ActionCardDismissalReceiver: $componentName dismissed," +
+                        "uid=$uid, sessionId=$sessionId")
             }
             NotificationListenerCheckInternal(context, null).run {
                 removeNotificationsForComponent(componentName)
@@ -1100,6 +1161,12 @@ class NotificationListenerActionCardDismissalReceiver : BroadcastReceiver() {
                 // TODO(b/217566029): update Safety center action cards
             }
         }
+        PermissionControllerStatsLog.write(
+            PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION,
+            PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__PRIVACY_SOURCE__NOTIFICATION_LISTENER,
+            uid,
+            PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__ACTION__CARD_DISMISSED,
+            sessionId)
     }
 }
 
@@ -1112,8 +1179,7 @@ class NotificationListenerPackageResetHandler : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
         if (action != Intent.ACTION_PACKAGE_DATA_CLEARED &&
-            action != Intent.ACTION_PACKAGE_FULLY_REMOVED
-        ) {
+            action != Intent.ACTION_PACKAGE_FULLY_REMOVED) {
             return
         }
 
@@ -1145,13 +1211,10 @@ class NotificationListenerPackageResetHandler : BroadcastReceiver() {
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class NotificationListenerPrivacySource : PrivacySource {
+    override val shouldProcessProfileRequest: Boolean = false
+
     override fun safetyCenterEnabledChanged(context: Context, enabled: Boolean) {
-        if (!isNotificationListenerCheckFlagEnabled()) {
-            return
-        }
-        NotificationListenerCheckInternal(context, null).run {
-            removeAnyNotification()
-        }
+        NotificationListenerCheckInternal(context, null).run { removeAnyNotification() }
     }
 
     override fun rescanAndPushSafetyCenterData(
@@ -1163,18 +1226,7 @@ class NotificationListenerPrivacySource : PrivacySource {
             return
         }
 
-        val safetyRefreshEvent = when (refreshEvent) {
-            UNKNOWN ->
-                SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_SOURCE_STATE_CHANGED).build()
-            EVENT_DEVICE_REBOOTED ->
-                SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_DEVICE_REBOOTED).build()
-            EVENT_REFRESH_REQUESTED -> {
-                val refreshBroadcastId = intent.getStringExtra(
-                    SafetyCenterManager.EXTRA_REFRESH_SAFETY_SOURCES_BROADCAST_ID)
-                SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_REFRESH_REQUESTED)
-                    .setRefreshBroadcastId(refreshBroadcastId).build()
-            }
-        }
+        val safetyRefreshEvent = getSafetyCenterEvent(refreshEvent, intent)
 
         NotificationListenerCheckInternal(context, null).run {
             sendIssuesToSafetyCenter(safetyRefreshEvent)

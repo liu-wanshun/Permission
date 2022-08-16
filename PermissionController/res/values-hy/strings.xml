@@ -55,12 +55,12 @@
     <string name="unused_apps" msgid="2058057455175955094">"Չօգտագործվող հավելվածներ"</string>
     <string name="no_unused_apps" msgid="12809387670415295">"Չօգտագործվող հավելվածներ չկան"</string>
     <string name="zero_unused_apps" msgid="9024448554157499748">"Չօգտագործվող հավելվածներ չկան"</string>
-    <string name="review_permission_decisions" msgid="309559429150613632">"Գործողություններ թույլտվ. հետ"</string>
+    <string name="review_permission_decisions" msgid="309559429150613632">"Թույլտվության որոշումներ"</string>
     <string name="review_permission_decisions_view_all" msgid="90391040431566130">"Թույլտվությունների հետ վերջերս արված բոլոր գործողությունները"</string>
     <string name="review_permission_decisions_empty" msgid="8120775336417279806">"Թույլտվությունների հետ վերջերս արված գործողություններ չկան"</string>
     <string name="auto_permission_manager_summary" msgid="9157438376234301354">"Կառավարեք օրացույցի, կանչերի ցուցակի և այլ տվյալների հասանելիությունը"</string>
     <string name="granted_permission_decision" msgid="7824827491551861365">"Դուք տրամադրել եք «<xliff:g id="PERMISSION_NAME">%2$s</xliff:g>» թույլտվությունը <xliff:g id="APP_NAME">%1$s</xliff:g> հավելվածին"</string>
-    <string name="denied_permission_decision" msgid="5308961501779563781">"Դուք չեք տրամադրել «<xliff:g id="PERMISSION_NAME">%2$s</xliff:g>» թույլտվությունը <xliff:g id="APP_NAME">%1$s</xliff:g> հավելվածին"</string>
+    <string name="denied_permission_decision" msgid="5308961501779563781">"Դուք մերժել եք «<xliff:g id="PERMISSION_NAME">%2$s</xliff:g>» թույլտվությունը <xliff:g id="APP_NAME">%1$s</xliff:g> հավելվածին"</string>
     <string name="days_ago" msgid="6650359081551335629">"{count,plural, =0{Այսօր}=1{1 օր առաջ}one{# օր առաջ}other{# օր առաջ}}"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"Անջատել հավելվածը"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"Եթե անջատեք այս հավելվածը, համակարգը և այլ հավելվածներ հնարավոր է սխալներով աշխատեն։ Դուք չեք կարող ջնջել այս հավելվածը, քանի որ այն նախապես տեղադրված է եղել ձեր սարքում։ Անջատելու դեպքում հավելվածը կդադարի աշխատել և կթաքցվի։"</string>
@@ -121,7 +121,7 @@
     <string name="message_staging" msgid="9110563899955511866">"Սպասեք…"</string>
     <string name="app_name_unknown" msgid="1319665005754048952">"Անհայտ"</string>
     <string name="permission_usage_title" msgid="1568233336351734538">"Հասանելիության կառավարման վահանակ"</string>
-    <string name="auto_permission_usage_summary" msgid="7335667266743337075">"Տեսնել՝ որ հավելվածներն են վերջերս թույլտվություն օգտագործել"</string>
+    <string name="auto_permission_usage_summary" msgid="7335667266743337075">"Տեսեք՝ որ հավելվածներն են վերջերս թույլտվություն օգտագործել"</string>
     <string name="permission_group_usage_title" msgid="2595013198075285173">"«<xliff:g id="PERMGROUP">%1$s</xliff:g>» թույլտվության օգտագործում"</string>
     <string name="perm_usage_adv_info_title" msgid="3357831829538873708">"Տեսնել այլ թույլտվություններ"</string>
     <string name="perm_usage_adv_info_summary_2_items" msgid="3702175198750127822">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g>"</string>
@@ -262,6 +262,9 @@
     <string name="auto_revoke_permission_notification_content" msgid="5125990886047799375">"Որոշ հավելվածներ մի քանի ամիս է, ինչ չեն օգտագործվել։ Հպեք՝ մանրամասները տեսնելու համար։"</string>
     <string name="unused_apps_notification_title" msgid="4314832015894238019">"{count,plural, =1{# չօգտագործվող հավելված}one{# օգտագործվող հավելված}other{# օգտագործվող հավելված}}"</string>
     <string name="unused_apps_notification_content" msgid="9195026773244581246">"Թույլտվություններն ու ժամանակավոր ֆայլերը հեռացվել են, իսկ ծանուցումների ուղարկումը դադարեցվել է։ Հպեք՝ մանրամասներն իմանալու համար։"</string>
+    <string name="unused_apps_safety_center_card_title" msgid="5638409355530099149">"Ստուգեք հավելվածները, որոնց թույլտվությունները հեռացվել են"</string>
+    <string name="unused_apps_safety_center_card_content" msgid="1088557243627427820">"Հավելվածներում, որոնք վաղուց չեք օգտագործել, թույլտվություններն ու ժամանակավոր ֆայլերը հեռացվել են, իսկ ծանուցումները՝ դադարեցվել։"</string>
+    <string name="unused_apps_safety_center_action_title" msgid="8865914432518993194">"Ստուգել հավելվածները"</string>
     <string name="post_drive_permission_decision_reminder_title" msgid="1290697371418139976">"Ստուգեք վերջին տրամադրած թույլտվությունները"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_1_permission" msgid="670521503734140711">"Մեքենան վարելիս դուք <xliff:g id="APP">%1$s</xliff:g> հավելվածին տրամադրել եք <xliff:g id="PERMISSION">%2$s</xliff:g>ն օգտագործելու թույլտվություն"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_2_permissions" msgid="671791184670801301">"Մեքենան վարելիս դուք <xliff:g id="APP">%1$s</xliff:g> հավելվածին տրամադրել եք <xliff:g id="PERMISSION_1">%2$s</xliff:g>ն ու <xliff:g id="PERMISSION_2">%3$s</xliff:g>ն օգտագործելու թույլտվություն"</string>
@@ -276,12 +279,21 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Թույլտվությունները հեռացվել են ձեր գաղտնիությունը պաշտպանելու նպատակով։"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> հավելվածը հետագծում է ձեր գտնվելու վայրը ֆոնային ռեժիմում"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Այս հավելվածին միշտ հասանելի են ձեր տեղադրության մասին տվյալները: Փոխելու համար հպեք:"</string>
-    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Ստուգեք ծանուցումները լսելու թույլտվությամբ հավելվածը"</string>
-    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> հավելվածը կարող է կարդալ ձեր բոլոր ծանուցումները։"</string>
-    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Այս հավելվածը կարող է կարդալ ձեր բոլոր ծանուցումները։"</string>
+    <string name="notification_listener_reminder_notification_title" msgid="3747210460187479091">"Ստուգեք հավելվածը, որին հասանելի են ձեր ծանուցումները"</string>
+    <!-- no translation found for notification_listener_reminder_notification_content (831476101108863427) -->
+    <skip />
+    <!-- no translation found for notification_listener_warning_card_content (7840973324284115893) -->
+    <skip />
     <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Հեռացնել մուտքի թույլտվությունը"</string>
-    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"Դիտել ծանուցումների հասանելիություն ունեցող հավելվածները"</string>
+    <string name="notification_listener_review_app_button_label" msgid="3433073281029143924">"Տեսնել այլ ընտրանքներ"</string>
     <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Մուտքի թույլտվությունը հեռացվեց"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="2971317234668807566">"Ստուգեք սարքի լրիվ հասանելիություն ունեցող հավելվածը"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="7389454158175306720">"<xliff:g id="APP_NAME">%s</xliff:g> հավելվածը կարող է տեսնել ձեր էկրանը և գործողություններ կատարել ձեր սարքում։ Նման թույլտվությունն անհրաժեշտ է հատուկ գործառույթների հավելվածների ճիշտ աշխատանքի համար։"</string>
+    <string name="accessibility_access_warning_card_content" msgid="4370327190293217358">"Այս հավելվածը կարող է տեսնել ձեր էկրանը և գործողություններ կատարել ձեր սարքում։ Նման թույլտվությունն անհրաժեշտ է հատուկ գործառույթների հավելվածների ճիշտ աշխատանքի համար, սակայն խորհուրդ ենք տալիս ձեզ ստուգել և համոզվել, որ վստահում եք հավելվածին։"</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"Հեռացնել օգտագործման թույլտվությունը"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="960067249326392280">"Դիտել լրիվ հասանելիություն ունեցող հավելվածները"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"Օգտագործման թույլտվությունը հեռացվեց"</string>
+    <string name="safety_center_notification_app_label" msgid="2457720616141926534">"Android համակարգ"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Հավելվածի թույլտվությունները հեռացվել են"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> հավելվածը մի քանի ամիս է, ինչ չի օգտագործվել։ Հպեք՝ մանրամասները տեսնելու համար։"</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> հավելվածն ու ևս 1 հավելված մի քանի ամիս է, ինչ չեն օգտագործվել։ Հպեք՝ մանրամասները տեսնելու համար։"</string>
@@ -502,21 +514,28 @@
     <string name="blocked_sensor_summary" msgid="4443707628305027375">"Հավելվածների և ծառայությունների համար"</string>
     <string name="blocked_mic_summary" msgid="8960466941528458347">"Խոսափողի տվյալները կարող են դեռ փոխանցվել, երբ զանգեք արտակարգ իրավիճակների որևէ հեռախոսահամարի։"</string>
     <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Փոխել"</string>
-    <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Անվտանգություն և գաղտնիություն"</string>
-    <string name="safety_center_rescan_button" msgid="8047036829052958144">"Սկանավորել"</string>
+    <string name="safety_center_dashboard_page_title" msgid="2810774008694315854">"Անվտանգություն և գաղտնիություն"</string>
+    <string name="safety_center_rescan_button" msgid="4517514567809409596">"Սկանավորել սարքը"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Փակել"</string>
     <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Փակե՞լ այս ծանուցումը"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_message" msgid="3775418736671093563">"Պաշտպանությունն ուժեցնելու համար ցանկացած ժամանակ ստուգեք ձեր անվտանգության և գաղտնիության կարգավորումները"</string>
     <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Փակել"</string>
     <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Չեղարկել"</string>
     <string name="safety_center_entries_category_title" msgid="34356964062813115">"Կարգավորումներ"</string>
+    <string name="safety_status_preference_title_and_summary_content_description" msgid="3511373256505058464">"Անվտանգության և գաղտնիության կարգավիճակը։ <xliff:g id="OVERALL_SAFETY_STATUS">%1$s</xliff:g>։ <xliff:g id="SUMMARY_OF_DEVICE_STATUS">%2$s</xliff:g>"</string>
     <string name="security_settings" msgid="3808106921175271317">"Անվտանգության կարգավորումներ"</string>
-    <string name="sensor_permissions_qs" msgid="4365989229426201877">"Տվիչների թույլտվություններ"</string>
-    <string name="privacy_controls_qs" msgid="471793881466080745">"Գաղտնիության կարգավորումներ"</string>
+    <string name="sensor_permissions_qs" msgid="1022267900031317472">"Թույլտվություններ"</string>
+    <string name="safety_privacy_qs_tile_title" msgid="727301867710374052">"Անվտանգություն և գաղտնիություն"</string>
+    <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"Ստուգեք կարգավիճակը"</string>
+    <string name="privacy_controls_qs" msgid="5780144882040591169">"Գաղտնիության կարգավորումներ"</string>
+    <string name="security_settings_button_label_qs" msgid="8280343822465962330">"Այլ կարգավորումներ"</string>
+    <string name="camera_toggle_label_qs" msgid="3880261453066157285">"Տեսախցիկի հասանելիություն"</string>
+    <string name="microphone_toggle_label_qs" msgid="8132912469813396552">"Խոսափողի հասանելիություն"</string>
     <string name="permissions_removed_qs" msgid="8957319130625294572">"Թույլտվությունը հեռացվել է"</string>
-    <string name="camera_usage_qs" msgid="7943349178368641820">"Դիտել տեսախցիկի օգտագործման այլ տվյալներ"</string>
-    <string name="microphone_usage_qs" msgid="2393193350541830472">"Դիտել խոսափողի օգտագործման այլ տվյալներ"</string>
-    <string name="remove_camera_qs" msgid="8209716677879809162">"Հեռացնել տեսախցիկի օգտագործման թույլտվությունը"</string>
-    <string name="remove_microphone_qs" msgid="2893536836641560183">"Հեռացնել խոսափողի օգտագործման թույլտվությունը"</string>
+    <string name="camera_usage_qs" msgid="4394233566086665994">"Տեսնել տեսախցիկի վերջին օգտագործումը"</string>
+    <string name="microphone_usage_qs" msgid="8527666682168170417">"Տեսնել խոսափողի վերջին օգտագործումը"</string>
+    <string name="remove_camera_qs" msgid="3649996161066883350">"Հեռացնել այս հավելվածի թույլտվությունը"</string>
+    <string name="remove_microphone_qs" msgid="1276551965129953198">"Հեռացնել այս հավելվածի թույլտվությունը"</string>
     <string name="manage_service_qs" msgid="7862555549364153805">"Կառավարել ծառայությունը"</string>
     <string name="manage_permissions_qs" msgid="3780541819763475434">"Կառավարել թույլտվությունները"</string>
     <string name="active_call_usage_qs" msgid="8559974395932523391">"Օգտագործվում է հեռախոսազանգի ժամանակ"</string>
@@ -527,8 +546,6 @@
     <string name="recent_app_usage_1_qs" msgid="261450184773310741">"Վերջերս օգտագործվել է <xliff:g id="APP_NAME">%1$s</xliff:g> հավելվածի կողմից (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g>)"</string>
     <string name="active_app_usage_2_qs" msgid="6107866785243565283">"Օգտագործվում է <xliff:g id="APP_NAME">%1$s</xliff:g> հավելվածի կողմից (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>)"</string>
     <string name="recent_app_usage_2_qs" msgid="3591205954235694403">"Վերջերս օգտագործվել է <xliff:g id="APP_NAME">%1$s</xliff:g> հավելվածի կողմից (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>)"</string>
-    <string name="safety_privacy_qs_tile_title" msgid="5431148204168066203">"Անվտանգություն և գաղտնիություն"</string>
-    <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"Ստուգեք կարգավիճակը"</string>
     <string name="media_confirm_dialog_positive_button" msgid="9020793594051526399">"Հաստատել"</string>
     <string name="media_confirm_dialog_negative_button" msgid="226987376924861785">"Հետ"</string>
     <string name="media_confirm_dialog_title_a_to_p_aural_allow" msgid="8560601114044699903">"Այլ ֆայլերի օգտագործումը նույնպես կթույլատրվի"</string>
@@ -547,4 +564,20 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Այս հավելվածը չի աջակցում Android-ի վերջին տարբերակը։ Եթե հավելվածը չունենա երաժշտության և աուդիո ֆայլերի օգտագործման թույլտվություն, նրան նաև հասանելի չեն լինի լուսանկարները և տեսանյութերը։"</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Այս հավելվածը չի աջակցում Android-ի վերջին տարբերակը։ Եթե հավելվածն ունենա լուսանկարների և տեսանյութերի օգտագործման թույլտվություն, նրան նաև հասանելի կլինեն երաժշտությունը և աուդիո ֆայլերը։"</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Այս հավելվածը չի աջակցում Android-ի վերջին տարբերակը։ Եթե հավելվածը չունենա երաժշտության և աուդիո ֆայլերի օգտագործման թույլտվություն, նրան նաև հասանելի չեն լինի լուսանկարները և տեսանյութերը։"</string>
+    <string name="safety_center_background_location_access_notification_title" msgid="8933610618810588237">"Ստուգեք հավելվածները, որոնց հասանելի են տեղադրության տվյալները ֆոնային ռեժիմում"</string>
+    <string name="safety_center_background_location_access_reminder_notification_content" msgid="4066560182507301022">"<xliff:g id="APP_NAME">%s</xliff:g> հավելվածին միշտ հասանելի են տեղադրության տվյալները, նույնիսկ երբ այն փակված է"</string>
+    <string name="safety_center_background_location_access_reminder_title" msgid="5477847038103863843">"Ստուգեք հավելվածները, որոնց հասանելի են տեղադրության տվյալները ֆոնային ռեժիմում"</string>
+    <string name="safety_center_background_location_access_reminder_summary" msgid="8276755741395332974">"Այս հավելվածը տեսնում է ձեր տեղադրության տվյալները, նույնիսկ երբ այն փակված է։"</string>
+    <string name="safety_center_background_location_access_revoked" msgid="6972274943343442213">"Թույլտվությունը փոխվեց"</string>
+    <string name="safety_center_view_recent_location_access" msgid="3524391299490678243">"Տեսնել տեղադրության տվյալների վերջին օգտագործումը"</string>
+    <string name="privacy_controls_title" msgid="7605929972256835199">"Գաղտնիության կարգավորումներ"</string>
+    <string name="camera_toggle_title" msgid="1251201397431837666">"Տեսախցիկի հասանելիություն"</string>
+    <string name="mic_toggle_title" msgid="2649991093496110162">"Խոսափողի հասանելիություն"</string>
+    <string name="perm_toggle_description" msgid="7801326363741451379">"Հավելվածների և ծառայությունների համար"</string>
+    <string name="mic_toggle_description" msgid="9163104307990677157">"Հավելվածների և ծառայությունների համար։ Եթե այս կարգավորումն անջատված է, խոսափողի տվյալները միևնույն է կարող են փոխանցվել, երբ զանգեք արտակարգ իրավիճակների որևէ հեռախոսահամարի։"</string>
+    <string name="location_settings_subtitle" msgid="2328360561197430695">"Դիտեք հավելվածներն ու ծառայությունները, որոնց հասանելի է ձեր տեղադրությունը"</string>
+    <string name="show_clip_access_notification_title" msgid="5168467637351109096">"Ցուցադրել սեղմատախտակի օգտագործման մասին ծանուցումներ"</string>
+    <string name="show_clip_access_notification_summary" msgid="3532020182782112687">"Ցուցադրել հաղորդագրություն, երբ հավելվածներին հասանելի են դառնում ձեր պատճենած տեքստը, պատկերները կամ այլ բովանդակություն"</string>
+    <string name="show_password_title" msgid="2877269286984684659">"Ցուցադրել գաղտնաբառերը"</string>
+    <string name="show_password_summary" msgid="1110166488865981610">"Տեքստ մուտքագրելիս կարճ ժամանակով ցուցադրել գրանշանները"</string>
 </resources>

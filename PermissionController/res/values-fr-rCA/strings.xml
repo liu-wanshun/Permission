@@ -58,9 +58,9 @@
     <string name="review_permission_decisions" msgid="309559429150613632">"Décisions d\'autorisation récentes"</string>
     <string name="review_permission_decisions_view_all" msgid="90391040431566130">"Afficher toutes les décisions d\'autorisation récentes"</string>
     <string name="review_permission_decisions_empty" msgid="8120775336417279806">"Aucune décision d\'autorisation récente"</string>
-    <string name="auto_permission_manager_summary" msgid="9157438376234301354">"Gérez l\'accès aux données pour l\'agenda, les journaux d\'appels, etc."</string>
-    <string name="granted_permission_decision" msgid="7824827491551861365">"Vous avez autorisé l\'accès de <xliff:g id="APP_NAME">%1$s</xliff:g> à <xliff:g id="PERMISSION_NAME">%2$s</xliff:g>"</string>
-    <string name="denied_permission_decision" msgid="5308961501779563781">"Vous avez refusé l\'accès de <xliff:g id="APP_NAME">%1$s</xliff:g> à <xliff:g id="PERMISSION_NAME">%2$s</xliff:g>"</string>
+    <string name="auto_permission_manager_summary" msgid="9157438376234301354">"Gérer l\'accès aux données pour l\'agenda, les journaux d\'appels, etc."</string>
+    <string name="granted_permission_decision" msgid="7824827491551861365">"Vous avez autorisé l\'accès de <xliff:g id="APP_NAME">%1$s</xliff:g> aux <xliff:g id="PERMISSION_NAME">%2$s</xliff:g>"</string>
+    <string name="denied_permission_decision" msgid="5308961501779563781">"Vous avez refusé l\'accès de <xliff:g id="APP_NAME">%1$s</xliff:g> aux <xliff:g id="PERMISSION_NAME">%2$s</xliff:g>"</string>
     <string name="days_ago" msgid="6650359081551335629">"{count,plural, =0{Aujourd’hui}=1{Il y a 1 jour}one{Il y a # jour}other{Il y a # jours}}"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"Désactiver l\'application"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"Si vous désactivez cette application, Android et d\'autres applications risquent de ne plus fonctionner correctement. Gardez à l\'esprit que vous ne pouvez pas supprimer cette application, étant donné qu\'elle était préinstallée sur votre appareil. En la désactivant, elle ne sera plus active et elle sera masquée sur votre appareil."</string>
@@ -158,7 +158,7 @@
     <string name="permission_usage_bar_chart_title_last_hour" msgid="6571647509660009185">"Utilisation des autorisat. dans la dernière heure"</string>
     <string name="permission_usage_bar_chart_title_last_15_minutes" msgid="2743143675412824819">"Utilisation des autor. dans les 15 dern. minutes"</string>
     <string name="permission_usage_bar_chart_title_last_minute" msgid="820450867183487607">"Utilisation des autorisat. dans la dernière minute"</string>
-    <string name="permission_usage_preference_summary_not_used_24h" msgid="3087783232178611025">"Inutilisée au cours des dernières 24 heures"</string>
+    <string name="permission_usage_preference_summary_not_used_24h" msgid="3087783232178611025">"Aucune utilisation au cours des dernières 24 heures"</string>
     <string name="permission_usage_preference_summary_not_used_7d" msgid="4592301300810120096">"Inutilisée au cours des 7 derniers jours"</string>
     <string name="permission_usage_preference_label" msgid="8343167938128676378">"{count,plural, =1{Utilisation : 1 application}one{Utilisation : # application}other{Utilisation : # applications}}"</string>
     <string name="permission_usage_view_details" msgid="6675335735468752787">"Tout afficher dans le tableau de bord"</string>
@@ -236,10 +236,8 @@
     <string name="permission_description_summary_sensors" msgid="1836045815643119949">"Les applications qui possèdent cette autorisation peuvent accéder aux données des capteurs concernant vos signes vitaux"</string>
     <string name="permission_description_summary_sms" msgid="725999468547768517">"Les applications qui possèdent cette autorisation peuvent envoyer et afficher des messages texte"</string>
     <string name="permission_description_summary_storage" msgid="6575759089065303346">"Les applications qui possèdent cette autorisation peuvent accéder aux photos, aux médias et aux fichiers de votre appareil"</string>
-    <!-- no translation found for permission_description_summary_read_media_aural (3354728149930482199) -->
-    <skip />
-    <!-- no translation found for permission_description_summary_read_media_visual (4991801977881732641) -->
-    <skip />
+    <string name="permission_description_summary_read_media_aural" msgid="3354728149930482199">"Les applications possédant cette autorisation peuvent accéder aux fichiers musicaux et audio sur cet appareil"</string>
+    <string name="permission_description_summary_read_media_visual" msgid="4991801977881732641">"Les applications possédant cette autorisation peuvent accéder aux photos et aux vidéos sur cet appareil"</string>
     <string name="app_permission_most_recent_summary" msgid="4292074449384040590">"Dernier accès : <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_permission_most_recent_denied_summary" msgid="7659497197737708112">"Autorisation présentement refusée/Dernier accès : <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_permission_never_accessed_summary" msgid="401346181461975090">"Aucun accès"</string>
@@ -264,6 +262,9 @@
     <string name="auto_revoke_permission_notification_content" msgid="5125990886047799375">"Certaines applications n\'ont pas été utilisées depuis quelques mois. Touchez pour examiner."</string>
     <string name="unused_apps_notification_title" msgid="4314832015894238019">"{count,plural, =1{# application non utilisée}one{# application non utilisée}other{# applications non utilisées}}"</string>
     <string name="unused_apps_notification_content" msgid="9195026773244581246">"Les autorisations et les fichiers temporaires ont été retirés, et les notifications ont été arrêtées. Touchez pour examiner."</string>
+    <string name="unused_apps_safety_center_card_title" msgid="5638409355530099149">"Voir les applications qui n\'ont plus leurs autorisations"</string>
+    <string name="unused_apps_safety_center_card_content" msgid="1088557243627427820">"Pour les applications que vous n\'avez pas utilisées depuis un moment, les autorisations et les fichiers temporaires ont été supprimés et les notifications ont été désactivées."</string>
+    <string name="unused_apps_safety_center_action_title" msgid="8865914432518993194">"Voir les applications"</string>
     <string name="post_drive_permission_decision_reminder_title" msgid="1290697371418139976">"Vérifiez les autorisations récentes"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_1_permission" msgid="670521503734140711">"Pendant la conduite, vous avez donné à <xliff:g id="APP">%1$s</xliff:g> l\'accès à <xliff:g id="PERMISSION">%2$s</xliff:g>"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_2_permissions" msgid="671791184670801301">"Pendant la conduite, vous avez donné à <xliff:g id="APP">%1$s</xliff:g> l\'accès à <xliff:g id="PERMISSION_1">%2$s</xliff:g> et à <xliff:g id="PERMISSION_2">%3$s</xliff:g>"</string>
@@ -278,12 +279,21 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Les autorisations ont été supprimées afin de protéger votre confidentialité"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"L\'application <xliff:g id="APP_NAME">%s</xliff:g> a accédé à votre position en arrière-plan"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Cette application peut toujours accéder à votre position. Touchez l\'écran pour modifier cela."</string>
-    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Examiner l\'application avec accès à l\'écoute des notifications"</string>
-    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> peut lire toutes vos notifications."</string>
-    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Cette application peut lire toutes vos notifications."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="3747210460187479091">"Voir les applications ayant accès à vos notifications"</string>
+    <!-- no translation found for notification_listener_reminder_notification_content (831476101108863427) -->
+    <skip />
+    <!-- no translation found for notification_listener_warning_card_content (7840973324284115893) -->
+    <skip />
     <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Retirer l\'accès"</string>
-    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"Examiner toutes les applis qui ont accès aux notifications"</string>
+    <string name="notification_listener_review_app_button_label" msgid="3433073281029143924">"Afficher d\'autres options"</string>
     <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Accès retiré"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="2971317234668807566">"Voir les applications ayant un accès complet à l\'appareil"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="7389454158175306720">"<xliff:g id="APP_NAME">%s</xliff:g> peut voir votre écran et effectuer des actions sur votre appareil. Les applications d\'accessibilité ont besoin de ce type d\'accès pour fonctionner correctement."</string>
+    <string name="accessibility_access_warning_card_content" msgid="4370327190293217358">"Cette application peut voir votre écran et effectuer des actions sur votre appareil. Les applications d\'accessibilité ont besoin de ce type d\'accès pour fonctionner correctement, mais vérifiez d\'abord l\'application et assurez-vous qu\'elle est fiable."</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"Retirer l\'accès"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="960067249326392280">"Voir les applications ayant un accès complet"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"Accès retiré"</string>
+    <string name="safety_center_notification_app_label" msgid="2457720616141926534">"Système Android"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Autorisations supprimées pour protéger votre confidentialité"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"L\'application <xliff:g id="APP_NAME">%s</xliff:g> n\'a pas été utilisée depuis plusieurs mois. Touchez pour examiner."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> et une autre application n\'ont pas été utilisées depuis plusieurs mois. Touchez pour examiner."</string>
@@ -456,14 +466,10 @@
     <string name="permgrouprequest_calendar" msgid="1493150855673603806">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à accéder à votre agenda?"</string>
     <string name="permgrouprequest_sms" msgid="5672063688745420991">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;  à envoyer et à afficher des messages texte?"</string>
     <string name="permgrouprequest_storage" msgid="8717773092518621602">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à accéder aux photos, au contenu multimédia et aux fichiers de votre appareil?"</string>
-    <!-- no translation found for permgrouprequest_storage_q_to_s (8213701872983685505) -->
-    <skip />
-    <!-- no translation found for permgrouprequest_storage_pre_q (168130651144569428) -->
-    <skip />
-    <!-- no translation found for permgrouprequest_read_media_aural (2593365397347577812) -->
-    <skip />
-    <!-- no translation found for permgrouprequest_read_media_visual (5548780620779729975) -->
-    <skip />
+    <string name="permgrouprequest_storage_q_to_s" msgid="8213701872983685505">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à accéder &lt;b&gt;aux photos, aux vidéos, et aux fichiers musicaux et audio&lt;/b&gt; sur cet appareil?"</string>
+    <string name="permgrouprequest_storage_pre_q" msgid="168130651144569428">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à accéder &lt;b&gt;aux photos, aux vidéos, et aux fichiers musicaux, audio et autres&lt;/b&gt; sur cet appareil?"</string>
+    <string name="permgrouprequest_read_media_aural" msgid="2593365397347577812">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à accéder aux fichiers musicaux et audio sur cet appareil?"</string>
+    <string name="permgrouprequest_read_media_visual" msgid="5548780620779729975">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à accéder aux photos et aux vidéos sur cet appareil?"</string>
     <string name="permgrouprequest_microphone" msgid="2825208549114811299">"Autoriser &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; à enregistrer l\'audio?"</string>
     <string name="permgrouprequestdetail_microphone" msgid="8510456971528228861">"L\'application pourra uniquement enregistrer de l\'audio lorsque vous l\'utilisez"</string>
     <string name="permgroupbackgroundrequest_microphone" msgid="8874462606796368183">"Autoriser « <xliff:g id="APP_NAME">%1$s</xliff:g> » à enregistrer de l\'audio?"</string>
@@ -508,21 +514,28 @@
     <string name="blocked_sensor_summary" msgid="4443707628305027375">"Pour les applications et les services"</string>
     <string name="blocked_mic_summary" msgid="8960466941528458347">"Il est possible que les données du microphone soient partagées lorsque vous appelez un numéro d\'urgence."</string>
     <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Modifier"</string>
-    <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Sécurité et confidentialité"</string>
-    <string name="safety_center_rescan_button" msgid="8047036829052958144">"Analyser"</string>
+    <string name="safety_center_dashboard_page_title" msgid="2810774008694315854">"Sécurité et confidentialité"</string>
+    <string name="safety_center_rescan_button" msgid="4517514567809409596">"Analyser l\'appareil"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Fermer"</string>
     <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Ignorer cette alerte?"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_message" msgid="3775418736671093563">"Passer en revue les paramètres de sécurité et de confidentialité à tout moment pour ajouter une protection"</string>
     <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Fermer"</string>
     <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Annuler"</string>
     <string name="safety_center_entries_category_title" msgid="34356964062813115">"Paramètres"</string>
+    <string name="safety_status_preference_title_and_summary_content_description" msgid="3511373256505058464">"État de la sécurité et de la confidentialité. <xliff:g id="OVERALL_SAFETY_STATUS">%1$s</xliff:g>. <xliff:g id="SUMMARY_OF_DEVICE_STATUS">%2$s</xliff:g>"</string>
     <string name="security_settings" msgid="3808106921175271317">"Paramètres de sécurité"</string>
-    <string name="sensor_permissions_qs" msgid="4365989229426201877">"Autorisations du capteur"</string>
-    <string name="privacy_controls_qs" msgid="471793881466080745">"Paramètres de confidentialité"</string>
+    <string name="sensor_permissions_qs" msgid="1022267900031317472">"Autorisations"</string>
+    <string name="safety_privacy_qs_tile_title" msgid="727301867710374052">"Sécurité et confidentialité"</string>
+    <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"Vérification de l\'état"</string>
+    <string name="privacy_controls_qs" msgid="5780144882040591169">"Paramètres de confidentialité"</string>
+    <string name="security_settings_button_label_qs" msgid="8280343822465962330">"Plus de paramètres"</string>
+    <string name="camera_toggle_label_qs" msgid="3880261453066157285">"Accès à l\'appareil photo"</string>
+    <string name="microphone_toggle_label_qs" msgid="8132912469813396552">"Accès au microphone"</string>
     <string name="permissions_removed_qs" msgid="8957319130625294572">"L\'autorisation a été retirée"</string>
-    <string name="camera_usage_qs" msgid="7943349178368641820">"Voir les données d\'utilisation de l\'appareil photo"</string>
-    <string name="microphone_usage_qs" msgid="2393193350541830472">"Voir les données d\'utilisation du microphone"</string>
-    <string name="remove_camera_qs" msgid="8209716677879809162">"Retirer l\'autorisation de l\'appareil photo"</string>
-    <string name="remove_microphone_qs" msgid="2893536836641560183">"Retirer l\'autorisation du microphone"</string>
+    <string name="camera_usage_qs" msgid="4394233566086665994">"Consulter les utilisations récentes de l\'appareil photo"</string>
+    <string name="microphone_usage_qs" msgid="8527666682168170417">"Consulter les utilisations récentes du microphone"</string>
+    <string name="remove_camera_qs" msgid="3649996161066883350">"Retirer l\'autorisation de cette application"</string>
+    <string name="remove_microphone_qs" msgid="1276551965129953198">"Retirer l\'autorisation de cette application"</string>
     <string name="manage_service_qs" msgid="7862555549364153805">"Gérer le service"</string>
     <string name="manage_permissions_qs" msgid="3780541819763475434">"Gérer les autorisations"</string>
     <string name="active_call_usage_qs" msgid="8559974395932523391">"En cours d\'utilisation par un appel téléphonique"</string>
@@ -533,8 +546,6 @@
     <string name="recent_app_usage_1_qs" msgid="261450184773310741">"Récemment utilisé par <xliff:g id="APP_NAME">%1$s</xliff:g> (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g>)"</string>
     <string name="active_app_usage_2_qs" msgid="6107866785243565283">"En cours d\'utilisation par <xliff:g id="APP_NAME">%1$s</xliff:g> (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>)"</string>
     <string name="recent_app_usage_2_qs" msgid="3591205954235694403">"Récemment utilisé par <xliff:g id="APP_NAME">%1$s</xliff:g> (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>)"</string>
-    <string name="safety_privacy_qs_tile_title" msgid="5431148204168066203">"Sécurité et confidentialité"</string>
-    <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"Vérification de l\'état"</string>
     <string name="media_confirm_dialog_positive_button" msgid="9020793594051526399">"Confirmer"</string>
     <string name="media_confirm_dialog_negative_button" msgid="226987376924861785">"Retour"</string>
     <string name="media_confirm_dialog_title_a_to_p_aural_allow" msgid="8560601114044699903">"L\'accès à d\'autres fichiers sera également autorisé"</string>
@@ -553,4 +564,20 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Cette application ne prend pas en charge la dernière version d\'Android. Si cette application ne peut pas accéder aux fichiers musicaux ni audio, elle ne sera pas non plus autorisée à accéder aux photos ni aux vidéos."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Cette application ne prend pas en charge la dernière version d\'Android. Si cette application peut accéder aux photos et aux vidéos, elle sera également autorisée à accéder aux fichiers musicaux et audio."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Cette application ne prend pas en charge la dernière version d\'Android. Si cette application ne peut pas accéder aux fichiers musicaux ni audio, elle ne sera pas non plus autorisée à accéder aux photos ni aux vidéos."</string>
+    <string name="safety_center_background_location_access_notification_title" msgid="8933610618810588237">"Voir les applications ayant accès aux données de localisation en arrière-plan"</string>
+    <string name="safety_center_background_location_access_reminder_notification_content" msgid="4066560182507301022">"<xliff:g id="APP_NAME">%s</xliff:g> peut toujours accéder à votre position, même quand l\'application est fermée"</string>
+    <string name="safety_center_background_location_access_reminder_title" msgid="5477847038103863843">"Voir les applications ayant accès aux données de localisation en arrière-plan"</string>
+    <string name="safety_center_background_location_access_reminder_summary" msgid="8276755741395332974">"Cette application peut toujours accéder à votre position, même si elle est fermée"</string>
+    <string name="safety_center_background_location_access_revoked" msgid="6972274943343442213">"Accès modifié"</string>
+    <string name="safety_center_view_recent_location_access" msgid="3524391299490678243">"Voir les utilisations récentes de la position"</string>
+    <string name="privacy_controls_title" msgid="7605929972256835199">"Paramètres de confidentialité"</string>
+    <string name="camera_toggle_title" msgid="1251201397431837666">"Accès à l\'appareil photo"</string>
+    <string name="mic_toggle_title" msgid="2649991093496110162">"Accès au microphone"</string>
+    <string name="perm_toggle_description" msgid="7801326363741451379">"Pour les applications et les services"</string>
+    <string name="mic_toggle_description" msgid="9163104307990677157">"Pour les applications et les services. Si ce paramètre est désactivé, il est possible que les données du microphone soient partagées lorsque vous appelez un numéro d\'urgence."</string>
+    <string name="location_settings_subtitle" msgid="2328360561197430695">"Voir les applications et les services qui ont accès à votre emplacement"</string>
+    <string name="show_clip_access_notification_title" msgid="5168467637351109096">"Afficher l\'accès au presse-papiers"</string>
+    <string name="show_clip_access_notification_summary" msgid="3532020182782112687">"Afficher un message lorsque les applications accèdent à du texte, à des images ou à d\'autres contenus que vous avez copiés"</string>
+    <string name="show_password_title" msgid="2877269286984684659">"Afficher les mots de passe"</string>
+    <string name="show_password_summary" msgid="1110166488865981610">"Afficher les caractères brièvement pendant la saisie"</string>
 </resources>
