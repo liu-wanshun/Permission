@@ -20,6 +20,7 @@ import android.content.Context
 import android.graphics.drawable.Animatable2
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.Drawable
+import android.provider.DeviceConfig
 import android.safetycenter.SafetyCenterIssue
 import android.text.TextUtils
 import android.transition.Fade
@@ -82,13 +83,20 @@ class IssueCardAnimator(val callback: AnimationCallback) {
         // Defer transition so that it's called after the root ViewGroup has been laid out.
         holder.itemView.post {
             TransitionManager.beginDelayedTransition(
-                defaultIssueContentGroup.getParent() as ViewGroup?, transitionSet
+                defaultIssueContentGroup.parent as ViewGroup?, transitionSet
             )
 
             // Setting INVISIBLE rather than GONE to ensure consistent card height between
             // view groups.
-            defaultIssueContentGroup.setVisibility(View.INVISIBLE)
-            resolvedIssueContentGroup.setVisibility(View.VISIBLE)
+            defaultIssueContentGroup.visibility = View.INVISIBLE
+
+            // These two views are outside of the group since their visibility must be set
+            // independently of the rest of the group, and some frustrating constraints of
+            // constraint layout's behavior. See b/242705351 for context.
+            makeInvisibleIfVisible(holder.findViewById(R.id.issue_card_subtitle))
+            makeInvisibleIfVisible(holder.findViewById(R.id.issue_card_protected_by_android))
+
+            resolvedIssueContentGroup.visibility = View.VISIBLE
         }
 
         // Cancel animations if they are scrolled out of view (detached from recycler view)
@@ -104,6 +112,12 @@ class IssueCardAnimator(val callback: AnimationCallback) {
                     )
                 }
             })
+    }
+
+    private fun makeInvisibleIfVisible(view: View?) {
+        if (view != null && view.visibility == View.VISIBLE) {
+            view.visibility = View.INVISIBLE
+        }
     }
 
     private fun startIssueResolvedAnimation(
@@ -163,10 +177,20 @@ class IssueCardAnimator(val callback: AnimationCallback) {
     }
 
     companion object {
+        /**
+         * Device config property for time in milliseconds to increase
+         * HIDE_RESOLVED_UI_TRANSITION_DELAY for use in testing.
+         */
+        private const val PROPERTY_HIDE_RESOLVED_UI_TRANSITION_DELAY_MILLIS =
+            "safety_center_hide_resolved_ui_transition_delay_millis"
+
         private val HIDE_ISSUE_CONTENT_TRANSITION_DURATION = Duration.ofMillis(333)
         private val SHOW_RESOLVED_TEXT_TRANSITION_DELAY = Duration.ofMillis(133)
         private val SHOW_RESOLVED_TEXT_TRANSITION_DURATION = Duration.ofMillis(250)
-        private val HIDE_RESOLVED_UI_TRANSITION_DELAY = Duration.ofMillis(1050)
+        private val HIDE_RESOLVED_UI_TRANSITION_DELAY = Duration.ofMillis(
+            DeviceConfig.getLong(DeviceConfig.NAMESPACE_PRIVACY,
+                PROPERTY_HIDE_RESOLVED_UI_TRANSITION_DELAY_MILLIS,
+                400))
         private val HIDE_RESOLVED_UI_TRANSITION_DURATION = Duration.ofMillis(167)
         private val linearInterpolator = LinearInterpolator()
         private val hideIssueContentTransition =
