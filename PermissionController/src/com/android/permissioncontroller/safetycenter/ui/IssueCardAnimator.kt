@@ -83,13 +83,20 @@ class IssueCardAnimator(val callback: AnimationCallback) {
         // Defer transition so that it's called after the root ViewGroup has been laid out.
         holder.itemView.post {
             TransitionManager.beginDelayedTransition(
-                defaultIssueContentGroup.getParent() as ViewGroup?, transitionSet
+                defaultIssueContentGroup.parent as ViewGroup?, transitionSet
             )
 
             // Setting INVISIBLE rather than GONE to ensure consistent card height between
             // view groups.
-            defaultIssueContentGroup.setVisibility(View.INVISIBLE)
-            resolvedIssueContentGroup.setVisibility(View.VISIBLE)
+            defaultIssueContentGroup.visibility = View.INVISIBLE
+
+            // These two views are outside of the group since their visibility must be set
+            // independently of the rest of the group, and some frustrating constraints of
+            // constraint layout's behavior. See b/242705351 for context.
+            makeInvisibleIfVisible(holder.findViewById(R.id.issue_card_subtitle))
+            makeInvisibleIfVisible(holder.findViewById(R.id.issue_card_protected_by_android))
+
+            resolvedIssueContentGroup.visibility = View.VISIBLE
         }
 
         // Cancel animations if they are scrolled out of view (detached from recycler view)
@@ -105,6 +112,12 @@ class IssueCardAnimator(val callback: AnimationCallback) {
                     )
                 }
             })
+    }
+
+    private fun makeInvisibleIfVisible(view: View?) {
+        if (view != null && view.visibility == View.VISIBLE) {
+            view.visibility = View.INVISIBLE
+        }
     }
 
     private fun startIssueResolvedAnimation(
@@ -174,25 +187,34 @@ class IssueCardAnimator(val callback: AnimationCallback) {
         private val HIDE_ISSUE_CONTENT_TRANSITION_DURATION = Duration.ofMillis(333)
         private val SHOW_RESOLVED_TEXT_TRANSITION_DELAY = Duration.ofMillis(133)
         private val SHOW_RESOLVED_TEXT_TRANSITION_DURATION = Duration.ofMillis(250)
-        private val HIDE_RESOLVED_UI_TRANSITION_DELAY = Duration.ofMillis(
-            DeviceConfig.getLong(DeviceConfig.NAMESPACE_PRIVACY,
-                PROPERTY_HIDE_RESOLVED_UI_TRANSITION_DELAY_MILLIS,
-                400))
         private val HIDE_RESOLVED_UI_TRANSITION_DURATION = Duration.ofMillis(167)
+
+        // Using getter due to reliance on DeviceConfig property modification in tests
+        private val hideResolvedUiTransitionDelay
+            get() = Duration.ofMillis(
+                DeviceConfig.getLong(DeviceConfig.NAMESPACE_PRIVACY,
+                    PROPERTY_HIDE_RESOLVED_UI_TRANSITION_DELAY_MILLIS,
+                    400))
+
         private val linearInterpolator = LinearInterpolator()
+
         private val hideIssueContentTransition =
             Fade(Fade.OUT).setDuration(HIDE_ISSUE_CONTENT_TRANSITION_DURATION.toMillis())
+
         private val showResolvedImageTransition =
             Fade(Fade.IN)
                 // Fade is used for visibility transformation. Image to be shown immediately
                 .setDuration(0)
                 .addTarget(R.id.resolved_issue_image)
+
         private val showResolvedTextTransition = Fade(Fade.IN)
             .setStartDelay(SHOW_RESOLVED_TEXT_TRANSITION_DELAY.toMillis())
             .setDuration(SHOW_RESOLVED_TEXT_TRANSITION_DURATION.toMillis())
             .addTarget(R.id.resolved_issue_text)
-        private val hideResolvedUiTransition = Fade(Fade.OUT)
-            .setStartDelay(HIDE_RESOLVED_UI_TRANSITION_DELAY.toMillis())
-            .setDuration(HIDE_RESOLVED_UI_TRANSITION_DURATION.toMillis())
+
+        private val hideResolvedUiTransition
+            get() = Fade(Fade.OUT)
+                .setStartDelay(hideResolvedUiTransitionDelay.toMillis())
+                .setDuration(HIDE_RESOLVED_UI_TRANSITION_DURATION.toMillis())
     }
 }
