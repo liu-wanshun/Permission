@@ -121,7 +121,7 @@
     <string name="message_staging" msgid="9110563899955511866">"アプリを準備しています…"</string>
     <string name="app_name_unknown" msgid="1319665005754048952">"不明"</string>
     <string name="permission_usage_title" msgid="1568233336351734538">"プライバシー ダッシュボード"</string>
-    <string name="auto_permission_usage_summary" msgid="7335667266743337075">"権限を最近使用したアプリを表示する"</string>
+    <string name="auto_permission_usage_summary" msgid="7335667266743337075">"権限を最近使用したアプリを表示します"</string>
     <string name="permission_group_usage_title" msgid="2595013198075285173">"<xliff:g id="PERMGROUP">%1$s</xliff:g>の使用状況"</string>
     <string name="perm_usage_adv_info_title" msgid="3357831829538873708">"他の権限を表示"</string>
     <string name="perm_usage_adv_info_summary_2_items" msgid="3702175198750127822">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>、<xliff:g id="PERMGROUP_1">%2$s</xliff:g>"</string>
@@ -190,7 +190,7 @@
     <string name="precise_image_description" msgid="6349638632303619872">"正確な現在地"</string>
     <string name="approximate_image_description" msgid="938803699637069884">"おおよその現在地"</string>
     <string name="app_permission_location_accuracy" msgid="7166912915040018669">"正確な位置情報を使用"</string>
-    <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"正確な位置情報が OFF の場合、アプリはおおよその位置情報にアクセスできます"</string>
+    <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"正確な位置情報がオフの場合、アプリはおおよその位置情報にアクセスできます"</string>
     <string name="app_permission_title" msgid="2090897901051370711">"<xliff:g id="PERM">%1$s</xliff:g>の権限"</string>
     <string name="app_permission_header" msgid="2951363137032603806">"このアプリによる<xliff:g id="PERM">%1$s</xliff:g>へのアクセス"</string>
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"「<xliff:g id="APP">%1$s</xliff:g>」アプリの権限をすべて表示"</string>
@@ -262,6 +262,9 @@
     <string name="auto_revoke_permission_notification_content" msgid="5125990886047799375">"数か月使用していないアプリがあります。タップしてご確認ください。"</string>
     <string name="unused_apps_notification_title" msgid="4314832015894238019">"{count,plural, =1{# 個の使用していないアプリ}other{# 個の使用していないアプリ}}"</string>
     <string name="unused_apps_notification_content" msgid="9195026773244581246">"権限と一時ファイルを削除し、通知を停止しました。タップしてご確認ください。"</string>
+    <string name="unused_apps_safety_center_card_title" msgid="5638409355530099149">"権限が削除されたアプリの確認"</string>
+    <string name="unused_apps_safety_center_card_content" msgid="1088557243627427820">"しばらく使用していないアプリについて、権限と一時ファイルを削除し、通知を停止しました。"</string>
+    <string name="unused_apps_safety_center_action_title" msgid="8865914432518993194">"アプリを確認"</string>
     <string name="post_drive_permission_decision_reminder_title" msgid="1290697371418139976">"最近許可した権限の確認"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_1_permission" msgid="670521503734140711">"運転中に <xliff:g id="APP">%1$s</xliff:g> による<xliff:g id="PERMISSION">%2$s</xliff:g>へのアクセスを許可しました"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_2_permissions" msgid="671791184670801301">"運転中に <xliff:g id="APP">%1$s</xliff:g> による<xliff:g id="PERMISSION_1">%2$s</xliff:g>および<xliff:g id="PERMISSION_2">%3$s</xliff:g>へのアクセスを許可しました"</string>
@@ -276,12 +279,21 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"プライバシー保護のため権限を削除しました"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> がバックグラウンドで位置情報を取得しました"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"このアプリは常に位置情報にアクセスできます。設定を変更するにはタップしてください。"</string>
-    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"通知リスナー アクセス権を使用してアプリを確認する"</string>
-    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g>はすべての通知を読み取ることができます。"</string>
-    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"このアプリはすべての通知を読み取ることができます。"</string>
+    <string name="notification_listener_reminder_notification_title" msgid="3747210460187479091">"通知へのアクセス権があるアプリの確認"</string>
+    <!-- no translation found for notification_listener_reminder_notification_content (831476101108863427) -->
+    <skip />
+    <!-- no translation found for notification_listener_warning_card_content (7840973324284115893) -->
+    <skip />
     <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"アクセス権を削除"</string>
-    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"通知アクセス権があるアプリをすべて表示"</string>
+    <string name="notification_listener_review_app_button_label" msgid="3433073281029143924">"その他のオプションを表示"</string>
     <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"アクセス権が削除されました"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="2971317234668807566">"デバイスへのフルアクセス権があるアプリの確認"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="7389454158175306720">"<xliff:g id="APP_NAME">%s</xliff:g> は画面の読み取りとデバイスでのアクションの実行を行えます。ユーザー補助アプリは、正常に動作するにはこのタイプのアクセス権が必要です。"</string>
+    <string name="accessibility_access_warning_card_content" msgid="4370327190293217358">"このアプリは画面の読み取りとデバイスでのアクションの実行を行えます。ユーザー補助アプリは、正常に動作するにはこのタイプのアクセス権が必要ですが、アプリを調べ、信頼できることをご確認ください。"</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"アクセス権の削除"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="960067249326392280">"フルアクセス権があるアプリを表示"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"アクセス権を削除しました"</string>
+    <string name="safety_center_notification_app_label" msgid="2457720616141926534">"Android システム"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"プライバシー保護のためアプリの権限を削除しました"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> は数か月使用されていません。タップしてご確認ください。"</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> と他 1 件のアプリは、数か月使用されていません。タップしてご確認ください。"</string>
@@ -502,21 +514,28 @@
     <string name="blocked_sensor_summary" msgid="4443707628305027375">"アプリとサービス"</string>
     <string name="blocked_mic_summary" msgid="8960466941528458347">"緊急通報番号に発信したときは、マイクのデータが引き続き共有されることがあります。"</string>
     <string name="blocked_sensor_button_label" msgid="6742092634984289658">"変更"</string>
-    <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"セキュリティとプライバシー"</string>
-    <string name="safety_center_rescan_button" msgid="8047036829052958144">"スキャン"</string>
+    <string name="safety_center_dashboard_page_title" msgid="2810774008694315854">"セキュリティとプライバシー"</string>
+    <string name="safety_center_rescan_button" msgid="4517514567809409596">"デバイスをスキャン"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"閉じる"</string>
     <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"このアラートを閉じますか？"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_message" msgid="3775418736671093563">"セキュリティとプライバシーの設定を適宜確認し、保護を強化しましょう"</string>
     <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"閉じる"</string>
     <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"キャンセル"</string>
     <string name="safety_center_entries_category_title" msgid="34356964062813115">"設定"</string>
+    <string name="safety_status_preference_title_and_summary_content_description" msgid="3511373256505058464">"セキュリティとプライバシーのステータス: <xliff:g id="OVERALL_SAFETY_STATUS">%1$s</xliff:g>。<xliff:g id="SUMMARY_OF_DEVICE_STATUS">%2$s</xliff:g>"</string>
     <string name="security_settings" msgid="3808106921175271317">"セキュリティ設定"</string>
-    <string name="sensor_permissions_qs" msgid="4365989229426201877">"センサーの権限"</string>
-    <string name="privacy_controls_qs" msgid="471793881466080745">"プライバシー管理"</string>
+    <string name="sensor_permissions_qs" msgid="1022267900031317472">"権限"</string>
+    <string name="safety_privacy_qs_tile_title" msgid="727301867710374052">"セキュリティとプライバシー"</string>
+    <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"ステータスを確認する"</string>
+    <string name="privacy_controls_qs" msgid="5780144882040591169">"プライバシー管理"</string>
+    <string name="security_settings_button_label_qs" msgid="8280343822465962330">"その他の設定"</string>
+    <string name="camera_toggle_label_qs" msgid="3880261453066157285">"カメラへのアクセス"</string>
+    <string name="microphone_toggle_label_qs" msgid="8132912469813396552">"マイクへのアクセス"</string>
     <string name="permissions_removed_qs" msgid="8957319130625294572">"権限が削除されました"</string>
-    <string name="camera_usage_qs" msgid="7943349178368641820">"カメラの使用状況の詳細"</string>
-    <string name="microphone_usage_qs" msgid="2393193350541830472">"マイクの使用状況の詳細"</string>
-    <string name="remove_camera_qs" msgid="8209716677879809162">"カメラの権限を削除"</string>
-    <string name="remove_microphone_qs" msgid="2893536836641560183">"マイクの権限を削除"</string>
+    <string name="camera_usage_qs" msgid="4394233566086665994">"最近のカメラの使用状況を確認する"</string>
+    <string name="microphone_usage_qs" msgid="8527666682168170417">"最近のマイクの使用状況を確認する"</string>
+    <string name="remove_camera_qs" msgid="3649996161066883350">"このアプリの権限を削除する"</string>
+    <string name="remove_microphone_qs" msgid="1276551965129953198">"このアプリの権限を削除する"</string>
     <string name="manage_service_qs" msgid="7862555549364153805">"サービスを管理"</string>
     <string name="manage_permissions_qs" msgid="3780541819763475434">"権限の管理"</string>
     <string name="active_call_usage_qs" msgid="8559974395932523391">"通話が使用中"</string>
@@ -527,8 +546,6 @@
     <string name="recent_app_usage_1_qs" msgid="261450184773310741">"<xliff:g id="APP_NAME">%1$s</xliff:g> が最近使用（<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g>）"</string>
     <string name="active_app_usage_2_qs" msgid="6107866785243565283">"<xliff:g id="APP_NAME">%1$s</xliff:g> が使用中（<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>）"</string>
     <string name="recent_app_usage_2_qs" msgid="3591205954235694403">"<xliff:g id="APP_NAME">%1$s</xliff:g> が最近使用（<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>）"</string>
-    <string name="safety_privacy_qs_tile_title" msgid="5431148204168066203">"セキュリティとプライバシー"</string>
-    <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"ステータスを確認する"</string>
     <string name="media_confirm_dialog_positive_button" msgid="9020793594051526399">"確認"</string>
     <string name="media_confirm_dialog_negative_button" msgid="226987376924861785">"戻る"</string>
     <string name="media_confirm_dialog_title_a_to_p_aural_allow" msgid="8560601114044699903">"他のファイルへのアクセスも許可されます"</string>
@@ -547,5 +564,20 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"このアプリは最新バージョンの Android に対応していません。このアプリが音楽ファイルや音声ファイルにアクセスできない場合は、写真や動画へのアクセスも許可されません。"</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"このアプリは最新バージョンの Android に対応していません。このアプリが写真や動画にアクセスできる場合は、音楽ファイルや音声ファイルへのアクセスも許可されます。"</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"このアプリは最新バージョンの Android に対応していません。このアプリが音楽ファイルや音声ファイルにアクセスできない場合は、写真や動画へのアクセスも許可されません。"</string>
-    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"閉じる"</string>
+    <string name="safety_center_background_location_access_notification_title" msgid="8933610618810588237">"バックグラウンドでの位置情報へのアクセス権があるアプリの確認"</string>
+    <string name="safety_center_background_location_access_reminder_notification_content" msgid="4066560182507301022">"<xliff:g id="APP_NAME">%s</xliff:g> は、閉じているときも、常に位置情報にアクセスできます"</string>
+    <string name="safety_center_background_location_access_reminder_title" msgid="5477847038103863843">"バックグラウンドでの位置情報へのアクセス権があるアプリの確認"</string>
+    <string name="safety_center_background_location_access_reminder_summary" msgid="8276755741395332974">"このアプリは、閉じているときも、常に位置情報にアクセスできます。"</string>
+    <string name="safety_center_background_location_access_revoked" msgid="6972274943343442213">"アクセス権を変更しました"</string>
+    <string name="safety_center_view_recent_location_access" msgid="3524391299490678243">"最近の位置情報の使用状況を確認"</string>
+    <string name="privacy_controls_title" msgid="7605929972256835199">"プライバシー管理"</string>
+    <string name="camera_toggle_title" msgid="1251201397431837666">"カメラへのアクセス"</string>
+    <string name="mic_toggle_title" msgid="2649991093496110162">"マイクへのアクセス"</string>
+    <string name="perm_toggle_description" msgid="7801326363741451379">"アプリとサービス"</string>
+    <string name="mic_toggle_description" msgid="9163104307990677157">"アプリとサービス。この設定が OFF の場合でも、緊急通報番号に発信するとマイクのデータが共有されることがあります。"</string>
+    <string name="location_settings_subtitle" msgid="2328360561197430695">"位置情報にアクセスできるアプリとサービスを確認"</string>
+    <string name="show_clip_access_notification_title" msgid="5168467637351109096">"クリップボードへのアクセスを表示"</string>
+    <string name="show_clip_access_notification_summary" msgid="3532020182782112687">"クリップボードにコピーしたテキストや画像などにアプリがアクセスすると、メッセージで通知する"</string>
+    <string name="show_password_title" msgid="2877269286984684659">"パスワードの表示"</string>
+    <string name="show_password_summary" msgid="1110166488865981610">"入力した文字を短い間表示する"</string>
 </resources>
