@@ -39,6 +39,7 @@ import com.android.safetycenter.config.SafetyCenterConfigParser;
 import com.android.safetycenter.resources.SafetyCenterResourcesContext;
 
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -142,6 +143,11 @@ final class SafetyCenterConfigReader {
         return getCurrentConfigInternal().getExternalSafetySources().containsKey(safetySourceId);
     }
 
+    /** Returns whether the {@link SafetyCenterConfig} is currently overridden. */
+    boolean isOverrideForTestsActive() {
+        return mConfigInternalOverrideForTests != null;
+    }
+
     /**
      * Returns the {@link Broadcast} defined in the {@link SafetyCenterConfig}, with all the sources
      * that they should handle and the profile on which they should be dispatched.
@@ -187,6 +193,20 @@ final class SafetyCenterConfigReader {
             Log.e(TAG, "Cannot read SafetyCenterConfig", e);
             return null;
         }
+    }
+
+    /**
+     * Dumps state for debugging purposes.
+     *
+     * @param fout {@link PrintWriter} to write to
+     */
+    void dump(@NonNull PrintWriter fout) {
+        fout.println("XML CONFIG");
+        fout.println("\t" + mConfigInternalFromXml);
+        fout.println();
+        fout.println("OVERRIDE CONFIG");
+        fout.println("\t" + mConfigInternalOverrideForTests);
+        fout.println();
     }
 
     /** A wrapper class around the parsed XML config. */
@@ -456,9 +476,9 @@ final class SafetyCenterConfigReader {
         @Override
         public String toString() {
             return "Broadcast{"
-                    + "mPackageName="
+                    + "mPackageName='"
                     + mPackageName
-                    + ", mSourceIdsForProfileParent="
+                    + "', mSourceIdsForProfileParent="
                     + mSourceIdsForProfileParent
                     + ", mSourceIdsForProfileParentOnPageOpen="
                     + mSourceIdsForProfileParentOnPageOpen

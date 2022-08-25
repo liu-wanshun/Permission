@@ -16,8 +16,6 @@
 
 package com.android.safetycenter.persistence
 
-import android.os.Build.VERSION_CODES.TIRAMISU
-import androidx.test.filters.SdkSuppress
 import com.android.safetycenter.persistence.PersistenceConstants.PATH
 import com.google.common.truth.Truth.assertThat
 import java.io.File
@@ -27,7 +25,6 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
 @RunWith(Parameterized::class)
-@SdkSuppress(minSdkVersion = TIRAMISU, codeName = "Tiramisu")
 class SafetyCenterIssuesPersistenceInvalidTest {
 
     data class Params(
@@ -47,7 +44,7 @@ class SafetyCenterIssuesPersistenceInvalidTest {
 
         val thrown =
             assertThrows(PersistenceException::class.java) {
-                SafetyCenterIssuesPersistence.readForUser(file)
+                SafetyCenterIssuesPersistence.read(file)
             }
 
         assertThat(thrown).hasMessageThat().isEqualTo(params.errorMessage)
@@ -82,6 +79,21 @@ class SafetyCenterIssuesPersistenceInvalidTest {
                     "Unexpected extra root element",
                     null),
                 Params(
+                    "InconsistentDismissCount",
+                    "invalid_file_inconsistent_dismiss_count.xml",
+                    "Element issue invalid",
+                    "dismissCount cannot be 0 if dismissedAt is present"),
+                Params(
+                    "InconsistentDismissedAt",
+                    "invalid_file_inconsistent_dismissed_at.xml",
+                    "Element issue invalid",
+                    "dismissedAt must be present if dismissCount is greater than 0"),
+                Params(
+                    "InvalidDismissCount",
+                    "invalid_file_invalid_dismiss_count.xml",
+                    "Attribute value \"NaN\" for dismiss_count invalid",
+                    null),
+                Params(
                     "InvalidDismissedAt",
                     "invalid_file_invalid_dismissed_at.xml",
                     "Attribute value \"NaN\" for dismissed_at_epoch_millis invalid",
@@ -100,21 +112,18 @@ class SafetyCenterIssuesPersistenceInvalidTest {
                     "MissingFirstSeenAt",
                     "invalid_file_missing_first_seen_at.xml",
                     "Element issue invalid",
-                    "Required attribute first seen at missing"),
+                    "Required attribute firstSeenAt missing"),
                 Params(
-                    "MissingIssueId",
-                    "invalid_file_missing_issue_id.xml",
+                    "MissingKey",
+                    "invalid_file_missing_key.xml",
                     "Element issue invalid",
-                    "Required attribute issue id missing"),
+                    "Required attribute key missing"),
                 Params(
-                    "MissingSourceId",
-                    "invalid_file_missing_source_id.xml",
-                    "Element issue invalid",
-                    "Required attribute source id missing"),
+                    "MissingVersion", "invalid_file_missing_version.xml", "Missing version", null),
                 Params(
-                    "MissingVersion",
-                    "invalid_file_missing_version.xml",
-                    "Missing version",
+                    "NegativeDismissCount",
+                    "invalid_file_negative_dismiss_count.xml",
+                    "Attribute value \"-1\" for dismiss_count invalid",
                     null),
                 Params("WrongRoot", "invalid_file_wrong_root.xml", "Element issues missing", null),
                 Params(

@@ -38,10 +38,18 @@ import com.google.common.util.concurrent.MoreExecutors.directExecutor
 class SafetyCenterCtsHelper(private val context: Context) {
 
     private val safetyCenterManager = context.getSystemService(SafetyCenterManager::class.java)!!
-    private val safetyCenterFlagsSnapshot = SafetyCenterFlags.snapshot
     private val listeners = mutableListOf<SafetyCenterCtsListener>()
 
     private var currentConfigContainsCtsSource = false
+
+    /**
+     * Sets up the state of Safety Center by enabling it on the device and setting default flag
+     * values. To be called before each test.
+     */
+    fun setup() {
+        SafetyCenterFlags.setup()
+        setEnabled(true)
+    }
 
     /** Resets the state of Safety Center. To be called after each test. */
     fun reset() {
@@ -114,8 +122,8 @@ class SafetyCenterCtsHelper(private val context: Context) {
     }
 
     private fun resetFlags() {
-        setEnabled(safetyCenterFlagsSnapshot.isSafetyCenterEnabled())
-        SafetyCenterFlags.reset(safetyCenterFlagsSnapshot)
+        setEnabled(SafetyCenterFlags.snapshot.isSafetyCenterEnabled())
+        SafetyCenterFlags.reset()
     }
 
     private fun setEnabledWaitingForBroadcastIdle(value: Boolean) {

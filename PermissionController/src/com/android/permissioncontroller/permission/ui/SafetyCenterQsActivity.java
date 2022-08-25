@@ -16,8 +16,7 @@
 
 package com.android.permissioncontroller.permission.ui;
 
-import static com.android.permissioncontroller.Constants.INVALID_SESSION_ID;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.permission.PermissionGroupUsage;
 import android.permission.PermissionManager;
@@ -25,15 +24,10 @@ import android.permission.PermissionManager;
 import androidx.fragment.app.FragmentActivity;
 
 import com.android.modules.utils.build.SdkLevel;
-import com.android.permissioncontroller.Constants;
 import com.android.permissioncontroller.permission.ui.handheld.v33.SafetyCenterQsFragment;
+import com.android.permissioncontroller.permission.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-/**
- * Activity for the Safety Center Quick Settings Activity
- */
+/** Activity for the Safety Center Quick Settings Activity */
 public class SafetyCenterQsActivity extends FragmentActivity {
 
     @Override
@@ -46,13 +40,28 @@ public class SafetyCenterQsActivity extends FragmentActivity {
             return;
         }
 
-        long sessionId = getIntent().getLongExtra(Constants.EXTRA_SESSION_ID, INVALID_SESSION_ID);
-        while (sessionId == INVALID_SESSION_ID) {
-            sessionId = new Random().nextLong();
-        }
-        ArrayList<PermissionGroupUsage> permissionUsages = getIntent().getParcelableArrayListExtra(
-                PermissionManager.EXTRA_PERMISSION_USAGES);
-        getSupportFragmentManager().beginTransaction().replace(android.R.id.content,
-                SafetyCenterQsFragment.newInstance(sessionId, permissionUsages)).commit();
+        configureFragment();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        configureFragment();
+    }
+
+    @SuppressWarnings("NewApi") // Before T, activity finishes before this is called
+    private void configureFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(
+                        android.R.id.content,
+                        SafetyCenterQsFragment.newInstance(
+                                Utils.getOrGenerateSessionId(getIntent()),
+                                getIntent()
+                                        .getParcelableArrayListExtra(
+                                                PermissionManager.EXTRA_PERMISSION_USAGES,
+                                                PermissionGroupUsage.class)))
+                .commit();
     }
 }

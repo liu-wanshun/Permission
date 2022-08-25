@@ -55,6 +55,14 @@ import static com.android.permissioncontroller.Constants.PREFERENCES_FILE;
 import static com.android.permissioncontroller.PermissionControllerStatsLog.LOCATION_ACCESS_CHECK_NOTIFICATION_ACTION;
 import static com.android.permissioncontroller.PermissionControllerStatsLog.LOCATION_ACCESS_CHECK_NOTIFICATION_ACTION__RESULT__NOTIFICATION_DECLINED;
 import static com.android.permissioncontroller.PermissionControllerStatsLog.LOCATION_ACCESS_CHECK_NOTIFICATION_ACTION__RESULT__NOTIFICATION_PRESENTED;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__ACTION__CARD_DISMISSED;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__ACTION__CLICKED_CTA1;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__PRIVACY_SOURCE__BG_LOCATION;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_NOTIFICATION_INTERACTION;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__ACTION__DISMISSED;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__ACTION__NOTIFICATION_SHOWN;
+import static com.android.permissioncontroller.PermissionControllerStatsLog.PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__PRIVACY_SOURCE__BG_LOCATION;
 import static com.android.permissioncontroller.permission.utils.Utils.OS_PKG;
 import static com.android.permissioncontroller.permission.utils.Utils.getParcelableExtraSafe;
 import static com.android.permissioncontroller.permission.utils.Utils.getParentUserContext;
@@ -132,7 +140,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 /**
  * Show notification that double-guesses the user if she/he really wants to grant fine background
@@ -170,13 +180,6 @@ public class LocationAccessCheck {
      **/
     public static final String PROPERTY_LOCATION_ACCESS_PERIODIC_INTERVAL_MILLIS =
             "location_access_check_periodic_interval_millis";
-
-    /**
-     * Device config property for time period in milliseconds after which background location
-     * access notification is sent again
-     **/
-    public static final String PROPERTY_BACKGROUND_LOCATION_RENOTIFY_DURATION_MILLIS =
-            "background_location_renotify_interval_millis";
 
     /**
      * Device config property for flag that determines whether location check for safety center
@@ -255,63 +258,42 @@ public class LocationAccessCheck {
     }
 
     /**
-     * Time after which the user is renotified about a package's background location access
-     * <p>
-     * Default 90 days
-     *
-     * @return The renotification interval in milliseconds
-     */
-    private long getRenotifyDelayMillis() {
-        return DeviceConfig.getLong(DeviceConfig.NAMESPACE_PRIVACY,
-                PROPERTY_BACKGROUND_LOCATION_RENOTIFY_DURATION_MILLIS,
-                DEFAULT_RENOTIFY_DURATION_MILLIS);
-    }
-
-    /**
      * Load the list of {@link UserPackage packages} we already shown a notification for.
      *
      * @return The list of packages we already shown a notification for.
      */
     private @NonNull ArraySet<UserPackage> loadAlreadyNotifiedPackagesLocked() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                mContext.openFileInput(LOCATION_ACCESS_CHECK_ALREADY_NOTIFIED_FILE)))) {
+            mContext.openFileInput(LOCATION_ACCESS_CHECK_ALREADY_NOTIFIED_FILE)))) {
             ArraySet<UserPackage> packages = new ArraySet<>();
 
             /*
-             * The format of the file is <package> <serial of user> <notification timestamp>,
+             * The format of the file is <package> <serial of user> <dismissed in safety center>,
              * Since notification timestamp was added later it is possible that it might be
              * missing during the first check. We need to handle that.
              *
              * e.g.
-             * com.one.package 5630633845 12345678
-             * com.two.package 5630633853 12345679
-             * com.three.package 5630633853 12345680
+             * com.one.package 5630633845 true
+             * com.two.package 5630633853 false
+             * com.three.package 5630633853 false
              */
             while (true) {
                 String line = reader.readLine();
                 if (line == null) {
                     break;
                 }
-
                 String[] lineComponents = line.split(" ");
                 String pkg = lineComponents[0];
                 UserHandle user = mUserManager.getUserForSerialNumber(
                         Long.valueOf(lineComponents[1]));
-                boolean notificationTimestampAvailable = lineComponents.length == 3;
-                long notificationTimestamp =
-                        notificationTimestampAvailable ? Long.parseLong(
-                                lineComponents[2])
-                                : currentTimeMillis() - getRenotifyDelayMillis();
-                if (user != null && notifiedWithinInterval(notificationTimestamp)) {
+                boolean dismissedInSafetyCenter = lineComponents.length == 3
+                        ? Boolean.valueOf(lineComponents[2]) : false;
+                if (user != null) {
                     UserPackage userPkg = new UserPackage(mContext, pkg, user,
-                            notificationTimestamp);
+                            dismissedInSafetyCenter);
                     packages.add(userPkg);
                 } else {
-                    if (user == null) {
-                        Log.i(LOG_TAG, "Not restoring state \"" + line + "\" as user is unknown");
-                    } else {
-                        Log.i(LOG_TAG, "Renotifying about  \"" + line);
-                    }
+                    Log.i(LOG_TAG, "Not restoring state \"" + line + "\" as user is unknown");
                 }
             }
             return packages;
@@ -321,11 +303,6 @@ public class LocationAccessCheck {
             Log.w(LOG_TAG, "Could not read " + LOCATION_ACCESS_CHECK_ALREADY_NOTIFIED_FILE, e);
             return new ArraySet<>();
         }
-    }
-
-    private boolean notifiedWithinInterval(long notificationTimestamp) {
-        return currentTimeMillis() - notificationTimestamp
-                < getRenotifyDelayMillis();
     }
 
     /**
@@ -338,11 +315,11 @@ public class LocationAccessCheck {
                 mContext.openFileOutput(LOCATION_ACCESS_CHECK_ALREADY_NOTIFIED_FILE,
                         MODE_PRIVATE)))) {
             /*
-             * The format of the file is <package> <serial of user> <notification timestamp>, e.g.
-             *
-             * com.one.package 5630633845 12345678
-             * com.two.package 5630633853 12345679
-             * com.three.package 5630633853 12345680
+             * The format of the file is <package> <serial of user> <dismissed in safety center>,
+             * e.g.
+             * com.one.package 5630633845 true
+             * com.two.package 5630633853 false
+             * com.three.package 5630633853 false
              */
             int numPkgs = packages.size();
             for (int i = 0; i < numPkgs; i++) {
@@ -352,7 +329,7 @@ public class LocationAccessCheck {
                 writer.append(
                         Long.valueOf(mUserManager.getSerialNumberForUser(userPkg.user)).toString());
                 writer.append(' ');
-                writer.append(Long.toString(userPkg.notificationTimestamp));
+                writer.append(Boolean.toString(userPkg.dismissedInSafetyCenter));
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -363,13 +340,17 @@ public class LocationAccessCheck {
     /**
      * Remember that we showed a notification for a {@link UserPackage}
      *
-     * @param pkg  The package we notified for
-     * @param user The user we notified for
+     * @param pkg                     The package we notified for
+     * @param user                    The user we notified for
+     * @param dismissedInSafetyCenter Whether this warning was dismissed by the user in safety
+     *                                center
      */
-    private void markAsNotified(@NonNull String pkg, @NonNull UserHandle user) {
+    private void markAsNotified(@NonNull String pkg, @NonNull UserHandle user,
+            boolean dismissedInSafetyCenter) {
         synchronized (sLock) {
             ArraySet<UserPackage> alreadyNotifiedPackages = loadAlreadyNotifiedPackagesLocked();
-            alreadyNotifiedPackages.add(new UserPackage(mContext, pkg, user, currentTimeMillis()));
+            alreadyNotifiedPackages.add(
+                    new UserPackage(mContext, pkg, user, dismissedInSafetyCenter));
             persistAlreadyNotifiedPackagesLocked(alreadyNotifiedPackages);
         }
     }
@@ -461,13 +442,15 @@ public class LocationAccessCheck {
             throws InterruptedException {
         synchronized (sLock) {
             List<UserPackage> packages = getLocationUsersLocked(ops);
+            ArraySet<UserPackage> alreadyNotifiedPackages = loadAlreadyNotifiedPackagesLocked();
+            throwInterruptedExceptionIfTaskIsCanceled();
             // Send these issues to safety center
             if (isSafetyCenterBgLocationReminderEnabled()) {
                 SafetyEvent safetyEvent = new SafetyEvent.Builder(
                         SafetyEvent.SAFETY_EVENT_TYPE_SOURCE_STATE_CHANGED).build();
-                sendToSafetyCenter(packages, safetyEvent);
+                sendToSafetyCenter(packages, safetyEvent, null, alreadyNotifiedPackages);
             }
-            filterAlreadyNotifiedPackagesLocked(packages);
+            filterAlreadyNotifiedPackagesLocked(packages, alreadyNotifiedPackages);
 
             // Get a random package and resolve package info
             PackageInfo pkgInfo = null;
@@ -539,7 +522,7 @@ public class LocationAccessCheck {
                 continue;
             }
 
-            UserPackage userPkg = new UserPackage(mContext, pkg, user, null);
+            UserPackage userPkg = new UserPackage(mContext, pkg, user, false);
             AppPermissionGroup bgLocationGroup = userPkg.getBackgroundLocationGroup();
             // Do not show notification that do not request the background permission anymore
             if (bgLocationGroup == null) {
@@ -596,9 +579,8 @@ public class LocationAccessCheck {
     }
 
     private void filterAlreadyNotifiedPackagesLocked(
-            @NonNull List<UserPackage> pkgsWithLocationAccess) throws InterruptedException {
-        ArraySet<UserPackage> alreadyNotifiedPkgs = loadAlreadyNotifiedPackagesLocked();
-        throwInterruptedExceptionIfTaskIsCanceled();
+            @NonNull List<UserPackage> pkgsWithLocationAccess,
+            @NonNull ArraySet<UserPackage> alreadyNotifiedPkgs) throws InterruptedException {
         resetAlreadyNotifiedPackagesWithoutPermissionLocked(alreadyNotifiedPkgs);
         pkgsWithLocationAccess.removeAll(alreadyNotifiedPkgs);
     }
@@ -678,9 +660,9 @@ public class LocationAccessCheck {
         int smallIconResId;
         int colorResId = android.R.color.system_notification_accent_color;
         if (safetyCenterBgLocationReminderEnabled) {
-            String pbaLabel = mContext.getString(android.R.string.safety_protection_display_text);
-            if (pbaLabel.length() > 0) {
-                appLabel = Html.fromHtml(pbaLabel, 0);
+            if (KotlinUtils.INSTANCE.shouldShowSafetyProtectionResources(mContext)) {
+                appLabel = Html.fromHtml(
+                    mContext.getString(android.R.string.safety_protection_display_text), 0);
                 smallIconResId = android.R.drawable.ic_safety_protection;
                 colorResId = R.color.safety_center_info;
             } else {
@@ -699,8 +681,8 @@ public class LocationAccessCheck {
                 .setStyle(new Notification.BigTextStyle().bigText(notificationContent))
                 .setSmallIcon(smallIconResId)
                 .setColor(mContext.getColor(colorResId))
-                .setDeleteIntent(createDismissIntent(pkgName, sessionId, uid))
-                .setContentIntent(createNotificationClickIntent(pkgName, user, sessionId))
+                .setDeleteIntent(createNotificationDismissIntent(pkgName, sessionId, uid))
+                .setContentIntent(createNotificationClickIntent(pkgName, user, sessionId, uid))
                 .setAutoCancel(true);
 
         if (!safetyCenterBgLocationReminderEnabled) {
@@ -722,15 +704,24 @@ public class LocationAccessCheck {
         }
 
         notificationManager.notify(pkgName, LOCATION_ACCESS_CHECK_NOTIFICATION_ID, b.build());
-        markAsNotified(pkgName, user);
+        markAsNotified(pkgName, user, false);
 
         if (DEBUG) Log.i(LOG_TAG, "Notified " + pkgName);
 
-        PermissionControllerStatsLog.write(LOCATION_ACCESS_CHECK_NOTIFICATION_ACTION, sessionId,
-                pkg.applicationInfo.uid, pkgName,
-                LOCATION_ACCESS_CHECK_NOTIFICATION_ACTION__RESULT__NOTIFICATION_PRESENTED);
         Log.v(LOG_TAG, "Location access check notification shown with sessionId=" + sessionId + ""
                 + " uid=" + pkg.applicationInfo.uid + " pkgName=" + pkgName);
+        if (safetyCenterBgLocationReminderEnabled) {
+            PermissionControllerStatsLog.write(
+                    PRIVACY_SIGNAL_NOTIFICATION_INTERACTION,
+                    PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__PRIVACY_SOURCE__BG_LOCATION,
+                    uid,
+                    PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__ACTION__NOTIFICATION_SHOWN,
+                    sessionId);
+        } else {
+            PermissionControllerStatsLog.write(LOCATION_ACCESS_CHECK_NOTIFICATION_ACTION, sessionId,
+                    pkg.applicationInfo.uid, pkgName,
+                    LOCATION_ACCESS_CHECK_NOTIFICATION_ACTION__RESULT__NOTIFICATION_PRESENTED);
+        }
 
         mSharedPrefs.edit().putLong(KEY_LAST_LOCATION_ACCESS_NOTIFICATION_SHOWN,
                 currentTimeMillis()).apply();
@@ -811,7 +802,7 @@ public class LocationAccessCheck {
             }
 
             ArraySet<UserPackage> packages = loadAlreadyNotifiedPackagesLocked();
-            packages.remove(new UserPackage(mContext, pkg, user, currentTimeMillis()));
+            packages.remove(new UserPackage(mContext, pkg, user, false));
             persistAlreadyNotifiedPackagesLocked(packages);
         }
     }
@@ -870,21 +861,49 @@ public class LocationAccessCheck {
 
         return DeviceConfig.getBoolean(
                 DeviceConfig.NAMESPACE_PRIVACY,
-                PROPERTY_BG_LOCATION_CHECK_ENABLED, false)
+                PROPERTY_BG_LOCATION_CHECK_ENABLED, true)
                 && getSystemServiceSafe(mContext,
                 SafetyCenterManager.class).isSafetyCenterEnabled();
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private void sendToSafetyCenter(List<UserPackage> userPackages, SafetyEvent safetyEvent) {
+    private void sendToSafetyCenter(List<UserPackage> userPackages, SafetyEvent safetyEvent,
+            @Nullable UserPackage userPackage,
+            @Nullable ArraySet<UserPackage> alreadyNotifiedPackages) {
         try {
+            Set<UserPackage> alreadyDismissedPackages =
+                    getAlreadyDismissedPackages(alreadyNotifiedPackages);
+
+            // Filter out packages already dismissed by the user in safety center
+            List<UserPackage> filteredPackages = userPackages.stream().filter(
+                    pkg -> !alreadyDismissedPackages.contains(pkg)).collect(
+                    Collectors.toList());
+
             Map<UserHandle, List<UserPackage>> userHandleToUserPackagesMap =
-                    splitUserPackageByUserHandle(userPackages);
-            userHandleToUserPackagesMap.forEach(
-                    (userHandle, packages) -> sendUserDataToSafetyCenter(packages, safetyEvent));
+                    splitUserPackageByUserHandle(filteredPackages);
+            if (userPackage == null) {
+                userHandleToUserPackagesMap.forEach(
+                        (userHandle, packages) -> sendUserDataToSafetyCenter(packages,
+                                safetyEvent, null));
+            } else {
+                sendUserDataToSafetyCenter(
+                        userHandleToUserPackagesMap.getOrDefault(userPackage.user,
+                                new ArrayList<>()), safetyEvent, userPackage);
+            }
+
         } catch (Exception e) {
             Log.e(LOG_TAG, "Could not send to safety center", e);
         }
+    }
+
+    private Set<UserPackage> getAlreadyDismissedPackages(
+            @Nullable ArraySet<UserPackage> alreadyNotifiedPackages) {
+        if (alreadyNotifiedPackages == null) {
+            alreadyNotifiedPackages = loadAlreadyNotifiedPackagesLocked();
+        }
+        return alreadyNotifiedPackages.stream().filter(
+                pkg -> pkg.dismissedInSafetyCenter).collect(
+                Collectors.toSet());
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -902,14 +921,14 @@ public class LocationAccessCheck {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private void sendUserDataToSafetyCenter(List<UserPackage> userPackages,
-            SafetyEvent safetyEvent) {
-        Context userContext = null;
+            SafetyEvent safetyEvent, @Nullable UserPackage userPackage) {
+        Context userContext = userPackage == null ? null : userPackage.mContext;
         SafetySourceData.Builder safetySourceDataBuilder = new SafetySourceData.Builder();
-        for (UserPackage userPackage : userPackages) {
+        for (UserPackage userPkg : userPackages) {
             if (userContext == null) {
-                userContext = userPackage.mContext;
+                userContext = userPkg.mContext;
             }
-            SafetySourceIssue sourceIssue = createSafetySourceIssue(userPackage);
+            SafetySourceIssue sourceIssue = createSafetySourceIssue(userPkg);
             if (sourceIssue != null) {
                 safetySourceDataBuilder.addIssue(sourceIssue);
             }
@@ -929,7 +948,7 @@ public class LocationAccessCheck {
         try {
             pkgInfo = userPackage.getPackageInfo();
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(LOG_TAG, "Could not get package info for " + userPackage.toString(), e);
+            Log.e(LOG_TAG, "Could not get package info for " + userPackage, e);
             return null;
         }
 
@@ -938,11 +957,15 @@ public class LocationAccessCheck {
             sessionId = new Random().nextLong();
         }
 
+        int uid = pkgInfo.applicationInfo.uid;
+
         Intent primaryActionIntent = new Intent(mContext, SafetyCenterPrimaryActionHandler.class);
         primaryActionIntent.putExtra(EXTRA_PACKAGE_NAME, userPackage.pkg);
         primaryActionIntent.putExtra(EXTRA_USER, userPackage.user);
+        primaryActionIntent.putExtra(EXTRA_UID, uid);
+        primaryActionIntent.putExtra(EXTRA_SESSION_ID, sessionId);
         primaryActionIntent.setFlags(FLAG_RECEIVER_FOREGROUND);
-        primaryActionIntent.setIdentifier(userPackage.pkg);
+        primaryActionIntent.setIdentifier(userPackage.pkg + userPackage.user);
 
         PendingIntent revokeIntent = PendingIntent.getBroadcast(mContext, 0,
                 primaryActionIntent,
@@ -969,18 +992,24 @@ public class LocationAccessCheck {
 
         CharSequence pkgLabel = mPackageManager.getApplicationLabel(pkgInfo.applicationInfo);
 
-        SafetySourceIssue.Builder b = new SafetySourceIssue.Builder(id, mContext.getString(
-                R.string.safety_center_background_location_access_reminder_title),
+        return new SafetySourceIssue.Builder(
+                id,
+                mContext.getString(
+                        R.string.safety_center_background_location_access_reminder_title),
                 mContext.getString(
                         R.string.safety_center_background_location_access_reminder_summary),
-                SafetySourceData.SEVERITY_LEVEL_INFORMATION, id).setSubtitle(
-                pkgLabel).addAction(revokeAction).addAction(
-                viewLocationUsageAction).setOnDismissPendingIntent(
-                createDismissIntent(pkgName, sessionId, pkgInfo.applicationInfo.uid));
-        return b.build();
+                SafetySourceData.SEVERITY_LEVEL_INFORMATION,
+                id)
+                .setSubtitle(pkgLabel)
+                .addAction(revokeAction)
+                .addAction(viewLocationUsageAction)
+                .setOnDismissPendingIntent(
+                        createWarningCardDismissalIntent(pkgName, sessionId, uid))
+                .setIssueCategory(SafetySourceIssue.ISSUE_CATEGORY_DEVICE)
+                .build();
     }
 
-    private PendingIntent createDismissIntent(String pkgName, long sessionId, int uid) {
+    private PendingIntent createNotificationDismissIntent(String pkgName, long sessionId, int uid) {
         Intent dismissIntent = new Intent(mContext, NotificationDeleteHandler.class);
         dismissIntent.putExtra(EXTRA_PACKAGE_NAME, pkgName);
         dismissIntent.putExtra(EXTRA_SESSION_ID, sessionId);
@@ -992,19 +1021,32 @@ public class LocationAccessCheck {
     }
 
     private PendingIntent createNotificationClickIntent(String pkg, UserHandle user,
-            long sessionId) {
+            long sessionId, int uid) {
         Intent clickIntent = null;
         if (isSafetyCenterBgLocationReminderEnabled()) {
             clickIntent = new Intent(ACTION_SAFETY_CENTER);
         } else {
             clickIntent = new Intent(ACTION_MANAGE_APP_PERMISSION);
             clickIntent.putExtra(EXTRA_PERMISSION_GROUP_NAME, LOCATION);
-            clickIntent.putExtra(EXTRA_PACKAGE_NAME, pkg);
-            clickIntent.putExtra(EXTRA_USER, user);
-            clickIntent.putExtra(EXTRA_SESSION_ID, sessionId);
         }
+        clickIntent.putExtra(EXTRA_PACKAGE_NAME, pkg);
+        clickIntent.putExtra(EXTRA_USER, user);
+        clickIntent.putExtra(EXTRA_SESSION_ID, sessionId);
+        clickIntent.putExtra(EXTRA_UID, uid);
         clickIntent.addFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_MULTIPLE_TASK);
         return PendingIntent.getActivity(mContext, 0, clickIntent,
+                FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
+    }
+
+    private PendingIntent createWarningCardDismissalIntent(String pkgName, long sessionId,
+            int uid) {
+        Intent dismissIntent = new Intent(mContext, WarningCardDismissalHandler.class);
+        dismissIntent.putExtra(EXTRA_PACKAGE_NAME, pkgName);
+        dismissIntent.putExtra(EXTRA_SESSION_ID, sessionId);
+        dismissIntent.putExtra(EXTRA_UID, uid);
+        dismissIntent.putExtra(EXTRA_USER, getUserHandleForUid(uid));
+        dismissIntent.setFlags(FLAG_RECEIVER_FOREGROUND);
+        return PendingIntent.getBroadcast(mContext, 0, dismissIntent,
                 FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
@@ -1024,16 +1066,18 @@ public class LocationAccessCheck {
      * Query for packages having background location access and push to safety center
      *
      * @param safetyEvent Safety event for which data is being pushed
+     * @param userPackage Optional, if supplied only push safety center data for the user supplied
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    public void rescanAndPushSafetyCenterData(SafetyEvent safetyEvent) {
+    public void rescanAndPushSafetyCenterData(SafetyEvent safetyEvent,
+            @Nullable UserPackage userPackage) {
         if (!isSafetyCenterBgLocationReminderEnabled()) {
             return;
         }
         try {
             List<UserPackage> packages = getLocationUsersLocked(mAppOpsManager.getPackagesForOps(
                     new String[]{OPSTR_FINE_LOCATION}));
-            sendToSafetyCenter(packages, safetyEvent);
+            sendToSafetyCenter(packages, safetyEvent, userPackage, null);
         } catch (InterruptedException e) {
             Log.e(LOG_TAG, "Couldn't get ops for location");
         }
@@ -1170,16 +1214,28 @@ public class LocationAccessCheck {
             String pkg = getStringExtraSafe(intent, EXTRA_PACKAGE_NAME);
             UserHandle user = getParcelableExtraSafe(intent, EXTRA_USER);
             long sessionId = intent.getLongExtra(EXTRA_SESSION_ID, INVALID_SESSION_ID);
-            int uid = intent.getIntExtra(EXTRA_UID, 0);
+            int uid = intent.getIntExtra(EXTRA_UID, -1);
 
-            PermissionControllerStatsLog.write(LOCATION_ACCESS_CHECK_NOTIFICATION_ACTION, sessionId,
-                    uid, pkg,
-                    LOCATION_ACCESS_CHECK_NOTIFICATION_ACTION__RESULT__NOTIFICATION_DECLINED);
             Log.v(LOG_TAG,
                     "Location access check notification declined with sessionId=" + sessionId + ""
                             + " uid=" + uid + " pkgName=" + pkg);
+            LocationAccessCheck locationAccessCheck = new LocationAccessCheck(context, null);
 
-            new LocationAccessCheck(context, null).markAsNotified(pkg, user);
+            if (locationAccessCheck.isSafetyCenterBgLocationReminderEnabled()) {
+                PermissionControllerStatsLog.write(
+                        PRIVACY_SIGNAL_NOTIFICATION_INTERACTION,
+                        PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__PRIVACY_SOURCE__BG_LOCATION,
+                        uid,
+                        PRIVACY_SIGNAL_NOTIFICATION_INTERACTION__ACTION__DISMISSED,
+                        sessionId
+                );
+            } else {
+                PermissionControllerStatsLog.write(LOCATION_ACCESS_CHECK_NOTIFICATION_ACTION,
+                        sessionId,
+                        uid, pkg,
+                        LOCATION_ACCESS_CHECK_NOTIFICATION_ACTION__RESULT__NOTIFICATION_DECLINED);
+            }
+            locationAccessCheck.markAsNotified(pkg, user, false);
         }
     }
 
@@ -1192,7 +1248,9 @@ public class LocationAccessCheck {
         public void onReceive(Context context, Intent intent) {
             String packageName = getStringExtraSafe(intent, EXTRA_PACKAGE_NAME);
             UserHandle user = getParcelableExtraSafe(intent, EXTRA_USER);
-            int uid = intent.getIntExtra(EXTRA_UID, 0);
+            int uid = intent.getIntExtra(EXTRA_UID, -1);
+            long sessionId = intent.getLongExtra(EXTRA_SESSION_ID, INVALID_SESSION_ID);
+            UserPackage userPackage = new UserPackage(context, packageName, user, false);
             // Revoke bg location permission and notify safety center
             KotlinUtils.INSTANCE.revokeBackgroundRuntimePermissions(context, packageName, LOCATION,
                     user, () -> {
@@ -1203,8 +1261,15 @@ public class LocationAccessCheck {
                                                 createSafetySourceIssueId(packageName))
                                         .setSafetySourceIssueActionId(
                                                 createLocationRevokeActionId(packageName))
-                                        .build());
+                                        .build(), userPackage);
                     });
+            PermissionControllerStatsLog.write(
+                    PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION,
+                    PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__PRIVACY_SOURCE__BG_LOCATION,
+                    uid,
+                    PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__ACTION__CLICKED_CTA1,
+                    sessionId
+            );
         }
     }
 
@@ -1214,6 +1279,33 @@ public class LocationAccessCheck {
 
     private static String createLocationRevokeActionId(String packageName) {
         return REVOKE_LOCATION_ACCESS_ID_PREFIX + packageName;
+    }
+
+    /**
+     * Handle the case where the warning card is dismissed by the user in Safety center
+     */
+    public static class WarningCardDismissalHandler extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String pkg = getStringExtraSafe(intent, EXTRA_PACKAGE_NAME);
+            UserHandle user = getParcelableExtraSafe(intent, EXTRA_USER);
+            long sessionId = intent.getLongExtra(EXTRA_SESSION_ID, INVALID_SESSION_ID);
+            int uid = intent.getIntExtra(EXTRA_UID, -1);
+            Log.v(LOG_TAG,
+                    "Location access check warning card dismissed with sessionId=" + sessionId + ""
+                            + " uid=" + uid + " pkgName=" + pkg);
+            PermissionControllerStatsLog.write(
+                    PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION,
+                    PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__PRIVACY_SOURCE__BG_LOCATION,
+                    uid,
+                    PRIVACY_SIGNAL_ISSUE_CARD_INTERACTION__ACTION__CARD_DISMISSED,
+                    sessionId
+            );
+
+            LocationAccessCheck locationAccessCheck = new LocationAccessCheck(context, null);
+            locationAccessCheck.markAsNotified(pkg, user, true);
+            locationAccessCheck.cancelBackgroundAccessWarningNotification(pkg, user);
+        }
     }
 
     /**
@@ -1233,11 +1325,13 @@ public class LocationAccessCheck {
             UserHandle user = getUserHandleForUid(intent.getIntExtra(EXTRA_UID, 0));
             if (DEBUG) Log.i(LOG_TAG, "Reset " + data.getSchemeSpecificPart());
             LocationAccessCheck locationAccessCheck = new LocationAccessCheck(context, null);
-            locationAccessCheck.forgetAboutPackage(data.getSchemeSpecificPart(), user);
+            String packageName =  data.getSchemeSpecificPart();
+            locationAccessCheck.forgetAboutPackage(packageName, user);
+            UserPackage userPackage = new UserPackage(context, packageName, user, false);
             if (locationAccessCheck.isSafetyCenterBgLocationReminderEnabled()) {
                 locationAccessCheck.rescanAndPushSafetyCenterData(
                         new SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_SOURCE_STATE_CHANGED)
-                                .build());
+                                .build(), userPackage);
             }
         }
     }
@@ -1250,7 +1344,7 @@ public class LocationAccessCheck {
 
         public final @NonNull String pkg;
         public final @NonNull UserHandle user;
-        public final @Nullable Long notificationTimestamp;
+        public final boolean dismissedInSafetyCenter;
 
         /**
          * Create a new {@link UserPackage}
@@ -1258,11 +1352,11 @@ public class LocationAccessCheck {
          * @param context               A context to be used by methods of this object
          * @param pkg                   The name of the package
          * @param user                  The user the package belongs to
-         * @param notificationTimestamp Optional timestamp recording when the notification was acted
-         *                              upon
+         * @param dismissedInSafetyCenter Optional boolean recording if the safety center
+         *                                       warning was dismissed by the user
          */
         UserPackage(@NonNull Context context, @NonNull String pkg, @NonNull UserHandle user,
-                @Nullable Long notificationTimestamp) {
+                boolean dismissedInSafetyCenter) {
             try {
                 mContext = context.createPackageContextAsUser(context.getPackageName(), 0, user);
             } catch (PackageManager.NameNotFoundException e) {
@@ -1271,7 +1365,7 @@ public class LocationAccessCheck {
 
             this.pkg = pkg;
             this.user = user;
-            this.notificationTimestamp = notificationTimestamp;
+            this.dismissedInSafetyCenter = dismissedInSafetyCenter;
         }
 
         /**
@@ -1338,7 +1432,7 @@ public class LocationAccessCheck {
             return "UserPackage { "
                     + "pkg = " + pkg + ", "
                     + "UserHandle = " + user.toString() + ", "
-                    + "NotificationTime = " + notificationTimestamp + " }";
+                    + "dismissedInSafetyCenter = " + dismissedInSafetyCenter + " }";
         }
     }
 }
