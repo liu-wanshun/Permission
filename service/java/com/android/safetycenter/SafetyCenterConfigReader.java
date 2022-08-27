@@ -143,6 +143,11 @@ final class SafetyCenterConfigReader {
         return getCurrentConfigInternal().getExternalSafetySources().containsKey(safetySourceId);
     }
 
+    /** Returns whether the {@link SafetyCenterConfig} is currently overridden. */
+    boolean isOverrideForTestsActive() {
+        return mConfigInternalOverrideForTests != null;
+    }
+
     /**
      * Returns the {@link Broadcast} defined in the {@link SafetyCenterConfig}, with all the sources
      * that they should handle and the profile on which they should be dispatched.
@@ -471,9 +476,9 @@ final class SafetyCenterConfigReader {
         @Override
         public String toString() {
             return "Broadcast{"
-                    + "mPackageName="
+                    + "mPackageName='"
                     + mPackageName
-                    + ", mSourceIdsForProfileParent="
+                    + "', mSourceIdsForProfileParent="
                     + mSourceIdsForProfileParent
                     + ", mSourceIdsForProfileParentOnPageOpen="
                     + mSourceIdsForProfileParentOnPageOpen

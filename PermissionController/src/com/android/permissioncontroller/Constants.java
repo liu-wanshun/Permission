@@ -70,6 +70,14 @@ public class Constants {
      */
     public static final int PERIODIC_ACCESSIBILITY_CHECK_JOB_ID = 6;
 
+    /**
+     * ID for Safety Centers delayed job scheduled after boot and after Safety Center is enabled
+     *
+     * @see
+     * com.android.permissioncontroller.safetycenter.service.SafetyCenterBackgroundRefreshJobService
+     */
+    public static final int SAFETY_CENTER_BACKGROUND_REFRESH_JOB_ID = 7;
+
 
     /**
      * Name of file to containing the packages we already showed a notification for.
@@ -78,14 +86,6 @@ public class Constants {
      */
     public static final String LOCATION_ACCESS_CHECK_ALREADY_NOTIFIED_FILE =
             "packages_already_notified_location_access";
-
-    /**
-     * Name of file to containing the packages we already showed a notification for.
-     *
-     * @see com.android.permissioncontroller.privacysources.NotificationListenerCheck
-     */
-    public static final String NOTIFICATION_LISTENER_CHECK_ALREADY_NOTIFIED_FILE =
-            "packages_already_notified_notification_listener";
 
     /**
      * Name of file to containing the packages we already showed a notification for.
