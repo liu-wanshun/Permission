@@ -26,6 +26,9 @@ import static java.util.Objects.requireNonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.safetycenter.SafetyCenterData;
 import android.safetycenter.SafetyCenterEntry;
@@ -61,6 +64,8 @@ import com.android.safetycenter.resources.SafetyCenterResourcesContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import kotlin.Unit;
 
 /** Dashboard fragment for the Safety Center. */
 @RequiresApi(TIRAMISU)
@@ -191,6 +196,17 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
 
         getPreferenceManager()
                 .setPreferenceComparisonCallback(new SafetyPreferenceComparisonCallback());
+    }
+
+    // Set the default divider line between preferences to be transparent
+    @Override
+    public void setDivider(Drawable divider) {
+        super.setDivider(new ColorDrawable(Color.TRANSPARENT));
+    }
+
+    @Override
+    public void setDividerHeight(int height) {
+        super.setDividerHeight(0);
     }
 
     @Override
@@ -324,8 +340,6 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
                 addGroupEntries(context, group, isFirstElement, isLastElement);
             }
         }
-
-        mCollapsableGroupCardHelper.updatePreferenceVisibility(mEntriesGroup);
     }
 
     private void addTopLevelEntry(
@@ -336,9 +350,8 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
         mEntriesGroup.addPreference(
                 new SafetyEntryPreference(
                         context,
-                        getTaskIdForEntry(entry),
+                        getTaskIdForEntry(entry.getId()),
                         entry,
-                        /* groupId */ null,
                         PositionInCardList.calculate(isFirstElement, isLastElement),
                         mViewModel));
     }
@@ -348,57 +361,23 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
             SafetyCenterEntryGroup group,
             boolean isFirstCard,
             boolean isLastCard) {
-        // adding collapsed group entry, which will be visible initially
         mEntriesGroup.addPreference(
-                new SafetyGroupHeaderEntryPreference(
+                new SafetyGroupPreference(
                         context,
                         group,
-                        isFirstCard
-                                ? isLastCard
-                                        ? PositionInCardList.LIST_START_END
-                                        : PositionInCardList.LIST_START_CARD_END
-                                : isLastCard
-                                        ? PositionInCardList.CARD_START_LIST_END
-                                        : PositionInCardList.CARD_START_END,
-                        /* isExpanded */ false,
-                        this::expandGroup));
-
-        // adding expanded group entry, which will be hidden initially
-        mEntriesGroup.addPreference(
-                new SafetyGroupHeaderEntryPreference(
-                        context,
-                        group,
-                        isFirstCard ? PositionInCardList.LIST_START : PositionInCardList.CARD_START,
-                        /* isExpanded */ true,
-                        this::collapseGroup));
-
-        // adding group entries, but they are will be hidden initially until group is expanded
-        List<SafetyCenterEntry> entries = group.getEntries();
-        for (int i = 0, last = entries.size() - 1; i <= last; i++) {
-            boolean isCardEnd = i == last;
-            boolean isListEnd = isLastCard && isCardEnd;
-            PositionInCardList positionInCardList =
-                    PositionInCardList.calculate(
-                            /* isListStart */ false, isListEnd, /* isCardStart */ false, isCardEnd);
-            mEntriesGroup.addPreference(
-                    new SafetyEntryPreference(
-                            context,
-                            getTaskIdForEntry(entries.get(i)),
-                            entries.get(i),
-                            group.getId(),
-                            positionInCardList,
-                            mViewModel));
-        }
-    }
-
-    private void expandGroup(String groupId) {
-        mCollapsableGroupCardHelper.expandGroup(groupId);
-        mCollapsableGroupCardHelper.updatePreferenceVisibility(mEntriesGroup);
-    }
-
-    private void collapseGroup(String groupId) {
-        mCollapsableGroupCardHelper.collapseGroup(groupId);
-        mCollapsableGroupCardHelper.updatePreferenceVisibility(mEntriesGroup);
+                        mCollapsableGroupCardHelper::isGroupExpanded,
+                        isFirstCard,
+                        isLastCard,
+                        this::getTaskIdForEntry,
+                        mViewModel,
+                        (groupId) -> {
+                            mCollapsableGroupCardHelper.onGroupExpanded(groupId);
+                            return Unit.INSTANCE;
+                        },
+                        (groupId) -> {
+                            mCollapsableGroupCardHelper.onGroupCollapsed(groupId);
+                            return Unit.INSTANCE;
+                        }));
     }
 
     private void updateStaticSafetyEntries(
@@ -418,8 +397,8 @@ public final class SafetyCenterDashboardFragment extends PreferenceFragmentCompa
         }
     }
 
-    private @Nullable Integer getTaskIdForEntry(SafetyCenterEntry entry) {
-        String issueId = SafetyCenterIds.entryIdFromString(entry.getId()).getSafetySourceId();
+    private @Nullable Integer getTaskIdForEntry(String entryId) {
+        String issueId = SafetyCenterIds.entryIdFromString(entryId).getSafetySourceId();
         return mSameTaskIssueIds.contains(issueId) ? requireActivity().getTaskId() : null;
     }
 }
