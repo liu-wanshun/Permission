@@ -28,6 +28,7 @@ import static android.safetycenter.SafetyEvent.SAFETY_EVENT_TYPE_RESOLVING_ACTIO
 import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__TIMEOUT;
 import static com.android.permission.PermissionStatsLog.SAFETY_STATE;
 import static com.android.safetycenter.SafetyCenterFlags.PROPERTY_SAFETY_CENTER_ENABLED;
+import static com.android.safetycenter.internaldata.SafetyCenterIds.toUserFriendlyString;
 
 import static java.util.Objects.requireNonNull;
 
@@ -116,7 +117,7 @@ public final class SafetyCenterService extends SystemService {
     private static final String SAFETY_CENTER_ISSUES_CACHE_FILE_NAME = "safety_center_issues.xml";
 
     /** The START_TASKS_FROM_RECENTS permission. TODO b/242905922 remove once in API */
-    public static final String START_TASKS_FROM_RECENTS =
+    private static final String START_TASKS_FROM_RECENTS =
             "android.permission.START_TASKS_FROM_RECENTS";
 
     /** The time delay used to throttle and aggregate writes to disk. */
@@ -161,9 +162,9 @@ public final class SafetyCenterService extends SystemService {
 
     public SafetyCenterService(@NonNull Context context) {
         super(context);
-        WestworldLogger westworldLogger = new WestworldLogger(context);
         mSafetyCenterResourcesContext = new SafetyCenterResourcesContext(context);
         mSafetyCenterConfigReader = new SafetyCenterConfigReader(mSafetyCenterResourcesContext);
+        WestworldLogger westworldLogger = new WestworldLogger(context, mSafetyCenterConfigReader);
         mSafetyCenterRefreshTracker = new SafetyCenterRefreshTracker(westworldLogger);
         mSafetyCenterDataTracker =
                 new SafetyCenterDataTracker(
@@ -330,6 +331,7 @@ public final class SafetyCenterService extends SystemService {
         @Override
         public void refreshSafetySources(@RefreshReason int refreshReason, @UserIdInt int userId) {
             getContext().enforceCallingPermission(MANAGE_SAFETY_CENTER, "refreshSafetySources");
+            RefreshReasons.validate(refreshReason);
             if (!enforceCrossUserPermission("refreshSafetySources", userId)
                     || !checkApiEnabled("refreshSafetySources")) {
                 return;
@@ -492,9 +494,9 @@ public final class SafetyCenterService extends SystemService {
                     SafetyCenterIds.issueActionIdFromString(issueActionId);
             if (!safetyCenterIssueActionId.getSafetyCenterIssueKey().equals(safetyCenterIssueKey)) {
                 throw new IllegalArgumentException(
-                        SafetyCenterIds.toUserFriendlyString(safetyCenterIssueId)
+                        toUserFriendlyString(safetyCenterIssueId)
                                 + " and "
-                                + SafetyCenterIds.toUserFriendlyString(safetyCenterIssueActionId)
+                                + toUserFriendlyString(safetyCenterIssueActionId)
                                 + " do not match");
             }
             UserProfileGroup userProfileGroup = UserProfileGroup.from(getContext(), userId);
@@ -522,8 +524,7 @@ public final class SafetyCenterService extends SystemService {
                     Log.w(
                             TAG,
                             "Error dispatching action: "
-                                    + SafetyCenterIds.toUserFriendlyString(
-                                            safetyCenterIssueActionId));
+                                    + toUserFriendlyString(safetyCenterIssueActionId));
                     CharSequence errorMessage;
                     if (safetySourceIssueAction.willResolve()) {
                         errorMessage =
@@ -559,11 +560,13 @@ public final class SafetyCenterService extends SystemService {
                 return;
             }
 
+            List<UserProfileGroup> userProfileGroups =
+                    UserProfileGroup.getAllUserProfileGroups(getContext());
             synchronized (mApiLock) {
                 // TODO(b/236693607): Should tests leave real data untouched?
                 clearDataLocked();
-                // TODO(b/223550097): Should we dispatch a new listener update here? This call can
-                //  modify the SafetyCenterData.
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroups(
+                        userProfileGroups, true, null);
             }
         }
 
@@ -577,12 +580,14 @@ public final class SafetyCenterService extends SystemService {
                 return;
             }
 
+            List<UserProfileGroup> userProfileGroups =
+                    UserProfileGroup.getAllUserProfileGroups(getContext());
             synchronized (mApiLock) {
                 mSafetyCenterConfigReader.setConfigOverrideForTests(safetyCenterConfig);
                 // TODO(b/236693607): Should tests leave real data untouched?
                 clearDataLocked();
-                // TODO(b/223550097): Should we clear the listeners here? Or should we dispatch a
-                //  new listener update since the SafetyCenterData will have changed?
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroups(
+                        userProfileGroups, true, null);
             }
         }
 
@@ -595,12 +600,14 @@ public final class SafetyCenterService extends SystemService {
                 return;
             }
 
+            List<UserProfileGroup> userProfileGroups =
+                    UserProfileGroup.getAllUserProfileGroups(getContext());
             synchronized (mApiLock) {
                 mSafetyCenterConfigReader.clearConfigOverrideForTests();
                 // TODO(b/236693607): Should tests leave real data untouched?
                 clearDataLocked();
-                // TODO(b/223550097): Should we clear the listeners here? Or should we dispatch a
-                //  new listener update since the SafetyCenterData will have changed?
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroups(
+                        userProfileGroups, true, null);
             }
         }
 
@@ -699,11 +706,7 @@ public final class SafetyCenterService extends SystemService {
                             args);
         }
 
-        /**
-         * Dumps state for debugging purposes.
-         *
-         * @param fout {@link PrintWriter} to write to
-         */
+        /** Dumps state for debugging purposes. */
         @Override
         protected void dump(
                 @NonNull FileDescriptor fd, @NonNull PrintWriter fout, @Nullable String[] args) {
@@ -824,14 +827,11 @@ public final class SafetyCenterService extends SystemService {
             List<UserProfileGroup> userProfileGroups =
                     UserProfileGroup.getAllUserProfileGroups(getContext());
             synchronized (mApiLock) {
-                if (mSafetyCenterConfigReader.isOverrideForTestsActive()) {
-                    Log.i(TAG, "Pulling and writing atoms with a test config override…");
-                    // We only log this and proceed with the call here, as we still want to be able
-                    // to assert the content of the logs in CTS tests. We may want to filter this
-                    // out in the future if this turns out to skew the collected events.
-                } else {
-                    Log.i(TAG, "Pulling and writing atoms…");
+                if (!mSafetyCenterConfigReader.allowsWestworldLogging()) {
+                    Log.w(TAG, "Skipping pulling and writing atoms due to a test config override");
+                    return StatsManager.PULL_SKIP;
                 }
+                Log.i(TAG, "Pulling and writing atoms…");
                 for (int i = 0; i < userProfileGroups.size(); i++) {
                     mSafetyCenterDataTracker.pullAndWriteAtoms(
                             userProfileGroups.get(i), statsEvents);
@@ -933,7 +933,7 @@ public final class SafetyCenterService extends SystemService {
         public String toString() {
             return "ResolvingActionTimeout{"
                     + "mSafetyCenterIssueActionId="
-                    + SafetyCenterIds.toUserFriendlyString(mSafetyCenterIssueActionId)
+                    + toUserFriendlyString(mSafetyCenterIssueActionId)
                     + ", mUserProfileGroup="
                     + mUserProfileGroup
                     + '}';
@@ -1093,14 +1093,9 @@ public final class SafetyCenterService extends SystemService {
         scheduleWriteSafetyCenterIssueCacheFileIfNeededLocked();
     }
 
-    /**
-     * Dumps state for debugging purposes.
-     *
-     * @param fd underlying {@link FileDescriptor} being written
-     * @param fout {@link PrintWriter} to write to
-     */
+    /** Dumps state for debugging purposes. */
     @GuardedBy("mApiLock")
-    void dumpLocked(@NonNull FileDescriptor fd, @NonNull PrintWriter fout) {
+    private void dumpLocked(@NonNull FileDescriptor fd, @NonNull PrintWriter fout) {
         fout.println("SERVICE");
         fout.println(
                 "\tSafetyCenterService{"
