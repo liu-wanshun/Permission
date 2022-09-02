@@ -62,6 +62,7 @@
     <!--SYSTEM_APPLICATION_OVERLAY will be granted on T+, as installer protection is added in T -->
     <uses-permission android:name="android.permission.SYSTEM_APPLICATION_OVERLAY"/>
     <uses-permission android:name="android.permission.SET_UNRESTRICTED_KEEP_CLEAR_AREAS"/>
+    <uses-permission android:name="android.permission.START_TASKS_FROM_RECENTS" />
 
     <application android:name="com.android.permissioncontroller.PermissionControllerApplication"
             android:label="@string/app_name"
@@ -169,6 +170,23 @@
 
         <service android:name="com.android.permissioncontroller.permission.service.PermissionEventCleanupJobService"
                  android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name="com.android.permissioncontroller.safetycenter.service.SafetyCenterBackgroundRefreshJobService"
+            android:enabled="@bool/is_at_least_t"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.android.permissioncontroller.safetycenter.service.SafetyCenterBackgroundRefreshJobService$SetupSafetyCenterBackgroundRefreshReceiver"
+            android:enabled="@bool/is_at_least_t"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.safetycenter.action.SAFETY_CENTER_ENABLED_CHANGED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
 
         <receiver
             android:name="com.android.permissioncontroller.privacysources.AccessibilityOnBootReceiver"
