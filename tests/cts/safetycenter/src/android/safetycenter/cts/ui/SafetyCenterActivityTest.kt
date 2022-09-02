@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2022 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package android.safetycenter.cts
+package android.safetycenter.cts.ui
 
 import android.Manifest.permission.SEND_SAFETY_CENTER_UPDATE
 import android.content.Context
 import android.os.Bundle
 import android.safetycenter.SafetyCenterManager.EXTRA_SAFETY_SOURCE_ID
 import android.safetycenter.SafetyCenterManager.EXTRA_SAFETY_SOURCE_ISSUE_ID
+import android.safetycenter.cts.testing.Coroutines.TIMEOUT_LONG
 import android.safetycenter.cts.testing.Coroutines.TIMEOUT_SHORT
 import android.safetycenter.cts.testing.SafetyCenterActivityLauncher.launchSafetyCenterActivity
 import android.safetycenter.cts.testing.SafetyCenterCtsConfigs
@@ -42,13 +43,13 @@ import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.SafetySou
 import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.SafetySourceDataKey.Reason.RESOLVE_ACTION
 import android.safetycenter.cts.testing.SettingsPackage.getSettingsPackageName
 import android.safetycenter.cts.testing.ShellPermissions.callWithShellPermissionIdentity
+import android.safetycenter.cts.testing.UiTestHelper.STATUS_CARD_RESCAN_BUTTON_LABEL
 import android.safetycenter.cts.testing.UiTestHelper.assertSourceDataDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.assertSourceIssueDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.assertSourceIssueNotDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.expandMoreIssuesCard
 import android.safetycenter.cts.testing.UiTestHelper.findAllText
 import android.safetycenter.cts.testing.UiTestHelper.findButton
-import android.safetycenter.cts.testing.UiTestHelper.waitButtonNotDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.waitNotDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.waitTextNotDisplayed
 import android.support.test.uiautomator.By
@@ -192,6 +193,53 @@ class SafetyCenterActivityTest {
     }
 
     @Test
+    fun entryListWithEntryGroup_informationState_hasContentDescription() {
+        safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
+        safetyCenterCtsHelper.setData(SOURCE_ID_1, safetySourceCtsData.information)
+        safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.information)
+        safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.information)
+
+        context.launchSafetyCenterActivity {
+            // Verify content description for the collapsed entry group, and click on it to expand
+            waitFindObject(By.desc("List. OK. OK")).click()
+
+            // Verify content descriptions for the expanded group header and entry list item
+            waitFindObject(By.text("OK"))
+            waitFindObject(By.desc("List item. Ok title. Ok summary"))
+        }
+    }
+
+    @Test
+    fun entryListWithEntryGroup_recommendationState_hasActionsNeededContentDescription() {
+        safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
+        safetyCenterCtsHelper.setData(
+            SOURCE_ID_1, safetySourceCtsData.recommendationWithGeneralIssue)
+        safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.information)
+        safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.information)
+
+        context.launchSafetyCenterActivity {
+            // Verify content description for the collapsed entry group, and click on it to expand
+            waitFindObject(By.desc("List. OK. Actions needed. Recommendation summary")).click()
+
+            // Verify content descriptions for the expanded group header and entry list items
+            waitFindObject(By.text("OK"))
+            waitFindObject(By.desc("List item. Recommendation title. Recommendation summary"))
+            waitFindObject(By.desc("List item. Ok title. Ok summary"))
+        }
+    }
+
+    @Test
+    fun entryListWithSingleSource_informationState_hasContentDescription() {
+        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.information)
+
+        context.launchSafetyCenterActivity {
+            // Verify content description for the individual entry
+            waitFindObject(By.desc("Ok title. Ok summary"))
+        }
+    }
+
+    @Test
     fun statusCard_withoutIssues_hasContentDescriptions() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.information)
@@ -213,6 +261,11 @@ class SafetyCenterActivityTest {
             waitFindObject(By.desc("Alert. Critical issue title. Critical issue summary"))
             findButton("Solve issue")
             waitNotDisplayed(By.desc("Protected by Android"))
+
+            // Since we already have a combined content description for the issue card, the below
+            // tests ensure that we don't make the individual views visible to a11y technologies.
+            waitNotDisplayed(By.desc("Critical issue title"))
+            waitNotDisplayed(By.desc("Critical issue summary"))
         }
     }
 
@@ -228,6 +281,12 @@ class SafetyCenterActivityTest {
             waitFindObject(By.desc(expectedString))
             findButton("Review")
             waitNotDisplayed(By.desc("Protected by Android"))
+
+            // Since we already have a combined content description for the issue card, the below
+            // tests ensure that we don't make the individual views visible to a11y technologies.
+            waitNotDisplayed(By.desc("Information issue title"))
+            waitNotDisplayed(By.desc("Information issue subtitle"))
+            waitNotDisplayed(By.desc("Information issue summary"))
         }
     }
 
@@ -256,7 +315,7 @@ class SafetyCenterActivityTest {
             findButton("Dismiss").click()
 
             assertSourceIssueNotDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
-            findButton("Scan device")
+            findButton(STATUS_CARD_RESCAN_BUTTON_LABEL)
         }
     }
 
@@ -284,7 +343,7 @@ class SafetyCenterActivityTest {
             findButton("Dismiss").click()
 
             assertSourceIssueNotDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
-            findButton("Scan device")
+            findButton(STATUS_CARD_RESCAN_BUTTON_LABEL)
         }
     }
 
@@ -326,6 +385,7 @@ class SafetyCenterActivityTest {
 
     @Test
     fun issueCard_resolveIssue_successConfirmationShown_issueDismisses() {
+        SafetyCenterFlags.hideResolvedIssueUiTransitionDelay = TIMEOUT_LONG
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
 
         // Set the initial data for the source
@@ -336,27 +396,26 @@ class SafetyCenterActivityTest {
         SafetySourceReceiver.safetySourceData[
                 SafetySourceDataKey(RESOLVE_ACTION, SINGLE_SOURCE_ID)] = null
 
-        context.launchSafetyCenterActivity {
-            callWithShellPermissionIdentity(
-                {
-                    val action = safetySourceCtsData.criticalResolvingActionWithSuccessMessage
-                    waitFindObject(By.text(action.label.toString())).click()
+        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
+            context.launchSafetyCenterActivity {
+                val action = safetySourceCtsData.criticalResolvingActionWithSuccessMessage
+                waitFindObject(By.text(action.label.toString())).click()
 
-                    // Success message should show up if issue marked as resolved
-                    val successMessage = action.successMessage.toString()
-                    waitFindObject(By.text(successMessage))
+                // Success message should show up if issue marked as resolved
+                val successMessage = action.successMessage.toString()
+                waitFindObject(By.text(successMessage))
 
-                    // Wait for success message to go away, verify issue no longer displayed
-                    waitTextNotDisplayed(successMessage)
-                    assertSourceIssueNotDisplayed(
-                        safetySourceCtsData.criticalResolvingIssueWithSuccessMessage)
-                },
-                SEND_SAFETY_CENTER_UPDATE)
+                // Wait for success message to go away, verify issue no longer displayed
+                waitTextNotDisplayed(successMessage)
+                assertSourceIssueNotDisplayed(
+                    safetySourceCtsData.criticalResolvingIssueWithSuccessMessage)
+            }
         }
     }
 
     @Test
-    fun issueCard_resolveIssue_noSuccessMessage_defaultSuccessMessageShown_issueDismisses() {
+    fun issueCard_resolveIssue_noSuccessMessage_noResolutionUiShown_issueDismisses() {
+        SafetyCenterFlags.hideResolvedIssueUiTransitionDelay = TIMEOUT_LONG
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
 
         // Set the initial data for the source
@@ -367,20 +426,15 @@ class SafetyCenterActivityTest {
         SafetySourceReceiver.safetySourceData[
                 SafetySourceDataKey(RESOLVE_ACTION, SINGLE_SOURCE_ID)] = null
 
-        context.launchSafetyCenterActivity {
-            callWithShellPermissionIdentity(
-                {
-                    val action = safetySourceCtsData.criticalResolvingAction
-                    waitFindObject(By.text(action.label.toString())).click()
+        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
+            context.launchSafetyCenterActivity {
+                val action = safetySourceCtsData.criticalResolvingAction
+                waitFindObject(By.text(action.label.toString())).click()
 
-                    // Default success message should show up if issue marked as resolved
-                    waitFindObject(By.text("Complete"))
-
-                    // Wait for success message to go away, verify issue no longer displayed
-                    waitTextNotDisplayed("Complete")
-                    assertSourceIssueNotDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
-                },
-                SEND_SAFETY_CENTER_UPDATE)
+                // Wait for success message to go away, verify issue no longer displayed
+                waitTextNotDisplayed(DEFAULT_SAFETY_CENTER_RESOLVED_ISSUE_SUCCESS_MESSAGE)
+                assertSourceIssueNotDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
+            }
         }
     }
 
@@ -397,17 +451,15 @@ class SafetyCenterActivityTest {
                 SafetySourceDataKey(RESOLVE_ACTION, SINGLE_SOURCE_ID)] = null
         SafetySourceReceiver.shouldReportSafetySourceError = true
 
-        context.launchSafetyCenterActivity {
-            callWithShellPermissionIdentity(
-                {
-                    val action = safetySourceCtsData.criticalResolvingAction
-                    waitFindObject(By.text(action.label.toString())).click()
+        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
+            context.launchSafetyCenterActivity {
+                val action = safetySourceCtsData.criticalResolvingAction
+                waitFindObject(By.text(action.label.toString())).click()
 
-                    // criticalResolvingAction does not define a success message, check for default
-                    waitTextNotDisplayed("Complete")
-                    assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
-                },
-                SEND_SAFETY_CENTER_UPDATE)
+                // criticalResolvingAction does not define a success message, check for default
+                waitTextNotDisplayed(DEFAULT_SAFETY_CENTER_RESOLVED_ISSUE_SUCCESS_MESSAGE)
+                assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
+            }
         }
     }
 
@@ -423,34 +475,16 @@ class SafetyCenterActivityTest {
 
         // Set no data at all on the receiver, will ignore incoming call.
 
-        context.launchSafetyCenterActivity {
-            callWithShellPermissionIdentity(
-                {
-                    val action = safetySourceCtsData.criticalResolvingAction
-                    waitFindObject(By.text(action.label.toString())).click()
+        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
+            context.launchSafetyCenterActivity {
+                val action = safetySourceCtsData.criticalResolvingAction
+                waitFindObject(By.text(action.label.toString())).click()
 
-                    // criticalResolvingAction does not define a success message, check for default
-                    waitTextNotDisplayed("Complete")
-                    assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
-                },
-                SEND_SAFETY_CENTER_UPDATE)
+                // criticalResolvingAction does not define a success message, check for default
+                waitTextNotDisplayed(DEFAULT_SAFETY_CENTER_RESOLVED_ISSUE_SUCCESS_MESSAGE)
+                assertSourceIssueDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
+            }
         }
-    }
-
-    @Test
-    fun launchActivity_withNoIssues_hasRescanButton() {
-        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.information)
-
-        context.launchSafetyCenterActivity { findButton("Scan device") }
-    }
-
-    @Test
-    fun launchActivity_withIssue_doesNotHaveRescanButton() {
-        safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        safetyCenterCtsHelper.setData(SINGLE_SOURCE_ID, safetySourceCtsData.informationWithIssue)
-
-        context.launchSafetyCenterActivity { waitButtonNotDisplayed("Scan device") }
     }
 
     @Test
@@ -664,6 +698,7 @@ class SafetyCenterActivityTest {
     }
 
     companion object {
+        private const val DEFAULT_SAFETY_CENTER_RESOLVED_ISSUE_SUCCESS_MESSAGE = "Action complete"
         private const val EXPAND_ISSUE_GROUP_QS_FRAGMENT_KEY = "expand_issue_group_qs_fragment_key"
         private val DIALOG_ROTATION_TIMEOUT = Duration.ofSeconds(1)
         private val DATA_UPDATE_TIMEOUT = Duration.ofSeconds(1)

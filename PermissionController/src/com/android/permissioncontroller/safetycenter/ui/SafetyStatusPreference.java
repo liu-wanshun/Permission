@@ -17,11 +17,17 @@
 package com.android.permissioncontroller.safetycenter.ui;
 
 import static android.os.Build.VERSION_CODES.TIRAMISU;
+import static android.safetycenter.SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_CRITICAL_WARNING;
+import static android.safetycenter.SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK;
+import static android.safetycenter.SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_RECOMMENDATION;
+import static android.safetycenter.SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN;
 
 import android.content.Context;
 import android.graphics.drawable.Animatable2;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.safetycenter.SafetyCenterData;
 import android.safetycenter.SafetyCenterStatus;
 import android.text.TextUtils;
@@ -38,11 +44,15 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import com.android.permissioncontroller.R;
+import com.android.permissioncontroller.permission.utils.KotlinUtils;
 import com.android.permissioncontroller.safetycenter.ui.model.SafetyCenterViewModel;
 
 import com.google.android.material.button.MaterialButton;
 
+import java.util.List;
 import java.util.Objects;
+
+import kotlin.Pair;
 
 /** Preference which displays a visual representation of {@link SafetyCenterStatus}. */
 @RequiresApi(TIRAMISU)
@@ -52,6 +62,18 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
     @Nullable private SafetyCenterStatus mStatus;
     @Nullable private View.OnClickListener mReviewSettingsOnClickListener;
     @Nullable private SafetyCenterViewModel mViewModel;
+
+    @NonNull
+    private final TextFadeAnimator mTitleTextAnimator = new TextFadeAnimator(R.id.status_title);
+
+    @NonNull
+    private final TextFadeAnimator mSummaryTextAnimator = new TextFadeAnimator(R.id.status_summary);
+
+    @NonNull
+    private final TextFadeAnimator mAllTextAnimator =
+            new TextFadeAnimator(List.of(R.id.status_title, R.id.status_summary));
+
+    private boolean mFirstBind = true;
     private boolean mHasPendingActions;
     private boolean mHasIssues;
 
@@ -64,7 +86,7 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
     private boolean mIsIconChangeAnimationRunning;
     private int mQueuedScanAnimationSeverityLevel;
     private int mQueuedIconAnimationSeverityLevel;
-    private int mSettledSeverityLevel = SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN;
+    private int mSettledSeverityLevel = OVERALL_SEVERITY_LEVEL_UNKNOWN;
 
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
@@ -80,15 +102,11 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
         MaterialButton pendingActionsRescanButton =
                 (MaterialButton) holder.findViewById(R.id.pending_actions_rescan_button);
         View reviewSettingsButton = holder.findViewById(R.id.review_settings_button);
-        TextView summaryTextView = ((TextView) holder.findViewById(R.id.status_summary));
-        ((TextView) holder.findViewById(R.id.status_title)).setText(mStatus.getTitle());
         if (mHasPendingActions) {
             reviewSettingsButton.setOnClickListener(mReviewSettingsOnClickListener);
             reviewSettingsButton.setVisibility(View.VISIBLE);
-            summaryTextView.setText(context.getString(R.string.safety_center_qs_status_summary));
         } else {
             reviewSettingsButton.setVisibility(View.GONE);
-            summaryTextView.setText(mStatus.getSummary());
         }
         rescanButton = updateRescanButtonUi(rescanButton, pendingActionsRescanButton);
         setRescanButtonState(rescanButton);
@@ -103,20 +121,61 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
                                         mStatus.getTitle(),
                                         mStatus.getSummary()));
 
-        // Hide the Safety Protection branding if there are any issue cards
-        View safetyProtectionSectionView = holder.findViewById(R.id.safety_protection_section_view);
-        safetyProtectionSectionView.setVisibility(mHasIssues ? View.GONE : View.VISIBLE);
+        rescanButton.setOnClickListener(
+                unused -> {
+                    SafetyCenterViewModel viewModel = requireViewModel();
+                    viewModel.rescan();
+                    viewModel.getInteractionLogger().record(Action.SCAN_INITIATED);
+                });
 
-        rescanButton.setOnClickListener(unused -> {
-            SafetyCenterViewModel viewModel = requireViewModel();
-            viewModel.rescan();
-            viewModel.getInteractionLogger().record(Action.SCAN_INITIATED);
-        });
+        TextView titleTextView = (TextView) holder.findViewById(R.id.status_title);
+        TextView summaryTextView = (TextView) holder.findViewById(R.id.status_summary);
+        updateStatusIconAndText(context, statusImage, rescanButton, titleTextView, summaryTextView);
 
-        updateStatusIcon(statusImage, rescanButton);
+        configureSafetyProtectionView(holder, context);
+        mFirstBind = false;
     }
 
-    private void updateStatusIcon(ImageView statusImage, View rescanButton) {
+    private void configureSafetyProtectionView(PreferenceViewHolder holder, Context context) {
+        View safetyProtectionSectionView = holder.findViewById(R.id.safety_protection_section_view);
+        if (KotlinUtils.INSTANCE.shouldShowSafetyProtectionResources(context)) {
+            // Hide the Safety Protection branding if there are any issue cards
+            safetyProtectionSectionView.setVisibility(mHasIssues ? View.GONE : View.VISIBLE);
+        }
+        if (safetyProtectionSectionView.getVisibility() == View.GONE) {
+            holder.itemView.setPaddingRelative(
+                    holder.itemView.getPaddingStart(),
+                    holder.itemView.getPaddingTop(),
+                    holder.itemView.getPaddingEnd(),
+                    /* bottom = */ getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.safety_center_card_margin_bottom));
+        } else {
+            holder.itemView.setPaddingRelative(
+                    holder.itemView.getPaddingStart(),
+                    holder.itemView.getPaddingTop(),
+                    holder.itemView.getPaddingEnd(),
+                    /* bottom = */ 0);
+        }
+    }
+
+    private void updateStatusIconAndText(
+            Context context,
+            ImageView statusImage,
+            View rescanButton,
+            TextView title,
+            TextView summary) {
+        String summaryText;
+        if (mHasPendingActions) {
+            summaryText = context.getString(R.string.safety_center_qs_status_summary);
+        } else {
+            summaryText = mStatus.getSummary().toString();
+        }
+        if (mFirstBind) {
+            title.setText(mStatus.getTitle());
+            summary.setText(summaryText);
+        }
+
         int severityLevel = mStatus.getSeverityLevel();
 
         boolean isRefreshing = isRefreshInProgress();
@@ -125,56 +184,85 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
         boolean shouldChangeIcon = mSettledSeverityLevel != severityLevel;
 
         if (shouldStartScanAnimation && !mIsIconChangeAnimationRunning) {
+            mSettledSeverityLevel = severityLevel;
             startScanningAnimation(statusImage);
         } else if (shouldStartScanAnimation) {
             mQueuedScanAnimationSeverityLevel = severityLevel;
+        } else if (mIsScanAnimationRunning && shouldChangeIcon) {
+            mSettledSeverityLevel = severityLevel;
+            continueScanningAnimation(statusImage);
         } else if (shouldEndScanAnimation) {
             endScanningAnimation(statusImage, rescanButton);
+            runTextAnimation(title, mStatus.getTitle().toString(), summary, summaryText);
         } else if (shouldChangeIcon && !mIsScanAnimationRunning) {
             startIconChangeAnimation(statusImage);
+            runTextAnimation(title, mStatus.getTitle().toString(), summary, summaryText);
         } else if (shouldChangeIcon) {
             mQueuedIconAnimationSeverityLevel = severityLevel;
         } else if (!mIsScanAnimationRunning && !mIsIconChangeAnimationRunning) {
             setSettledStatus(statusImage);
+            runTextAnimation(title, mStatus.getTitle().toString(), summary, summaryText);
+        }
+    }
+
+    private void runTextAnimation(
+            TextView titleView, String titleText, TextView summaryView, String summaryText) {
+        boolean titleEquals = titleView.getText().toString().equals(titleText);
+        boolean summaryEquals = summaryView.getText().toString().equals(summaryText);
+        if (!titleEquals && !summaryEquals) {
+            Pair<TextView, String> titleChange = new Pair<>(titleView, titleText);
+            Pair<TextView, String> summaryChange = new Pair<>(summaryView, summaryText);
+            mAllTextAnimator.animateChangeText(List.of(titleChange, summaryChange));
+        } else if (!titleEquals) {
+            mTitleTextAnimator.animateChangeText(titleView, titleText);
+        } else if (!summaryEquals) {
+            mSummaryTextAnimator.animateChangeText(summaryView, summaryText);
         }
     }
 
     private boolean isRefreshInProgress() {
         int refreshStatus = mStatus.getRefreshStatus();
         return refreshStatus == SafetyCenterStatus.REFRESH_STATUS_FULL_RESCAN_IN_PROGRESS
-                || refreshStatus
-                == SafetyCenterStatus.REFRESH_STATUS_DATA_FETCH_IN_PROGRESS;
+                || refreshStatus == SafetyCenterStatus.REFRESH_STATUS_DATA_FETCH_IN_PROGRESS;
     }
 
     private void startScanningAnimation(ImageView statusImage) {
         mIsScanAnimationRunning = true;
-        int currentSeverityLevel = mStatus.getSeverityLevel();
         statusImage.setImageResource(
-                StatusAnimationResolver.getScanningStartAnimation(currentSeverityLevel));
+                StatusAnimationResolver.getScanningStartAnimation(mSettledSeverityLevel));
         AnimatedVectorDrawable animation = (AnimatedVectorDrawable) statusImage.getDrawable();
         animation.registerAnimationCallback(
                 new Animatable2.AnimationCallback() {
                     @Override
                     public void onAnimationEnd(Drawable drawable) {
-                        statusImage.setImageResource(
-                                StatusAnimationResolver.getScanningAnimation(currentSeverityLevel));
-                        AnimatedVectorDrawable scanningAnim =
-                                (AnimatedVectorDrawable) statusImage.getDrawable();
-                        scanningAnim.registerAnimationCallback(
-                                new Animatable2.AnimationCallback() {
-                                    @Override
-                                    public void onAnimationEnd(Drawable drawable) {
-                                        if (mIsScanAnimationRunning && isRefreshInProgress()) {
-                                            scanningAnim.start();
-                                        } else {
-                                            scanningAnim.clearAnimationCallbacks();
-                                        }
-                                    }
-                                });
-                        scanningAnim.start();
+                        continueScanningAnimation(statusImage);
                     }
                 });
         animation.start();
+    }
+
+    private void continueScanningAnimation(ImageView statusImage) {
+        // clear previous scan animation in case we need to continue with different severity level
+        Drawable statusDrawable = statusImage.getDrawable();
+        if (statusDrawable instanceof AnimatedVectorDrawable) {
+            ((AnimatedVectorDrawable) statusDrawable).clearAnimationCallbacks();
+        }
+
+        statusImage.setImageResource(
+                StatusAnimationResolver.getScanningAnimation(mSettledSeverityLevel));
+        AnimatedVectorDrawable scanningAnim = (AnimatedVectorDrawable) statusImage.getDrawable();
+        scanningAnim.registerAnimationCallback(
+                new Animatable2.AnimationCallback() {
+                    @Override
+                    public void onAnimationEnd(Drawable drawable) {
+                        if (mIsScanAnimationRunning && isRefreshInProgress()) {
+                            scanningAnim.start();
+                        } else {
+                            scanningAnim.clearAnimationCallbacks();
+                        }
+                    }
+                });
+        scanningAnim.start();
     }
 
     private void endScanningAnimation(ImageView statusImage, View rescanButton) {
@@ -224,8 +312,7 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
     private void startIconChangeAnimation(ImageView statusImage) {
         int changeAnimationResId =
                 StatusAnimationResolver.getStatusChangeAnimation(
-                        mSettledSeverityLevel,
-                        mStatus.getSeverityLevel());
+                        mSettledSeverityLevel, mStatus.getSeverityLevel());
         if (changeAnimationResId == 0) {
             setSettledStatus(statusImage);
             return;
@@ -247,6 +334,11 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
     }
 
     private void setSettledStatus(ImageView statusImage) {
+        Drawable statusDrawable = statusImage.getDrawable();
+        if (statusDrawable instanceof AnimatedVectorDrawable) {
+            ((AnimatedVectorDrawable) statusDrawable).clearAnimationCallbacks();
+        }
+
         mSettledSeverityLevel = mStatus.getSeverityLevel();
         statusImage.setImageResource(toStatusImageResId(mSettledSeverityLevel));
     }
@@ -279,13 +371,13 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
 
     void setSafetyStatus(SafetyCenterStatus status) {
         mStatus = status;
-        notifyChanged();
+        safeNotifyChanged();
     }
 
     void setSafetyData(SafetyCenterData data) {
         mHasIssues = data.getIssues().size() > 0;
         mStatus = data.getStatus();
-        notifyChanged();
+        safeNotifyChanged();
     }
 
     void setViewModel(SafetyCenterViewModel viewModel) {
@@ -303,26 +395,35 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
     void setHasPendingActions(boolean hasPendingActions, View.OnClickListener listener) {
         mHasPendingActions = hasPendingActions;
         mReviewSettingsOnClickListener = listener;
-        notifyChanged();
+        safeNotifyChanged();
     }
 
     private void setRescanButtonState(View rescanButton) {
-        rescanButton.setVisibility(
-                mStatus.getSeverityLevel() != SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK
-                        || mHasIssues
-                        ? View.GONE
-                        : View.VISIBLE);
+        rescanButton.setVisibility(shouldShowRescanButton() ? View.VISIBLE : View.GONE);
         rescanButton.setEnabled(!isRefreshInProgress());
+    }
+
+    private boolean shouldShowRescanButton() {
+        int severityLevel = mStatus.getSeverityLevel();
+        return !mHasIssues
+                && (severityLevel == OVERALL_SEVERITY_LEVEL_OK
+                        || severityLevel == OVERALL_SEVERITY_LEVEL_UNKNOWN);
+    }
+
+    // Calling notifyChanged while recyclerview is scrolling or computing layout will result in an
+    // IllegalStateException. Post to handler to wait for UI to settle.
+    private void safeNotifyChanged() {
+        new Handler(Looper.getMainLooper()).post(() -> notifyChanged());
     }
 
     private static int toStatusImageResId(int overallSeverityLevel) {
         switch (overallSeverityLevel) {
-            case SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_UNKNOWN:
-            case SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_OK:
+            case OVERALL_SEVERITY_LEVEL_UNKNOWN:
+            case OVERALL_SEVERITY_LEVEL_OK:
                 return R.drawable.safety_status_info;
-            case SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_RECOMMENDATION:
+            case OVERALL_SEVERITY_LEVEL_RECOMMENDATION:
                 return R.drawable.safety_status_recommendation;
-            case SafetyCenterStatus.OVERALL_SEVERITY_LEVEL_CRITICAL_WARNING:
+            case OVERALL_SEVERITY_LEVEL_CRITICAL_WARNING:
                 return R.drawable.safety_status_warn;
             default:
                 Log.w(
@@ -344,7 +445,6 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
             return false;
         }
         SafetyStatusPreference other = (SafetyStatusPreference) preference;
-        return Objects.equals(mStatus, other.mStatus)
-                && mHasIssues == other.mHasIssues;
+        return Objects.equals(mStatus, other.mStatus) && mHasIssues == other.mHasIssues;
     }
 }
