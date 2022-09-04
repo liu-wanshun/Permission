@@ -38,6 +38,7 @@ import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.ACTION_HA
 import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.EXTRA_SOURCE_ID
 import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.EXTRA_SOURCE_ISSUE_ACTION_ID
 import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.EXTRA_SOURCE_ISSUE_ID
+import kotlin.math.max
 
 /**
  * A class that provides [SafetySourceData] objects and associated constants to facilitate setting
@@ -112,6 +113,18 @@ class SafetySourceCtsData(private val context: Context) {
             .build()
 
     /**
+     * A [SafetySourceData] with a [SEVERITY_LEVEL_INFORMATION] [SafetySourceStatus] and null
+     * pending intent.
+     */
+    val informationWithNullIntent =
+        SafetySourceData.Builder()
+            .setStatus(
+                SafetySourceStatus.Builder("Ok title", "Ok summary", SEVERITY_LEVEL_INFORMATION)
+                    .setPendingIntent(null)
+                    .build())
+            .build()
+
+    /**
      * A [SafetySourceData] with a [SEVERITY_LEVEL_INFORMATION] [SafetySourceStatus] and an
      * [IconAction] defined.
      */
@@ -163,8 +176,11 @@ class SafetySourceCtsData(private val context: Context) {
             .addIssue(informationIssueWithSubtitle)
             .build()
 
-    /** A [SafetySourceIssue] with a [SEVERITY_LEVEL_RECOMMENDATION] and a redirecting [Action]. */
-    val recommendationIssue =
+    /**
+     * A [SafetySourceIssue.Builder] with a [SEVERITY_LEVEL_RECOMMENDATION] and a redirecting
+     * [Action].
+     */
+    private fun defaultRecommendationIssueBuilder() =
         SafetySourceIssue.Builder(
                 RECOMMENDATION_ISSUE_ID,
                 "Recommendation issue title",
@@ -174,23 +190,29 @@ class SafetySourceCtsData(private val context: Context) {
             .addAction(
                 Action.Builder(RECOMMENDATION_ISSUE_ACTION_ID, "See issue", redirectPendingIntent)
                     .build())
+
+    /**
+     * A [SafetySourceIssue] with a [SEVERITY_LEVEL_RECOMMENDATION], general category and a
+     * redirecting [Action].
+     */
+    val recommendationGeneralIssue = defaultRecommendationIssueBuilder().build()
+
+    /**
+     * A [SafetySourceIssue] with a [SEVERITY_LEVEL_RECOMMENDATION], account category and a
+     * redirecting [Action].
+     */
+    val recommendationAccountIssue =
+        defaultRecommendationIssueBuilder()
+            .setIssueCategory(SafetySourceIssue.ISSUE_CATEGORY_ACCOUNT)
             .build()
 
     /**
-     * A [SafetySourceIssue] with a [SEVERITY_LEVEL_RECOMMENDATION] and a redirecting [Action],
-     * related to the account.
+     * A [SafetySourceIssue] with a [SEVERITY_LEVEL_RECOMMENDATION], device category and a
+     * redirecting [Action].
      */
-    val accountRecommendationIssue =
-        SafetySourceIssue.Builder(
-                RECOMMENDATION_ISSUE_ID,
-                "Recommendation issue title",
-                "Recommendation issue summary",
-                SEVERITY_LEVEL_RECOMMENDATION,
-                ISSUE_TYPE_ID)
-            .addAction(
-                Action.Builder(RECOMMENDATION_ISSUE_ACTION_ID, "See issue", redirectPendingIntent)
-                    .build())
-            .setIssueCategory(SafetySourceIssue.ISSUE_CATEGORY_ACCOUNT)
+    val recommendationDeviceIssue =
+        defaultRecommendationIssueBuilder()
+            .setIssueCategory(SafetySourceIssue.ISSUE_CATEGORY_DEVICE)
             .build()
 
     private val dismissIssuePendingIntent =
@@ -201,23 +223,12 @@ class SafetySourceCtsData(private val context: Context) {
      * A [SafetySourceIssue] with a [SEVERITY_LEVEL_RECOMMENDATION] and a dismiss [PendingIntent].
      */
     val recommendationIssueWithDismissPendingIntent =
-        SafetySourceIssue.Builder(
-                RECOMMENDATION_ISSUE_ID,
-                "Recommendation issue title",
-                "Recommendation issue summary",
-                SEVERITY_LEVEL_RECOMMENDATION,
-                ISSUE_TYPE_ID)
+        defaultRecommendationIssueBuilder()
             .setOnDismissPendingIntent(dismissIssuePendingIntent)
-            .addAction(
-                Action.Builder(RECOMMENDATION_ISSUE_ACTION_ID, "See issue", redirectPendingIntent)
-                    .build())
             .build()
 
-    /**
-     * A [SafetySourceData] with a [SEVERITY_LEVEL_RECOMMENDATION] redirecting [SafetySourceIssue]
-     * and [SafetySourceStatus].
-     */
-    val recommendationWithIssue =
+    /** A [SafetySourceData.Builder] with a [SEVERITY_LEVEL_RECOMMENDATION] status. */
+    fun defaultRecommendationDataBuilder() =
         SafetySourceData.Builder()
             .setStatus(
                 SafetySourceStatus.Builder(
@@ -226,42 +237,38 @@ class SafetySourceCtsData(private val context: Context) {
                         SEVERITY_LEVEL_RECOMMENDATION)
                     .setPendingIntent(redirectPendingIntent)
                     .build())
-            .addIssue(recommendationIssue)
-            .build()
+
+    /**
+     * A [SafetySourceData] with a [SEVERITY_LEVEL_RECOMMENDATION] redirecting [SafetySourceIssue]
+     * and [SafetySourceStatus], only containing a general issue.
+     */
+    val recommendationWithGeneralIssue =
+        defaultRecommendationDataBuilder().addIssue(recommendationGeneralIssue).build()
 
     /**
      * A [SafetySourceData] with a [SEVERITY_LEVEL_RECOMMENDATION] redirecting [SafetySourceIssue]
      * and [SafetySourceStatus], only containing an account issue.
      */
     val recommendationWithAccountIssue =
-        SafetySourceData.Builder()
-            .setStatus(
-                SafetySourceStatus.Builder(
-                        "Recommendation title",
-                        "Recommendation summary",
-                        SEVERITY_LEVEL_RECOMMENDATION)
-                    .setPendingIntent(redirectPendingIntent)
-                    .build())
-            .addIssue(accountRecommendationIssue)
-            .build()
+        defaultRecommendationDataBuilder().addIssue(recommendationAccountIssue).build()
+
+    /**
+     * A [SafetySourceData] with a [SEVERITY_LEVEL_RECOMMENDATION] redirecting [SafetySourceIssue]
+     * and [SafetySourceStatus], only containing a device issue.
+     */
+    val recommendationWithDeviceIssue =
+        defaultRecommendationDataBuilder().addIssue(recommendationDeviceIssue).build()
 
     /**
      * A [SafetySourceData] with a [SEVERITY_LEVEL_RECOMMENDATION] [SafetySourceIssue] that has a
      * dismiss [PendingIntent], and [SafetySourceStatus].
      */
     val recommendationDismissPendingIntentIssue =
-        SafetySourceData.Builder()
-            .setStatus(
-                SafetySourceStatus.Builder(
-                        "Recommendation title",
-                        "Recommendation summary",
-                        SEVERITY_LEVEL_RECOMMENDATION)
-                    .setPendingIntent(redirectPendingIntent)
-                    .build())
+        defaultRecommendationDataBuilder()
             .addIssue(recommendationIssueWithDismissPendingIntent)
             .build()
 
-    /** A [PendingIntent] used by the resolving [Action] in [criticalResolvingIssue]. */
+    /** A [PendingIntent] used by the resolving [Action] in [criticalResolvingGeneralIssue]. */
     val criticalIssueActionPendingIntent =
         broadcastPendingIntent(
             Intent(ACTION_HANDLE_INLINE_ACTION)
@@ -269,19 +276,28 @@ class SafetySourceCtsData(private val context: Context) {
                 .putExtra(EXTRA_SOURCE_ISSUE_ID, CRITICAL_ISSUE_ID)
                 .putExtra(EXTRA_SOURCE_ISSUE_ACTION_ID, CRITICAL_ISSUE_ACTION_ID))
 
+    /** A resolving Critical [Action] */
+    val criticalResolvingAction =
+        Action.Builder(CRITICAL_ISSUE_ACTION_ID, "Solve issue", criticalIssueActionPendingIntent)
+            .setWillResolve(true)
+            .build()
+
+    /** A resolving Critical [Action] that declares a success message */
+    val criticalResolvingActionWithSuccessMessage =
+        Action.Builder(CRITICAL_ISSUE_ACTION_ID, "Solve issue", criticalIssueActionPendingIntent)
+            .setWillResolve(true)
+            .setSuccessMessage("Issue solved")
+            .build()
+
     /** A [SafetySourceIssue] with a [SEVERITY_LEVEL_CRITICAL_WARNING] and a resolving [Action]. */
-    val criticalResolvingIssue =
+    val criticalResolvingIssueWithSuccessMessage =
         SafetySourceIssue.Builder(
                 CRITICAL_ISSUE_ID,
                 "Critical issue title",
                 "Critical issue summary",
                 SEVERITY_LEVEL_CRITICAL_WARNING,
                 ISSUE_TYPE_ID)
-            .addAction(
-                Action.Builder(
-                        CRITICAL_ISSUE_ACTION_ID, "Solve issue", criticalIssueActionPendingIntent)
-                    .setWillResolve(true)
-                    .build())
+            .addAction(criticalResolvingActionWithSuccessMessage)
             .build()
 
     /**
@@ -301,36 +317,94 @@ class SafetySourceCtsData(private val context: Context) {
             .build()
 
     /**
-     * Account related [SafetySourceIssue] with a [SEVERITY_LEVEL_CRITICAL_WARNING] and a resolving
-     * [Action].
+     * [SafetySourceIssue.Builder] with a [SEVERITY_LEVEL_CRITICAL_WARNING] and a resolving [Action]
+     * .
      */
-    val criticalResolvingAccountIssue =
+    fun defaultCriticalResolvingIssueBuilder(issueId: String = CRITICAL_ISSUE_ID) =
         SafetySourceIssue.Builder(
-                CRITICAL_ISSUE_ID,
+                issueId,
                 "Critical issue title",
                 "Critical issue summary",
                 SEVERITY_LEVEL_CRITICAL_WARNING,
                 ISSUE_TYPE_ID)
-            .addAction(
-                Action.Builder(
-                        CRITICAL_ISSUE_ACTION_ID, "Solve issue", criticalIssueActionPendingIntent)
-                    .setWillResolve(true)
-                    .build())
+            .addAction(criticalResolvingAction)
+
+    /**
+     * General [SafetySourceIssue] with a [SEVERITY_LEVEL_CRITICAL_WARNING] and a resolving [Action]
+     * .
+     */
+    val criticalResolvingGeneralIssue = defaultCriticalResolvingIssueBuilder().build()
+
+    /**
+     * Account related [SafetySourceIssue] with a [SEVERITY_LEVEL_CRITICAL_WARNING] and a resolving
+     * [Action].
+     */
+    val criticalResolvingAccountIssue =
+        defaultCriticalResolvingIssueBuilder()
             .setIssueCategory(SafetySourceIssue.ISSUE_CATEGORY_ACCOUNT)
             .build()
 
     /**
-     * A [SafetySourceData] with a [SEVERITY_LEVEL_CRITICAL_WARNING] resolving [SafetySourceIssue]
-     * and [SafetySourceStatus].
+     * Device related [SafetySourceIssue] with a [SEVERITY_LEVEL_CRITICAL_WARNING] and a resolving
+     * [Action].
      */
-    val criticalWithResolvingIssue =
+    val criticalResolvingDeviceIssue =
+        defaultCriticalResolvingIssueBuilder()
+            .setIssueCategory(SafetySourceIssue.ISSUE_CATEGORY_DEVICE)
+            .build()
+
+    /** A [SafetySourceData.Builder] with a [SEVERITY_LEVEL_CRITICAL_WARNING] status. */
+    fun defaultCriticalDataBuilder() =
         SafetySourceData.Builder()
             .setStatus(
                 SafetySourceStatus.Builder(
                         "Critical title", "Critical summary", SEVERITY_LEVEL_CRITICAL_WARNING)
                     .setPendingIntent(redirectPendingIntent)
                     .build())
-            .addIssue(criticalResolvingIssue)
+
+    /**
+     * A [SafetySourceData] with a [SEVERITY_LEVEL_CRITICAL_WARNING] resolving general
+     * [SafetySourceIssue] and [SafetySourceStatus].
+     */
+    val criticalWithResolvingGeneralIssue =
+        defaultCriticalDataBuilder().addIssue(criticalResolvingGeneralIssue).build()
+
+    /**
+     * A [SafetySourceData] with a [SEVERITY_LEVEL_CRITICAL_WARNING] resolving account related
+     * [SafetySourceIssue] and [SafetySourceStatus].
+     */
+    val criticalWithResolvingAccountIssue =
+        defaultCriticalDataBuilder().addIssue(criticalResolvingAccountIssue).build()
+
+    /**
+     * A [SafetySourceData] with a [SEVERITY_LEVEL_CRITICAL_WARNING] resolving device related
+     * [SafetySourceIssue] and [SafetySourceStatus].
+     */
+    val criticalWithResolvingDeviceIssue =
+        defaultCriticalDataBuilder().addIssue(criticalResolvingDeviceIssue).build()
+
+    /**
+     * A [SafetySourceData] with a [SEVERITY_LEVEL_CRITICAL_WARNING] resolving device related
+     * [SafetySourceIssue] and [SafetySourceStatus] and a recommendation issue.
+     */
+    val criticalWithResolvingDeviceIssueAndRecommendationIssue =
+        defaultCriticalDataBuilder()
+            .addIssue(criticalResolvingDeviceIssue)
+            .addIssue(recommendationAccountIssue)
+            .build()
+
+    /**
+     * A [SafetySourceData] with a [SEVERITY_LEVEL_CRITICAL_WARNING] resolving [SafetySourceIssue]
+     * and [SafetySourceStatus].
+     */
+    val criticalWithResolvingIssueWithSuccessMessage =
+        SafetySourceData.Builder()
+            .setStatus(
+                SafetySourceStatus.Builder(
+                        "Critical title", "Critical summary", SEVERITY_LEVEL_CRITICAL_WARNING)
+                    .setPendingIntent(redirectPendingIntent)
+                    .build())
+            .addIssue(criticalResolvingIssueWithSuccessMessage)
             .build()
 
     /**
@@ -338,30 +412,7 @@ class SafetySourceCtsData(private val context: Context) {
      * [SEVERITY_LEVEL_CRITICAL_WARNING] [SafetySourceStatus].
      */
     val criticalWithInformationIssue =
-        SafetySourceData.Builder()
-            .setStatus(
-                SafetySourceStatus.Builder(
-                        "Critical title", "Critical summary", SEVERITY_LEVEL_CRITICAL_WARNING)
-                    .setPendingIntent(redirectPendingIntent)
-                    .build())
-            .addIssue(informationIssue)
-            .build()
-
-    /**
-     * A [SafetySourceData] with a [SEVERITY_LEVEL_CRITICAL_WARNING] and a
-     * [SEVERITY_LEVEL_RECOMMENDATION] [SafetySourceIssue]s and [SEVERITY_LEVEL_CRITICAL_WARNING]
-     * [SafetySourceStatus]. One issue is account related, other isn't.
-     */
-    val criticalWithTwoIssues =
-        SafetySourceData.Builder()
-            .setStatus(
-                SafetySourceStatus.Builder(
-                        "Critical title", "Critical summary", SEVERITY_LEVEL_CRITICAL_WARNING)
-                    .setPendingIntent(redirectPendingIntent)
-                    .build())
-            .addIssue(criticalResolvingAccountIssue)
-            .addIssue(recommendationIssue)
-            .build()
+        defaultCriticalDataBuilder().addIssue(informationIssue).build()
 
     /**
      * Another [SafetySourceData] with a [SEVERITY_LEVEL_CRITICAL_WARNING] redirecting
@@ -375,20 +426,6 @@ class SafetySourceCtsData(private val context: Context) {
                     .setPendingIntent(redirectPendingIntent)
                     .build())
             .addIssue(criticalRedirectingIssue)
-            .build()
-
-    /**
-     * Another [SafetySourceData] with a [SEVERITY_LEVEL_CRITICAL_WARNING] resolving account related
-     * [SafetySourceIssue] and [SafetySourceStatus].
-     */
-    val criticalWithResolvingAccountIssue =
-        SafetySourceData.Builder()
-            .setStatus(
-                SafetySourceStatus.Builder(
-                        "Critical title", "Critical summary", SEVERITY_LEVEL_CRITICAL_WARNING)
-                    .setPendingIntent(redirectPendingIntent)
-                    .build())
-            .addIssue(criticalResolvingAccountIssue)
             .build()
 
     /**
@@ -412,7 +449,7 @@ class SafetySourceCtsData(private val context: Context) {
                                 "issue_id",
                                 "Issue title",
                                 "Issue summary",
-                                severityLevel,
+                                max(severityLevel, SEVERITY_LEVEL_INFORMATION),
                                 ISSUE_TYPE_ID)
                             .addAction(
                                 Action.Builder("action_id", "Action", redirectPendingIntent)
@@ -436,10 +473,10 @@ class SafetySourceCtsData(private val context: Context) {
         /** Action ID for the redirecting action in [informationIssue]. */
         const val INFORMATION_ISSUE_ACTION_ID = "information_issue_action_id"
 
-        /** Issue ID for [recommendationIssue]. */
+        /** Issue ID for a recommendation issue */
         const val RECOMMENDATION_ISSUE_ID = "recommendation_issue_id"
 
-        /** Action ID for the redirecting action in [recommendationIssue]. */
+        /** Action ID for the redirecting action in recommendation issue. */
         const val RECOMMENDATION_ISSUE_ACTION_ID = "recommendation_issue_action_id"
 
         /** Issue ID for the critical issues in this file. */

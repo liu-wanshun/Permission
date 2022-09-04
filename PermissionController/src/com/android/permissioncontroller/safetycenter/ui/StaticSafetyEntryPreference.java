@@ -24,9 +24,11 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.preference.Preference;
 
+import com.android.permissioncontroller.R;
 import com.android.permissioncontroller.safetycenter.ui.model.SafetyCenterViewModel;
 
 /** A preference which displays a visual representation of a {@link SafetyCenterStaticEntry}. */
@@ -39,17 +41,21 @@ public class StaticSafetyEntryPreference extends Preference implements Comparabl
     private final SafetyCenterViewModel mViewModel;
 
     public StaticSafetyEntryPreference(
-            Context context, SafetyCenterStaticEntry entry, SafetyCenterViewModel viewModel) {
+            Context context,
+            @Nullable Integer launchTaskId,
+            SafetyCenterStaticEntry entry,
+            SafetyCenterViewModel viewModel) {
         super(context);
         mEntry = entry;
         mViewModel = viewModel;
+        setLayoutResource(R.layout.preference_static_entry);
         setTitle(entry.getTitle());
         setSummary(entry.getSummary());
         if (entry.getPendingIntent() != null) {
             setOnPreferenceClickListener(
                     unused -> {
                         try {
-                            mEntry.getPendingIntent().send();
+                            PendingIntentSender.send(mEntry.getPendingIntent(), launchTaskId);
                         } catch (Exception ex) {
                             Log.e(
                                     TAG,

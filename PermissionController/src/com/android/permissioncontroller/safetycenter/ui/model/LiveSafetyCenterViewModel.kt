@@ -24,7 +24,10 @@ import android.safetycenter.SafetyCenterData
 import android.safetycenter.SafetyCenterErrorDetails
 import android.safetycenter.SafetyCenterIssue
 import android.safetycenter.SafetyCenterManager
+import android.safetycenter.SafetyCenterStatus
 import android.safetycenter.config.SafetySource
+import android.util.Log
+import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getMainExecutor
 import androidx.fragment.app.Fragment
@@ -34,13 +37,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.android.permissioncontroller.safetycenter.ui.InteractionLogger
 import com.android.permissioncontroller.safetycenter.ui.NavigationSource
-import java.util.concurrent.atomic.AtomicBoolean
+import com.android.safetycenter.internaldata.SafetyCenterIds
 
 /* A SafetyCenterViewModel that talks to the real backing service for Safety Center. */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
 
-    override val safetyCenterLiveData: LiveData<SafetyCenterData> by this::_safetyCenterLiveData
+    private val TAG: String = LiveSafetyCenterViewModel::class.java.simpleName
+    override val safetyCenterUiLiveData: LiveData<SafetyCenterUiData> by this::_safetyCenterLiveData
     override val errorLiveData: LiveData<SafetyCenterErrorDetails> by this::_errorLiveData
 
     private val _safetyCenterLiveData = SafetyCenterLiveData()
@@ -74,7 +78,7 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
             })
     }
 
-    private var changingConfigurations = AtomicBoolean(false)
+    private var changingConfigurations = false
 
     private val safetyCenterManager = app.getSystemService(SafetyCenterManager::class.java)!!
 
@@ -82,8 +86,26 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
         safetyCenterManager.dismissSafetyCenterIssue(issue.id)
     }
 
-    override fun executeIssueAction(issue: SafetyCenterIssue, action: SafetyCenterIssue.Action) {
-        safetyCenterManager.executeSafetyCenterIssueAction(issue.id, action.id)
+    override fun executeIssueAction(
+        issue: SafetyCenterIssue,
+        action: SafetyCenterIssue.Action,
+        launchTaskId: Int?
+    ) {
+        val issueId =
+            if (launchTaskId != null) {
+                SafetyCenterIds.encodeToString(
+                    SafetyCenterIds.issueIdFromString(issue.id)
+                        .toBuilder()
+                        .setTaskId(launchTaskId)
+                        .build())
+            } else {
+                issue.id
+            }
+        safetyCenterManager.executeSafetyCenterIssueAction(issueId, action.id)
+    }
+
+    override fun markIssueResolvedUiCompleted(issueId: IssueId) {
+        _safetyCenterLiveData.markIssueResolvedUiCompleted(issueId)
     }
 
     override fun rescan() {
@@ -106,18 +128,28 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
     }
 
     override fun pageOpen() {
-        if (!changingConfigurations.getAndSet(false)) {
-            // Refresh unless this is a config change
+        if (changingConfigurations) {
+            // Don't refresh when changing configurations, but reset for the next pageOpen call
+            changingConfigurations = false
+        } else {
             safetyCenterManager.refreshSafetySources(SafetyCenterManager.REFRESH_REASON_PAGE_OPEN)
         }
     }
 
     override fun changingConfigurations() {
-        changingConfigurations.set(true)
+        changingConfigurations = true
     }
 
-    inner class SafetyCenterLiveData :
-        MutableLiveData<SafetyCenterData>(), SafetyCenterManager.OnSafetyCenterDataChangedListener {
+    private inner class SafetyCenterLiveData :
+        MutableLiveData<SafetyCenterUiData>(),
+        SafetyCenterManager.OnSafetyCenterDataChangedListener {
+
+        // Managing the data queue isn't designed to support multithreading. Any methods that
+        // manipulate it, or the inFlight or resolved issues lists should only be called on the
+        // main thread, and are marked accordingly.
+        private val safetyCenterDataQueue = ArrayDeque<SafetyCenterData>()
+        private var issuesPendingResolution = mapOf<IssueId, ActionId>()
+        private val currentResolvedIssues = mutableMapOf<IssueId, ActionId>()
 
         override fun onActive() {
             safetyCenterManager.addOnSafetyCenterDataChangedListener(
@@ -127,18 +159,126 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
 
         override fun onInactive() {
             safetyCenterManager.removeOnSafetyCenterDataChangedListener(this)
+
+            if (!changingConfigurations) {
+                // Remove all the tracked state and start from scratch when active again.
+                issuesPendingResolution = mapOf()
+                currentResolvedIssues.clear()
+                safetyCenterDataQueue.clear()
+            }
             super.onInactive()
         }
 
+        @MainThread
         override fun onSafetyCenterDataChanged(data: SafetyCenterData) {
-            value = data
+            safetyCenterDataQueue.addLast(data)
+            maybeProcessDataToNextResolvedIssues()
         }
 
         override fun onError(errorDetails: SafetyCenterErrorDetails) {
             _errorLiveData.value = errorDetails
         }
+
+        @MainThread
+        private fun maybeProcessDataToNextResolvedIssues() {
+            // Only process data updates while we aren't waiting for issue resolution animations
+            // to complete.
+            if (currentResolvedIssues.isNotEmpty()) {
+                Log.d(
+                    TAG,
+                    "Received SafetyCenterData while issue resolution animations" +
+                        " occurring. Will update UI with new data soon.")
+                return
+            }
+
+            while (safetyCenterDataQueue.isNotEmpty() && currentResolvedIssues.isEmpty()) {
+                val nextData = safetyCenterDataQueue.first()
+
+                // Calculate newly resolved issues by diffing the tracked in-flight issues and the
+                // current update. Resolved issues are formerly in-flight issues that no longer
+                // appear in a subsequent SafetyCenterData update.
+                val nextResolvedIssues: Map<IssueId, ActionId> =
+                    determineResolvedIssues(nextData.buildIssueIdSet())
+
+                // Save the set of in-flight issues to diff against the next data update, removing
+                // the now-resolved, formerly in-flight issues. If these are not tracked separately
+                // the queue will not progress once the issue resolution animations complete.
+                issuesPendingResolution = nextData.getInFlightIssues()
+
+                if (nextResolvedIssues.isNotEmpty()) {
+                    currentResolvedIssues.putAll(nextResolvedIssues)
+                    sendResolvedIssuesAndCurrentData()
+                } else if (shouldEndScan(nextData) || shouldSendLastDataInQueue()) {
+                    sendNextData()
+                } else {
+                    skipNextData()
+                }
+            }
+        }
+
+        private fun determineResolvedIssues(nextIssueIds: Set<IssueId>): Map<IssueId, ActionId> {
+            // Any previously in-flight issue that does not appear in the incoming SafetyCenterData
+            // is considered resolved.
+            return issuesPendingResolution.filterNot { issue ->
+                nextIssueIds.contains(issue.key)
+            }
+        }
+
+        private fun shouldEndScan(nextData: SafetyCenterData): Boolean =
+            isCurrentlyScanning() && !nextData.isScanning()
+
+        private fun shouldSendLastDataInQueue(): Boolean =
+            !isCurrentlyScanning() && safetyCenterDataQueue.size == 1
+
+        private fun isCurrentlyScanning(): Boolean = value?.safetyCenterData?.isScanning() ?: false
+
+        private fun sendNextData() {
+            value = SafetyCenterUiData(safetyCenterDataQueue.removeFirst())
+        }
+
+        private fun skipNextData() = safetyCenterDataQueue.removeFirst()
+
+        private fun sendResolvedIssuesAndCurrentData() {
+            val currentData = value?.safetyCenterData
+            if (currentData == null || currentResolvedIssues.isEmpty()) {
+                // There can only be resolved issues after receiving data with in-flight issues,
+                // so we should always have already sent data here.
+                throw IllegalArgumentException("No current data or no resolved issues")
+            }
+
+            // The current SafetyCenterData still contains the resolved SafetyCenterIssue objects.
+            // Send it with the resolved IDs so the UI can generate the correct preferences and
+            // trigger the right animations for issue resolution.
+            value = SafetyCenterUiData(currentData, currentResolvedIssues)
+        }
+
+        @MainThread
+        fun markIssueResolvedUiCompleted(issueId: IssueId) {
+            currentResolvedIssues.remove(issueId)
+            maybeProcessDataToNextResolvedIssues()
+        }
     }
 }
+
+/**
+ * Returns inflight issues pending resolution
+ */
+private fun SafetyCenterData.getInFlightIssues(): Map<IssueId, ActionId> =
+    issues
+        .map { issue ->
+            issue.actions
+                // UX requirements require skipping resolution UI for issues that do not have a
+                // valid successMessage
+                .filter { it.isInFlight && !it.successMessage.isNullOrEmpty() }
+                .map { issue.id to it.id }
+        }
+        .flatten()
+        .toMap()
+
+private fun SafetyCenterData.isScanning() =
+    status.refreshStatus == SafetyCenterStatus.REFRESH_STATUS_FULL_RESCAN_IN_PROGRESS
+
+private fun SafetyCenterData.buildIssueIdSet(): Set<IssueId> = issues.map { it.id }.toSet()
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class LiveSafetyCenterViewModelFactory(private val app: Application) : ViewModelProvider.Factory {
