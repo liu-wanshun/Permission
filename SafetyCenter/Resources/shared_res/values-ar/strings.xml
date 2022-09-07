@@ -23,17 +23,16 @@
     <string name="overall_severity_level_ok_summary" msgid="7219520381757200598">"لم يتم العثور على أي مشاكل"</string>
     <string name="overall_severity_level_ok_review_title" msgid="1494321117696765360">"مراجعة الإعدادات"</string>
     <string name="overall_severity_level_ok_review_summary" msgid="7743619617413076275">"الاطّلاع على قائمة الإعدادات"</string>
-    <!-- no translation found for overall_severity_level_device_recommendation_title (5250040236433061827) -->
-    <skip />
-    <!-- no translation found for overall_severity_level_critical_device_warning_title (5901771721834272596) -->
-    <skip />
+    <string name="overall_severity_level_device_recommendation_title" msgid="5250040236433061827">"الجهاز قد يكون معرّضًا للخطر"</string>
+    <string name="overall_severity_level_critical_device_warning_title" msgid="5901771721834272596">"الجهاز معرّض للخطر"</string>
     <string name="overall_severity_level_safety_recommendation_title" msgid="6436208984463981167">"قد تكون معرّضًا للخطر"</string>
     <string name="overall_severity_level_critical_safety_warning_title" msgid="1039142045555227172">"أنت معرّض للخطر"</string>
     <string name="overall_severity_n_alerts_summary" msgid="1105615451561197136">"{count,plural, =1{تنبيه واحد (#)}zero{# تنبيه}two{تنبيهان}few{# تنبيهات}many{# تنبيهًا}other{# تنبيه}}"</string>
     <string name="redirecting_error" msgid="8146983632878233202">"تعذَّر فتح الصفحة"</string>
     <string name="resolving_action_error" msgid="371968886143262375">"تعذَّر التعامل بشكل نهائي مع التنبيه"</string>
     <string name="refresh_timeout" msgid="251734999692581852">"تعذّر تحديث الإعدادات"</string>
-    <string name="refresh_error" msgid="255412333381376201">"تعذَّر التحقق من {count,plural, =1{إعداد واحد}zero{إعداد}two{إعدادين}few{إعدادات}many{إعدادًا}other{إعداد}}"</string>
+    <!-- no translation found for refresh_error (656062128422446177) -->
+    <skip />
     <string name="work_profile_paused" msgid="7037400224040869079">"تم إيقاف الملف الشخصي للعمل مؤقتًا"</string>
     <string name="group_unknown_summary" msgid="6951386960814105641">"ما مِن معلومات بعد."</string>
 </resources>
