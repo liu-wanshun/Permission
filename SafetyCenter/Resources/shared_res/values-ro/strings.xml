@@ -23,17 +23,15 @@
     <string name="overall_severity_level_ok_summary" msgid="7219520381757200598">"Nu s-au găsit probleme"</string>
     <string name="overall_severity_level_ok_review_title" msgid="1494321117696765360">"Examinați setările"</string>
     <string name="overall_severity_level_ok_review_summary" msgid="7743619617413076275">"Verificați lista de setări"</string>
-    <!-- no translation found for overall_severity_level_device_recommendation_title (5250040236433061827) -->
-    <skip />
-    <!-- no translation found for overall_severity_level_critical_device_warning_title (5901771721834272596) -->
-    <skip />
+    <string name="overall_severity_level_device_recommendation_title" msgid="5250040236433061827">"Dispozitivul poate fi expus la risc"</string>
+    <string name="overall_severity_level_critical_device_warning_title" msgid="5901771721834272596">"Dispozitivul este expus riscului"</string>
     <string name="overall_severity_level_safety_recommendation_title" msgid="6436208984463981167">"E posibil să fiți expus(ă) la risc"</string>
     <string name="overall_severity_level_critical_safety_warning_title" msgid="1039142045555227172">"Sunteți expus(ă) la risc"</string>
     <string name="overall_severity_n_alerts_summary" msgid="1105615451561197136">"{count,plural, =1{# alertă}few{# alerte}other{# de alerte}}"</string>
     <string name="redirecting_error" msgid="8146983632878233202">"Pagina nu s-a putut deschide"</string>
     <string name="resolving_action_error" msgid="371968886143262375">"Nu s-a putut rezolva alerta"</string>
     <string name="refresh_timeout" msgid="251734999692581852">"Nu s-au putut actualiza setările"</string>
-    <string name="refresh_error" msgid="255412333381376201">"Nu se poate face verificarea {count,plural, =1{setării}few{setărilor}other{setărilor}}"</string>
+    <string name="refresh_error" msgid="656062128422446177">"{count,plural, =1{Nu s-a putut verifica setarea}few{Nu s-au putut verifica setările}other{Nu s-au putut verifica setările}}"</string>
     <string name="work_profile_paused" msgid="7037400224040869079">"Profilul de serviciu este întrerupt"</string>
     <string name="group_unknown_summary" msgid="6951386960814105641">"Nu există informații încă"</string>
 </resources>
