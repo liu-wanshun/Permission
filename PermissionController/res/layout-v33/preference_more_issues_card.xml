@@ -21,15 +21,15 @@
     style="@style/SafetyCenterMoreIssues">
 
     <ImageView
-        android:id="@android:id/icon"
+        android:id="@+id/status_icon"
         android:importantForAccessibility="no"
         android:src="@drawable/safety_status_info"
         style="@style/SafetyCenterMoreIssuesIcon"/>
 
     <TextView
-        android:id="@android:id/title"
-        android:text="@string/summary_placeholder"
-        style="@style/SafetyCenterMoreIssuesTitle" />
+        android:id="@+id/title"
+        android:text="@string/safety_center_more_issues_card_title"
+        style="@style/SafetyCenterMoreIssuesTitle"/>
 
     <LinearLayout
         android:id="@android:id/widget_frame"

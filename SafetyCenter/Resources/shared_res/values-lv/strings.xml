@@ -23,17 +23,16 @@
     <string name="overall_severity_level_ok_summary" msgid="7219520381757200598">"Netika atrasta neviena problēma"</string>
     <string name="overall_severity_level_ok_review_title" msgid="1494321117696765360">"Pārskatiet iestatījumus"</string>
     <string name="overall_severity_level_ok_review_summary" msgid="7743619617413076275">"Pārbaudiet iestatījumu sarakstu"</string>
-    <!-- no translation found for overall_severity_level_device_recommendation_title (5250040236433061827) -->
-    <skip />
-    <!-- no translation found for overall_severity_level_critical_device_warning_title (5901771721834272596) -->
-    <skip />
+    <string name="overall_severity_level_device_recommendation_title" msgid="5250040236433061827">"Iespējams, ierīce ir apdraudēta"</string>
+    <string name="overall_severity_level_critical_device_warning_title" msgid="5901771721834272596">"Ierīce ir apdraudēta"</string>
     <string name="overall_severity_level_safety_recommendation_title" msgid="6436208984463981167">"Iespējams, jūs esat apdraudēts"</string>
     <string name="overall_severity_level_critical_safety_warning_title" msgid="1039142045555227172">"Jūs esat apdraudēts"</string>
     <string name="overall_severity_n_alerts_summary" msgid="1105615451561197136">"{count,plural, =1{# ieteikums vai brīdinājums}zero{# ieteikumu vai brīdinājumu}one{# ieteikums vai brīdinājums}other{# ieteikumi vai brīdinājumi}}"</string>
     <string name="redirecting_error" msgid="8146983632878233202">"Nevarēja atvērt lapu"</string>
     <string name="resolving_action_error" msgid="371968886143262375">"Nevarēja atrisināt ieteikumu vai brīdinājumu"</string>
     <string name="refresh_timeout" msgid="251734999692581852">"Nevarēja atsvaidzināt iestatījumus"</string>
-    <string name="refresh_error" msgid="255412333381376201">"Nevarēja pārbaudīt {count,plural, =1{iestatījumu}zero{iestatījumus}one{iestatījumu}other{iestatījumus}}."</string>
+    <!-- no translation found for refresh_error (656062128422446177) -->
+    <skip />
     <string name="work_profile_paused" msgid="7037400224040869079">"Darba profila darbība ir apturēta"</string>
     <string name="group_unknown_summary" msgid="6951386960814105641">"Vēl nav informācijas"</string>
 </resources>
