@@ -24,6 +24,7 @@ import android.safetycenter.SafetyCenterData
 import android.safetycenter.SafetyCenterErrorDetails
 import android.safetycenter.SafetyCenterIssue
 import android.safetycenter.SafetyCenterManager
+import android.safetycenter.SafetyCenterStatus
 import android.safetycenter.config.SafetySource
 import android.util.Log
 import androidx.annotation.MainThread
@@ -36,7 +37,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.android.permissioncontroller.safetycenter.ui.InteractionLogger
 import com.android.permissioncontroller.safetycenter.ui.NavigationSource
-import java.util.concurrent.atomic.AtomicBoolean
+import com.android.safetycenter.internaldata.SafetyCenterIds
 
 /* A SafetyCenterViewModel that talks to the real backing service for Safety Center. */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -77,7 +78,7 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
             })
     }
 
-    private var changingConfigurations = AtomicBoolean(false)
+    private var changingConfigurations = false
 
     private val safetyCenterManager = app.getSystemService(SafetyCenterManager::class.java)!!
 
@@ -85,8 +86,22 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
         safetyCenterManager.dismissSafetyCenterIssue(issue.id)
     }
 
-    override fun executeIssueAction(issue: SafetyCenterIssue, action: SafetyCenterIssue.Action) {
-        safetyCenterManager.executeSafetyCenterIssueAction(issue.id, action.id)
+    override fun executeIssueAction(
+        issue: SafetyCenterIssue,
+        action: SafetyCenterIssue.Action,
+        launchTaskId: Int?
+    ) {
+        val issueId =
+            if (launchTaskId != null) {
+                SafetyCenterIds.encodeToString(
+                    SafetyCenterIds.issueIdFromString(issue.id)
+                        .toBuilder()
+                        .setTaskId(launchTaskId)
+                        .build())
+            } else {
+                issue.id
+            }
+        safetyCenterManager.executeSafetyCenterIssueAction(issueId, action.id)
     }
 
     override fun markIssueResolvedUiCompleted(issueId: IssueId) {
@@ -113,17 +128,19 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
     }
 
     override fun pageOpen() {
-        if (!changingConfigurations.getAndSet(false)) {
-            // Refresh unless this is a config change
+        if (changingConfigurations) {
+            // Don't refresh when changing configurations, but reset for the next pageOpen call
+            changingConfigurations = false
+        } else {
             safetyCenterManager.refreshSafetySources(SafetyCenterManager.REFRESH_REASON_PAGE_OPEN)
         }
     }
 
     override fun changingConfigurations() {
-        changingConfigurations.set(true)
+        changingConfigurations = true
     }
 
-    inner class SafetyCenterLiveData :
+    private inner class SafetyCenterLiveData :
         MutableLiveData<SafetyCenterUiData>(),
         SafetyCenterManager.OnSafetyCenterDataChangedListener {
 
@@ -131,22 +148,24 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
         // manipulate it, or the inFlight or resolved issues lists should only be called on the
         // main thread, and are marked accordingly.
         private val safetyCenterDataQueue = ArrayDeque<SafetyCenterData>()
-        private var currentInFlightIssues = mapOf<IssueId, ActionId>()
+        private var issuesPendingResolution = mapOf<IssueId, ActionId>()
         private val currentResolvedIssues = mutableMapOf<IssueId, ActionId>()
 
         override fun onActive() {
             safetyCenterManager.addOnSafetyCenterDataChangedListener(
-                    getMainExecutor(app.applicationContext), this)
+                getMainExecutor(app.applicationContext), this)
             super.onActive()
         }
 
         override fun onInactive() {
             safetyCenterManager.removeOnSafetyCenterDataChangedListener(this)
 
-            // Remove all the tracked state and start from scratch when active again.
-            currentInFlightIssues = mapOf()
-            currentResolvedIssues.clear()
-            safetyCenterDataQueue.clear()
+            if (!changingConfigurations) {
+                // Remove all the tracked state and start from scratch when active again.
+                issuesPendingResolution = mapOf()
+                currentResolvedIssues.clear()
+                safetyCenterDataQueue.clear()
+            }
             super.onInactive()
         }
 
@@ -166,46 +185,58 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
             // to complete.
             if (currentResolvedIssues.isNotEmpty()) {
                 Log.d(
-                        TAG,
-                        "Received SafetyCenterData while issue resolution animations" +
-                                " occurring. Will update UI with new data soon.")
+                    TAG,
+                    "Received SafetyCenterData while issue resolution animations" +
+                        " occurring. Will update UI with new data soon.")
                 return
             }
 
             while (safetyCenterDataQueue.isNotEmpty() && currentResolvedIssues.isEmpty()) {
-                val nextSafetyCenterData = safetyCenterDataQueue.first()
+                val nextData = safetyCenterDataQueue.first()
 
                 // Calculate newly resolved issues by diffing the tracked in-flight issues and the
                 // current update. Resolved issues are formerly in-flight issues that no longer
                 // appear in a subsequent SafetyCenterData update.
                 val nextResolvedIssues: Map<IssueId, ActionId> =
-                        determineResolvedIssues(nextSafetyCenterData, currentInFlightIssues)
+                    determineResolvedIssues(nextData.buildIssueIdSet())
 
-                // Save the set of in-flight issues to diff against the next data update.
-                currentInFlightIssues = nextSafetyCenterData.getInFlightIssues()
+                // Save the set of in-flight issues to diff against the next data update, removing
+                // the now-resolved, formerly in-flight issues. If these are not tracked separately
+                // the queue will not progress once the issue resolution animations complete.
+                issuesPendingResolution = nextData.getInFlightIssues()
 
-                if (nextResolvedIssues.isEmpty()) {
-                    sendNextData()
-                } else {
+                if (nextResolvedIssues.isNotEmpty()) {
                     currentResolvedIssues.putAll(nextResolvedIssues)
                     sendResolvedIssuesAndCurrentData()
+                } else if (shouldEndScan(nextData) || shouldSendLastDataInQueue()) {
+                    sendNextData()
+                } else {
+                    skipNextData()
                 }
             }
         }
 
-        private fun determineResolvedIssues(
-            incomingData: SafetyCenterData,
-            inFlightIssues: Map<IssueId, ActionId>
-        ): Map<IssueId, ActionId> {
+        private fun determineResolvedIssues(nextIssueIds: Set<IssueId>): Map<IssueId, ActionId> {
             // Any previously in-flight issue that does not appear in the incoming SafetyCenterData
             // is considered resolved.
-            val issueIdSet: Set<IssueId> = incomingData.issues.map { issue -> issue.id }.toSet()
-            return inFlightIssues.filterNot { issue -> issueIdSet.contains(issue.key) }
+            return issuesPendingResolution.filterNot { issue ->
+                nextIssueIds.contains(issue.key)
+            }
         }
+
+        private fun shouldEndScan(nextData: SafetyCenterData): Boolean =
+            isCurrentlyScanning() && !nextData.isScanning()
+
+        private fun shouldSendLastDataInQueue(): Boolean =
+            !isCurrentlyScanning() && safetyCenterDataQueue.size == 1
+
+        private fun isCurrentlyScanning(): Boolean = value?.safetyCenterData?.isScanning() ?: false
 
         private fun sendNextData() {
             value = SafetyCenterUiData(safetyCenterDataQueue.removeFirst())
         }
+
+        private fun skipNextData() = safetyCenterDataQueue.removeFirst()
 
         private fun sendResolvedIssuesAndCurrentData() {
             val currentData = value?.safetyCenterData
@@ -229,15 +260,25 @@ class LiveSafetyCenterViewModel(app: Application) : SafetyCenterViewModel(app) {
     }
 }
 
+/**
+ * Returns inflight issues pending resolution
+ */
 private fun SafetyCenterData.getInFlightIssues(): Map<IssueId, ActionId> =
     issues
         .map { issue ->
             issue.actions
-                .filter { it.isInFlight }
+                // UX requirements require skipping resolution UI for issues that do not have a
+                // valid successMessage
+                .filter { it.isInFlight && !it.successMessage.isNullOrEmpty() }
                 .map { issue.id to it.id }
         }
         .flatten()
         .toMap()
+
+private fun SafetyCenterData.isScanning() =
+    status.refreshStatus == SafetyCenterStatus.REFRESH_STATUS_FULL_RESCAN_IN_PROGRESS
+
+private fun SafetyCenterData.buildIssueIdSet(): Set<IssueId> = issues.map { it.id }.toSet()
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class LiveSafetyCenterViewModelFactory(private val app: Application) : ViewModelProvider.Factory {

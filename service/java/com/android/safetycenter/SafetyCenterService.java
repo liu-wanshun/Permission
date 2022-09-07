@@ -19,12 +19,16 @@ package com.android.safetycenter;
 import static android.Manifest.permission.MANAGE_SAFETY_CENTER;
 import static android.Manifest.permission.READ_SAFETY_CENTER_STATUS;
 import static android.Manifest.permission.SEND_SAFETY_CENTER_UPDATE;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 import static android.safetycenter.SafetyCenterManager.REFRESH_REASON_OTHER;
 import static android.safetycenter.SafetyCenterManager.RefreshReason;
 import static android.safetycenter.SafetyEvent.SAFETY_EVENT_TYPE_RESOLVING_ACTION_FAILED;
 
+import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__TIMEOUT;
+import static com.android.permission.PermissionStatsLog.SAFETY_STATE;
 import static com.android.safetycenter.SafetyCenterFlags.PROPERTY_SAFETY_CENTER_ENABLED;
+import static com.android.safetycenter.internaldata.SafetyCenterIds.toUserFriendlyString;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,14 +36,17 @@ import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.annotation.UserIdInt;
 import android.annotation.WorkerThread;
+import android.app.ActivityOptions;
 import android.app.AppOpsManager;
 import android.app.PendingIntent;
+import android.app.StatsManager;
+import android.app.StatsManager.PullAtomMetadata;
+import android.app.StatsManager.StatsPullAtomCallback;
 import android.content.ApexEnvironment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Binder;
 import android.os.Handler;
@@ -59,15 +66,16 @@ import android.safetycenter.SafetySourceIssue;
 import android.safetycenter.config.SafetyCenterConfig;
 import android.util.ArraySet;
 import android.util.Log;
+import android.util.StatsEvent;
 
 import androidx.annotation.Keep;
 import androidx.annotation.RequiresApi;
 
 import com.android.internal.annotations.GuardedBy;
 import com.android.modules.utils.BackgroundThread;
+import com.android.permission.PermissionStatsLog;
 import com.android.permission.util.ForegroundThread;
 import com.android.permission.util.UserUtils;
-import com.android.safetycenter.SafetyCenterConfigReader.Broadcast;
 import com.android.safetycenter.internaldata.SafetyCenterIds;
 import com.android.safetycenter.internaldata.SafetyCenterIssueActionId;
 import com.android.safetycenter.internaldata.SafetyCenterIssueId;
@@ -84,6 +92,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -108,8 +117,13 @@ public final class SafetyCenterService extends SystemService {
     /** The name of the file used to persist the Safety Center issue cache. */
     private static final String SAFETY_CENTER_ISSUES_CACHE_FILE_NAME = "safety_center_issues.xml";
 
+    /** The START_TASKS_FROM_RECENTS permission. */
+    // TODO(b/242905922): Remove once in API.
+    private static final String START_TASKS_FROM_RECENTS =
+            "android.permission.START_TASKS_FROM_RECENTS";
+
     /** The time delay used to throttle and aggregate writes to disk. */
-    private static final long WRITE_DELAY_MILLIS = 500;
+    private static final Duration WRITE_DELAY = Duration.ofMillis(500);
 
     private final Handler mWriteHandler = BackgroundThread.getHandler();
 
@@ -152,16 +166,19 @@ public final class SafetyCenterService extends SystemService {
         super(context);
         mSafetyCenterResourcesContext = new SafetyCenterResourcesContext(context);
         mSafetyCenterConfigReader = new SafetyCenterConfigReader(mSafetyCenterResourcesContext);
-        mSafetyCenterRefreshTracker = new SafetyCenterRefreshTracker();
+        WestworldLogger westworldLogger = new WestworldLogger(context, mSafetyCenterConfigReader);
+        mSafetyCenterRefreshTracker = new SafetyCenterRefreshTracker(westworldLogger);
         mSafetyCenterDataTracker =
                 new SafetyCenterDataTracker(
                         context,
                         mSafetyCenterResourcesContext,
                         mSafetyCenterConfigReader,
-                        mSafetyCenterRefreshTracker);
+                        mSafetyCenterRefreshTracker,
+                        westworldLogger);
         mSafetyCenterListeners = new SafetyCenterListeners(mSafetyCenterDataTracker);
         mSafetyCenterBroadcastDispatcher =
-                new SafetyCenterBroadcastDispatcher(context, mSafetyCenterRefreshTracker);
+                new SafetyCenterBroadcastDispatcher(
+                        context, mSafetyCenterConfigReader, mSafetyCenterRefreshTracker);
         mAppOpsManager = requireNonNull(context.getSystemService(AppOpsManager.class));
         mDeviceSupportsSafetyCenter =
                 context.getResources()
@@ -188,13 +205,29 @@ public final class SafetyCenterService extends SystemService {
     @Override
     public void onBootPhase(int phase) {
         if (phase == SystemService.PHASE_BOOT_COMPLETED && canUseSafetyCenter()) {
-            Executor foregroundThreadExecutor = ForegroundThread.getExecutor();
-            SafetyCenterEnabledListener listener = new SafetyCenterEnabledListener();
-            // Ensure the listener is called first with the current state on the same thread.
-            foregroundThreadExecutor.execute(listener::setInitialState);
-            DeviceConfig.addOnPropertiesChangedListener(
-                    DeviceConfig.NAMESPACE_PRIVACY, foregroundThreadExecutor, listener);
+            registerSafetyCenterEnabledListener();
+            registerSafetyCenterPullAtomCallback();
         }
+    }
+
+    private void registerSafetyCenterEnabledListener() {
+        Executor foregroundThreadExecutor = ForegroundThread.getExecutor();
+        SafetyCenterEnabledListener listener = new SafetyCenterEnabledListener();
+        // Ensure the listener is called first with the current state on the same thread.
+        foregroundThreadExecutor.execute(listener::setInitialState);
+        DeviceConfig.addOnPropertiesChangedListener(
+                DeviceConfig.NAMESPACE_PRIVACY, foregroundThreadExecutor, listener);
+    }
+
+    private void registerSafetyCenterPullAtomCallback() {
+        StatsManager statsManager =
+                requireNonNull(getContext().getSystemService(StatsManager.class));
+        PullAtomMetadata defaultMetadata = null;
+        statsManager.setPullAtomCallback(
+                SAFETY_STATE,
+                defaultMetadata,
+                BackgroundThread.getExecutor(),
+                new SafetyCenterPullAtomCallback());
     }
 
     /** Service implementation of {@link ISafetyCenterManager.Stub}. */
@@ -300,6 +333,7 @@ public final class SafetyCenterService extends SystemService {
         @Override
         public void refreshSafetySources(@RefreshReason int refreshReason, @UserIdInt int userId) {
             getContext().enforceCallingPermission(MANAGE_SAFETY_CENTER, "refreshSafetySources");
+            RefreshReasons.validate(refreshReason);
             if (!enforceCrossUserPermission("refreshSafetySources", userId)
                     || !checkApiEnabled("refreshSafetySources")) {
                 return;
@@ -335,11 +369,7 @@ public final class SafetyCenterService extends SystemService {
             mAppOpsManager.checkPackage(Binder.getCallingUid(), packageName);
             if (!enforceCrossUserPermission("getSafetyCenterData", userId)
                     || !checkApiEnabled("getSafetyCenterData")) {
-                // This call is thread safe and there is no need to hold the mApiLock
-                @SuppressWarnings("GuardedBy")
-                SafetyCenterData defaultData =
-                        mSafetyCenterDataTracker.getDefaultSafetyCenterData();
-                return defaultData;
+                return SafetyCenterDataTracker.getDefaultSafetyCenterData();
             }
 
             UserProfileGroup userProfileGroup = UserProfileGroup.from(getContext(), userId);
@@ -430,7 +460,7 @@ public final class SafetyCenterService extends SystemService {
                 PendingIntent onDismissPendingIntent =
                         safetySourceIssue.getOnDismissPendingIntent();
                 if (onDismissPendingIntent != null
-                        && !dispatchPendingIntent(onDismissPendingIntent)) {
+                        && !dispatchPendingIntent(onDismissPendingIntent, null)) {
                     Log.w(
                             TAG,
                             "Error dispatching dismissal for issue: "
@@ -466,10 +496,9 @@ public final class SafetyCenterService extends SystemService {
                     SafetyCenterIds.issueActionIdFromString(issueActionId);
             if (!safetyCenterIssueActionId.getSafetyCenterIssueKey().equals(safetyCenterIssueKey)) {
                 throw new IllegalArgumentException(
-                        "issueId: "
-                                + safetyCenterIssueId
-                                + " and issueActionId: "
-                                + safetyCenterIssueActionId
+                        toUserFriendlyString(safetyCenterIssueId)
+                                + " and "
+                                + toUserFriendlyString(safetyCenterIssueActionId)
                                 + " do not match");
             }
             UserProfileGroup userProfileGroup = UserProfileGroup.from(getContext(), userId);
@@ -490,15 +519,14 @@ public final class SafetyCenterService extends SystemService {
                     // button multiple times in a row.
                     return;
                 }
-                if (!dispatchPendingIntent(safetySourceIssueAction.getPendingIntent())) {
+
+                Integer taskId =
+                        safetyCenterIssueId.hasTaskId() ? safetyCenterIssueId.getTaskId() : null;
+                if (!dispatchPendingIntent(safetySourceIssueAction.getPendingIntent(), taskId)) {
                     Log.w(
                             TAG,
                             "Error dispatching action: "
-                                    + safetyCenterIssueActionId.getSafetySourceIssueActionId()
-                                    + ", for issue: "
-                                    + safetyCenterIssueKey.getSafetySourceIssueId()
-                                    + ", of source: "
-                                    + safetyCenterIssueKey.getSafetySourceId());
+                                    + toUserFriendlyString(safetyCenterIssueActionId));
                     CharSequence errorMessage;
                     if (safetySourceIssueAction.willResolve()) {
                         errorMessage =
@@ -513,7 +541,7 @@ public final class SafetyCenterService extends SystemService {
                     return;
                 }
                 if (safetySourceIssueAction.willResolve()) {
-                    mSafetyCenterDataTracker.markSafetyCenterIssueActionAsInFlight(
+                    mSafetyCenterDataTracker.markSafetyCenterIssueActionInFlight(
                             safetyCenterIssueActionId);
                     ResolvingActionTimeout resolvingActionTimeout =
                             new ResolvingActionTimeout(safetyCenterIssueActionId, userProfileGroup);
@@ -534,11 +562,13 @@ public final class SafetyCenterService extends SystemService {
                 return;
             }
 
+            List<UserProfileGroup> userProfileGroups =
+                    UserProfileGroup.getAllUserProfileGroups(getContext());
             synchronized (mApiLock) {
                 // TODO(b/236693607): Should tests leave real data untouched?
                 clearDataLocked();
-                // TODO(b/223550097): Should we dispatch a new listener update here? This call can
-                //  modify the SafetyCenterData.
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroups(
+                        userProfileGroups, true, null);
             }
         }
 
@@ -552,12 +582,14 @@ public final class SafetyCenterService extends SystemService {
                 return;
             }
 
+            List<UserProfileGroup> userProfileGroups =
+                    UserProfileGroup.getAllUserProfileGroups(getContext());
             synchronized (mApiLock) {
                 mSafetyCenterConfigReader.setConfigOverrideForTests(safetyCenterConfig);
                 // TODO(b/236693607): Should tests leave real data untouched?
                 clearDataLocked();
-                // TODO(b/223550097): Should we clear the listeners here? Or should we dispatch a
-                //  new listener update since the SafetyCenterData will have changed?
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroups(
+                        userProfileGroups, true, null);
             }
         }
 
@@ -570,12 +602,14 @@ public final class SafetyCenterService extends SystemService {
                 return;
             }
 
+            List<UserProfileGroup> userProfileGroups =
+                    UserProfileGroup.getAllUserProfileGroups(getContext());
             synchronized (mApiLock) {
                 mSafetyCenterConfigReader.clearConfigOverrideForTests();
                 // TODO(b/236693607): Should tests leave real data untouched?
                 clearDataLocked();
-                // TODO(b/223550097): Should we clear the listeners here? Or should we dispatch a
-                //  new listener update since the SafetyCenterData will have changed?
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroups(
+                        userProfileGroups, true, null);
             }
         }
 
@@ -590,7 +624,7 @@ public final class SafetyCenterService extends SystemService {
             }
             for (int i = 0; i < permissions.length; i++) {
                 if (getContext().checkCallingOrSelfPermission(permissions[i])
-                        == PackageManager.PERMISSION_GRANTED) {
+                        == PERMISSION_GRANTED) {
                     return;
                 }
             }
@@ -614,7 +648,6 @@ public final class SafetyCenterService extends SystemService {
                                 + ", which does not correspond to an existing user");
                 return false;
             }
-            // TODO(b/223132917): Check if user is enabled, running and/or if quiet mode is enabled?
             return true;
         }
 
@@ -640,9 +673,19 @@ public final class SafetyCenterService extends SystemService {
             }
         }
 
-        private boolean dispatchPendingIntent(@NonNull PendingIntent pendingIntent) {
+        private boolean dispatchPendingIntent(
+                @NonNull PendingIntent pendingIntent, @Nullable Integer taskId) {
             try {
-                pendingIntent.send();
+                if (taskId != null
+                        && pendingIntent.isActivity()
+                        && getContext().checkCallingOrSelfPermission(START_TASKS_FROM_RECENTS)
+                                == PERMISSION_GRANTED) {
+                    ActivityOptions options = ActivityOptions.makeBasic();
+                    options.setLaunchTaskId(taskId);
+                    pendingIntent.send(null, 0, null, null, null, null, options.toBundle());
+                } else {
+                    pendingIntent.send();
+                }
                 return true;
             } catch (PendingIntent.CanceledException ex) {
                 Log.w(TAG, "Couldn't dispatch PendingIntent", ex);
@@ -665,11 +708,7 @@ public final class SafetyCenterService extends SystemService {
                             args);
         }
 
-        /**
-         * Dumps state for debugging purposes.
-         *
-         * @param fout {@link PrintWriter} to write to
-         */
+        /** Dumps state for debugging purposes. */
         @Override
         protected void dump(
                 @NonNull FileDescriptor fd, @NonNull PrintWriter fout, @Nullable String[] args) {
@@ -689,7 +728,7 @@ public final class SafetyCenterService extends SystemService {
 
         private boolean checkDumpPermission(@NonNull PrintWriter writer) {
             if (getContext().checkCallingOrSelfPermission(android.Manifest.permission.DUMP)
-                    != PackageManager.PERMISSION_GRANTED) {
+                    != PERMISSION_GRANTED) {
                 writer.println(
                         "Permission Denial: can't dump "
                                 + "safety_center"
@@ -752,8 +791,7 @@ public final class SafetyCenterService extends SystemService {
 
         private void onApiEnabled() {
             synchronized (mApiLock) {
-                List<Broadcast> broadcasts = mSafetyCenterConfigReader.getBroadcasts();
-                mSafetyCenterBroadcastDispatcher.sendEnabledChanged(broadcasts);
+                mSafetyCenterBroadcastDispatcher.sendEnabledChanged();
             }
         }
 
@@ -761,9 +799,47 @@ public final class SafetyCenterService extends SystemService {
             synchronized (mApiLock) {
                 clearDataLocked();
                 mSafetyCenterListeners.clear();
-                List<Broadcast> broadcasts = mSafetyCenterConfigReader.getBroadcasts();
-                mSafetyCenterBroadcastDispatcher.sendEnabledChanged(broadcasts);
+                mSafetyCenterBroadcastDispatcher.sendEnabledChanged();
             }
+        }
+    }
+
+    /**
+     * A {@link StatsPullAtomCallback} that provides data for {@link
+     * PermissionStatsLog#SAFETY_STATE} when called by the {@link StatsManager}.
+     */
+    private final class SafetyCenterPullAtomCallback implements StatsPullAtomCallback {
+
+        private SafetyCenterPullAtomCallback() {}
+
+        @Override
+        public int onPullAtom(int atomTag, @NonNull List<StatsEvent> statsEvents) {
+            if (atomTag != SAFETY_STATE) {
+                Log.w(
+                        TAG,
+                        "Attempt to pull atom: "
+                                + atomTag
+                                + ", but only SAFETY_STATE is supported");
+                return StatsManager.PULL_SKIP;
+            }
+            if (!SafetyCenterFlags.getSafetyCenterEnabled()) {
+                Log.w(TAG, "Attempt to pull SAFETY_STATE, but Safety Center is disabled");
+                return StatsManager.PULL_SKIP;
+            }
+            List<UserProfileGroup> userProfileGroups =
+                    UserProfileGroup.getAllUserProfileGroups(getContext());
+            synchronized (mApiLock) {
+                if (!mSafetyCenterConfigReader.allowsWestworldLogging()) {
+                    Log.w(TAG, "Skipping pulling and writing atoms due to a test config override");
+                    return StatsManager.PULL_SKIP;
+                }
+                Log.i(TAG, "Pulling and writing atoms…");
+                for (int i = 0; i < userProfileGroups.size(); i++) {
+                    mSafetyCenterDataTracker.pullAndWriteAtoms(
+                            userProfileGroups.get(i), statsEvents);
+                }
+            }
+            return StatsManager.PULL_SUCCESS;
         }
     }
 
@@ -784,8 +860,8 @@ public final class SafetyCenterService extends SystemService {
             synchronized (mApiLock) {
                 mSafetyCenterTimeouts.remove(this);
                 ArraySet<SafetySourceKey> stillInFlight =
-                        mSafetyCenterRefreshTracker.clearRefresh(mRefreshBroadcastId);
-                if (stillInFlight == null || stillInFlight.isEmpty()) {
+                        mSafetyCenterRefreshTracker.timeoutRefresh(mRefreshBroadcastId);
+                if (stillInFlight == null) {
                     return;
                 }
                 boolean showErrorEntriesOnTimeout =
@@ -840,8 +916,9 @@ public final class SafetyCenterService extends SystemService {
             synchronized (mApiLock) {
                 mSafetyCenterTimeouts.remove(this);
                 boolean safetyCenterDataHasChanged =
-                        mSafetyCenterDataTracker.unmarkSafetyCenterIssueActionAsInFlight(
-                                mSafetyCenterIssueActionId);
+                        mSafetyCenterDataTracker.unmarkSafetyCenterIssueActionInFlight(
+                                mSafetyCenterIssueActionId,
+                                SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__TIMEOUT);
                 if (!safetyCenterDataHasChanged) {
                     return;
                 }
@@ -858,7 +935,7 @@ public final class SafetyCenterService extends SystemService {
         public String toString() {
             return "ResolvingActionTimeout{"
                     + "mSafetyCenterIssueActionId="
-                    + mSafetyCenterIssueActionId
+                    + toUserFriendlyString(mSafetyCenterIssueActionId)
                     + ", mUserProfileGroup="
                     + mUserProfileGroup
                     + '}';
@@ -941,9 +1018,13 @@ public final class SafetyCenterService extends SystemService {
         UserProfileGroup userProfileGroup = UserProfileGroup.from(getContext(), userId);
         synchronized (mApiLock) {
             mSafetyCenterDataTracker.clearSafetySourceErrors(userProfileGroup);
+
             String refreshBroadcastId =
-                    mSafetyCenterRefreshTracker.reportRefreshInProgress(
+                    mSafetyCenterBroadcastDispatcher.sendRefreshSafetySources(
                             refreshReason, userProfileGroup);
+            if (refreshBroadcastId == null) {
+                return;
+            }
 
             RefreshTimeout refreshTimeout =
                     new RefreshTimeout(refreshBroadcastId, userProfileGroup);
@@ -951,10 +1032,6 @@ public final class SafetyCenterService extends SystemService {
                     refreshTimeout, SafetyCenterFlags.getRefreshSourcesTimeout(refreshReason));
 
             mSafetyCenterListeners.deliverUpdateForUserProfileGroup(userProfileGroup, true, null);
-
-            List<Broadcast> broadcasts = mSafetyCenterConfigReader.getBroadcasts();
-            mSafetyCenterBroadcastDispatcher.sendRefreshSafetySources(
-                    broadcasts, refreshBroadcastId, refreshReason, userProfileGroup);
         }
     }
 
@@ -965,7 +1042,8 @@ public final class SafetyCenterService extends SystemService {
             return;
         }
         if (!mSafetyCenterIssueCacheWriteScheduled) {
-            mWriteHandler.postDelayed(this::writeSafetyCenterIssueCacheFile, WRITE_DELAY_MILLIS);
+            mWriteHandler.postDelayed(
+                    this::writeSafetyCenterIssueCacheFile, WRITE_DELAY.toMillis());
             mSafetyCenterIssueCacheWriteScheduled = true;
         }
     }
@@ -1018,14 +1096,9 @@ public final class SafetyCenterService extends SystemService {
         scheduleWriteSafetyCenterIssueCacheFileIfNeededLocked();
     }
 
-    /**
-     * Dumps state for debugging purposes.
-     *
-     * @param fd underlying {@link FileDescriptor} being written
-     * @param fout {@link PrintWriter} to write to
-     */
+    /** Dumps state for debugging purposes. */
     @GuardedBy("mApiLock")
-    void dumpLocked(@NonNull FileDescriptor fd, @NonNull PrintWriter fout) {
+    private void dumpLocked(@NonNull FileDescriptor fd, @NonNull PrintWriter fout) {
         fout.println("SERVICE");
         fout.println(
                 "\tSafetyCenterService{"
