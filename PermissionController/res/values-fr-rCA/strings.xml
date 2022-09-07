@@ -204,7 +204,7 @@
     <string name="unused_apps_label" msgid="2595428768404901064">"Retirer autorisations et libérer espace"</string>
     <string name="unused_apps_label_v2" msgid="7058776770056517980">"Suspendre l\'activité appli si inutilisée"</string>
     <string name="unused_apps_summary" msgid="8839466950318403115">"Retirer les autorisations, supprimer les fichiers temporaires et arrêter les notifications"</string>
-    <string name="auto_revoke_summary" msgid="5867548789805911683">"Afin de protéger vos données, les autorisations pour cette application seront supprimées si elle n\'est pas utilisée pendant quelques mois."</string>
+    <string name="auto_revoke_summary" msgid="5867548789805911683">"Afin de protéger vos données, les autorisations pour cette application seront retirées si elle n\'est pas utilisée pendant quelques mois."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"Afin de protéger vos données, si l\'application n\'est pas utilisée pendant quelques mois, les autorisations suivantes seront supprimées : <xliff:g id="PERMS">%1$s</xliff:g>"</string>
     <string name="auto_revoked_apps_page_summary" msgid="6594753657893756536">"Afin de protéger vos données, les autorisations ont été supprimées pour les applications que vous n\'avez pas utilisées depuis quelques mois."</string>
     <string name="auto_revoke_open_app_message" msgid="8075556291711205039">"Pour accorder les autorisations de nouveau, ouvrez l\'application."</string>
@@ -265,7 +265,7 @@
     <string name="unused_apps_notification_title" msgid="4314832015894238019">"{count,plural, =1{# application non utilisée}one{# application non utilisée}other{# applications non utilisées}}"</string>
     <string name="unused_apps_notification_content" msgid="9195026773244581246">"Les autorisations et les fichiers temporaires ont été retirés, et les notifications ont été arrêtées. Touchez pour examiner."</string>
     <string name="unused_apps_safety_center_card_title" msgid="5638409355530099149">"Voir les applications qui n\'ont plus leurs autorisations"</string>
-    <string name="unused_apps_safety_center_card_content" msgid="1088557243627427820">"Pour les applications que vous n\'avez pas utilisées depuis un moment, les autorisations et les fichiers temporaires ont été supprimés et les notifications ont été désactivées."</string>
+    <string name="unused_apps_safety_center_card_content" msgid="1088557243627427820">"Pour les applications que vous n\'avez pas utilisées depuis un moment, les autorisations et les fichiers temporaires ont été retirés, et les notifications ont été désactivées."</string>
     <string name="unused_apps_safety_center_action_title" msgid="8865914432518993194">"Voir les applications"</string>
     <string name="post_drive_permission_decision_reminder_title" msgid="1290697371418139976">"Vérifiez les autorisations récentes"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_1_permission" msgid="670521503734140711">"Pendant la conduite, vous avez donné à <xliff:g id="APP">%1$s</xliff:g> l\'accès à <xliff:g id="PERMISSION">%2$s</xliff:g>"</string>
@@ -283,7 +283,7 @@
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Cette application peut toujours accéder à votre position. Touchez l\'écran pour modifier cela."</string>
     <string name="notification_listener_reminder_notification_title" msgid="3747210460187479091">"Voir l\'application ayant accès à vos notifications"</string>
     <string name="notification_listener_reminder_notification_content" msgid="831476101108863427">"<xliff:g id="APP_NAME">%s</xliff:g> peut ignorer et gérer le contenu de vos notifications de même qu\'y accéder"</string>
-    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"Cette application peut ignorer et gérer le contenu de vos notifications de même qu\'y accéder. Certaines applications ont besoin de cet accès pour fonctionner correctement."</string>
+    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"Cette application peut ignorer le contenu de vos notifications, y accéder et le gérer. Certaines applications ont besoin de cet accès pour fonctionner correctement."</string>
     <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Retirer l\'accès"</string>
     <string name="notification_listener_review_app_button_label" msgid="3433073281029143924">"Afficher d\'autres options"</string>
     <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Accès retiré"</string>
@@ -518,7 +518,7 @@
     <string name="safety_center_rescan_button" msgid="4517514567809409596">"Analyser l\'appareil"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Fermer"</string>
     <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Ignorer cette alerte?"</string>
-    <string name="safety_center_issue_card_dismiss_confirmation_message" msgid="3775418736671093563">"Passer en revue les paramètres de sécurité et de confidentialité à tout moment pour ajouter une protection"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_message" msgid="3775418736671093563">"Passez en revue les paramètres de sécurité et de confidentialité à tout moment pour ajouter une protection"</string>
     <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Fermer"</string>
     <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Annuler"</string>
     <string name="safety_center_entries_category_title" msgid="34356964062813115">"Paramètres"</string>
