@@ -22,13 +22,11 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/full_card"
-        style="@style/SafetyCenterIndicatorForeground">
+        android:id="@+id/full_card">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/indicator_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/SafetyCenterIndicatorForeground">
+        android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/indicator_icon"
             style="@style/SafetyCenterIndicatorImageView"
@@ -63,8 +61,7 @@
         android:id="@+id/expanded_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        style="@style/SafetyCenterIndicatorForeground">
+        android:visibility="gone">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/primary_button"
             style="@style/SafetyCenterIndicatorActionButton"

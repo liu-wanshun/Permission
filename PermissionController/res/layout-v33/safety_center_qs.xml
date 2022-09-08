@@ -19,8 +19,7 @@
     android:id="@+id/nested_scroll_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clipChildren="false"
-    android:contentDescription="@string/safety_center_qs_page_landing">
+    android:clipChildren="false">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +37,7 @@
             android:src="@drawable/ic_close"
             android:tint="?android:attr/textColorPrimary"
             android:background="?android:colorBackground"
-            android:contentDescription="@string/safety_center_qs_close_button"/>
+            android:contentDescription="@string/security_privacy_qs_close_button"/>
 
         <FrameLayout
             android:id="@+id/safety_center_prefs"

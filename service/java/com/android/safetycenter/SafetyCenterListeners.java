@@ -27,7 +27,6 @@ import android.os.RemoteException;
 import android.safetycenter.IOnSafetyCenterDataChangedListener;
 import android.safetycenter.SafetyCenterData;
 import android.safetycenter.SafetyCenterErrorDetails;
-import android.util.ArrayMap;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -49,21 +48,17 @@ final class SafetyCenterListeners {
 
     private static final String TAG = "SafetyCenterListeners";
 
-    @NonNull private final SafetyCenterDataTracker mSafetyCenterDataTracker;
-
     private final SparseArray<RemoteCallbackList<IOnSafetyCenterDataChangedListener>>
             mSafetyCenterDataChangedListeners = new SparseArray<>();
 
-    /** Creates a {@link SafetyCenterListeners} with the given {@link SafetyCenterDataTracker}. */
-    SafetyCenterListeners(@NonNull SafetyCenterDataTracker safetyCenterDataTracker) {
-        mSafetyCenterDataTracker = safetyCenterDataTracker;
-    }
+    /** Creates a {@link SafetyCenterListeners}. */
+    SafetyCenterListeners() {}
 
     /**
      * Delivers a {@link SafetyCenterData} and/or {@link SafetyCenterErrorDetails} update to a
      * single {@link IOnSafetyCenterDataChangedListener}.
      */
-    static void deliverUpdateForListener(
+    static void deliverUpdate(
             @NonNull IOnSafetyCenterDataChangedListener listener,
             @Nullable SafetyCenterData safetyCenterData,
             @Nullable SafetyCenterErrorDetails safetyCenterErrorDetails) {
@@ -84,56 +79,49 @@ final class SafetyCenterListeners {
     }
 
     /**
-     * Delivers a {@link SafetyCenterData} and {@link SafetyCenterErrorDetails} update on all
-     * listeners of the given {@link UserProfileGroup}, if applicable.
-     *
-     * @param userProfileGroup the {@link UserProfileGroup} to deliver this update on
-     * @param updateSafetyCenterData whether a new {@link SafetyCenterData} should be computed and
-     *     delivered to listeners
-     * @param safetyCenterErrorDetails the relevant {@link SafetyCenterErrorDetails} to deliver to
-     *     listeners, if any
+     * Delivers a {@link SafetyCenterData} and/or {@link SafetyCenterErrorDetails} update to all the
+     * listeners in the given {@link UserProfileGroup}.
      */
     void deliverUpdateForUserProfileGroup(
             @NonNull UserProfileGroup userProfileGroup,
-            boolean updateSafetyCenterData,
+            @Nullable SafetyCenterData safetyCenterData,
             @Nullable SafetyCenterErrorDetails safetyCenterErrorDetails) {
-        boolean needToUpdateListeners = updateSafetyCenterData || safetyCenterErrorDetails != null;
-        if (!needToUpdateListeners) {
-            return;
-        }
-
-        ArrayMap<String, SafetyCenterData> safetyCenterDataCache = new ArrayMap<>();
-        deliverUpdateForUser(
+        deliverUpdateForUserId(
                 userProfileGroup.getProfileParentUserId(),
-                userProfileGroup,
-                safetyCenterDataCache,
-                updateSafetyCenterData,
+                safetyCenterData,
                 safetyCenterErrorDetails);
-
-        int[] managedRunningProfilesUserIds = userProfileGroup.getManagedRunningProfilesUserIds();
-        for (int i = 0; i < managedRunningProfilesUserIds.length; i++) {
-            int managedRunningProfileUserId = managedRunningProfilesUserIds[i];
-
-            deliverUpdateForUser(
-                    managedRunningProfileUserId,
-                    userProfileGroup,
-                    safetyCenterDataCache,
-                    updateSafetyCenterData,
-                    safetyCenterErrorDetails);
+        int[] managedProfilesUserIds = userProfileGroup.getManagedProfilesUserIds();
+        for (int i = 0; i < managedProfilesUserIds.length; i++) {
+            deliverUpdateForUserId(
+                    managedProfilesUserIds[i], safetyCenterData, safetyCenterErrorDetails);
         }
     }
 
     /**
-     * Adds a {@link IOnSafetyCenterDataChangedListener} for the given {@code packageName} and
-     * {@code userId}.
+     * Returns whether there are any {@link IOnSafetyCenterDataChangedListener}s registered for the
+     * given {@link UserProfileGroup}.
+     */
+    boolean hasListenersForUserProfileGroup(@NonNull UserProfileGroup userProfileGroup) {
+        if (hasListenersForUserId(userProfileGroup.getProfileParentUserId())) {
+            return true;
+        }
+        int[] managedProfilesUserIds = userProfileGroup.getManagedProfilesUserIds();
+        for (int i = 0; i < managedProfilesUserIds.length; i++) {
+            if (hasListenersForUserId(managedProfilesUserIds[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Adds a {@link IOnSafetyCenterDataChangedListener} for the given {@code userId}.
      *
      * <p>Returns whether the callback was successfully registered. Returns {@code true} if the
      * callback was already registered.
      */
     boolean addListener(
-            @NonNull IOnSafetyCenterDataChangedListener listener,
-            @NonNull String packageName,
-            @UserIdInt int userId) {
+            @NonNull IOnSafetyCenterDataChangedListener listener, @UserIdInt int userId) {
         RemoteCallbackList<IOnSafetyCenterDataChangedListener> listeners =
                 mSafetyCenterDataChangedListeners.get(userId);
         if (listeners == null) {
@@ -141,7 +129,7 @@ final class SafetyCenterListeners {
             mSafetyCenterDataChangedListeners.put(userId, listeners);
         }
         OnSafetyCenterDataChangedListenerWrapper listenerWrapper =
-                new OnSafetyCenterDataChangedListenerWrapper(listener, packageName);
+                new OnSafetyCenterDataChangedListenerWrapper(listener);
         return listeners.register(listenerWrapper);
     }
 
@@ -189,11 +177,9 @@ final class SafetyCenterListeners {
         mSafetyCenterDataChangedListeners.clear();
     }
 
-    private void deliverUpdateForUser(
+    private void deliverUpdateForUserId(
             @UserIdInt int userId,
-            @NonNull UserProfileGroup userProfileGroup,
-            @NonNull ArrayMap<String, SafetyCenterData> safetyCenterDataCache,
-            boolean updateSafetyCenterData,
+            @Nullable SafetyCenterData safetyCenterData,
             @Nullable SafetyCenterErrorDetails safetyCenterErrorDetails) {
         RemoteCallbackList<IOnSafetyCenterDataChangedListener> listenersForUserId =
                 mSafetyCenterDataChangedListeners.get(userId);
@@ -203,25 +189,21 @@ final class SafetyCenterListeners {
         int i = listenersForUserId.beginBroadcast();
         while (i > 0) {
             i--;
-            OnSafetyCenterDataChangedListenerWrapper listenerWrapper =
-                    (OnSafetyCenterDataChangedListenerWrapper)
-                            listenersForUserId.getBroadcastItem(i);
-            SafetyCenterData safetyCenterData = null;
-            if (updateSafetyCenterData) {
-                String packageName = listenerWrapper.getPackageName();
-                SafetyCenterData cachedSafetyCenterData = safetyCenterDataCache.get(packageName);
-                if (cachedSafetyCenterData != null) {
-                    safetyCenterData = cachedSafetyCenterData;
-                } else {
-                    safetyCenterData =
-                            mSafetyCenterDataTracker.getSafetyCenterData(
-                                    packageName, userProfileGroup);
-                    safetyCenterDataCache.put(packageName, safetyCenterData);
-                }
-            }
-            deliverUpdateForListener(listenerWrapper, safetyCenterData, safetyCenterErrorDetails);
+            deliverUpdate(
+                    listenersForUserId.getBroadcastItem(i),
+                    safetyCenterData,
+                    safetyCenterErrorDetails);
         }
         listenersForUserId.finishBroadcast();
+    }
+
+    private boolean hasListenersForUserId(@UserIdInt int userId) {
+        RemoteCallbackList<IOnSafetyCenterDataChangedListener> listenersForUserId =
+                mSafetyCenterDataChangedListeners.get(userId);
+        if (listenersForUserId == null) {
+            return false;
+        }
+        return listenersForUserId.getRegisteredCallbackCount() != 0;
     }
 
     /**
@@ -232,15 +214,12 @@ final class SafetyCenterListeners {
             implements IOnSafetyCenterDataChangedListener {
 
         @NonNull private final IOnSafetyCenterDataChangedListener mDelegate;
-        @NonNull private final String mPackageName;
-
         private final AtomicReference<SafetyCenterData> mLastSafetyCenterData =
                 new AtomicReference<>();
 
         OnSafetyCenterDataChangedListenerWrapper(
-                @NonNull IOnSafetyCenterDataChangedListener delegate, @NonNull String packageName) {
+                @NonNull IOnSafetyCenterDataChangedListener delegate) {
             mDelegate = delegate;
-            mPackageName = packageName;
         }
 
         @Override
@@ -261,11 +240,6 @@ final class SafetyCenterListeners {
         @Override
         public IBinder asBinder() {
             return mDelegate.asBinder();
-        }
-
-        @NonNull
-        public String getPackageName() {
-            return mPackageName;
         }
     }
 }

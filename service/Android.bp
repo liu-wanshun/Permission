@@ -35,22 +35,30 @@ filegroup {
     visibility: ["//frameworks/base"],
 }
 
-java_library {
+gensrcs {
     name: "service-permission-streaming-proto-java-gen",
-    proto: {
-        type: "stream",
-        include_dirs: [
-            "external/protobuf/src",
-        ],
-    },
-    srcs: [":service-permission-streaming-proto-sources"],
-    installable: false,
-    min_sdk_version: "30",
-    sdk_version: "system_server_current",
-    apex_available: [
-        "com.android.permission",
-        "test_com.android.permission",
+    depfile: true,
+
+    tools: [
+        "aprotoc",
+        "protoc-gen-javastream",
+        "soong_zip",
     ],
+
+    cmd: "mkdir -p $(genDir)/$(in) " +
+        "&& $(location aprotoc) " +
+        "  --plugin=$(location protoc-gen-javastream) " +
+        "  --dependency_out=$(depfile) " +
+        "  --javastream_out=$(genDir)/$(in) " +
+        "  -Iexternal/protobuf/src " +
+        "  -I . " +
+        "  $(in) " +
+        "&& $(location soong_zip) -jar -o $(out) -C $(genDir)/$(in) -D $(genDir)/$(in)",
+
+    srcs: [
+        ":service-permission-streaming-proto-sources",
+    ],
+    output_extension: "srcjar",
 }
 
 java_library {
@@ -83,6 +91,7 @@ java_sdk_library {
     ],
     srcs: [
         ":service-permission-java-sources",
+        ":service-permission-streaming-proto-java-gen",
     ],
     libs: [
         "androidx.annotation_annotation",
@@ -108,11 +117,7 @@ java_sdk_library {
         "safety-center-persistence",
         "safety-center-resources-lib",
         "service-permission-shared",
-        "service-permission-streaming-proto-java-gen",
     ],
-    errorprone: {
-        javacflags: ["-Xep:GuardedBy:ERROR"],
-    },
     exclude_kotlinc_generated_files: true,
     jarjar_rules: ":permission-jarjar-rules",
     kotlincflags: [

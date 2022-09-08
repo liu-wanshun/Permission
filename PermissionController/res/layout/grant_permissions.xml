@@ -29,7 +29,6 @@
     <LinearLayout
         android:id="@+id/grant_singleton"
         android:importantForAccessibility="no"
-        android:focusable="false"
         style="@style/PermissionGrantSingleton">
 
         <!-- The dialog -->

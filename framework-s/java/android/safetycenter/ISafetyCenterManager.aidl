@@ -78,11 +78,10 @@ interface ISafetyCenterManager {
     /**
      * Returns the current SafetyCenterData, assembled from the SafetySourceData from all sources.
      */
-    SafetyCenterData getSafetyCenterData(String packageName, int userId);
+    SafetyCenterData getSafetyCenterData(int userId);
 
     void addOnSafetyCenterDataChangedListener(
             IOnSafetyCenterDataChangedListener listener,
-            String packageName,
             int userId);
 
     void removeOnSafetyCenterDataChangedListener(

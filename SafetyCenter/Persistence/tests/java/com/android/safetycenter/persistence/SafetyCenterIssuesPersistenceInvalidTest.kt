@@ -16,6 +16,8 @@
 
 package com.android.safetycenter.persistence
 
+import android.os.Build.VERSION_CODES.TIRAMISU
+import androidx.test.filters.SdkSuppress
 import com.android.safetycenter.persistence.PersistenceConstants.PATH
 import com.google.common.truth.Truth.assertThat
 import java.io.File
@@ -25,6 +27,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
 @RunWith(Parameterized::class)
+@SdkSuppress(minSdkVersion = TIRAMISU, codeName = "Tiramisu")
 class SafetyCenterIssuesPersistenceInvalidTest {
 
     data class Params(
@@ -104,7 +107,10 @@ class SafetyCenterIssuesPersistenceInvalidTest {
                     "Element issue invalid",
                     "Required attribute key missing"),
                 Params(
-                    "MissingVersion", "invalid_file_missing_version.xml", "Missing version", null),
+                    "MissingVersion",
+                    "invalid_file_missing_version.xml",
+                    "Missing version",
+                    null),
                 Params("WrongRoot", "invalid_file_wrong_root.xml", "Element issues missing", null),
                 Params(
                     "WrongVersion",

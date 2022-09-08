@@ -579,9 +579,6 @@ public class GrantPermissionsActivity extends SettingsActivity
 
     @Override
     public void onBackPressed() {
-        if (mViewHandler == null) {
-            return;
-        }
         mViewHandler.onBackPressed();
     }
 

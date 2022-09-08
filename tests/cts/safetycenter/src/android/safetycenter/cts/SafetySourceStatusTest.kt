@@ -20,6 +20,7 @@ import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Context
 import android.content.Intent
+import android.os.Build.VERSION_CODES.TIRAMISU
 import android.safetycenter.SafetySourceData.SEVERITY_LEVEL_CRITICAL_WARNING
 import android.safetycenter.SafetySourceData.SEVERITY_LEVEL_INFORMATION
 import android.safetycenter.SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED
@@ -31,6 +32,7 @@ import android.safetycenter.cts.testing.Generic
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.os.ParcelableSubject.assertThat
+import androidx.test.filters.SdkSuppress
 import com.android.permission.testing.EqualsHashCodeToStringTester
 import com.google.common.truth.Truth.assertThat
 import kotlin.test.assertFailsWith
@@ -39,6 +41,7 @@ import org.junit.runner.RunWith
 
 /** CTS tests for [SafetySourceStatus]. */
 @RunWith(AndroidJUnit4::class)
+@SdkSuppress(minSdkVersion = TIRAMISU, codeName = "Tiramisu")
 class SafetySourceStatusTest {
     private val context: Context = getApplicationContext()
 

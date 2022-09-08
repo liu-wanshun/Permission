@@ -16,7 +16,6 @@
 
 package android.safetycenter.cts.testing
 
-import android.content.Context
 import android.content.Intent.ACTION_SAFETY_CENTER
 import android.content.res.Resources
 import android.safetycenter.SafetySourceData
@@ -26,7 +25,6 @@ import android.safetycenter.config.SafetySource.SAFETY_SOURCE_TYPE_DYNAMIC
 import android.safetycenter.config.SafetySource.SAFETY_SOURCE_TYPE_ISSUE_ONLY
 import android.safetycenter.config.SafetySource.SAFETY_SOURCE_TYPE_STATIC
 import android.safetycenter.config.SafetySourcesGroup
-import android.safetycenter.cts.testing.SettingsPackage.getSettingsPackageName
 
 /**
  * A class that provides [SafetyCenterConfig] objects and associated constants to facilitate setting
@@ -40,12 +38,6 @@ object SafetyCenterCtsConfigs {
      * [NO_PAGE_OPEN_CONFIG].
      */
     const val SINGLE_SOURCE_ID = "cts_single_source_id"
-
-    /** ID of the only source provided in [SINGLE_SOURCE_ALL_PROFILE_CONFIG]. */
-    const val SINGLE_SOURCE_ALL_PROFILE_ID = "cts_single_source_all_profile_id"
-
-    /** ID of the only source provided in [ISSUE_ONLY_SOURCE_ALL_PROFILE_CONFIG]. */
-    const val ISSUE_ONLY_ALL_PROFILE_SOURCE_ID = "cts_issue_only_all_profile_id"
 
     /**
      * ID of the only [SafetySourcesGroup] provided by [SINGLE_SOURCE_CONFIG],
@@ -132,7 +124,7 @@ object SafetyCenterCtsConfigs {
     /**
      * ID of a source provided by [COMPLEX_CONFIG], this is a dynamic, primary profile only,
      * disabled by default source belonging to the [OTHER_PACKAGE_NAME] package for which only the
-     * required fields are set.
+     * required fields are set
      */
     const val DYNAMIC_OTHER_PACKAGE_ID = "dynamic_other_package"
 
@@ -219,30 +211,6 @@ object SafetyCenterCtsConfigs {
     /** Package name the [DYNAMIC_OTHER_PACKAGE_ID] source used in [COMPLEX_CONFIG]. */
     const val OTHER_PACKAGE_NAME = "other_package_name"
 
-    /** A Simple [SafetyCenterConfig] with an issue only source. */
-    val ISSUE_ONLY_SOURCE_CONFIG =
-        singleSourceConfig(issueOnlySafetySourceBuilder(ISSUE_ONLY_ALL_OPTIONAL_ID).build())
-
-    /** A Simple [SafetyCenterConfig] with an issue only source supporting all profiles. */
-    val ISSUE_ONLY_SOURCE_ALL_PROFILE_CONFIG =
-        singleSourceConfig(
-            SafetySource.Builder(SAFETY_SOURCE_TYPE_ISSUE_ONLY)
-                .setId(ISSUE_ONLY_ALL_PROFILE_SOURCE_ID)
-                .setPackageName(CTS_PACKAGE_NAME)
-                .setProfile(SafetySource.PROFILE_ALL)
-                .setRefreshOnPageOpenAllowed(true)
-                .build())
-
-    /** A dynamic PROFILE_ALL source provided by [SINGLE_SOURCE_ALL_PROFILE_CONFIG]. */
-    val DYNAMIC_ALL_PROFILE_SAFETY_SOURCE =
-        dynamicSafetySourceBuilder(SINGLE_SOURCE_ALL_PROFILE_ID)
-            .setProfile(SafetySource.PROFILE_ALL)
-            .setTitleForWorkResId(android.R.string.paste)
-            .build()
-
-    /** A simple [SafetyCenterConfig] with a source supporting all profiles. */
-    val SINGLE_SOURCE_ALL_PROFILE_CONFIG = singleSourceConfig(DYNAMIC_ALL_PROFILE_SAFETY_SOURCE)
-
     /** A simple [SafetyCenterConfig] for CTS tests with multiple sources. */
     val MULTIPLE_SOURCES_CONFIG =
         SafetyCenterConfig.Builder()
@@ -267,13 +235,6 @@ object SafetyCenterCtsConfigs {
             .setSummaryResId(android.R.string.autofill)
             .build()
 
-    /** Source provided by [STATIC_ALL_PROFILE_CONFIG]. */
-    val STATIC_ALL_PROFILE_SOURCE =
-        staticSafetySourceBuilder("cts_static_all_profile_source_id")
-            .setProfile(SafetySource.PROFILE_ALL)
-            .setTitleForWorkResId(android.R.string.dialog_alert_title)
-            .build()
-
     /** Source provided by [STATIC_SOURCES_CONFIG]. */
     val STATIC_SOURCE_2 =
         staticSafetySourceBuilder("cts_static_source_id_2")
@@ -293,16 +254,6 @@ object SafetyCenterCtsConfigs {
             .build()
 
     /**
-     * Source group provided by [STATIC_ALL_PROFILE_SOURCES_CONFIG] containing a single source of id
-     * [STATIC_GROUP_ID].
-     */
-    val STATIC_ALL_PROFILE_SOURCE_GROUP =
-        safetySourcesGroupBuilder(STATIC_GROUP_ID)
-            .setSummaryResId(Resources.ID_NULL)
-            .addSafetySource(STATIC_ALL_PROFILE_SOURCE)
-            .build()
-
-    /**
      * Source group provided by [STATIC_SOURCES_CONFIG] containing a single source of id
      * [STATIC_SOURCE_2].
      */
@@ -318,41 +269,6 @@ object SafetyCenterCtsConfigs {
         SafetyCenterConfig.Builder()
             .addSafetySourcesGroup(STATIC_SOURCE_GROUP_1)
             .addSafetySourcesGroup(STATIC_SOURCE_GROUP_2)
-            .build()
-
-    /** A simple [SafetyCenterConfig] for CTS tests with static all profile source. */
-    val STATIC_ALL_PROFILE_SOURCES_CONFIG =
-        SafetyCenterConfig.Builder().addSafetySourcesGroup(STATIC_ALL_PROFILE_SOURCE_GROUP).build()
-
-    /** [SafetyCenterConfig] used in CTS tests for Your Work Policy Info source. */
-    fun Context.getWorkPolicyInfoConfig() =
-        SafetyCenterConfig.Builder()
-            .addSafetySourcesGroup(
-                SafetySourcesGroup.Builder()
-                    .setId("AndroidAdvancedSources")
-                    .setTitleResId(android.R.string.paste)
-                    .addSafetySource(
-                        SafetySource.Builder(SAFETY_SOURCE_TYPE_DYNAMIC)
-                            .setId("AndroidWorkPolicyInfo")
-                            .setPackageName(packageManager.permissionControllerPackageName)
-                            .setProfile(SafetySource.PROFILE_PRIMARY)
-                            .setRefreshOnPageOpenAllowed(true)
-                            .setInitialDisplayState(SafetySource.INITIAL_DISPLAY_STATE_HIDDEN)
-                            .build())
-                    .build())
-            .build()
-
-    /** [SafetyCenterConfig] used in CTS tests to replicate the lock screen source. */
-    fun Context.getLockScreenSourceConfig() =
-        SafetyCenterConfig.Builder()
-            .addSafetySourcesGroup(
-                safetySourcesGroupBuilder("AndroidLockScreenSources")
-                    .addSafetySource(
-                        dynamicSafetySourceBuilder("AndroidLockScreen")
-                            .setPackageName(getSettingsPackageName())
-                            .setInitialDisplayState(SafetySource.INITIAL_DISPLAY_STATE_DISABLED)
-                            .build())
-                    .build())
             .build()
 
     /**

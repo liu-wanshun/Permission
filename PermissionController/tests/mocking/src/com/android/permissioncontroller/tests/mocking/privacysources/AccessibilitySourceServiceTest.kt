@@ -347,7 +347,7 @@ class AccessibilitySourceServiceTest {
     }
 
     private fun getNotifiedComponents(): Set<AccessibilityComponent> = runBlocking {
-        accessibilitySourceService.loadNotifiedComponentsLocked().toSet()
+        accessibilitySourceService.loadNotifiedComponentsLocked()
     }
 
     private fun <R> runWithShellPermissionIdentity(block: () -> R): R {

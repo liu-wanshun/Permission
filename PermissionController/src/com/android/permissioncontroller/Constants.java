@@ -249,12 +249,6 @@ public class Constants {
             "com.android.permissioncontroller.extra.SESSION_ID";
 
     /**
-     * Intent extra used to pass privacy source details to safety center.
-     */
-    public static final String EXTRA_PRIVACY_SOURCE =
-            "com.android.permissioncontroller.extra.PRIVACY_SOURCE";
-
-    /**
      * Invalid session id.
      */
     public static final long INVALID_SESSION_ID = 0;
@@ -282,21 +276,6 @@ public class Constants {
      * Package name of the Android platform.
      */
     public static final String OS_PACKAGE_NAME = "android";
-
-    /**
-     * Source id for safety center source for unused apps.
-     */
-    public static final String UNUSED_APPS_SAFETY_CENTER_SOURCE_ID = "AndroidPermissionAutoRevoke";
-
-    /**
-     * Issue id for safety center issue for unused apps.
-     */
-    public static final String UNUSED_APPS_SAFETY_CENTER_ISSUE_ID = "unused_apps_issue";
-
-    /**
-     * Action id for safety center "See unused apps" action.
-     */
-    public static final String UNUSED_APPS_SAFETY_CENTER_SEE_UNUSED_APPS_ID = "see_unused_apps";
 
     // TODO(b/231624295) add to API
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
