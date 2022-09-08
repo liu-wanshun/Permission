@@ -144,9 +144,31 @@ public class IssueCardPreference extends Preference implements ComparablePrefere
             }
         }
 
+        configureSafetyProtectionView(holder);
+
         mSafetyCenterViewModel
                 .getInteractionLogger()
                 .recordForIssue(Action.SAFETY_ISSUE_VIEWED, mIssue);
+    }
+
+    private void configureSafetyProtectionView(PreferenceViewHolder holder) {
+        View safetyProtectionSectionView =
+                holder.findViewById(R.id.issue_card_protected_by_android);
+        if (safetyProtectionSectionView.getVisibility() == View.GONE) {
+            holder.itemView.setPaddingRelative(
+                    holder.itemView.getPaddingStart(),
+                    holder.itemView.getPaddingTop(),
+                    holder.itemView.getPaddingEnd(),
+                    /* bottom = */ getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.sc_card_margin_bottom));
+        } else {
+            holder.itemView.setPaddingRelative(
+                    holder.itemView.getPaddingStart(),
+                    holder.itemView.getPaddingTop(),
+                    holder.itemView.getPaddingEnd(),
+                    /* bottom = */ 0);
+        }
     }
 
     public int getSeverityLevel() {
@@ -167,7 +189,7 @@ public class IssueCardPreference extends Preference implements ComparablePrefere
             dismissButton.setVisibility(View.VISIBLE);
 
             SafetyCenterTouchTarget.configureSize(
-                    dismissButton, R.dimen.safety_center_icon_button_touch_target_size);
+                    dismissButton, R.dimen.sc_icon_button_touch_target_size);
         } else {
             dismissButton.setVisibility(View.GONE);
         }
@@ -298,8 +320,7 @@ public class IssueCardPreference extends Preference implements ComparablePrefere
                         getSecondaryButtonStrokeColorFromSeverity(mIssue.getSeverityLevel())));
 
         int margin =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.safety_center_action_button_list_margin);
+                context.getResources().getDimensionPixelSize(R.dimen.sc_action_button_list_margin);
         ViewGroup.MarginLayoutParams layoutParams =
                 new ViewGroup.MarginLayoutParams(MATCH_PARENT, WRAP_CONTENT);
         layoutParams.setMargins(0, margin, 0, 0);

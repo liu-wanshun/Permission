@@ -19,10 +19,18 @@ package com.android.safetycenter;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 
 import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED;
+import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__COMPLETE_GET_NEW_DATA;
+import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__COMPLETE_RESCAN;
+import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__EVENT_TYPE_UNKNOWN;
 import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__INLINE_ACTION;
+import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__SINGLE_SOURCE_GET_NEW_DATA;
+import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__SINGLE_SOURCE_RESCAN;
 import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__ERROR;
 import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__SUCCESS;
 import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__TIMEOUT;
+import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_MANAGED;
+import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_PERSONAL;
+import static com.android.permission.PermissionStatsLog.SAFETY_CENTER_SYSTEM_EVENT_REPORTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_UNKNOWN;
 import static com.android.permission.PermissionStatsLog.SAFETY_SOURCE_STATE_COLLECTED;
 import static com.android.permission.PermissionStatsLog.SAFETY_SOURCE_STATE_COLLECTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_MANAGED;
 import static com.android.permission.PermissionStatsLog.SAFETY_SOURCE_STATE_COLLECTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_PERSONAL;
@@ -41,6 +49,8 @@ import android.annotation.IntDef;
 import android.annotation.NonNull;
 import android.annotation.UserIdInt;
 import android.content.Context;
+import android.safetycenter.SafetyCenterManager;
+import android.safetycenter.SafetyCenterManager.RefreshRequestType;
 import android.safetycenter.SafetyCenterStatus;
 import android.safetycenter.SafetySourceData;
 import android.util.Log;
@@ -58,15 +68,23 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.util.List;
+
+import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Marshalls and writes atoms to Westworld. Contains implementation details of how atom parameters
  * are encoded and provides a better-typed interface for other classes to call.
+ *
+ * <p>This class isn't thread safe. Thread safety must be handled by the caller.
  */
 @RequiresApi(TIRAMISU)
+@NotThreadSafe
 final class WestworldLogger {
 
     private static final String TAG = "WestworldLogger";
+    private static final long UNSET_SOURCE_ID = 0;
+    private static final long UNSET_ISSUE_TYPE_ID = 0;
 
     @IntDef(
             prefix = {"SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__"},
@@ -76,24 +94,36 @@ final class WestworldLogger {
                 SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__TIMEOUT
             })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface SystemEventResult {}
+    @interface SystemEventResult {}
 
     @NonNull private final Context mContext;
+    @NonNull private final SafetyCenterConfigReader mSafetyCenterConfigReader;
 
-    WestworldLogger(@NonNull Context context) {
+    WestworldLogger(
+            @NonNull Context context, @NonNull SafetyCenterConfigReader safetyCenterConfigReader) {
         mContext = context;
+        mSafetyCenterConfigReader = safetyCenterConfigReader;
     }
 
-    /** Constructs a new {@link PermissionStatsLog#SAFETY_STATE} {@link StatsEvent}. */
-    public static StatsEvent newSafetyStateEvent(
+    /**
+     * Pulls a {@link PermissionStatsLog#SAFETY_STATE} {@link StatsEvent} with the given parameters
+     * into {@code statsEvents}.
+     */
+    void pullSafetyStateEvent(
             @SafetyCenterStatus.OverallSeverityLevel int severityLevel,
             long openIssueCount,
-            long dismissedIssueCount) {
-        return PermissionStatsLog.buildStatsEvent(
-                SAFETY_STATE,
-                toSafetyStateOverallSeverityLevel(severityLevel),
-                openIssueCount,
-                dismissedIssueCount);
+            long dismissedIssueCount,
+            @NonNull List<StatsEvent> statsEvents) {
+        if (!mSafetyCenterConfigReader.allowsWestworldLogging()) {
+            return;
+        }
+        StatsEvent safetyStateEvent =
+                PermissionStatsLog.buildStatsEvent(
+                        SAFETY_STATE,
+                        toSafetyStateOverallSeverityLevel(severityLevel),
+                        openIssueCount,
+                        dismissedIssueCount);
+        statsEvents.add(safetyStateEvent);
     }
 
     /**
@@ -102,16 +132,23 @@ final class WestworldLogger {
      * @param sourceSeverityLevel is the {@link SafetySourceData.SeverityLevel} to log for this
      *     source, or {@code null} if none/unknown severity should be recorded.
      */
-    public void writeSafetySourceStateCollected(
+    void writeSafetySourceStateCollected(
             @NonNull String sourceId,
             boolean isManagedProfile,
             @Nullable @SafetySourceData.SeverityLevel Integer sourceSeverityLevel,
             long openIssuesCount,
             long dismissedIssuesCount) {
+        if (!mSafetyCenterConfigReader.allowsWestworldLogging()) {
+            return;
+        }
+        int profileType =
+                isManagedProfile
+                        ? SAFETY_SOURCE_STATE_COLLECTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_MANAGED
+                        : SAFETY_SOURCE_STATE_COLLECTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_PERSONAL;
         PermissionStatsLog.write(
                 SAFETY_SOURCE_STATE_COLLECTED,
                 idStringToLong(sourceId),
-                getProfileType(isManagedProfile),
+                profileType,
                 toSafetySourceStateCollectedSeverityLevel(sourceSeverityLevel),
                 openIssuesCount,
                 dismissedIssuesCount);
@@ -119,32 +156,108 @@ final class WestworldLogger {
 
     /**
      * Writes a {@link PermissionStatsLog#SAFETY_CENTER_SYSTEM_EVENT_REPORTED} atom of type {@code
-     * INLINE_ACTION}.
+     * SINGLE_SOURCE_RESCAN} or {@code SINGLE_SOURCE_GET_DATA}.
      */
-    public void writeInlineActionSystemEvent(
+    void writeSourceRefreshSystemEvent(
+            @RefreshRequestType int refreshType,
             @NonNull String sourceId,
             @UserIdInt int userId,
-            @NonNull String issueTypeId,
             @NonNull Duration duration,
             @SystemEventResult int result) {
+        if (!mSafetyCenterConfigReader.allowsWestworldLogging()) {
+            return;
+        }
         PermissionStatsLog.write(
                 SAFETY_CENTER_SYSTEM_EVENT_REPORTED,
-                SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__INLINE_ACTION,
+                toSourceRefreshEventType(refreshType),
                 idStringToLong(sourceId),
-                userIdToProfileType(userId),
-                idStringToLong(issueTypeId),
+                toSystemEventProfileType(userId),
+                UNSET_ISSUE_TYPE_ID,
                 duration.toMillis(),
                 result);
     }
 
-    private int userIdToProfileType(@UserIdInt int userId) {
-        return getProfileType(UserUtils.isManagedProfile(userId, mContext));
+    /**
+     * Writes a {@link PermissionStatsLog#SAFETY_CENTER_SYSTEM_EVENT_REPORTED} atom of type {@code
+     * COMPLETE_RESCAN} or {@code COMPLETE_GET_DATA}.
+     */
+    void writeWholeRefreshSystemEvent(
+            @RefreshRequestType int refreshType,
+            @NonNull Duration duration,
+            @SystemEventResult int result) {
+        if (!mSafetyCenterConfigReader.allowsWestworldLogging()) {
+            return;
+        }
+        PermissionStatsLog.write(
+                SAFETY_CENTER_SYSTEM_EVENT_REPORTED,
+                toWholeRefreshEventType(refreshType),
+                UNSET_SOURCE_ID,
+                SAFETY_CENTER_SYSTEM_EVENT_REPORTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_UNKNOWN,
+                UNSET_ISSUE_TYPE_ID,
+                duration.toMillis(),
+                result);
     }
 
-    private static int getProfileType(boolean isManaged) {
-        return isManaged
-                ? SAFETY_SOURCE_STATE_COLLECTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_MANAGED
-                : SAFETY_SOURCE_STATE_COLLECTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_PERSONAL;
+    /**
+     * Writes a {@link PermissionStatsLog#SAFETY_CENTER_SYSTEM_EVENT_REPORTED} atom of type {@code
+     * INLINE_ACTION}.
+     */
+    void writeInlineActionSystemEvent(
+            @NonNull String sourceId,
+            @UserIdInt int userId,
+            @Nullable String issueTypeId,
+            @NonNull Duration duration,
+            @SystemEventResult int result) {
+        if (!mSafetyCenterConfigReader.allowsWestworldLogging()) {
+            return;
+        }
+        PermissionStatsLog.write(
+                SAFETY_CENTER_SYSTEM_EVENT_REPORTED,
+                SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__INLINE_ACTION,
+                idStringToLong(sourceId),
+                toSystemEventProfileType(userId),
+                issueTypeId == null ? UNSET_ISSUE_TYPE_ID : idStringToLong(issueTypeId),
+                duration.toMillis(),
+                result);
+    }
+
+    /**
+     * Returns a {@link SystemEventResult} based on whether the given operation was {@code
+     * successful}.
+     */
+    @SystemEventResult
+    static int toSystemEventResult(boolean success) {
+        return success
+                ? SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__SUCCESS
+                : SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__ERROR;
+    }
+
+    private static int toSourceRefreshEventType(@RefreshRequestType int refreshType) {
+        switch (refreshType) {
+            case SafetyCenterManager.EXTRA_REFRESH_REQUEST_TYPE_GET_DATA:
+                return SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__SINGLE_SOURCE_GET_NEW_DATA;
+            case SafetyCenterManager.EXTRA_REFRESH_REQUEST_TYPE_FETCH_FRESH_DATA:
+                return SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__SINGLE_SOURCE_RESCAN;
+        }
+        Log.w(TAG, "Unexpected SafetyCenterManager.RefreshRequestType: " + refreshType);
+        return SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__EVENT_TYPE_UNKNOWN;
+    }
+
+    private static int toWholeRefreshEventType(@RefreshRequestType int refreshType) {
+        switch (refreshType) {
+            case SafetyCenterManager.EXTRA_REFRESH_REQUEST_TYPE_GET_DATA:
+                return SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__COMPLETE_GET_NEW_DATA;
+            case SafetyCenterManager.EXTRA_REFRESH_REQUEST_TYPE_FETCH_FRESH_DATA:
+                return SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__COMPLETE_RESCAN;
+        }
+        Log.w(TAG, "Unexpected SafetyCenterManager.RefreshRequestType: " + refreshType);
+        return SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__EVENT_TYPE_UNKNOWN;
+    }
+
+    private int toSystemEventProfileType(@UserIdInt int userId) {
+        return UserUtils.isManagedProfile(userId, mContext)
+                ? SAFETY_CENTER_SYSTEM_EVENT_REPORTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_MANAGED
+                : SAFETY_CENTER_SYSTEM_EVENT_REPORTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_PERSONAL;
     }
 
     /**
