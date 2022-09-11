@@ -152,7 +152,7 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
                     holder.itemView.getPaddingEnd(),
                     /* bottom = */ getContext()
                             .getResources()
-                            .getDimensionPixelSize(R.dimen.safety_center_card_margin_bottom));
+                            .getDimensionPixelSize(R.dimen.sc_card_margin_bottom));
         } else {
             holder.itemView.setPaddingRelative(
                     holder.itemView.getPaddingStart(),
@@ -416,6 +416,7 @@ public class SafetyStatusPreference extends Preference implements ComparablePref
     private boolean shouldShowRescanButton() {
         int severityLevel = mStatus.getSeverityLevel();
         return !mHasIssues
+                && !mHasPendingActions // hides the second button in QS to keep the UI clean
                 && (severityLevel == OVERALL_SEVERITY_LEVEL_OK
                         || severityLevel == OVERALL_SEVERITY_LEVEL_UNKNOWN);
     }
