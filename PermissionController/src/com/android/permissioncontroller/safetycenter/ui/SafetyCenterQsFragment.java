@@ -155,7 +155,6 @@ public class SafetyCenterQsFragment extends Fragment {
         mRootView = root;
         if (mPermGroupUsages.isEmpty()) {
             mRootView.setVisibility(View.VISIBLE);
-            setSensorToggleState(new ArrayMap<>(), mRootView);
         } else {
             mRootView.setVisibility(View.GONE);
         }
@@ -163,7 +162,7 @@ public class SafetyCenterQsFragment extends Fragment {
         View closeButton = root.findViewById(R.id.close_button);
         closeButton.setOnClickListener((v) -> requireActivity().finish());
         SafetyCenterTouchTarget.configureSize(
-                closeButton, R.dimen.safety_center_icon_button_touch_target_size);
+                closeButton, R.dimen.sc_icon_button_touch_target_size);
 
         mSafetyCenterViewModel =
                 new ViewModelProvider(
@@ -210,7 +209,6 @@ public class SafetyCenterQsFragment extends Fragment {
     private void onPermissionGroupsLoaded(boolean initialized) {
         if (initialized) {
             mRootView.setVisibility(View.VISIBLE);
-            setSensorToggleState(new ArrayMap<>(), mRootView);
             addPermissionUsageInformation(mRootView);
         }
     }
@@ -568,6 +566,10 @@ public class SafetyCenterQsFragment extends Fragment {
             if (rootView == null) {
                 return;
             }
+        }
+
+        if (sensorState == null) {
+            sensorState = new ArrayMap<>();
         }
 
         for (int i = 0; i < sToggleButtons.size(); i++) {
