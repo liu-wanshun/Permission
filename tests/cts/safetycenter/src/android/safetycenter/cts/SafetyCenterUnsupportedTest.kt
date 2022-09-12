@@ -50,10 +50,10 @@ import android.safetycenter.cts.testing.SafetySourceReceiver
 import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.executeSafetyCenterIssueActionWithPermissionAndWait
 import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.refreshSafetySourcesWithReceiverPermissionAndWait
 import android.safetycenter.cts.testing.SettingsPackage.getSettingsPackageName
+import android.safetycenter.cts.testing.UiTestHelper.waitDisplayed
 import android.support.test.uiautomator.By
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.android.compatibility.common.util.UiAutomatorUtils.waitFindObject
 import com.google.common.truth.Truth.assertThat
 import com.google.common.util.concurrent.MoreExecutors.directExecutor
 import kotlin.test.assertFailsWith
@@ -68,7 +68,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SafetyCenterUnsupportedTest {
     private val context: Context = getApplicationContext()
-    private val packageManager = context.packageManager
     private val safetyCenterCtsHelper = SafetyCenterCtsHelper(context)
     private val safetySourceCtsData = SafetySourceCtsData(context)
     private val safetyCenterManager = context.getSystemService(SafetyCenterManager::class.java)!!
@@ -100,7 +99,7 @@ class SafetyCenterUnsupportedTest {
     @Test
     fun launchActivity_opensSettings() {
         context.launchSafetyCenterActivity {
-            waitFindObject(By.pkg(context.getSettingsPackageName()))
+            waitDisplayed(By.pkg(context.getSettingsPackageName()))
         }
     }
 
