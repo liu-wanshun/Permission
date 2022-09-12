@@ -43,7 +43,7 @@ final class SafetyCenterFlags {
     static final String PROPERTY_SAFETY_CENTER_ENABLED = "safety_center_is_enabled";
 
     private static final String PROPERTY_SHOW_ERROR_ENTRIES_ON_TIMEOUT =
-            "show_error_entries_on_timeout";
+            "safety_center_show_error_entries_on_timeout";
 
     private static final String PROPERTY_REPLACE_LOCK_SCREEN_ICON_ACTION =
             "safety_center_replace_lock_screen_icon_action";
@@ -71,6 +71,9 @@ final class SafetyCenterFlags {
     private static final String PROPERTY_ISSUE_CATEGORY_ALLOWLISTS =
             "safety_center_issue_category_allowlists";
 
+    private static final String PROPERTY_ALLOW_WESTWORLD_LOGGING_IN_TESTS =
+            "safety_center_allow_westworld_logging_in_tests";
+
     private static final Duration REFRESH_SOURCES_TIMEOUT_DEFAULT_DURATION = Duration.ofSeconds(15);
 
     private static final Duration RESOLVING_ACTION_TIMEOUT_DEFAULT_DURATION =
@@ -82,11 +85,7 @@ final class SafetyCenterFlags {
 
     private static final Duration RESURFACE_ISSUE_DEFAULT_DELAY = Duration.ofDays(180);
 
-    /**
-     * Dumps state for debugging purposes.
-     *
-     * @param fout {@link PrintWriter} to write to
-     */
+    /** Dumps state for debugging purposes. */
     static void dump(@NonNull PrintWriter fout) {
         fout.println("FLAGS");
         printFlag(fout, PROPERTY_SAFETY_CENTER_ENABLED, getSafetyCenterEnabled());
@@ -103,6 +102,8 @@ final class SafetyCenterFlags {
                 getBackgroundRefreshDeniedSourceIds());
         printFlag(
                 fout, PROPERTY_REFRESH_SOURCES_TIMEOUTS_MILLIS, getRefreshSourcesTimeoutsMillis());
+        printFlag(
+                fout, PROPERTY_ALLOW_WESTWORLD_LOGGING_IN_TESTS, getAllowWestworldLoggingInTests());
         fout.println();
     }
 
@@ -276,6 +277,11 @@ final class SafetyCenterFlags {
     @NonNull
     private static String getIssueCategoryAllowlists() {
         return getString(PROPERTY_ISSUE_CATEGORY_ALLOWLISTS, "");
+    }
+
+    /** Returns whether we allow Westworld logging in tests. */
+    static boolean getAllowWestworldLoggingInTests() {
+        return getBoolean(PROPERTY_ALLOW_WESTWORLD_LOGGING_IN_TESTS, false);
     }
 
     @NonNull
