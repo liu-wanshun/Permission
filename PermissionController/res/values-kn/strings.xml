@@ -23,6 +23,8 @@
     <string name="back" msgid="6249950659061523680">"ಹಿಂದಕ್ಕೆ"</string>
     <string name="available" msgid="6007778121920339498">"ಲಭ್ಯವಿದೆ"</string>
     <string name="blocked" msgid="9195547604866033708">"ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ"</string>
+    <string name="on" msgid="280241003226755921">"ಆನ್"</string>
+    <string name="off" msgid="1438489226422866263">"ಆಫ್"</string>
     <string name="uninstall_or_disable" msgid="4496612999740858933">"ಅನ್ಇನ್‌‌ಸ್ಟಾಲ್ ಮಾಡಿ ಅಥವಾ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ"</string>
     <string name="app_not_found_dlg_title" msgid="6029482906093859756">"ಆ್ಯಪ್ ಕಂಡುಬಂದಿಲ್ಲ"</string>
     <string name="grant_dialog_button_deny" msgid="88262611492697192">"ಅನುಮತಿಸಬೇಡಿ"</string>
@@ -130,6 +132,7 @@
     <string name="permission_group_usage_subtitle_7d" msgid="1465828402260324654">"ಕಳೆದ 7 ದಿನಗಳಲ್ಲಿ ಆ್ಯಪ್‌ಗಳು ನಿಮ್ಮ <xliff:g id="PERMGROUP">%1$s</xliff:g> ಅನ್ನು ಯಾವ ಸಮಯದಲ್ಲಿ ಬಳಸಿವೆ ಎಂಬುದರ ಟೈಮ್‌ಲೈನ್"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"ನಿಮ್ಮ <xliff:g id="PERMGROUP">%1$s</xliff:g> ಅನುಮತಿಯನ್ನು ಈ ಆ್ಯಪ್ ಯಾವಾಗ ಬಳಸಿದೆ"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ"</string>
+    <string name="learn_more_content_description" msgid="8673699744544502539">"<xliff:g id="PERMGROUP">%1$s</xliff:g> ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ"</string>
     <string name="manage_permission_summary" msgid="4117555482684114317">"ನಿಮ್ಮ <xliff:g id="PERMGROUP">%1$s</xliff:g> ಗೆ ಪ್ರವೇಶವನ್ನು ನಿಯಂತ್ರಿಸಿ"</string>
     <string name="auto_permission_usage_timeline_summary" msgid="2713135806453218703">"<xliff:g id="ACCESS_TIME">%1$s</xliff:g> • <xliff:g id="SUMMARY_TEXT">%2$s</xliff:g>"</string>
     <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
@@ -192,7 +195,7 @@
     <string name="app_permission_location_accuracy" msgid="7166912915040018669">"ನಿಖರವಾದ ಸ್ಥಳವನ್ನು ಬಳಸಿ"</string>
     <string name="app_permission_location_accuracy_subtitle" msgid="2654077606404987210">"ನಿಖರವಾದ ಸ್ಥಳ ಆಫ್ ಆಗಿರುವಾಗ, ಆ್ಯಪ್‌ಗಳು ನಿಮ್ಮ ಅಂದಾಜು ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸಬಹುದು"</string>
     <string name="app_permission_title" msgid="2090897901051370711">"<xliff:g id="PERM">%1$s</xliff:g> ಅನುಮತಿ"</string>
-    <string name="app_permission_header" msgid="2951363137032603806">"ಈ <xliff:g id="PERM">%1$s</xliff:g> ಆ್ಯಪ್‌ಗಾಗಿ ಪ್ರವೇಶದ ಅನುಮತಿ"</string>
+    <string name="app_permission_header" msgid="2951363137032603806">"ಈ ಆ್ಯಪ್‌ಗಾಗಿ <xliff:g id="PERM">%1$s</xliff:g> ಆ್ಯಕ್ಸೆಸ್"</string>
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"ಎಲ್ಲಾ <xliff:g id="APP">%1$s</xliff:g> ಅನುಮತಿಗಳನ್ನು ವೀಕ್ಷಿಸಿ"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"ಈ ಅನುಮತಿಯನ್ನು ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"ಅಸಿಸ್ಟೆಂಟ್‌ನ ಮೈಕ್ರೋಫೋನ್ ಬಳಕೆಯನ್ನು ತೋರಿಸಿ"</string>
@@ -211,7 +214,6 @@
     <string name="auto_revocable_permissions_two" msgid="4874067408752041716">"<xliff:g id="PERM_0">%1$s</xliff:g> ಹಾಗೂ <xliff:g id="PERM_1">%2$s</xliff:g> ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ."</string>
     <string name="auto_revocable_permissions_many" msgid="1521807896206032992">"ತೆಗೆದುಹಾಕಲಾಗುವ ಅನುಮತಿಗಳು: <xliff:g id="PERMS">%1$s</xliff:g>."</string>
     <string name="auto_manage_title" msgid="7693181026874842935">"ಅನುಮತಿಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿರ್ವಹಿಸಿ"</string>
-    <string name="off" msgid="1438489226422866263">"ಆಫ್"</string>
     <string name="auto_revoked_app_summary_one" msgid="7093213590301252970">"<xliff:g id="PERMISSION_NAME">%s</xliff:g> ಅನುಮತಿಯನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ"</string>
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"<xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> ಮತ್ತು <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g> ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> ಮತ್ತು <xliff:g id="NUMBER">%2$s</xliff:g> ಇತರ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ"</string>
@@ -262,6 +264,9 @@
     <string name="auto_revoke_permission_notification_content" msgid="5125990886047799375">"ಹಲವಾರು ತಿಂಗಳುಗಳಿಂದ ಕೆಲವು ಆ್ಯಪ್‌ಗಳನ್ನು ಬಳಸಲಾಗಿಲ್ಲ. ಪರಿಶೀಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ."</string>
     <string name="unused_apps_notification_title" msgid="4314832015894238019">"{count,plural, =1{# ಬಳಕೆಯಾಗದ ಆ್ಯಪ್}one{# ಬಳಕೆಯಾಗದ ಆ್ಯಪ್‌ಗಳು}other{# ಬಳಕೆಯಾಗದ ಆ್ಯಪ್‌ಗಳು}}"</string>
     <string name="unused_apps_notification_content" msgid="9195026773244581246">"ಅನುಮತಿಗಳು ಮತ್ತು ತಾತ್ಕಾಲಿಕ ಫೈಲ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ ಮತ್ತು ಅಧಿಸೂಚನೆಗಳನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಲಾಗಿದೆ. ಪರಿಶೀಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ."</string>
+    <string name="unused_apps_safety_center_card_title" msgid="5638409355530099149">"ತೆಗೆದುಹಾಕಲಾದ ಅನುಮತಿಗಳ ಮೂಲಕ ಆ್ಯಪ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ"</string>
+    <string name="unused_apps_safety_center_card_content" msgid="1088557243627427820">"ನೀವು ಸ್ವಲ್ಪ ಸಮಯದಿಂದ ಬಳಸದ ಆ್ಯಪ್‌ಗಳಿಗೆ ಅನುಮತಿಗಳು ಹಾಗೂ ತಾತ್ಕಾಲಿಕ ಫೈಲ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ ಮತ್ತು ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿಲ್ಲಿಸಲಾಗಿದೆ."</string>
+    <string name="unused_apps_safety_center_action_title" msgid="8865914432518993194">"ಆ್ಯಪ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ"</string>
     <string name="post_drive_permission_decision_reminder_title" msgid="1290697371418139976">"ಇತ್ತೀಚಿನ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಿ"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_1_permission" msgid="670521503734140711">"ನೀವು ವಾಹನ ಚಲಾಯಿಸುವಾಗ, <xliff:g id="APP">%1$s</xliff:g> ಗೆ <xliff:g id="PERMISSION">%2$s</xliff:g> ಪ್ರವೇಶವನ್ನು ನೀಡಿದ್ದೀರಿ"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_2_permissions" msgid="671791184670801301">"ನೀವು ವಾಹನ ಚಲಾಯಿಸುವಾಗ, <xliff:g id="APP">%1$s</xliff:g> ಗೆ <xliff:g id="PERMISSION_1">%2$s</xliff:g> ಮತ್ತು <xliff:g id="PERMISSION_2">%3$s</xliff:g> ಪ್ರವೇಶವನ್ನು ನೀಡಿದ್ದೀರಿ"</string>
@@ -276,12 +281,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ರಕ್ಷಿಸಲು ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಹಿನ್ನಲೆಯಲ್ಲಿ ಪಡೆದುಕೊಂಡಿದೆ"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"ಈ ಆ್ಯಪ್‌ ಯಾವಾಗಲೂ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸಬಹುದು. ಬದಲಾಯಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ."</string>
-    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"ಅಧಿಸೂಚನೆಯನ್ನು ಆಲಿಸುವ ಪ್ರವೇಶದ ಮೂಲಕ ಆ್ಯಪ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ"</string>
-    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> ನಿಮ್ಮ ಎಲ್ಲಾ ಅಧಿಸೂಚನೆಗಳನ್ನು ಓದಬಹುದು."</string>
-    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"ಈ ಆ್ಯಪ್ ನಿಮ್ಮ ಎಲ್ಲಾ ಅಧಿಸೂಚನೆಗಳನ್ನು ಓದಬಹುದು."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="3747210460187479091">"ನಿಮ್ಮ ಅಧಿಸೂಚನೆಗಳಿಗೆ ಪ್ರವೇಶ ಹೊಂದಿರುವ ಆ್ಯಪ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="831476101108863427">"<xliff:g id="APP_NAME">%s</xliff:g> ನಿಮ್ಮ ಅಧಿಸೂಚನೆಗಳನ್ನು ವಜಾಗೊಳಿಸಬಹುದು, ಕ್ರಮ ಕೈಗೊಳ್ಳಬಹುದು ಹಾಗೂ ಅದರಲ್ಲಿರುವ ವಿಷಯವನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು"</string>
+    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"ಈ ಆ್ಯಪ್ ನಿಮ್ಮ ಅಧಿಸೂಚನೆಗಳನ್ನು ವಜಾಗೊಳಿಸಬಹುದು, ಕ್ರಮ ಕೈಗೊಳ್ಳಬಹುದು ಹಾಗೂ ಅದರಲ್ಲಿರುವ ವಿಷಯವನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು. ಕೆಲವು ಆ್ಯಪ್‌ಗಳು ಉದ್ದೇಶಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸಲು ಅವುಗಳಿಗೆ ಈ ಆ್ಯಕ್ಸೆಸ್‌ನ ಅಗತ್ಯವಿದೆ."</string>
     <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"ಪ್ರವೇಶವನ್ನು ತೆಗೆದುಹಾಕಿ"</string>
-    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"ಅಧಿಸೂಚನೆ ಪ್ರವೇಶವನ್ನು ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ"</string>
+    <string name="notification_listener_review_app_button_label" msgid="3433073281029143924">"ಮತ್ತಷ್ಟು ಆಯ್ಕೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ"</string>
     <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"ಪ್ರವೇಶವನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="2971317234668807566">"ಪೂರ್ಣ ಸಾಧನ ಪ್ರವೇಶದ ಮೂಲಕ ಆ್ಯಪ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="7389454158175306720">"<xliff:g id="APP_NAME">%s</xliff:g> ಆ್ಯಪ್ ಸ್ಕ್ರೀನ್ ಅನ್ನು ವೀಕ್ಷಿಸಬಹುದು ಮತ್ತು ಸಾಧನದಲ್ಲಿ ಕ್ರಿಯೆಗಳನ್ನು ಮಾಡಬಹುದು. ಪ್ರವೇಶಿಸುವಿಕೆ ಆ್ಯಪ್‌ಗಳು ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸಲು ಈ ರೀತಿಯ ಪ್ರವೇಶದ ಅಗತ್ಯವಿದೆ."</string>
+    <string name="accessibility_access_warning_card_content" msgid="4370327190293217358">"ಈ ಆ್ಯಪ್ ಸ್ಕ್ರೀನ್ ಅನ್ನು ವೀಕ್ಷಿಸಬಹುದು ಮತ್ತು ಸಾಧನದಲ್ಲಿ ಕ್ರಿಯೆಗಳನ್ನು ಮಾಡಬಹುದು. ಪ್ರವೇಶಿಸುವಿಕೆ ಆ್ಯಪ್‌ಗಳು ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸಲು ಈ ರೀತಿಯ ಪ್ರವೇಶದ ಅಗತ್ಯವಿದೆ, ಆದರೆ ಆ್ಯಪ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ನೀವು ಅದನ್ನು ನಂಬುತ್ತೀರಿ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ."</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"ಪ್ರವೇಶವನ್ನು ತೆಗೆದುಹಾಕಿ"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="960067249326392280">"ಪೂರ್ಣ ಪ್ರವೇಶದ ಮೂಲಕ ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"ಪ್ರವೇಶವನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ"</string>
+    <string name="safety_center_notification_app_label" msgid="2457720616141926534">"Android ಸಿಸ್ಟಂ"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"ಗೌಪ್ಯತೆಯನ್ನು ರಕ್ಷಿಸಲು ಆ್ಯಪ್‌ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> ಅನ್ನು ಕೆಲವು ತಿಂಗಳುಗಳಿಂದ ಬಳಸಲಾಗಿಲ್ಲ. ಪರಿಶೀಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> ಮತ್ತು 1 ಇತರ ಆ್ಯಪ್‌ ಅನ್ನು ಕೆಲವು ತಿಂಗಳುಗಳಿಂದ ಬಳಸಲಾಗಿಲ್ಲ. ಪರಿಶೀಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ."</string>
@@ -502,21 +514,28 @@
     <string name="blocked_sensor_summary" msgid="4443707628305027375">"ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೇವೆಗಳಿಗಾಗಿ"</string>
     <string name="blocked_mic_summary" msgid="8960466941528458347">"ನೀವು ತುರ್ತು ಸಂಖ್ಯೆಗೆ ಕರೆ ಮಾಡಿದಾಗ ಈಗಲೂ ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಡೇಟಾವನ್ನು ಹಂಚಿಕೊಳ್ಳಬಹುದಾದ ಸಾಧ್ಯತೆಯಿದೆ."</string>
     <string name="blocked_sensor_button_label" msgid="6742092634984289658">"ಬದಲಾಯಿಸಿ"</string>
-    <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"ಭದ್ರತೆ ಮತ್ತು ಗೌಪ್ಯತೆ"</string>
-    <string name="safety_center_rescan_button" msgid="8047036829052958144">"ಸ್ಕ್ಯಾನ್ ಮಾಡಿ"</string>
+    <string name="safety_center_dashboard_page_title" msgid="2810774008694315854">"ಭದ್ರತೆ ಮತ್ತು ಗೌಪ್ಯತೆ"</string>
+    <string name="safety_center_rescan_button" msgid="4517514567809409596">"ಸಾಧನವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"ವಜಾಗೊಳಿಸಿ"</string>
     <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"ಈ ಎಚ್ಚರಿಕೆಯನ್ನು ವಜಾಗೊಳಿಸಬೇಕೆ?"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_message" msgid="3775418736671093563">"ಹೆಚ್ಚಿನ ರಕ್ಷಣೆಗಾಗಿ ನಿಮ್ಮ ಭದ್ರತೆ ಮತ್ತು ಗೌಪ್ಯತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಪರಿಶೀಲಿಸಿ"</string>
     <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"ವಜಾಗೊಳಿಸಿ"</string>
     <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"ರದ್ದುಮಾಡಿ"</string>
     <string name="safety_center_entries_category_title" msgid="34356964062813115">"ಸೆಟ್ಟಿಂಗ್‌ಗಳು"</string>
+    <string name="safety_status_preference_title_and_summary_content_description" msgid="3511373256505058464">"ಭದ್ರತೆ ಮತ್ತು ಗೌಪ್ಯತೆಯ ಸ್ಥಿತಿ. <xliff:g id="OVERALL_SAFETY_STATUS">%1$s</xliff:g>. <xliff:g id="SUMMARY_OF_DEVICE_STATUS">%2$s</xliff:g>"</string>
     <string name="security_settings" msgid="3808106921175271317">"ಭದ್ರತಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳು"</string>
-    <string name="sensor_permissions_qs" msgid="4365989229426201877">"ಸೆನ್ಸರ್ ಅನುಮತಿಗಳು"</string>
-    <string name="privacy_controls_qs" msgid="471793881466080745">"ಗೌಪ್ಯತೆ ನಿಯಂತ್ರಣಗಳು"</string>
+    <string name="sensor_permissions_qs" msgid="1022267900031317472">"ಅನುಮತಿಗಳು"</string>
+    <string name="safety_privacy_qs_tile_title" msgid="727301867710374052">"ಭದ್ರತೆ ಮತ್ತು ಗೌಪ್ಯತೆ"</string>
+    <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಿ"</string>
+    <string name="privacy_controls_qs" msgid="5780144882040591169">"ನಿಮ್ಮ ಗೌಪ್ಯತೆ ನಿಯಂತ್ರಣಗಳು"</string>
+    <string name="security_settings_button_label_qs" msgid="8280343822465962330">"ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು"</string>
+    <string name="camera_toggle_label_qs" msgid="3880261453066157285">"ಕ್ಯಾಮರಾ ಪ್ರವೇಶದ ಅನುಮತಿ"</string>
+    <string name="microphone_toggle_label_qs" msgid="8132912469813396552">"ಮೈಕ್ ಆ್ಯಕ್ಸೆಸ್"</string>
     <string name="permissions_removed_qs" msgid="8957319130625294572">"ಅನುಮತಿಯನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ"</string>
-    <string name="camera_usage_qs" msgid="7943349178368641820">"ಕ್ಯಾಮರಾ ಬಳಕೆಯ ಕುರಿತು ಇನ್ನೂ ಹೆಚ್ಚಿನವನ್ನು ನೋಡಿ"</string>
-    <string name="microphone_usage_qs" msgid="2393193350541830472">"ಮೈಕ್ರೊಫೋನ್ ಬಳಕೆಯ ಕುರಿತು ಇನ್ನೂ ಹೆಚ್ಚಿನವನ್ನು ನೋಡಿ"</string>
-    <string name="remove_camera_qs" msgid="8209716677879809162">"ಕ್ಯಾಮರಾ ಅನುಮತಿಯನ್ನು ತೆಗೆದುಹಾಕಿ"</string>
-    <string name="remove_microphone_qs" msgid="2893536836641560183">"ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಯನ್ನು ತೆಗೆದುಹಾಕಿ"</string>
+    <string name="camera_usage_qs" msgid="4394233566086665994">"ಇತ್ತೀಚಿನ ಕ್ಯಾಮರಾ ಬಳಕೆಯನ್ನು ನೋಡಿ"</string>
+    <string name="microphone_usage_qs" msgid="8527666682168170417">"ಇತ್ತೀಚಿನ ಮೈಕ್ ಬಳಕೆಯನ್ನು ನೋಡಿ"</string>
+    <string name="remove_camera_qs" msgid="3649996161066883350">"ಈ ಆ್ಯಪ್‌ಗೆ ಅನುಮತಿಯನ್ನು ತೆಗೆದುಹಾಕಿ"</string>
+    <string name="remove_microphone_qs" msgid="1276551965129953198">"ಈ ಆ್ಯಪ್‌ಗೆ ಅನುಮತಿಯನ್ನು ತೆಗೆದುಹಾಕಿ"</string>
     <string name="manage_service_qs" msgid="7862555549364153805">"ಸೇವೆಯನ್ನು ನಿರ್ವಹಿಸಿ"</string>
     <string name="manage_permissions_qs" msgid="3780541819763475434">"ಅನುಮತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ"</string>
     <string name="active_call_usage_qs" msgid="8559974395932523391">"ಫೋನ್ ಕರೆಯು ಇದನ್ನು ಬಳಸುತ್ತಿದೆ"</string>
@@ -527,8 +546,6 @@
     <string name="recent_app_usage_1_qs" msgid="261450184773310741">"ಇತ್ತೀಚೆಗೆ <xliff:g id="APP_NAME">%1$s</xliff:g> ಇದನ್ನು ಬಳಸಿದೆ (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g>)"</string>
     <string name="active_app_usage_2_qs" msgid="6107866785243565283">"<xliff:g id="APP_NAME">%1$s</xliff:g> ಇದನ್ನು ಬಳಸುತ್ತಿದೆ (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>)"</string>
     <string name="recent_app_usage_2_qs" msgid="3591205954235694403">"ಇತ್ತೀಚೆಗೆ <xliff:g id="APP_NAME">%1$s</xliff:g> ಇದನ್ನು ಬಳಸಿದೆ (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>)"</string>
-    <string name="safety_privacy_qs_tile_title" msgid="5431148204168066203">"ಭದ್ರತೆ ಮತ್ತು ಗೌಪ್ಯತೆ"</string>
-    <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಿ"</string>
     <string name="media_confirm_dialog_positive_button" msgid="9020793594051526399">"ದೃಢೀಕರಿಸಿ"</string>
     <string name="media_confirm_dialog_negative_button" msgid="226987376924861785">"ಹಿಂದೆ"</string>
     <string name="media_confirm_dialog_title_a_to_p_aural_allow" msgid="8560601114044699903">"ಇತರ ಫೈಲ್‌ಗಳಿಗೂ ಸಹ ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಲಾಗುತ್ತದೆ"</string>
@@ -547,5 +564,20 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"ಈ ಆ್ಯಪ್ ಇತ್ತೀಚಿನ Android ಆವೃತ್ತಿಯನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಸಂಗೀತ ಹಾಗೂ ಆಡಿಯೋ ಫೈಲ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಈ ಆ್ಯಪ್‌ಗೆ ಸಾಧ್ಯವಾಗದಿದ್ದರೆ, ಫೋಟೋಗಳು ಹಾಗೂ ವೀಡಿಯೋಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಸಹ ಅದನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"ಈ ಆ್ಯಪ್ ಇತ್ತೀಚಿನ Android ಆವೃತ್ತಿಯನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಫೋಟೋಗಳು ಹಾಗೂ ವೀಡಿಯೋಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಈ ಆ್ಯಪ್‌ಗೆ ಸಾಧ್ಯವಾದರೆ, ಸಂಗೀತ ಹಾಗೂ ಆಡಿಯೋ ಫೈಲ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಸಹ ಅದನ್ನು ಅನುಮತಿಸಲಾಗುತ್ತದೆ."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"ಈ ಆ್ಯಪ್ ಇತ್ತೀಚಿನ Android ಆವೃತ್ತಿಯನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ಸಂಗೀತ ಹಾಗೂ ಆಡಿಯೋ ಫೈಲ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಈ ಆ್ಯಪ್‌ಗೆ ಸಾಧ್ಯವಾಗದಿದ್ದರೆ, ಫೋಟೋಗಳು ಹಾಗೂ ವೀಡಿಯೋಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಸಹ ಅದನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ."</string>
-    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"ಮುಚ್ಚಿರಿ"</string>
+    <string name="safety_center_background_location_access_notification_title" msgid="8933610618810588237">"ಹಿನ್ನೆಲೆ ಸ್ಥಳ ಪ್ರವೇಶದ ಮೂಲಕ ಆ್ಯಪ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ"</string>
+    <string name="safety_center_background_location_access_reminder_notification_content" msgid="4066560182507301022">"<xliff:g id="APP_NAME">%s</xliff:g> ಆ್ಯಪ್ ಮುಚ್ಚಿದಾಗಲೂ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಯಾವಾಗಲೂ ಪ್ರವೇಶಿಸಬಹುದು"</string>
+    <string name="safety_center_background_location_access_reminder_title" msgid="5477847038103863843">"ಹಿನ್ನೆಲೆ ಸ್ಥಳ ಪ್ರವೇಶದ ಮೂಲಕ ಆ್ಯಪ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ"</string>
+    <string name="safety_center_background_location_access_reminder_summary" msgid="8276755741395332974">"ಈ ಆ್ಯಪ್‌ ಮುಚ್ಚಿರುವಾಗಲೂ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಯಾವಾಗಲೂ ಪ್ರವೇಶಿಸಬಹುದು."</string>
+    <string name="safety_center_background_location_access_revoked" msgid="6972274943343442213">"ಪ್ರವೇಶವನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ"</string>
+    <string name="safety_center_view_recent_location_access" msgid="3524391299490678243">"ಇತ್ತೀಚಿನ ಸ್ಥಳದ ಬಳಕೆಯನ್ನು ನೋಡಿ"</string>
+    <string name="privacy_controls_title" msgid="7605929972256835199">"ಗೌಪ್ಯತೆ ನಿಯಂತ್ರಣಗಳು"</string>
+    <string name="camera_toggle_title" msgid="1251201397431837666">"ಕ್ಯಾಮರಾ ಪ್ರವೇಶ"</string>
+    <string name="mic_toggle_title" msgid="2649991093496110162">"ಮೈಕ್ರೊಫೋನ್ ಪ್ರವೇಶ"</string>
+    <string name="perm_toggle_description" msgid="7801326363741451379">"ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೇವೆಗಳಿಗಾಗಿ"</string>
+    <string name="mic_toggle_description" msgid="9163104307990677157">"ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೇವೆಗಳಿಗಾಗಿ. ಈ ಸೆಟ್ಟಿಂಗ್ ಆಫ್ ಆಗಿದ್ದರೆ, ನೀವು ತುರ್ತು ಸಂಖ್ಯೆಗೆ ಕರೆ ಮಾಡಿದಾಗ ಮೈಕ್ರೊಫೋನ್ ಡೇಟಾವನ್ನು ಆಗಲೂ ಹಂಚಿಕೊಳ್ಳಬಹುದು."</string>
+    <string name="location_settings_subtitle" msgid="2328360561197430695">"ಸ್ಥಳಕ್ಕೆ ಪ್ರವೇಶ ಹೊಂದಿರುವ ಆ್ಯಪ್‌ಗಳು ಹಾಗೂ ಸೇವೆಗಳನ್ನು ನೋಡಿ"</string>
+    <string name="show_clip_access_notification_title" msgid="5168467637351109096">"ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಪ್ರವೇಶವನ್ನು ತೋರಿಸಿ"</string>
+    <string name="show_clip_access_notification_summary" msgid="3532020182782112687">"ನೀವು ನಕಲಿಸಿರುವ ಪಠ್ಯ, ಚಿತ್ರಗಳು ಅಥವಾ ಇತರ ವಿಷಯವನ್ನು ಆ್ಯಪ್‌ಗಳು ಪ್ರವೇಶಿಸಿದಾಗ ಸಂದೇಶವೊಂದನ್ನು ತೋರಿಸಿ"</string>
+    <string name="show_password_title" msgid="2877269286984684659">"ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ತೋರಿಸಿ"</string>
+    <string name="show_password_summary" msgid="1110166488865981610">"ನೀವು ಟೈಪ್ ಮಾಡಿದಂತೆ ಅಕ್ಷರಗಳನ್ನು ಸಂಕ್ಷಿಪ್ತವಾಗಿ ಪ್ರದರ್ಶಿಸಿ"</string>
 </resources>

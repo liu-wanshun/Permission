@@ -23,6 +23,8 @@
     <string name="back" msgid="6249950659061523680">"Артқа"</string>
     <string name="available" msgid="6007778121920339498">"Қолжетімді"</string>
     <string name="blocked" msgid="9195547604866033708">"Бөгелген"</string>
+    <string name="on" msgid="280241003226755921">"Қосулы"</string>
+    <string name="off" msgid="1438489226422866263">"Өшіру"</string>
     <string name="uninstall_or_disable" msgid="4496612999740858933">"Жою немесе өшіру"</string>
     <string name="app_not_found_dlg_title" msgid="6029482906093859756">"Қолданба табылмады"</string>
     <string name="grant_dialog_button_deny" msgid="88262611492697192">"Рұқсат бермеу"</string>
@@ -55,10 +57,10 @@
     <string name="unused_apps" msgid="2058057455175955094">"Пайдаланылмайтын қолданбалар"</string>
     <string name="no_unused_apps" msgid="12809387670415295">"Пайдаланылмайтын қолданбалар жоқ"</string>
     <string name="zero_unused_apps" msgid="9024448554157499748">"0 пайдаланылмайтын қолданба бар"</string>
-    <string name="review_permission_decisions" msgid="309559429150613632">"Рұқсаттары бар әрекеттер"</string>
+    <string name="review_permission_decisions" msgid="309559429150613632">"Рұқсат беру әрекеттері"</string>
     <string name="review_permission_decisions_view_all" msgid="90391040431566130">"Рұқсаттары бар соңғы барлық әрекетті көру"</string>
     <string name="review_permission_decisions_empty" msgid="8120775336417279806">"Рұқсаттары бар соңғы әрекеттер жоқ"</string>
-    <string name="auto_permission_manager_summary" msgid="9157438376234301354">"Күнтізбе, қоңырау журналдары және т.б. деректерін пайдалануды басқару"</string>
+    <string name="auto_permission_manager_summary" msgid="9157438376234301354">"Күнтізбе, қоңырау журналдары және т.б. деректерін пайдалануды реттеңіз."</string>
     <string name="granted_permission_decision" msgid="7824827491551861365">"<xliff:g id="APP_NAME">%1$s</xliff:g> қолданбасына <xliff:g id="PERMISSION_NAME">%2$s</xliff:g> рұқсатын пайдалануға мүмкіндік бердіңіз."</string>
     <string name="denied_permission_decision" msgid="5308961501779563781">"<xliff:g id="APP_NAME">%1$s</xliff:g> қолданбасына <xliff:g id="PERMISSION_NAME">%2$s</xliff:g> рұқсатын пайдалануға тыйым салдыңыз."</string>
     <string name="days_ago" msgid="6650359081551335629">"{count,plural, =0{Бүгін}=1{1 күн бұрын}other{# күн бұрын}}"</string>
@@ -130,6 +132,7 @@
     <string name="permission_group_usage_subtitle_7d" msgid="1465828402260324654">"Қолданбалардың соңғы 7 күнде <xliff:g id="PERMGROUP">%1$s</xliff:g> рұқсатын пайдалану хронологиясы"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Бұл қолданба <xliff:g id="PERMGROUP">%1$s</xliff:g> рұқсатын қолданған кезде"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Толығырақ"</string>
+    <string name="learn_more_content_description" msgid="8673699744544502539">"<xliff:g id="PERMGROUP">%1$s</xliff:g> туралы толық ақпарат"</string>
     <string name="manage_permission_summary" msgid="4117555482684114317">"Қолданбаның <xliff:g id="PERMGROUP">%1$s</xliff:g> пайдалану рұқсатын басқарады."</string>
     <string name="auto_permission_usage_timeline_summary" msgid="2713135806453218703">"<xliff:g id="ACCESS_TIME">%1$s</xliff:g> • <xliff:g id="SUMMARY_TEXT">%2$s</xliff:g>"</string>
     <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
@@ -211,7 +214,6 @@
     <string name="auto_revocable_permissions_two" msgid="4874067408752041716">"<xliff:g id="PERM_0">%1$s</xliff:g> және <xliff:g id="PERM_1">%2$s</xliff:g> рұқсаттары өшіріледі."</string>
     <string name="auto_revocable_permissions_many" msgid="1521807896206032992">"Өшірілетін рұқсаттар: <xliff:g id="PERMS">%1$s</xliff:g>."</string>
     <string name="auto_manage_title" msgid="7693181026874842935">"Рұқсаттарды автоматты түрде басқару"</string>
-    <string name="off" msgid="1438489226422866263">"Өшіру"</string>
     <string name="auto_revoked_app_summary_one" msgid="7093213590301252970">"<xliff:g id="PERMISSION_NAME">%s</xliff:g> рұқсаты өшірілді"</string>
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"<xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g> және <xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g> рұқсаттары өшірілді"</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> және тағы <xliff:g id="NUMBER">%2$s</xliff:g> рұқсат өшірілді"</string>
@@ -262,6 +264,9 @@
     <string name="auto_revoke_permission_notification_content" msgid="5125990886047799375">"Кейбір қолданбалар бірнеше ай бойы пайдаланылмаған. Көру үшін түртіңіз."</string>
     <string name="unused_apps_notification_title" msgid="4314832015894238019">"{count,plural, =1{# пайдаланылмайтын қолданба}other{# пайдаланылмайтын қолданба}}"</string>
     <string name="unused_apps_notification_content" msgid="9195026773244581246">"Рұқсаттар мен уақытша файлдар өшірілді және хабарландырулар тоқтатылды. Көру үшін түртіңіз."</string>
+    <string name="unused_apps_safety_center_card_title" msgid="5638409355530099149">"Рұқсаттары өшірілген қолданбаларды қарап шығыңыз"</string>
+    <string name="unused_apps_safety_center_card_content" msgid="1088557243627427820">"Біраз уақыттан бері пайдаланылмаған қолданбалар бойынша рұқсаттар мен уақытша файлдар өшірілді және хабарландырулар тоқтатылды."</string>
+    <string name="unused_apps_safety_center_action_title" msgid="8865914432518993194">"Қолданбаларды шолу"</string>
     <string name="post_drive_permission_decision_reminder_title" msgid="1290697371418139976">"Ағымдағы рұқсаттарды тексеру"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_1_permission" msgid="670521503734140711">"Көлік жүргізген кезде, <xliff:g id="APP">%1$s</xliff:g> қолданбасына <xliff:g id="PERMISSION">%2$s</xliff:g> рұқсатын бердіңіз."</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_2_permissions" msgid="671791184670801301">"Көлік жүргізген кезде, <xliff:g id="APP">%1$s</xliff:g> қолданбасына <xliff:g id="PERMISSION_1">%2$s</xliff:g> және <xliff:g id="PERMISSION_2">%3$s</xliff:g> рұқсаттарын бердіңіз."</string>
@@ -276,12 +281,19 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"Құпиялылықты қорғау үшін рұқсаттар өшірілді."</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> сіздің орналасқан жеріңізді фондық режимде анықтады."</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Бұл қолданба геодерегіңізді кез келген уақытта пайдалана алады. Өзгерту үшін түртіңіз."</string>
-    <string name="notification_listener_reminder_notification_title" msgid="6214106302085018939">"Хабарландыру көру қызметіне рұқсаты бар қолданбаны тексеріңіз"</string>
-    <string name="notification_listener_reminder_notification_content" msgid="4740891089329946164">"<xliff:g id="APP_NAME">%s</xliff:g> барлық хабарландыруыңызды оқи алады."</string>
-    <string name="notification_listener_warning_card_content" msgid="8181427178654279926">"Бұл қолданба барлық хабарландыруыңызды оқи алады."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="3747210460187479091">"Хабарландыруды пайдалану құқығы бар қолданбаны қарап шығыңыз"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="831476101108863427">"<xliff:g id="APP_NAME">%s</xliff:g> қолданбасы хабарландырулардағы мазмұнды пайдалана, жаба, өңдей алады."</string>
+    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"Бұл қолданба хабарландырулардағы мазмұнды пайдалана, жаба, өңдей алады. Кейбір қолданба тиісінше жұмыс істеуі үшін осы рұқсатты қажет етеді."</string>
     <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Пайдалану рұқсатын өшіру"</string>
-    <string name="notification_listener_review_app_button_label" msgid="4452381557379652037">"Хабарландыру рұқсаты берілген барлық қолданбаны қарап шығу"</string>
+    <string name="notification_listener_review_app_button_label" msgid="3433073281029143924">"Басқа опцияларды көру"</string>
     <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Пайдалану рұқсаты өшірілді."</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="2971317234668807566">"Құрылғыны толық пайдалану құқығы бар қолданбаны қарап шығыңыз"</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="7389454158175306720">"<xliff:g id="APP_NAME">%s</xliff:g> қолданбасы экраныңызды көре алады және құрылғыңызда белгілі бір әрекеттер жасай алады. Арнайы мүмкіндіктер қолданбалары тиісінше жұмыс істеу үшін осы пайдалану түрін қажет етеді."</string>
+    <string name="accessibility_access_warning_card_content" msgid="4370327190293217358">"Бұл қолданба экраныңызды көре алады және құрылғыңызда белгілі бір әрекеттер жасай алады. Арнайы мүмкіндіктер қолданбалары тиісінше жұмыс істеу үшін осы пайдалану түрін қажет етеді. Алайда қолданбаны тексеріп, оның сенімді екеніне көз жеткізіңіз."</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"Пайдалану рұқсатын өшіру"</string>
+    <string name="accessibility_show_all_apps_button_label" msgid="960067249326392280">"Толық пайдалану құқығы бар қолданбаларды көру"</string>
+    <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"Пайдалану рұқсаты өшірілді."</string>
+    <string name="safety_center_notification_app_label" msgid="2457720616141926534">"Android жүйесі"</string>
     <string name="auto_revoke_after_notification_title" msgid="5417761027669887431">"Құпиялылықты сақтау үшін қолданба рұқсаттары өшірілді"</string>
     <string name="auto_revoke_after_notification_content_one" msgid="6804038707453662753">"<xliff:g id="APP_NAME">%s</xliff:g> қолданбасы бірнеше ай бойы пайдаланылмады. Көру үшін түртіңіз."</string>
     <string name="auto_revoke_after_notification_content_two" msgid="9108709764831425172">"<xliff:g id="APP_NAME">%s</xliff:g> және тағы 1 қолданба бірнеше ай бойы пайдаланылмады. Көру үшін түртіңіз."</string>
@@ -502,21 +514,28 @@
     <string name="blocked_sensor_summary" msgid="4443707628305027375">"Қолданбалар мен қызметтер үшін"</string>
     <string name="blocked_mic_summary" msgid="8960466941528458347">"Құтқару қызметінің нөміріне қоңырау шалу кезінде микрофон деректері әлі бөлісіліп жатуы мүмкін."</string>
     <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Өзгерту"</string>
-    <string name="safety_center_dashboard_page_title" msgid="7514620345152008005">"Қауіпсіздік және құпиялылық"</string>
-    <string name="safety_center_rescan_button" msgid="8047036829052958144">"Сканерлеу"</string>
+    <string name="safety_center_dashboard_page_title" msgid="2810774008694315854">"Қауіпсіздік және құпиялылық"</string>
+    <string name="safety_center_rescan_button" msgid="4517514567809409596">"Құрылғыны тексеру"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Жабу"</string>
     <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"Осы хабарландыруды жабу керек пе?"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_message" msgid="3775418736671093563">"Қорғаныс деңгейін арттыру үшін қауіпсіздік пен құпиялылық параметрлерін кез келген уақытта қарап шығыңыз."</string>
     <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Жабу"</string>
     <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Бас тарту"</string>
     <string name="safety_center_entries_category_title" msgid="34356964062813115">"Параметрлер"</string>
+    <string name="safety_status_preference_title_and_summary_content_description" msgid="3511373256505058464">"Қауіпсіздік пен құпиялылық күйі. <xliff:g id="OVERALL_SAFETY_STATUS">%1$s</xliff:g>. <xliff:g id="SUMMARY_OF_DEVICE_STATUS">%2$s</xliff:g>"</string>
     <string name="security_settings" msgid="3808106921175271317">"Қауіпсіздік параметрлері"</string>
-    <string name="sensor_permissions_qs" msgid="4365989229426201877">"Датчик пайдалану рұқсаттары"</string>
-    <string name="privacy_controls_qs" msgid="471793881466080745">"Құпиялылық параметрлері"</string>
+    <string name="sensor_permissions_qs" msgid="1022267900031317472">"Рұқсаттар"</string>
+    <string name="safety_privacy_qs_tile_title" msgid="727301867710374052">"Қауіпсіздік және құпиялылық"</string>
+    <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"Күйді тексеру"</string>
+    <string name="privacy_controls_qs" msgid="5780144882040591169">"Құпиялылық параметрлеріңіз"</string>
+    <string name="security_settings_button_label_qs" msgid="8280343822465962330">"Қосымша параметрлер"</string>
+    <string name="camera_toggle_label_qs" msgid="3880261453066157285">"Камераны пайдалану"</string>
+    <string name="microphone_toggle_label_qs" msgid="8132912469813396552">"Микрофонды пайдалану"</string>
     <string name="permissions_removed_qs" msgid="8957319130625294572">"Рұқсат өшірілді."</string>
-    <string name="camera_usage_qs" msgid="7943349178368641820">"Камераны пайдаланатын басқа қолданбаларды көру"</string>
-    <string name="microphone_usage_qs" msgid="2393193350541830472">"Микрофонды пайдаланатын басқа қолданбаларды көру"</string>
-    <string name="remove_camera_qs" msgid="8209716677879809162">"Камера пайдалану рұқсатын өшіру"</string>
-    <string name="remove_microphone_qs" msgid="2893536836641560183">"Микрофон пайдалану рұқсатын өшіру"</string>
+    <string name="camera_usage_qs" msgid="4394233566086665994">"Камераны пайдалану бойынша соңғы деректерді көру"</string>
+    <string name="microphone_usage_qs" msgid="8527666682168170417">"Микрофонды пайдалану бойынша соңғы деректерді көру"</string>
+    <string name="remove_camera_qs" msgid="3649996161066883350">"Осы қолданбаның рұқсатын өшіру"</string>
+    <string name="remove_microphone_qs" msgid="1276551965129953198">"Осы қолданбаның рұқсатын өшіру"</string>
     <string name="manage_service_qs" msgid="7862555549364153805">"Қызметті басқару"</string>
     <string name="manage_permissions_qs" msgid="3780541819763475434">"Рұқсаттарды басқару"</string>
     <string name="active_call_usage_qs" msgid="8559974395932523391">"Телефон қоңырауы үшін пайдаланылуда."</string>
@@ -527,8 +546,6 @@
     <string name="recent_app_usage_1_qs" msgid="261450184773310741">"Соңғы рет <xliff:g id="APP_NAME">%1$s</xliff:g> (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g>) пайдаланды."</string>
     <string name="active_app_usage_2_qs" msgid="6107866785243565283">"<xliff:g id="APP_NAME">%1$s</xliff:g> (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>) пайдалануда."</string>
     <string name="recent_app_usage_2_qs" msgid="3591205954235694403">"Соңғы рет <xliff:g id="APP_NAME">%1$s</xliff:g> (<xliff:g id="ATTRIBUTION_LABEL">%2$s</xliff:g> • <xliff:g id="PROXY_LABEL">%3$s</xliff:g>) пайдаланды."</string>
-    <string name="safety_privacy_qs_tile_title" msgid="5431148204168066203">"Қауіпсіздік және құпиялылық"</string>
-    <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"Күйді тексеру"</string>
     <string name="media_confirm_dialog_positive_button" msgid="9020793594051526399">"Растау"</string>
     <string name="media_confirm_dialog_negative_button" msgid="226987376924861785">"Артқа"</string>
     <string name="media_confirm_dialog_title_a_to_p_aural_allow" msgid="8560601114044699903">"Басқа файлдарды пайдалануға да рұқсат етіледі"</string>
@@ -547,5 +564,20 @@
     <string name="media_confirm_dialog_message_q_to_s_aural_deny" msgid="6832087393653561911">"Бұл қолданба Android жүйесінің соңғы нұсқасын қолдамайды. Егер осы қолданба музыканы және аудиофайлдарды пайдалана алмаса, онда ол фотосуреттерді және бейнелерді пайдалана алмайтын болады."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_allow" msgid="3504335060843147760">"Бұл қолданба Android жүйесінің соңғы нұсқасын қолдамайды. Егер осы қолданба фотосуреттерді және бейнелерді пайдалана алса, онда ол музыканы, аудиожазбаларды пайдалана алатын болады."</string>
     <string name="media_confirm_dialog_message_q_to_s_visual_deny" msgid="2145973462806481992">"Бұл қолданба Android жүйесінің соңғы нұсқасын қолдамайды. Егер осы қолданба музыканы және аудиофайлдарды пайдалана алмаса, онда ол фотосуреттерді және бейнелерді пайдалана алмайтын болады."</string>
-    <string name="security_privacy_qs_close_button" msgid="6788105863103224114">"Жабу"</string>
+    <string name="safety_center_background_location_access_notification_title" msgid="8933610618810588237">"Локацияны фондық режимде пайдаланатын қолданбаны қарап шығыңыз"</string>
+    <string name="safety_center_background_location_access_reminder_notification_content" msgid="4066560182507301022">"<xliff:g id="APP_NAME">%s</xliff:g> қолданбасы жабық кезде де локация дерегіңізді пайдалана алады."</string>
+    <string name="safety_center_background_location_access_reminder_title" msgid="5477847038103863843">"Локацияны фондық режимде пайдаланатын қолданбаны қарап шығыңыз"</string>
+    <string name="safety_center_background_location_access_reminder_summary" msgid="8276755741395332974">"Бұл қолданба жабық кезде де локация дерегіңізді пайдалана алады."</string>
+    <string name="safety_center_background_location_access_revoked" msgid="6972274943343442213">"Кіру рұқсаты өзгертілді."</string>
+    <string name="safety_center_view_recent_location_access" msgid="3524391299490678243">"Локацияны пайдалану бойынша соңғы деректі көру"</string>
+    <string name="privacy_controls_title" msgid="7605929972256835199">"Құпиялылық параметрлері"</string>
+    <string name="camera_toggle_title" msgid="1251201397431837666">"Камераны пайдалану"</string>
+    <string name="mic_toggle_title" msgid="2649991093496110162">"Микрофонды пайдалану"</string>
+    <string name="perm_toggle_description" msgid="7801326363741451379">"Қолданбалар мен қызметтер үшін"</string>
+    <string name="mic_toggle_description" msgid="9163104307990677157">"Қолданбалар мен қызметтерге арналған. Бұл параметр өшірілсе де, құтқару қызметінің нөміріне қоңырау шалғанда, микрофон деректері жіберілуі мүмкін."</string>
+    <string name="location_settings_subtitle" msgid="2328360561197430695">"Локацияны пайдалана алатын қолданбалар мен қызметтерді көру"</string>
+    <string name="show_clip_access_notification_title" msgid="5168467637351109096">"Буфер пайдаланылғанын көрсету"</string>
+    <string name="show_clip_access_notification_summary" msgid="3532020182782112687">"Қолданбалар көшірілген мәтінді, суреттерді немесе басқа мазмұнды пайдаланған кезде хабар көрсету"</string>
+    <string name="show_password_title" msgid="2877269286984684659">"Құпия сөздерді көрсету"</string>
+    <string name="show_password_summary" msgid="1110166488865981610">"Таңбалар терілген кезде аз уақыт көрсетіледі."</string>
 </resources>

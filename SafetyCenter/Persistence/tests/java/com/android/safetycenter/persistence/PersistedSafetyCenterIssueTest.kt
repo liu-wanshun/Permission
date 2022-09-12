@@ -16,18 +16,15 @@
 
 package com.android.safetycenter.persistence
 
-import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SdkSuppress
 import com.android.permission.testing.EqualsHashCodeToStringTester
 import com.google.common.truth.Truth.assertThat
+import java.time.Instant
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.time.Instant
 
 /** CTS tests for [PersistedSafetyCenterIssue]. */
 @RunWith(AndroidJUnit4::class)
-@SdkSuppress(minSdkVersion = TIRAMISU, codeName = "Tiramisu")
 class PersistedSafetyCenterIssueTest {
 
     @Test
@@ -49,6 +46,12 @@ class PersistedSafetyCenterIssueTest {
     }
 
     @Test
+    fun getDismissCount_returnsDismissCount() {
+        assertThat(ACTIVE_ISSUE.dismissCount).isEqualTo(0)
+        assertThat(DISMISSED_ISSUE.dismissCount).isEqualTo(1)
+    }
+
+    @Test
     fun equalsHashCodeToString_usingEqualsHashCodeToStringTester() {
         EqualsHashCodeToStringTester()
             .addEqualityGroup(
@@ -63,18 +66,28 @@ class PersistedSafetyCenterIssueTest {
                     .setKey("other")
                     .setFirstSeenAt(INSTANT)
                     .setDismissedAt(INSTANT)
+                    .setDismissCount(1)
                     .build())
             .addEqualityGroup(
                 PersistedSafetyCenterIssue.Builder()
                     .setKey(DISMISSED_ISSUE_KEY)
                     .setFirstSeenAt(Instant.ofEpochMilli(0))
                     .setDismissedAt(INSTANT)
+                    .setDismissCount(1)
                     .build())
             .addEqualityGroup(
                 PersistedSafetyCenterIssue.Builder()
                     .setKey(DISMISSED_ISSUE_KEY)
                     .setFirstSeenAt(INSTANT)
                     .setDismissedAt(Instant.ofEpochMilli(0))
+                    .setDismissCount(1)
+                    .build())
+            .addEqualityGroup(
+                PersistedSafetyCenterIssue.Builder()
+                    .setKey(DISMISSED_ISSUE_KEY)
+                    .setFirstSeenAt(INSTANT)
+                    .setDismissedAt(INSTANT)
+                    .setDismissCount(99)
                     .build())
             .test()
     }
@@ -95,6 +108,7 @@ class PersistedSafetyCenterIssueTest {
                 .setKey(DISMISSED_ISSUE_KEY)
                 .setFirstSeenAt(INSTANT)
                 .setDismissedAt(INSTANT)
+                .setDismissCount(1)
                 .build()
     }
 }

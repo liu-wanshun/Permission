@@ -33,6 +33,7 @@ import java.util.Objects;
 // TODO(b/219697341): Look into using AutoValue for this data class.
 @RequiresApi(TIRAMISU)
 final class SafetySourceKey {
+
     @NonNull private final String mSourceId;
     @UserIdInt private final int mUserId;
 
@@ -41,7 +42,7 @@ final class SafetySourceKey {
         mUserId = userId;
     }
 
-    /** Creates a {@link SafetySourceKey}. */
+    /** Creates a {@link SafetySourceKey} for the given {@code sourceId} and {@code userId}. */
     @NonNull
     static SafetySourceKey of(@NonNull String sourceId, @UserIdInt int userId) {
         return new SafetySourceKey(sourceId, userId);
@@ -49,23 +50,18 @@ final class SafetySourceKey {
 
     @Override
     public String toString() {
-        return "SafetySourceKey{"
-                + "mSourceId='"
-                + mSourceId
-                + '\''
-                + ", mUserId="
-                + mUserId
-                + '\''
-                + '}';
+        return "SafetySourceKey{" + "mSourceId='" + mSourceId + "', mUserId=" + mUserId + '}';
     }
 
+    /** Returns the source id of this {@link SafetySourceKey}. */
     @NonNull
-    public String getSourceId() {
+    String getSourceId() {
         return mSourceId;
     }
 
+    /** Returns the user id of this {@link SafetySourceKey}. */
     @UserIdInt
-    public int getUserId() {
+    int getUserId() {
         return mUserId;
     }
 
