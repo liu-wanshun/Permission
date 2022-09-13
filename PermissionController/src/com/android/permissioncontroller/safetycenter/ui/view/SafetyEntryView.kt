@@ -113,6 +113,10 @@ internal class SafetyEntryView @JvmOverloads constructor(
                             ex)
                 }
             }
+        } else {
+            // Ensure that views without listeners can still be focused by accessibility services
+            // TODO b/243713158: Set the proper accessibility focus in style, rather than in code
+            isFocusable = true
         }
     }
 
@@ -153,7 +157,7 @@ internal class SafetyEntryView @JvmOverloads constructor(
                     paddingTop,
                     context
                             .resources
-                            .getDimensionPixelSize(R.dimen.safety_center_entry_padding_end),
+                            .getDimensionPixelSize(R.dimen.sc_entry_padding_end),
                     paddingBottom)
         }
     }
