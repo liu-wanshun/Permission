@@ -34,6 +34,7 @@ import android.util.SparseArray;
 import androidx.annotation.RequiresApi;
 
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -55,7 +56,6 @@ final class SafetyCenterListeners {
     private final SparseArray<RemoteCallbackList<IOnSafetyCenterDataChangedListener>>
             mSafetyCenterDataChangedListeners = new SparseArray<>();
 
-    /** Creates a {@link SafetyCenterListeners} with the given {@link SafetyCenterDataTracker}. */
     SafetyCenterListeners(@NonNull SafetyCenterDataTracker safetyCenterDataTracker) {
         mSafetyCenterDataTracker = safetyCenterDataTracker;
     }
@@ -81,6 +81,20 @@ final class SafetyCenterListeners {
             } catch (RemoteException e) {
                 Log.e(TAG, "Error delivering SafetyCenterErrorDetails to listener", e);
             }
+        }
+    }
+
+    /**
+     * Same as {@link #deliverUpdateForUserProfileGroup} but for all the given {@code
+     * userProfileGroups}.
+     */
+    void deliverUpdateForUserProfileGroups(
+            @NonNull List<UserProfileGroup> userProfileGroups,
+            boolean updateSafetyCenterData,
+            @Nullable SafetyCenterErrorDetails safetyCenterErrorDetails) {
+        for (int i = 0; i < userProfileGroups.size(); i++) {
+            deliverUpdateForUserProfileGroup(
+                    userProfileGroups.get(i), updateSafetyCenterData, safetyCenterErrorDetails);
         }
     }
 
@@ -225,11 +239,7 @@ final class SafetyCenterListeners {
         listenersForUserId.finishBroadcast();
     }
 
-    /**
-     * Dumps state for debugging purposes.
-     *
-     * @param fout {@link PrintWriter} to write to
-     */
+    /** Dumps state for debugging purposes. */
     void dump(@NonNull PrintWriter fout) {
         int userIdCount = mSafetyCenterDataChangedListeners.size();
         fout.println("DATA CHANGED LISTENERS (" + userIdCount + " user IDs)");
