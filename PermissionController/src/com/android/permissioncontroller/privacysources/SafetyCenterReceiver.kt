@@ -23,18 +23,20 @@ import android.content.Intent
 import android.content.Intent.ACTION_BOOT_COMPLETED
 import android.content.pm.PackageManager
 import android.os.Build
+import android.provider.DeviceConfig
 import android.safetycenter.SafetyCenterManager
 import android.safetycenter.SafetyCenterManager.ACTION_REFRESH_SAFETY_SOURCES
 import android.safetycenter.SafetyCenterManager.ACTION_SAFETY_CENTER_ENABLED_CHANGED
 import android.safetycenter.SafetyCenterManager.EXTRA_REFRESH_SAFETY_SOURCE_IDS
 import androidx.annotation.RequiresApi
 import com.android.modules.utils.build.SdkLevel
+import com.android.permissioncontroller.Constants.UNUSED_APPS_SAFETY_CENTER_SOURCE_ID
 import com.android.permissioncontroller.PermissionControllerApplication
 import com.android.permissioncontroller.permission.service.LocationAccessCheck
 import com.android.permissioncontroller.permission.service.v33.SafetyCenterQsTileService
+import com.android.permissioncontroller.permission.service.v33.SafetyCenterQsTileService.Companion.QS_TILE_COMPONENT_SETTING_FLAGS
 import com.android.permissioncontroller.permission.utils.Utils
 import com.android.permissioncontroller.privacysources.WorkPolicyInfo.Companion.WORK_POLICY_INFO_SOURCE_ID
-
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
@@ -45,11 +47,11 @@ private fun createMapOfSourceIdsToSources(context: Context): Map<String, Privacy
         return emptyMap()
     }
     return mapOf(
-            SC_NLS_SOURCE_ID to NotificationListenerPrivacySource(),
-            WORK_POLICY_INFO_SOURCE_ID to WorkPolicyInfo.create(context),
-            SC_ACCESSIBILITY_SOURCE_ID to AccessibilitySourceService(context),
-            LocationAccessCheck.BG_LOCATION_SOURCE_ID to LocationAccessPrivacySource()
-    )
+        SC_NLS_SOURCE_ID to NotificationListenerPrivacySource(),
+        WORK_POLICY_INFO_SOURCE_ID to WorkPolicyInfo.create(context),
+        SC_ACCESSIBILITY_SOURCE_ID to AccessibilitySourceService(context),
+        LocationAccessCheck.BG_LOCATION_SOURCE_ID to LocationAccessPrivacySource(),
+        UNUSED_APPS_SAFETY_CENTER_SOURCE_ID to AutoRevokePrivacySource())
 }
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -130,12 +132,18 @@ class SafetyCenterReceiver(
         val wasEnabled =
             context.packageManager?.getComponentEnabledSetting(tileComponent) !=
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        val qsTileComponentSettingFlags =
+            DeviceConfig.getInt(DeviceConfig.NAMESPACE_PRIVACY, QS_TILE_COMPONENT_SETTING_FLAGS, 0)
         if (enabled && !wasEnabled) {
             context.packageManager.setComponentEnabledSetting(
-                tileComponent, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 0)
+                tileComponent,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                qsTileComponentSettingFlags)
         } else if (!enabled && wasEnabled) {
             context.packageManager.setComponentEnabledSetting(
-                tileComponent, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, 0)
+                tileComponent,
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                qsTileComponentSettingFlags)
         }
     }
 

@@ -16,37 +16,64 @@
 
 package android.safetycenter.cts.testing
 
-import android.os.Bundle
+import android.Manifest.permission.REVOKE_RUNTIME_PERMISSIONS
+import android.Manifest.permission.SEND_SAFETY_CENTER_UPDATE
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_SAFETY_CENTER
+import android.content.Intent.ACTION_VIEW_SAFETY_CENTER_QS
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.safetycenter.cts.testing.WaitForBroadcastIdle.waitForBroadcastIdle
-import com.android.compatibility.common.util.UiAutomatorUtils
+import android.os.Bundle
+import android.safetycenter.cts.testing.ShellPermissions.callWithShellPermissionIdentity
+import com.android.compatibility.common.util.UiAutomatorUtils.getUiDevice
 
 /** A class that provides a way to launch the SafetyCenter activity in tests. */
 object SafetyCenterActivityLauncher {
 
-    /** Launches the SafetyCenter activity and exits it once [block] completes. */
-    fun Context.launchSafetyCenterActivity(intentExtras: Bundle? = null, block: () -> Unit) {
-        val launchSafetyCenterIntent =
-            Intent(ACTION_SAFETY_CENTER)
-                .addFlags(FLAG_ACTIVITY_NEW_TASK)
-                .addFlags(FLAG_ACTIVITY_CLEAR_TASK)
-
-        intentExtras?.let {
-            launchSafetyCenterIntent.putExtras(it)
+    /**
+     * Launches the SafetyCenter activity and exits it once [block] completes.
+     *
+     * @param withReceiverPermission whether we should hold the [SEND_SAFETY_CENTER_UPDATE]
+     * permission while the activity is on the screen (e.g. to ensure the CTS package can have its
+     * receiver called during refresh/rescan)
+     */
+    fun Context.launchSafetyCenterActivity(
+        intentExtras: Bundle? = null,
+        withReceiverPermission: Boolean = false,
+        block: () -> Unit
+    ) {
+        val launchSafetyCenterIntent = createIntent(ACTION_SAFETY_CENTER, intentExtras)
+        if (withReceiverPermission) {
+            callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
+                executeBlockAndExit(block) { startActivity(launchSafetyCenterIntent) }
+            }
+        } else {
+            executeBlockAndExit(block) { startActivity(launchSafetyCenterIntent) }
         }
+    }
 
-        // Wait for the PermissionController's SafetyCenterReceiver broadcast to be fully dispatched
-        // prior to opening the SafetyCenterActivity. This shouldn't be necessary but there seems
-        // to some racyness when enabling the SafetyCenter QS tile while opening the
-        // SafetyCenterActivity which causes the window to be removed.
-        waitForBroadcastIdle()
-        val uiDevice = UiAutomatorUtils.getUiDevice()
+    /** Launches the SafetyCenter Quick Settings activity and exits it once [block] completes. */
+    fun Context.launchSafetyCenterQsActivity(intentExtras: Bundle? = null, block: () -> Unit) {
+        val launchSafetyCenterQsIntent = createIntent(ACTION_VIEW_SAFETY_CENTER_QS, intentExtras)
+        executeBlockAndExit(block) {
+            callWithShellPermissionIdentity(REVOKE_RUNTIME_PERMISSIONS) {
+                startActivity(launchSafetyCenterQsIntent)
+            }
+        }
+    }
+
+    private fun createIntent(intentAction: String, intentExtras: Bundle?): Intent {
+        val launchIntent =
+            Intent(intentAction).addFlags(FLAG_ACTIVITY_NEW_TASK).addFlags(FLAG_ACTIVITY_CLEAR_TASK)
+        intentExtras?.let { launchIntent.putExtras(it) }
+        return launchIntent
+    }
+
+    private fun executeBlockAndExit(block: () -> Unit, launchActivity: () -> Unit) {
+        val uiDevice = getUiDevice()
         uiDevice.waitForIdle()
-        startActivity(launchSafetyCenterIntent)
+        launchActivity()
         uiDevice.waitForIdle()
         block()
         uiDevice.pressBack()

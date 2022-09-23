@@ -278,7 +278,7 @@ object KotlinUtils {
             }
 
             if (icon == null) {
-                val groupName = Utils.getGroupOfPermission(permInfo) ?: permInfo.name
+                val groupName = PermissionMapping.getGroupOfPermission(permInfo) ?: permInfo.name
                 icon = getPermGroupIcon(context, groupName)
             }
 
@@ -915,7 +915,8 @@ object KotlinUtils {
                 // cancel location access warning notification
                 LocationAccessCheck(app, null).cancelBackgroundAccessWarningNotification(
                     group.packageInfo.packageName,
-                    user
+                    user,
+                    true
                 )
             }
         }
