@@ -16,8 +16,11 @@
 
 package com.android.permissioncontroller.permission.service.v33
 
+import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.IBinder
+import android.provider.DeviceConfig
 import android.safetycenter.SafetyCenterManager
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
@@ -31,13 +34,15 @@ class SafetyCenterQsTileService : TileService() {
 
     override fun onBind(intent: Intent?): IBinder? {
         val scManager = getSystemService(SafetyCenterManager::class.java)!!
-        /*
+        val qsTileComponentSettingFlags =
+            DeviceConfig.getInt(DeviceConfig.NAMESPACE_PRIVACY, QS_TILE_COMPONENT_SETTING_FLAGS, 0)
         if (!scManager.isSafetyCenterEnabled) {
-            packageManager.setComponentEnabledSetting(ComponentName(this, this::class.java),
-                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, 0)
+            packageManager.setComponentEnabledSetting(
+                ComponentName(this, this::class.java),
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                qsTileComponentSettingFlags)
             disabled = true
         }
-         */
 
         return super.onBind(intent)
     }
@@ -57,5 +62,13 @@ class SafetyCenterQsTileService : TileService() {
         val intent = Intent(Intent.ACTION_VIEW_SAFETY_CENTER_QS)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivityAndCollapse(intent)
+    }
+
+    companion object {
+        /**
+         * Device config property to make sure toggling the tile does not kill the app during CTS
+         * tests and cause flakiness.
+         */
+        const val QS_TILE_COMPONENT_SETTING_FLAGS = "safety_center_qs_tile_component_setting_flags"
     }
 }

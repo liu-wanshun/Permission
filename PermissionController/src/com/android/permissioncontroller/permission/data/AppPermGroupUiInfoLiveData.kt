@@ -31,9 +31,9 @@ import com.android.permissioncontroller.permission.model.livedatatypes.LightPack
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPermGroupInfo
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPermInfo
 import com.android.permissioncontroller.permission.model.livedatatypes.PermState
+import com.android.permissioncontroller.permission.utils.PermissionMapping.isPlatformPermissionGroup
 import com.android.permissioncontroller.permission.utils.LocationUtils
 import com.android.permissioncontroller.permission.utils.Utils
-import com.android.permissioncontroller.permission.utils.Utils.isModernPermissionGroup
 import kotlinx.coroutines.Job
 
 /**
@@ -124,8 +124,9 @@ class AppPermGroupUiInfoLiveData private constructor(
         val requestedPermissionInfos =
             allPermInfos.filter { permissionState.containsKey(it.key) }.values
 
-        val shouldShow = packageInfo.enabled && isGrantableAndNotLegacyPlatform(packageInfo,
-            groupInfo, requestedPermissionInfos)
+        val shouldShow = packageInfo.enabled &&
+            isGrantableAndNotLegacyPlatform(packageInfo, groupInfo, requestedPermissionInfos) &&
+            (!isStorage || Utils.shouldShowStorage(packageInfo))
 
         val isSystemApp = !isUserSensitive(permissionState)
 
@@ -154,7 +155,7 @@ class AppPermGroupUiInfoLiveData private constructor(
         permissionInfos: Collection<LightPermInfo>
     ): Boolean {
         if (groupInfo.packageName == Utils.OS_PKG &&
-            !isModernPermissionGroup(groupInfo.name)) {
+            !isPlatformPermissionGroup(groupInfo.name)) {
             return false
         }
 
@@ -192,7 +193,7 @@ class AppPermGroupUiInfoLiveData private constructor(
      * permission group
      */
     private fun isUserSensitive(permissionState: Map<String, PermState>): Boolean {
-        if (!isModernPermissionGroup(permGroupName)) {
+        if (!isPlatformPermissionGroup(permGroupName)) {
             return true
         }
 

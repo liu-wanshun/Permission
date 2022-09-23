@@ -20,7 +20,6 @@ import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Context
 import android.content.Intent
-import android.os.Build.VERSION_CODES.TIRAMISU
 import android.safetycenter.SafetySourceData
 import android.safetycenter.SafetySourceData.SEVERITY_LEVEL_CRITICAL_WARNING
 import android.safetycenter.SafetySourceData.SEVERITY_LEVEL_INFORMATION
@@ -28,11 +27,10 @@ import android.safetycenter.SafetySourceData.SEVERITY_LEVEL_RECOMMENDATION
 import android.safetycenter.SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED
 import android.safetycenter.SafetySourceIssue
 import android.safetycenter.SafetySourceStatus
-import android.safetycenter.cts.testing.EqualsHashCodeToStringTester
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.os.ParcelableSubject.assertThat
-import androidx.test.filters.SdkSuppress
+import com.android.permission.testing.EqualsHashCodeToStringTester
 import com.google.common.truth.Truth.assertThat
 import kotlin.test.assertFailsWith
 import org.junit.Test
@@ -40,7 +38,6 @@ import org.junit.runner.RunWith
 
 /** CTS tests for [SafetySourceData]. */
 @RunWith(AndroidJUnit4::class)
-@SdkSuppress(minSdkVersion = TIRAMISU, codeName = "Tiramisu")
 class SafetySourceDataTest {
     private val context: Context = getApplicationContext()
 
@@ -83,13 +80,13 @@ class SafetySourceDataTest {
         val data =
             SafetySourceData.Builder()
                 .setStatus(createStatus(SEVERITY_LEVEL_CRITICAL_WARNING))
-                .addIssue(createIssue(SEVERITY_LEVEL_CRITICAL_WARNING))
-                .addIssue(createIssue(SEVERITY_LEVEL_RECOMMENDATION))
+                .addIssue(createIssue(SEVERITY_LEVEL_CRITICAL_WARNING, 0))
+                .addIssue(createIssue(SEVERITY_LEVEL_RECOMMENDATION, 1))
                 .build()
         val mutatedIssues = data.issues
 
         assertFailsWith(UnsupportedOperationException::class) {
-            mutatedIssues.add(createIssue(SEVERITY_LEVEL_INFORMATION))
+            mutatedIssues.add(createIssue(SEVERITY_LEVEL_INFORMATION, 2))
         }
     }
 
@@ -188,21 +185,6 @@ class SafetySourceDataTest {
     }
 
     @Test
-    fun build_withInformationStatusAndRecommendationIssues_throwsIllegalArgumentException() {
-        val builder =
-            SafetySourceData.Builder()
-                .setStatus(createStatus(SEVERITY_LEVEL_INFORMATION))
-                .addIssue(createIssue(SEVERITY_LEVEL_RECOMMENDATION))
-
-        val exception = assertFailsWith(IllegalArgumentException::class) { builder.build() }
-        assertThat(exception)
-            .hasMessageThat()
-            .isEqualTo(
-                "Safety source data must not contain any issue with a severity level both greater" +
-                    " than SEVERITY_LEVEL_INFORMATION and greater than the status severity level")
-    }
-
-    @Test
     fun build_withRecommendationStatusAndNoIssues_doesNotThrow() {
         val builder =
             SafetySourceData.Builder().setStatus(createStatus(SEVERITY_LEVEL_RECOMMENDATION))
@@ -231,6 +213,32 @@ class SafetySourceDataTest {
     }
 
     @Test
+    fun build_withUnspecifiedStatusAndRecommendationIssues_throwsIllegalArgumentException() {
+        val builder =
+            SafetySourceData.Builder()
+                .setStatus(createStatus(SEVERITY_LEVEL_UNSPECIFIED))
+                .addIssue(createIssue(SEVERITY_LEVEL_RECOMMENDATION))
+
+        val exception = assertFailsWith(IllegalArgumentException::class) { builder.build() }
+        assertThat(exception)
+            .hasMessageThat()
+            .isEqualTo("Safety source data cannot have issues that are more severe than its status")
+    }
+
+    @Test
+    fun build_withInformationStatusAndRecommendationIssues_throwsIllegalArgumentException() {
+        val builder =
+            SafetySourceData.Builder()
+                .setStatus(createStatus(SEVERITY_LEVEL_INFORMATION))
+                .addIssue(createIssue(SEVERITY_LEVEL_RECOMMENDATION))
+
+        val exception = assertFailsWith(IllegalArgumentException::class) { builder.build() }
+        assertThat(exception)
+            .hasMessageThat()
+            .isEqualTo("Safety source data cannot have issues that are more severe than its status")
+    }
+
+    @Test
     fun build_withRecommendationStatusAndCriticalIssues_throwsIllegalArgumentException() {
         val builder =
             SafetySourceData.Builder()
@@ -240,9 +248,20 @@ class SafetySourceDataTest {
         val exception = assertFailsWith(IllegalArgumentException::class) { builder.build() }
         assertThat(exception)
             .hasMessageThat()
-            .isEqualTo(
-                "Safety source data must not contain any issue with a severity level both greater" +
-                    " than SEVERITY_LEVEL_INFORMATION and greater than the status severity level")
+            .isEqualTo("Safety source data cannot have issues that are more severe than its status")
+    }
+
+    @Test
+    fun build_duplicateIssueIds_throwsIllegalArgumentException() {
+        val builder =
+            SafetySourceData.Builder()
+                .addIssue(createIssue(SEVERITY_LEVEL_RECOMMENDATION, id = 0))
+                .addIssue(createIssue(SEVERITY_LEVEL_CRITICAL_WARNING, id = 0))
+
+        val exception = assertFailsWith(IllegalArgumentException::class) { builder.build() }
+        assertThat(exception)
+            .hasMessageThat()
+            .isEqualTo("Safety source data cannot have duplicate issue ids")
     }
 
     @Test

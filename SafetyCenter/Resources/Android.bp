@@ -19,17 +19,32 @@ package {
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
+android_library {
+    name: "SafetyCenterResourcesShared",
+    sdk_version: "system_current",
+    min_sdk_version: "30",
+    target_sdk_version: "33",
+    apex_available: ["com.android.permission"],
+    resource_dirs: [
+        "shared_res",
+    ],
+    manifest: "AndroidManifestLibrary.xml"
+}
+
 android_app {
     name: "SafetyCenterResources",
     privileged: true,
     sdk_version: "system_current",
     min_sdk_version: "30",
-    target_sdk_version: "32",
+    target_sdk_version: "33",
     apex_available: ["com.android.permission"],
     certificate: ":com.android.safetycenter.resources.certificate",
     lint: {
         extra_check_modules: ["ConfigLintChecker"],
     },
+    static_libs: [
+        "SafetyCenterResourcesShared",
+    ],
 }
 
 android_app_certificate {

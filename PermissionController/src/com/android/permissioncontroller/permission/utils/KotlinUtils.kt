@@ -46,6 +46,7 @@ import android.content.pm.PackageManager.MATCH_DIRECT_BOOT_AWARE
 import android.content.pm.PackageManager.MATCH_DIRECT_BOOT_UNAWARE
 import android.content.pm.PermissionGroupInfo
 import android.content.pm.PermissionInfo
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
@@ -65,6 +66,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
 import com.android.modules.utils.build.SdkLevel
 import com.android.permissioncontroller.R
+import com.android.permissioncontroller.permission.data.LightAppPermGroupLiveData
 import com.android.permissioncontroller.permission.data.LightPackageInfoLiveData
 import com.android.permissioncontroller.permission.data.get
 import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup
@@ -83,7 +85,6 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-
 /**
  * A set of util functions designed to work with kotlin, though they can work with java, as well.
  */
@@ -277,7 +278,7 @@ object KotlinUtils {
             }
 
             if (icon == null) {
-                val groupName = Utils.getGroupOfPermission(permInfo) ?: permInfo.name
+                val groupName = PermissionMapping.getGroupOfPermission(permInfo) ?: permInfo.name
                 icon = getPermGroupIcon(context, groupName)
             }
 
@@ -766,6 +767,34 @@ object KotlinUtils {
     }
 
     /**
+     * Revoke background permissions
+     *
+     * @param context context
+     * @param packageName Name of the package
+     * @param permissionGroupName Name of the permission group
+     * @param user User handle
+     * @param postRevokeHandler Optional callback that lets us perform an action on revoke
+     */
+    fun revokeBackgroundRuntimePermissions(
+        context: Context,
+        packageName: String,
+        permissionGroupName: String,
+        user: UserHandle,
+        postRevokeHandler: Runnable?
+    ) {
+        GlobalScope.launch(Dispatchers.Main) {
+            val group = LightAppPermGroupLiveData[packageName, permissionGroupName, user]
+                .getInitializedValue()
+            if (group != null) {
+                revokeBackgroundRuntimePermissions(context.application, group)
+            }
+            if (postRevokeHandler != null) {
+                postRevokeHandler.run()
+            }
+        }
+    }
+
+    /**
      * Determines if any permissions of a package are granted for one-time only
      *
      * @param app The current application
@@ -869,6 +898,27 @@ object KotlinUtils {
         if (perm.flags != newFlags) {
             app.packageManager.updatePermissionFlags(perm.name, group.packageInfo.packageName,
                 PERMISSION_CONTROLLER_CHANGED_FLAG_MASK, newFlags, user)
+        }
+
+        // If we revoke background access to the fine location, we trigger a check to remove
+        // notification warning about background location access
+        if (perm.isGrantedIncludingAppOp && !isGranted) {
+            var cancelLocationAccessWarning = false
+            if (perm.name == ACCESS_FINE_LOCATION) {
+                val bgPerm = group.permissions[perm.backgroundPermission]
+                cancelLocationAccessWarning = bgPerm?.isGrantedIncludingAppOp == true
+            } else if (perm.name == ACCESS_BACKGROUND_LOCATION) {
+                val fgPerm = group.permissions[ACCESS_FINE_LOCATION]
+                cancelLocationAccessWarning = fgPerm?.isGrantedIncludingAppOp == true
+            }
+            if (cancelLocationAccessWarning) {
+                // cancel location access warning notification
+                LocationAccessCheck(app, null).cancelBackgroundAccessWarningNotification(
+                    group.packageInfo.packageName,
+                    user,
+                    true
+                )
+            }
         }
 
         val newState = PermState(newFlags, isGranted)
@@ -1132,13 +1182,17 @@ object KotlinUtils {
      * We show the resources only if
      * (1) the build version is T or after and
      * (2) the feature flag safety_protection_enabled is enabled and
-     * (3) the resources exist (currently the resources only exist on GMS devices)
+     * (3) the config value config_safetyProtectionEnabled is enabled/true and
+     * (4) the resources exist (currently the resources only exist on GMS devices)
      */
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
     fun shouldShowSafetyProtectionResources(context: Context): Boolean {
         return SdkLevel.isAtLeastT() &&
             DeviceConfig.getBoolean(
                 DeviceConfig.NAMESPACE_PRIVACY, SAFETY_PROTECTION_RESOURCES_ENABLED, false) &&
+            context.getResources().getBoolean(
+                Resources.getSystem()
+                    .getIdentifier("config_safetyProtectionEnabled", "bool", "android")) &&
             context.getDrawable(android.R.drawable.ic_safety_protection) != null &&
             !context.getString(android.R.string.safety_protection_display_text).isNullOrEmpty()
     }

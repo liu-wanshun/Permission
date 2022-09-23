@@ -38,6 +38,7 @@ import com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISS
 import com.android.permissioncontroller.PermissionControllerStatsLog.APP_PERMISSION_GROUPS_FRAGMENT_AUTO_REVOKE_ACTION__ACTION__SWITCH_ENABLED
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.hibernation.isHibernationEnabled
+import com.android.permissioncontroller.permission.utils.PermissionMapping
 import com.android.permissioncontroller.permission.data.AppPermGroupUiInfoLiveData
 import com.android.permissioncontroller.permission.data.FullStoragePermissionAppsLiveData
 import com.android.permissioncontroller.permission.data.HibernationSettingStateLiveData
@@ -158,8 +159,11 @@ class AppPermissionGroupsViewModel(
             }
 
             for (groupName in groups) {
-                val isSystem = Utils.getPlatformPermissionGroups().contains(groupName)
+                val isSystem = PermissionMapping.getPlatformPermissionGroups().contains(groupName)
                 appPermGroupUiInfoLiveDatas[groupName]?.value?.let { uiInfo ->
+                    if (SdkLevel.isAtLeastT() && !uiInfo.shouldShow) {
+                        return@let
+                    }
                     if (groupName == Manifest.permission_group.STORAGE &&
                         (fullStorageState?.isGranted == true && !fullStorageState.isLegacy)) {
                         groupGrantStates[Category.ALLOWED]!!.add(
@@ -169,10 +173,14 @@ class AppPermissionGroupsViewModel(
                     when (uiInfo.permGrantState) {
                         PermGrantState.PERMS_ALLOWED -> {
                             val subtitle = if (groupName == Manifest.permission_group.STORAGE) {
-                                if (fullStorageState?.isLegacy == true) {
-                                    PermSubtitle.ALL_FILES
+                                if (SdkLevel.isAtLeastT()) {
+                                    PermSubtitle.NONE
                                 } else {
-                                    PermSubtitle.MEDIA_ONLY
+                                    if (fullStorageState?.isLegacy == true) {
+                                        PermSubtitle.ALL_FILES
+                                    } else {
+                                        PermSubtitle.MEDIA_ONLY
+                                    }
                                 }
                             } else {
                                 PermSubtitle.NONE
@@ -270,7 +278,7 @@ class AppPermissionGroupsViewModel(
         packageName: String
     ) {
         if (!SdkLevel.isAtLeastS()) {
-            return;
+            return
         }
 
         val aggregateDataFilterBeginDays = if (is7DayToggleEnabled())

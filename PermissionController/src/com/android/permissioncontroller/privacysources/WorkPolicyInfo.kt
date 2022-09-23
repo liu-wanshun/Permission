@@ -19,13 +19,14 @@ package com.android.permissioncontroller.privacysources
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.UserHandle
 import android.provider.Settings
 import android.safetycenter.SafetyCenterManager
 import android.safetycenter.SafetyEvent
 import android.safetycenter.SafetySourceData
 import android.safetycenter.SafetySourceStatus
-import com.android.permissioncontroller.PermissionControllerApplication
+import androidx.annotation.RequiresApi
 import com.android.permissioncontroller.R
 import com.android.permissioncontroller.permission.utils.Utils
 import com.android.permissioncontroller.privacysources.SafetyCenterReceiver.RefreshEvent
@@ -39,15 +40,20 @@ import com.android.settingslib.utils.WorkPolicyUtils
  * safetyCenterEnabledChanged and rescanAndPushSafetyCenterData methods checks if the device is
  * managed and shows the Work Policy Info by pushing the data in SafetyCenter
  */
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class WorkPolicyInfo(private val workPolicyUtils: WorkPolicyUtils) : PrivacySource {
 
     companion object {
         const val WORK_POLICY_INFO_SOURCE_ID = "AndroidWorkPolicyInfo"
+        const val WORK_POLICY_TITLE = "SafetyCenter.WORK_POLICY_TITLE"
+        const val WORK_POLICY_SUMMARY = "SafetyCenter.WORK_POLICY_SUMMARY"
         fun create(context: Context): WorkPolicyInfo {
             val workPolicyUtils = WorkPolicyUtils(context)
             return WorkPolicyInfo(workPolicyUtils)
         }
     }
+
+    override val shouldProcessProfileRequest: Boolean = false
 
     override fun safetyCenterEnabledChanged(context: Context, enabled: Boolean) {
         val intent = Intent(Settings.ACTION_SHOW_WORK_POLICY_INFO)
@@ -63,9 +69,7 @@ class WorkPolicyInfo(private val workPolicyUtils: WorkPolicyUtils) : PrivacySour
         refreshEvent: RefreshEvent
     ) {
         val safetyCenterManager: SafetyCenterManager =
-            Utils.getSystemServiceSafe(
-                PermissionControllerApplication.get().applicationContext,
-                SafetyCenterManager::class.java)
+            Utils.getSystemServiceSafe(context, SafetyCenterManager::class.java)
         val safetyEvent: SafetyEvent = createSafetyEventForWorkPolicy(refreshEvent, intent)
         val safetySourceData: SafetySourceData? = createSafetySourceDataForWorkPolicy(context)
 
@@ -80,10 +84,7 @@ class WorkPolicyInfo(private val workPolicyUtils: WorkPolicyUtils) : PrivacySour
             when {
                 deviceOwnerIntent != null -> {
                     PendingIntent.getActivity(
-                        context,
-                        0,
-                        deviceOwnerIntent,
-                        PendingIntent.FLAG_IMMUTABLE)
+                        context, 0, deviceOwnerIntent, PendingIntent.FLAG_IMMUTABLE)
                 }
                 profileOwnerIntent != null -> {
                     val managedProfileContext =
@@ -92,18 +93,18 @@ class WorkPolicyInfo(private val workPolicyUtils: WorkPolicyUtils) : PrivacySour
                             0,
                             UserHandle.of(workPolicyUtils.managedProfileUserId))
                     PendingIntent.getActivity(
-                        managedProfileContext,
-                        0,
-                        profileOwnerIntent,
-                        PendingIntent.FLAG_IMMUTABLE)
+                        managedProfileContext, 0, profileOwnerIntent, PendingIntent.FLAG_IMMUTABLE)
                 }
                 else -> null
-            } ?: return null
+            }
+                ?: return null
 
         val safetySourceStatus: SafetySourceStatus =
             SafetySourceStatus.Builder(
-                    context.getText(R.string.work_policy_title),
-                    context.getText(R.string.work_policy_summary),
+                    Utils.getEnterpriseString(
+                        context, WORK_POLICY_TITLE, R.string.work_policy_title),
+                    Utils.getEnterpriseString(
+                        context, WORK_POLICY_SUMMARY, R.string.work_policy_summary),
                     SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED)
                 .setPendingIntent(pendingIntent)
                 .build()

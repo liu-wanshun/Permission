@@ -16,31 +16,29 @@
 
 package com.android.permissioncontroller.safetycenter.ui;
 
+import static android.os.Build.VERSION_CODES.TIRAMISU;
+
+import androidx.annotation.RequiresApi;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager.PreferenceComparisonCallback;
 
 /** A {@link PreferenceComparisonCallback} to identify changed preferences of Safety Center. */
+@RequiresApi(TIRAMISU)
 class SafetyPreferenceComparisonCallback extends PreferenceComparisonCallback {
 
     @Override
-    public boolean arePreferenceItemsTheSame(Preference oldPreference,
-            Preference newPreference) {
-        if (oldPreference instanceof SafetyEntryPreference) {
-            return ((SafetyEntryPreference) oldPreference).isSameItem(newPreference);
-        } else if (oldPreference instanceof SafetyGroupHeaderEntryPreference) {
-            return (((SafetyGroupHeaderEntryPreference) oldPreference).isSameItem(newPreference));
+    public boolean arePreferenceItemsTheSame(Preference oldPreference, Preference newPreference) {
+        if (oldPreference instanceof ComparablePreference) {
+            return ((ComparablePreference) oldPreference).isSameItem(newPreference);
         }
         return false;
     }
 
     @Override
-    public boolean arePreferenceContentsTheSame(Preference oldPreference,
-            Preference newPreference) {
-        if (oldPreference instanceof SafetyEntryPreference) {
-            return ((SafetyEntryPreference) oldPreference).hasSameContents(newPreference);
-        } else if (oldPreference instanceof SafetyGroupHeaderEntryPreference) {
-            return (((SafetyGroupHeaderEntryPreference) oldPreference).hasSameContents(
-                    newPreference));
+    public boolean arePreferenceContentsTheSame(
+            Preference oldPreference, Preference newPreference) {
+        if (oldPreference instanceof ComparablePreference) {
+            return ((ComparablePreference) oldPreference).hasSameContents(newPreference);
         }
         return false;
     }

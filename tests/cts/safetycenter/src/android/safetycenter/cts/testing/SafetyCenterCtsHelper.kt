@@ -16,10 +16,10 @@
 
 package android.safetycenter.cts.testing
 
+import android.Manifest.permission.READ_SAFETY_CENTER_STATUS
+import android.Manifest.permission.SEND_SAFETY_CENTER_UPDATE
 import android.content.Context
-import android.content.IntentFilter
 import android.safetycenter.SafetyCenterManager
-import android.safetycenter.SafetyCenterManager.ACTION_SAFETY_CENTER_ENABLED_CHANGED
 import android.safetycenter.SafetyEvent
 import android.safetycenter.SafetySourceData
 import android.safetycenter.config.SafetyCenterConfig
@@ -27,23 +27,30 @@ import android.safetycenter.config.SafetySource.SAFETY_SOURCE_TYPE_STATIC
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.addOnSafetyCenterDataChangedListenerWithPermission
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.clearAllSafetySourceDataForTestsWithPermission
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.clearSafetyCenterConfigForTestsWithPermission
+import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.getSafetyCenterConfigWithPermission
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.isSafetyCenterEnabledWithPermission
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.removeOnSafetyCenterDataChangedListenerWithPermission
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.setSafetyCenterConfigForTestsWithPermission
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.setSafetySourceDataWithPermission
 import android.safetycenter.cts.testing.SafetyCenterFlags.isSafetyCenterEnabled
 import android.safetycenter.cts.testing.SafetySourceCtsData.Companion.EVENT_SOURCE_STATE_CHANGED
+import android.safetycenter.cts.testing.ShellPermissions.callWithShellPermissionIdentity
 import com.google.common.util.concurrent.MoreExecutors.directExecutor
 
 /** A class that facilitates settings up Safety Center in tests. */
 class SafetyCenterCtsHelper(private val context: Context) {
 
     private val safetyCenterManager = context.getSystemService(SafetyCenterManager::class.java)!!
-    private val safetyCenterFlagsSnapshot = SafetyCenterFlags.snapshot
     private val listeners = mutableListOf<SafetyCenterCtsListener>()
-    private val enabledChangedReceivers = mutableListOf<SafetyCenterEnabledChangedReceiver>()
 
-    private var currentConfigContainsCtsSource = false
+    /**
+     * Sets up the state of Safety Center by enabling it on the device and setting default flag
+     * values. To be called before each test.
+     */
+    fun setup() {
+        SafetyCenterFlags.setup()
+        setEnabled(true)
+    }
 
     /** Resets the state of Safety Center. To be called after each test. */
     fun reset() {
@@ -55,14 +62,8 @@ class SafetyCenterCtsHelper(private val context: Context) {
         listeners.clear()
         safetyCenterManager.clearAllSafetySourceDataForTestsWithPermission()
         safetyCenterManager.clearSafetyCenterConfigForTestsWithPermission()
-        currentConfigContainsCtsSource = false
         resetFlags()
         SafetySourceReceiver.reset()
-        enabledChangedReceivers.forEach {
-            context.unregisterReceiver(it)
-            it.reset()
-        }
-        enabledChangedReceivers.clear()
     }
 
     /** Enables or disables SafetyCenter based on [value]. */
@@ -71,27 +72,20 @@ class SafetyCenterCtsHelper(private val context: Context) {
         if (currentValue == value) {
             return
         }
-        setEnabledWaitingForBroadcastIdle(value)
-    }
-
-    /** Adds and returns a runtime-registered [SafetyCenterEnabledChangedReceiver]. */
-    fun addEnabledChangedReceiver(): SafetyCenterEnabledChangedReceiver {
-        val enabledChangedReceiver = SafetyCenterEnabledChangedReceiver()
-        context.registerReceiver(
-            enabledChangedReceiver, IntentFilter(ACTION_SAFETY_CENTER_ENABLED_CHANGED))
-        enabledChangedReceivers.add(enabledChangedReceiver)
-        return enabledChangedReceiver
+        val safetyCenterConfig = safetyCenterManager.getSafetyCenterConfigWithPermission()
+        if (safetyCenterConfig == null) {
+            // No broadcasts are dispatched when toggling the flag when SafetyCenter is not
+            // supported by the device.
+            SafetyCenterFlags.isEnabled = value
+        } else {
+            setEnabledWaitingForSafetyCenterBroadcastIdle(value, safetyCenterConfig)
+        }
     }
 
     /** Sets the given [SafetyCenterConfig]. */
     fun setConfig(config: SafetyCenterConfig) {
         require(isEnabled())
         safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(config)
-        currentConfigContainsCtsSource =
-            config.safetySourcesGroups
-                .flatMap { it.safetySources }
-                .filter { it.type != SAFETY_SOURCE_TYPE_STATIC }
-                .any { it.packageName == context.packageName }
     }
 
     /**
@@ -124,31 +118,48 @@ class SafetyCenterCtsHelper(private val context: Context) {
     }
 
     private fun resetFlags() {
-        setEnabled(safetyCenterFlagsSnapshot.isSafetyCenterEnabled())
-        SafetyCenterFlags.reset(safetyCenterFlagsSnapshot)
+        setEnabled(SafetyCenterFlags.snapshot.isSafetyCenterEnabled())
+        SafetyCenterFlags.reset()
     }
 
-    private fun setEnabledWaitingForBroadcastIdle(value: Boolean) {
-        // Wait for the CTS ACTION_SAFETY_CENTER_ENABLED_CHANGED broadcast to be dispatched to avoid
-        // it leaking onto other tests.
-        if (currentConfigContainsCtsSource) {
-            SafetySourceReceiver.setSafetyCenterEnabledWithReceiverPermissionAndWait(value)
-        } else {
-            // This is still necessary because the config could be set in another test. Since
-            // broadcasts are dispatched asynchronously, a wrong sequencing could still cause
-            // failures (e.g: 1: flag switched, 2: test finishes, 3: new test starts, 4: a CTS
-            // config is set, 5: broadcast from 1 dispatched).
-            addEnabledChangedReceiver().setSafetyCenterEnabledWithReceiverPermissionAndWait(value)
+    private fun setEnabledWaitingForSafetyCenterBroadcastIdle(
+        value: Boolean,
+        safetyCenterConfig: SafetyCenterConfig
+    ) =
+        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE, READ_SAFETY_CENTER_STATUS) {
+            val enabledChangedReceiver = SafetyCenterEnabledChangedReceiver(context)
+            SafetyCenterFlags.isEnabled = value
+            // Wait for all CTS ACTION_SAFETY_CENTER_ENABLED_CHANGED broadcasts to be dispatched to
+            // avoid them leaking onto other tests.
+            if (safetyCenterConfig.containsCtsSource()) {
+                SafetySourceReceiver.receiveSafetyCenterEnabledChanged()
+                // The explicit ACTION_SAFETY_CENTER_ENABLED_CHANGED broadcast is also sent to the
+                // dynamically registered receivers.
+                enabledChangedReceiver.receiveSafetyCenterEnabledChanged()
+            }
+            // Wait for the implicit ACTION_SAFETY_CENTER_ENABLED_CHANGED broadcast. This is because
+            // the CTS config could later be set in another test. Since broadcasts are dispatched
+            // asynchronously, a wrong sequencing could still cause failures (e.g: 1: flag switched,
+            // 2: test finishes, 3: new test starts, 4: a CTS config is set, 5: broadcast from 1
+            // dispatched).
+            enabledChangedReceiver.receiveSafetyCenterEnabledChanged()
+            enabledChangedReceiver.unregister()
+            // NOTE: We could be using ActivityManager#waitForBroadcastIdle() to achieve the same
+            // thing.
+            // However:
+            // 1. We can't solely rely on this call to wait for the
+            // ACTION_SAFETY_CENTER_ENABLED_CHANGED broadcasts to be dispatched, as the DeviceConfig
+            // listener is called on a background thread (so waitForBroadcastIdle() could
+            // immediately return prior to the listener being called)
+            // 2. waitForBroadcastIdle() sleeps 1s in a loop when the broadcast queue is not empty,
+            // which would slow down our CTS tests significantly
         }
-        // NOTE: We could be using ActivityManager#waitForBroadcastIdle() to achieve the same thing.
-        // However:
-        // 1. We can't solely rely on this call to wait for the
-        // ACTION_SAFETY_CENTER_ENABLED_CHANGED broadcasts to be dispatched, as the DeviceConfig
-        // listener is called on a background thread (so waitForBroadcastIdle() could immediately
-        // return prior to the listener being called)
-        // 2. waitForBroadcastIdle() sleeps 1s in a loop when the broadcast queue is not empty,
-        // which would slow down our CTS tests significantly
-    }
+
+    private fun SafetyCenterConfig.containsCtsSource(): Boolean =
+        safetySourcesGroups
+            .flatMap { it.safetySources }
+            .filter { it.type != SAFETY_SOURCE_TYPE_STATIC }
+            .any { it.packageName == context.packageName }
 
     private fun isEnabled() = safetyCenterManager.isSafetyCenterEnabledWithPermission()
 }

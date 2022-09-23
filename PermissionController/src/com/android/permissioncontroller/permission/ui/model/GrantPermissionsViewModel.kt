@@ -59,6 +59,7 @@ import com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_
 import com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_GRANT_REQUEST_RESULT_REPORTED__RESULT__USER_GRANTED_ONE_TIME
 import com.android.permissioncontroller.PermissionControllerStatsLog.PERMISSION_GRANT_REQUEST_RESULT_REPORTED__RESULT__USER_IGNORED
 import com.android.permissioncontroller.auto.DrivingDecisionReminderService
+import com.android.permissioncontroller.permission.utils.PermissionMapping
 import com.android.permissioncontroller.permission.data.LightAppPermGroupLiveData
 import com.android.permissioncontroller.permission.data.LightPackageInfoLiveData
 import com.android.permissioncontroller.permission.data.PackagePermissionsLiveData
@@ -67,6 +68,7 @@ import com.android.permissioncontroller.permission.data.get
 import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPackageInfo
 import com.android.permissioncontroller.permission.model.livedatatypes.LightPermGroupInfo
+import com.android.permissioncontroller.permission.service.PermissionChangeStorageImpl
 import com.android.permissioncontroller.permission.service.v33.PermissionDecisionStorageImpl
 import com.android.permissioncontroller.permission.ui.AutoGrantPermissionsNotifier
 import com.android.permissioncontroller.permission.ui.GrantPermissionsActivity
@@ -318,7 +320,7 @@ class GrantPermissionsViewModel(
                 buttonVisibilities[ALLOW_BUTTON] = true
                 buttonVisibilities[DENY_BUTTON] = true
                 buttonVisibilities[ALLOW_ONE_TIME_BUTTON] =
-                    Utils.supportsOneTimeGrant(groupName)
+                    PermissionMapping.supportsOneTimeGrant(groupName)
                 var message = RequestMessage.FG_MESSAGE
                 // Whether or not to use the foreground, background, or no detail message.
                 // null ==
@@ -504,7 +506,8 @@ class GrantPermissionsViewModel(
                         continue
                     }
                     // If app is <T and requests STORAGE, grant dialogs has special text
-                    if (groupState.group.permGroupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS) {
+                    if (groupState.group.permGroupName in
+                        PermissionMapping.STORAGE_SUPERGROUP_PERMISSIONS) {
                         if (packageInfo.targetSdkVersion < Build.VERSION_CODES.Q) {
                             message = RequestMessage.STORAGE_SUPERGROUP_MESSAGE_PRE_Q
                         } else if (packageInfo.targetSdkVersion <= Build.VERSION_CODES.S_V2) {
@@ -707,7 +710,7 @@ class GrantPermissionsViewModel(
 
         // Do not attempt to grant background access if foreground access is not either already
         // granted or requested
-        if (isBackground && !group.foreground.isGrantedExcludeRevokeWhenRequestedPermissions &&
+        if (isBackground && !group.foreground.isGrantedExcludingRWROrAllRWR &&
             !hasForegroundRequest) {
             Log.w(LOG_TAG, "Cannot grant $perm as the matching foreground permission is not " +
                 "already granted.")
@@ -719,8 +722,8 @@ class GrantPermissionsViewModel(
             return STATE_SKIPPED
         }
 
-        if ((isBackground && group.background.isGrantedExcludeRevokeWhenRequestedPermissions ||
-            !isBackground && group.foreground.isGrantedExcludeRevokeWhenRequestedPermissions)) {
+        if ((isBackground && group.background.isGrantedExcludingRWROrAllRWR ||
+            !isBackground && group.foreground.isGrantedExcludingRWROrAllRWR)) {
             // If FINE location is not granted, do not grant it automatically when COARSE
             // location is already granted.
             if (group.permGroupName == LOCATION &&
@@ -821,9 +824,9 @@ class GrantPermissionsViewModel(
 
         // If this is a legacy app, and a storage group is requested: request all storage groups
         if (!alreadyRequestedStorageGroupsIfNeeded &&
-            groupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS &&
+            groupName in PermissionMapping.STORAGE_SUPERGROUP_PERMISSIONS &&
             packageInfo.targetSdkVersion <= Build.VERSION_CODES.S_V2) {
-            for (groupName in Utils.STORAGE_SUPERGROUP_PERMISSIONS) {
+            for (groupName in PermissionMapping.STORAGE_SUPERGROUP_PERMISSIONS) {
                 val groupPerms = appPermGroupLiveDatas[groupName]
                     ?.value?.allPermissions?.keys?.toList()
                 onPermissionGrantResult(groupName, groupPerms, result, true)
@@ -977,6 +980,7 @@ class GrantPermissionsViewModel(
         requestInfosLiveData.update()
         PermissionDecisionStorageImpl.recordPermissionDecision(app.applicationContext,
             packageName, groupState.group.permGroupName, granted)
+        PermissionChangeStorageImpl.recordPermissionChange(packageName)
         if (granted) {
             startDrivingDecisionReminderServiceIfNecessary(groupState.group.permGroupName)
         }

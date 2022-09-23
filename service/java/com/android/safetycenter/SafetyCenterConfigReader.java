@@ -39,6 +39,7 @@ import com.android.safetycenter.config.SafetyCenterConfigParser;
 import com.android.safetycenter.resources.SafetyCenterResourcesContext;
 
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -124,11 +125,11 @@ final class SafetyCenterConfigReader {
      * calls will be no-oped).
      */
     @Nullable
-    SafetySource getExternalSafetySource(@NonNull String safetySourceId) {
-        SafetySource safetySourceInCurrentConfig =
+    ExternalSafetySource getExternalSafetySource(@NonNull String safetySourceId) {
+        ExternalSafetySource externalSafetySourceInCurrentConfig =
                 getCurrentConfigInternal().getExternalSafetySources().get(safetySourceId);
-        if (safetySourceInCurrentConfig != null) {
-            return safetySourceInCurrentConfig;
+        if (externalSafetySourceInCurrentConfig != null) {
+            return externalSafetySourceInCurrentConfig;
         }
 
         return mConfigInternalFromXml.getExternalSafetySources().get(safetySourceId);
@@ -142,6 +143,14 @@ final class SafetyCenterConfigReader {
         return getCurrentConfigInternal().getExternalSafetySources().containsKey(safetySourceId);
     }
 
+    /** Returns whether the {@link SafetyCenterConfig} allows Westworld logging. */
+    boolean allowsWestworldLogging() {
+        if (!isOverrideForTestsActive()) {
+            return true;
+        }
+        return SafetyCenterFlags.getAllowWestworldLoggingInTests();
+    }
+
     /**
      * Returns the {@link Broadcast} defined in the {@link SafetyCenterConfig}, with all the sources
      * that they should handle and the profile on which they should be dispatched.
@@ -149,6 +158,11 @@ final class SafetyCenterConfigReader {
     @NonNull
     List<Broadcast> getBroadcasts() {
         return getCurrentConfigInternal().getBroadcasts();
+    }
+
+    /** Returns whether the {@link SafetyCenterConfig} is currently overridden for tests. */
+    private boolean isOverrideForTestsActive() {
+        return mConfigInternalOverrideForTests != null;
     }
 
     @NonNull
@@ -189,16 +203,26 @@ final class SafetyCenterConfigReader {
         }
     }
 
+    /** Dumps state for debugging purposes. */
+    void dump(@NonNull PrintWriter fout) {
+        fout.println("XML CONFIG");
+        fout.println("\t" + mConfigInternalFromXml);
+        fout.println();
+        fout.println("OVERRIDE CONFIG");
+        fout.println("\t" + mConfigInternalOverrideForTests);
+        fout.println();
+    }
+
     /** A wrapper class around the parsed XML config. */
     private static final class SafetyCenterConfigInternal {
 
         @NonNull private final SafetyCenterConfig mConfig;
-        @NonNull private final ArrayMap<String, SafetySource> mExternalSafetySources;
+        @NonNull private final ArrayMap<String, ExternalSafetySource> mExternalSafetySources;
         @NonNull private final List<Broadcast> mBroadcasts;
 
         private SafetyCenterConfigInternal(
                 @NonNull SafetyCenterConfig safetyCenterConfig,
-                @NonNull ArrayMap<String, SafetySource> externalSafetySources,
+                @NonNull ArrayMap<String, ExternalSafetySource> externalSafetySources,
                 @NonNull List<Broadcast> broadcasts) {
             mConfig = safetyCenterConfig;
             mExternalSafetySources = externalSafetySources;
@@ -211,7 +235,7 @@ final class SafetyCenterConfigReader {
         }
 
         @NonNull
-        private ArrayMap<String, SafetySource> getExternalSafetySources() {
+        private ArrayMap<String, ExternalSafetySource> getExternalSafetySources() {
             return mExternalSafetySources;
         }
 
@@ -255,9 +279,9 @@ final class SafetyCenterConfigReader {
         }
 
         @NonNull
-        private static ArrayMap<String, SafetySource> extractExternalSafetySources(
+        private static ArrayMap<String, ExternalSafetySource> extractExternalSafetySources(
                 @NonNull SafetyCenterConfig safetyCenterConfig) {
-            ArrayMap<String, SafetySource> externalSafetySources = new ArrayMap<>();
+            ArrayMap<String, ExternalSafetySource> externalSafetySources = new ArrayMap<>();
             List<SafetySourcesGroup> safetySourcesGroups =
                     safetyCenterConfig.getSafetySourcesGroups();
             for (int i = 0; i < safetySourcesGroups.size(); i++) {
@@ -271,7 +295,14 @@ final class SafetyCenterConfigReader {
                         continue;
                     }
 
-                    externalSafetySources.put(safetySource.getId(), safetySource);
+                    boolean hasEntryInRigidGroup =
+                            safetySource.getType() == SafetySource.SAFETY_SOURCE_TYPE_DYNAMIC
+                                    && safetySourcesGroup.getType()
+                                            == SafetySourcesGroup.SAFETY_SOURCES_GROUP_TYPE_RIGID;
+
+                    externalSafetySources.put(
+                            safetySource.getId(),
+                            new ExternalSafetySource(safetySource, hasEntryInRigidGroup));
                 }
             }
 
@@ -302,11 +333,10 @@ final class SafetyCenterConfigReader {
                         packageNameToBroadcast.put(safetySource.getPackageName(), broadcast);
                         broadcasts.add(broadcast);
                     }
-                    broadcast.mSourceIdsForProfileOwner.add(safetySource.getId());
+                    broadcast.mSourceIdsForProfileParent.add(safetySource.getId());
                     if (safetySource.isRefreshOnPageOpenAllowed()) {
-                        broadcast.mSourceIdsForProfileOwnerOnPageOpen.add(safetySource.getId());
+                        broadcast.mSourceIdsForProfileParentOnPageOpen.add(safetySource.getId());
                     }
-                    // TODO(b/217688797): This might also be handled by the source directly.
                     boolean needsManagedProfilesBroadcast =
                             SafetySources.supportsManagedProfiles(safetySource);
                     if (needsManagedProfilesBroadcast) {
@@ -323,13 +353,63 @@ final class SafetyCenterConfigReader {
         }
     }
 
+    /** A wrapper class around a {@link SafetySource} that is providing data externally. */
+    static final class ExternalSafetySource {
+        @NonNull private final SafetySource mSafetySource;
+        @NonNull private final boolean mHasEntryInRigidGroup;
+
+        private ExternalSafetySource(
+                @NonNull SafetySource safetySource, boolean hasEntryInRigidGroup) {
+            mSafetySource = safetySource;
+            mHasEntryInRigidGroup = hasEntryInRigidGroup;
+        }
+
+        /** Returns the external {@link SafetySource}. */
+        @NonNull
+        SafetySource getSafetySource() {
+            return mSafetySource;
+        }
+
+        /**
+         * Returns whether the external {@link SafetySource} has an entry in a rigid {@link
+         * SafetySourcesGroup}.
+         */
+        boolean hasEntryInRigidGroup() {
+            return mHasEntryInRigidGroup;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof ExternalSafetySource)) return false;
+            ExternalSafetySource that = (ExternalSafetySource) o;
+            return mHasEntryInRigidGroup == that.mHasEntryInRigidGroup
+                    && mSafetySource.equals(that.mSafetySource);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mSafetySource, mHasEntryInRigidGroup);
+        }
+
+        @Override
+        public String toString() {
+            return "ExternalSafetySource{"
+                    + "mSafetySource="
+                    + mSafetySource
+                    + ", mHasEntryInRigidGroup="
+                    + mHasEntryInRigidGroup
+                    + '}';
+        }
+    }
+
     /** A class that represents a broadcast to be sent to safety sources. */
     static final class Broadcast {
 
         @NonNull private final String mPackageName;
 
-        private final List<String> mSourceIdsForProfileOwner = new ArrayList<>();
-        private final List<String> mSourceIdsForProfileOwnerOnPageOpen = new ArrayList<>();
+        private final List<String> mSourceIdsForProfileParent = new ArrayList<>();
+        private final List<String> mSourceIdsForProfileParentOnPageOpen = new ArrayList<>();
         private final List<String> mSourceIdsForManagedProfiles = new ArrayList<>();
         private final List<String> mSourceIdsForManagedProfilesOnPageOpen = new ArrayList<>();
 
@@ -339,7 +419,7 @@ final class SafetyCenterConfigReader {
 
         /** Returns the package name to dispatch the broadcast to. */
         @NonNull
-        public String getPackageName() {
+        String getPackageName() {
             return mPackageName;
         }
 
@@ -351,11 +431,11 @@ final class SafetyCenterConfigReader {
          * @param refreshReason the {@link RefreshReason} for the broadcast
          */
         @NonNull
-        public List<String> getSourceIdsForProfileOwner(@RefreshReason int refreshReason) {
+        List<String> getSourceIdsForProfileParent(@RefreshReason int refreshReason) {
             if (refreshReason == SafetyCenterManager.REFRESH_REASON_PAGE_OPEN) {
-                return unmodifiableList(mSourceIdsForProfileOwnerOnPageOpen);
+                return unmodifiableList(mSourceIdsForProfileParentOnPageOpen);
             }
-            return unmodifiableList(mSourceIdsForProfileOwner);
+            return unmodifiableList(mSourceIdsForProfileParent);
         }
 
         /**
@@ -366,7 +446,7 @@ final class SafetyCenterConfigReader {
          * @param refreshReason the {@link RefreshReason} for the broadcast
          */
         @NonNull
-        public List<String> getSourceIdsForManagedProfiles(@RefreshReason int refreshReason) {
+        List<String> getSourceIdsForManagedProfiles(@RefreshReason int refreshReason) {
             if (refreshReason == SafetyCenterManager.REFRESH_REASON_PAGE_OPEN) {
                 return unmodifiableList(mSourceIdsForManagedProfilesOnPageOpen);
             }
@@ -379,9 +459,9 @@ final class SafetyCenterConfigReader {
             if (!(o instanceof Broadcast)) return false;
             Broadcast that = (Broadcast) o;
             return mPackageName.equals(that.mPackageName)
-                    && mSourceIdsForProfileOwner.equals(that.mSourceIdsForProfileOwner)
-                    && mSourceIdsForProfileOwnerOnPageOpen.equals(
-                            that.mSourceIdsForProfileOwnerOnPageOpen)
+                    && mSourceIdsForProfileParent.equals(that.mSourceIdsForProfileParent)
+                    && mSourceIdsForProfileParentOnPageOpen.equals(
+                            that.mSourceIdsForProfileParentOnPageOpen)
                     && mSourceIdsForManagedProfiles.equals(that.mSourceIdsForManagedProfiles)
                     && mSourceIdsForManagedProfilesOnPageOpen.equals(
                             that.mSourceIdsForManagedProfilesOnPageOpen);
@@ -391,8 +471,8 @@ final class SafetyCenterConfigReader {
         public int hashCode() {
             return Objects.hash(
                     mPackageName,
-                    mSourceIdsForProfileOwner,
-                    mSourceIdsForProfileOwnerOnPageOpen,
+                    mSourceIdsForProfileParent,
+                    mSourceIdsForProfileParentOnPageOpen,
                     mSourceIdsForManagedProfiles,
                     mSourceIdsForManagedProfilesOnPageOpen);
         }
@@ -400,12 +480,12 @@ final class SafetyCenterConfigReader {
         @Override
         public String toString() {
             return "Broadcast{"
-                    + "mPackageName="
+                    + "mPackageName='"
                     + mPackageName
-                    + ", mSourceIdsForProfileOwner="
-                    + mSourceIdsForProfileOwner
-                    + ", mSourceIdsForProfileOwnerOnPageOpen="
-                    + mSourceIdsForProfileOwnerOnPageOpen
+                    + "', mSourceIdsForProfileParent="
+                    + mSourceIdsForProfileParent
+                    + ", mSourceIdsForProfileParentOnPageOpen="
+                    + mSourceIdsForProfileParentOnPageOpen
                     + ", mSourceIdsForManagedProfiles="
                     + mSourceIdsForManagedProfiles
                     + ", mSourceIdsForManagedProfilesOnPageOpen="

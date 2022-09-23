@@ -18,8 +18,10 @@ package com.android.permissioncontroller.tests.mocking.privacysources
 
 import android.app.PendingIntent
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Build
+import android.os.UserManager
 import android.safetycenter.SafetyCenterManager
 import android.safetycenter.SafetyEvent
 import android.safetycenter.SafetySourceData
@@ -29,7 +31,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import com.android.dx.mockito.inline.extended.ExtendedMockito
 import com.android.permissioncontroller.PermissionControllerApplication
-import com.android.permissioncontroller.R
+import com.android.permissioncontroller.permission.utils.Utils
 import com.android.permissioncontroller.privacysources.SafetyCenterReceiver
 import com.android.permissioncontroller.privacysources.SafetyCenterReceiver.RefreshEvent
 import com.android.permissioncontroller.privacysources.WorkPolicyInfo
@@ -38,6 +40,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.Mockito.verify
@@ -56,11 +61,14 @@ class WorkPolicyInfoTest {
     private lateinit var workPolicyInfo: WorkPolicyInfo
     @Mock lateinit var mockSafetyCenterManager: SafetyCenterManager
     @Mock lateinit var mockWorkPolicyUtils: WorkPolicyUtils
+    @Mock lateinit var mockUserManager: UserManager
 
     companion object {
         // Real context is used in order to avoid mocking resources and other expected things
         // eg: context.userId, context.getText etc
         var context: Context = ApplicationProvider.getApplicationContext()
+        const val WORK_POLICY_TITLE: String = "workPolicyTitle"
+        const val WORK_POLICY_SUMMARY: String = "workPolicySummary"
     }
 
     @Before
@@ -69,16 +77,36 @@ class WorkPolicyInfoTest {
         mockitoSession =
             ExtendedMockito.mockitoSession()
                 .mockStatic(PermissionControllerApplication::class.java)
+                .mockStatic(Utils::class.java)
                 .strictness(Strictness.LENIENT)
                 .startMocking()
 
         // Mock application is used to setup the services, eg.devicePolicyManager, userManager
         val application = Mockito.mock(PermissionControllerApplication::class.java)
+        whenever(
+                Utils.getSystemServiceSafe(
+                    any(ContextWrapper::class.java), eq(UserManager::class.java)))
+            .thenReturn(mockUserManager)
+        whenever(
+                Utils.getSystemServiceSafe(
+                    any(ContextWrapper::class.java), eq(SafetyCenterManager::class.java)))
+            .thenReturn(mockSafetyCenterManager)
+        whenever(mockUserManager.isProfile).thenReturn(false)
+        whenever(
+                Utils.getEnterpriseString(
+                    any(ContextWrapper::class.java),
+                    eq(WorkPolicyInfo.WORK_POLICY_TITLE),
+                    anyInt()))
+            .thenReturn(WORK_POLICY_TITLE)
+        whenever(
+                Utils.getEnterpriseString(
+                    any(ContextWrapper::class.java),
+                    eq(WorkPolicyInfo.WORK_POLICY_SUMMARY),
+                    anyInt()))
+            .thenReturn(WORK_POLICY_SUMMARY)
 
         whenever(PermissionControllerApplication.get()).thenReturn(application)
         whenever(application.applicationContext).thenReturn(application)
-        whenever(application.getSystemService(SafetyCenterManager::class.java))
-            .thenReturn(mockSafetyCenterManager)
         workPolicyInfo = WorkPolicyInfo(mockWorkPolicyUtils)
     }
 
@@ -104,8 +132,8 @@ class WorkPolicyInfoTest {
             PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val expectedSafetySourceStatus: SafetySourceStatus =
             SafetySourceStatus.Builder(
-                    context.getText(R.string.work_policy_title),
-                    context.getText(R.string.work_policy_summary),
+                    WORK_POLICY_TITLE,
+                    WORK_POLICY_SUMMARY,
                     SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED)
                 .setPendingIntent(pendingIntent)
                 .build()
@@ -167,8 +195,8 @@ class WorkPolicyInfoTest {
             PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val expectedSafetySourceStatus: SafetySourceStatus =
             SafetySourceStatus.Builder(
-                    context.getText(R.string.work_policy_title),
-                    context.getText(R.string.work_policy_summary),
+                    WORK_POLICY_TITLE,
+                    WORK_POLICY_SUMMARY,
                     SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED)
                 .setPendingIntent(pendingIntent)
                 .build()
@@ -203,8 +231,8 @@ class WorkPolicyInfoTest {
             PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val expectedSafetySourceStatus: SafetySourceStatus =
             SafetySourceStatus.Builder(
-                    context.getText(R.string.work_policy_title),
-                    context.getText(R.string.work_policy_summary),
+                    WORK_POLICY_TITLE,
+                    WORK_POLICY_SUMMARY,
                     SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED)
                 .setPendingIntent(pendingIntent)
                 .build()
@@ -240,8 +268,8 @@ class WorkPolicyInfoTest {
 
         val expectedSafetySourceStatus: SafetySourceStatus =
             SafetySourceStatus.Builder(
-                    context.getText(R.string.work_policy_title),
-                    context.getText(R.string.work_policy_summary),
+                    WORK_POLICY_TITLE,
+                    WORK_POLICY_SUMMARY,
                     SafetySourceData.SEVERITY_LEVEL_UNSPECIFIED)
                 .setPendingIntent(pendingIntent)
                 .build()
