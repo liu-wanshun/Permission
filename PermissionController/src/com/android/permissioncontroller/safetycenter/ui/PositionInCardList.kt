@@ -38,6 +38,7 @@ import com.android.permissioncontroller.R
  * in the group).
  */
 internal enum class PositionInCardList(val backgroundDrawableResId: Int) {
+    INSIDE_GROUP(R.drawable.safety_group_entry_background),
     LIST_START_END(R.drawable.safety_entity_top_large_bottom_large_background),
     LIST_START(R.drawable.safety_entity_top_large_bottom_flat_background),
     LIST_START_CARD_END(R.drawable.safety_entity_top_large_bottom_small_background),
@@ -51,9 +52,9 @@ internal enum class PositionInCardList(val backgroundDrawableResId: Int) {
     fun getTopMargin(context: Context): Int =
         when (this) {
             CARD_START, CARD_START_END, CARD_START_LIST_END ->
-                context.resources.getDimensionPixelSize(R.dimen.safety_center_card_margin)
+                context.resources.getDimensionPixelSize(R.dimen.sc_card_margin)
             LIST_START, LIST_START_CARD_END, LIST_START_END ->
-                context.resources.getDimensionPixelSize(R.dimen.safety_center_list_margin)
+                context.resources.getDimensionPixelSize(R.dimen.sc_list_margin_top)
             else -> 0
         }
 

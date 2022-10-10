@@ -19,30 +19,154 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <!-- START SAFETY CENTER QUICK SETTINGS PAGE -->
 
+    <style name="SafetyCenterQsContainer"
+           parent="android:Widget.DeviceDefault">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clipChildren">false</item>
+    </style>
+
     <style name="SafetyCenterLinkText">
         <item name="android:textDirection">locale</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <style name="SafetyCenterToggleText" parent="Theme.AppCompat">
-        <item name="android:textSize">14dp</item>
-        <item name="android:textDirection">locale</item>
-        <item name="android:gravity">center</item>
-        <item name="android:textColor">?android:attr/textColorSecondary</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    <style name="SafetyCenterQsCloseButton"
+           parent="android:Widget.DeviceDefault">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_gravity">start</item>
+        <item name="android:layout_marginBottom">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:layout_marginStart">@dimen/sc_list_margin</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:tint">?android:attr/textColorPrimary</item>
     </style>
 
-    <style name="SafetyCenterSensorToggleButton" parent="SafetyCenterLinkText">
-        <item name="android:background">@drawable/safety_center_button_background</item>
+    <style name="SafetyCenterQsSectionTitle" >
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_xxlarge</item>
+        <item name="android:textColor">?attr/colorAccentPrimary</item>
+        <item name="android:paddingStart">@dimen/sc_list_margin</item>
+        <item name="android:paddingEnd">@dimen/sc_list_margin</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:lineHeight">24sp</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Medium</item>
+    </style>
+
+    <style name="SafetyCenterQsPermissionUsage">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingStart">@dimen/sc_list_margin</item>
+        <item name="android:paddingEnd">@dimen/sc_list_margin</item>
+    </style>
+
+    <style name="SafetyCenterQsPreferences">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="SafetyCenterQsToggleContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginStart">@dimen/sc_list_margin</item>
+        <item name="android:layout_marginEnd">@dimen/sc_list_margin</item>
+        <item name="android:paddingStart">@dimen/sc_list_margin</item>
+        <item name="android:paddingEnd">@dimen/sc_list_margin</item>
+    </style>
+
+    <style name="SafetyCenterQsToggleContainer.Top">
+        <item name="android:layout_marginTop">@dimen/sc_spacing_large</item>
+        <item name="android:paddingTop">@dimen/sc_spacing_large</item>
+        <item name="android:paddingBottom">@dimen/sc_spacing_xsmall</item>
+    </style>
+
+    <style name="SafetyCenterQsToggleContainer.Bottom">
+        <item name="android:paddingBottom">@dimen/sc_spacing_large</item>
+        <item name="android:layout_marginBottom">@dimen/sc_spacing_large</item>
+    </style>
+
+    <style name="SafetyCenterQsToggleButton">
+        <item name="android:background">@drawable/safety_center_sensor_toggle_enabled</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">80dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_weight">0.5</item>
+    </style>
+
+    <style name="SafetyCenterQsToggleButton.Start">
+        <item name="android:layout_marginEnd">@dimen/sc_spacing_xxsmall</item>
+    </style>
+
+    <style name="SafetyCenterQsToggleButton.End">
+        <item name="android:layout_marginStart">@dimen/sc_spacing_xxsmall</item>
+    </style>
+
+    <style name="SafetyCenterQsToggleTextContainer">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="SafetyCenterQsToggleText">
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:marqueeRepeatLimit">marquee_forever</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:layout_marginEnd">@dimen/sc_spacing_large</item>
+        <item name="android:textAlignment">viewStart</item>
+    </style>
+
+    <style name="SafetyCenterQsToggleText.Title">
+        <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
+        <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Medium</item>
+    </style>
+
+    <style name="SafetyCenterQsToggleText.Subtitle">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+        <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Body</item>
+    </style>
+
+    <style name="SafetyCenterQsToggleArrow">
+        <item name="android:layout_width">20dp</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">end|center_vertical</item>
+        <item name="android:layout_marginEnd">@dimen/sc_spacing_small</item>
+    </style>
+
+    <style name="SafetyCenterQsToggleIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/sc_spacing_large</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:layout_gravity">start|center_vertical</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:maxWidth">20dp</item>
+        <item name="android:maxHeight">20dp</item>
     </style>
 
     <style name="SafetyCenterIndicatorCardView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="app:cardCornerRadius">24dp</item>
+        <item name="app:cardCornerRadius">@dimen/sc_card_corner_radius_large</item>
         <item name="app:cardElevation">0dp</item>
         <item name="app:cardBackgroundColor">?attr/colorSurface</item>
-        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_large</item>
         <item name="android:clickable">true</item>
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
     </style>
@@ -50,48 +174,60 @@
     <style name="SafetyCenterIndicatorImageView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">24dp</item>
-        <item name="android:layout_marginTop">28dp</item>
-        <item name="android:layout_marginBottom">28dp</item>
+        <item name="android:layout_marginStart">@dimen/sc_spacing_xxxlarge</item>
         <item name="android:layout_centerVertical">true</item>
         <item name="android:clickable">false</item>
     </style>
 
     <style name="SafetyCenterIndicatorTitleText">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginStart">@dimen/sc_spacing_large</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">23dp</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Medium</item>
     </style>
 
     <style name="SafetyCenterIndicatorLabelText">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">2dp</item>
-        <item name="android:layout_marginBottom">23dp</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_xxxsmall</item>
+        <item name="android:layout_marginBottom">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Body</item>
     </style>
 
     <style name="SafetyCenterIndicatorExpandView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginEnd">24dp</item>
-        <item name="android:layout_marginTop">32dp</item>
-        <item name="android:layout_marginBottom">32dp</item>
+        <item name="android:layout_marginEnd">@dimen/sc_spacing_xxxlarge</item>
     </style>
 
     <style name="SafetyCenterIndicatorActionButton"
-           parent="@style/SafetyCenter.MaterialActionButton.Secondary">
+           parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">24dp</item>
-        <item name="android:layout_marginEnd">24dp</item>
+        <item name="android:layout_marginStart">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:layout_marginEnd">@dimen/sc_spacing_xxxlarge</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:paddingTop">18dp</item>
+        <item name="android:paddingBottom">18dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">3</item>
+        <item name="android:theme">@style/Theme.MaterialComponents</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.ActionButton</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="rippleColor">?android:colorControlHighlight</item>
     </style>
 
     <style name="SafetyCenterIndicatorSecondaryActionButton"
            parent="@style/SafetyCenterIndicatorActionButton">
-        <item name="android:layout_marginBottom">24dp</item>
-        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_large</item>
     </style>
 
     <style name="SafetyCenterIndicatorForeground">
@@ -126,11 +262,15 @@
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
-    <style name="TextAppearance.SafetyCenter.ActionButton"
+    <style name="TextAppearance.SafetyCenter.Medium"
         parent="@android:style/TextAppearance.DeviceDefault.Medium">
-        <item name="android:capitalize">sentences</item>
         <item name="android:textSize">14sp</item>
         <item name="android:lineHeight">20sp</item>
+    </style>
+
+    <style name="TextAppearance.SafetyCenter.ActionButton"
+        parent="TextAppearance.SafetyCenter.Medium">
+        <item name="android:capitalize">sentences</item>
     </style>
 
     <style name="TextAppearance.SafetyCenter.ActionButton.Secondary">
@@ -139,37 +279,36 @@
 
     <style name="SafetyCenterCard"
         parent="android:Widget.DeviceDefault">
-        <item name="android:paddingStart">24dp</item>
-        <item name="android:paddingEnd">24dp</item>
-        <item name="android:paddingTop">24dp</item>
-        <item name="android:paddingBottom">24dp</item>
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:paddingStart">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:paddingEnd">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:paddingTop">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:paddingBottom">@dimen/sc_card_margin_bottom</item>
+        <item name="android:layout_marginStart">@dimen/sc_spacing_large</item>
+        <item name="android:layout_marginEnd">@dimen/sc_spacing_large</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_xsmall</item>
+        <item name="android:layout_marginBottom">@dimen/sc_spacing_xsmall</item>
         <item name="android:background">@drawable/safety_center_card_background</item>
     </style>
 
-    <style name="SafetyCenter.ActionButton"
-        parent="android:Widget.DeviceDefault.Button.Colored">
-        <item name="android:background">@drawable/safety_center_issue_action_button</item>
-        <item name="android:height">56dp</item>
-        <item name="android:textColor">?attr/textColorScActionButton</item>
-    </style>
-
-    <style name="SafetyCenter.MaterialActionButton"
+    <style name="SafetyCenterActionButton"
            parent="@style/Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:theme">@style/Theme.MaterialComponents</item>
-        <item name="android:height">56dp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:paddingStart">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:paddingEnd">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:paddingTop">@dimen/sc_spacing_xlarge</item>
+        <item name="android:paddingBottom">@dimen/sc_spacing_xlarge</item>
         <item name="android:insetTop">0dp</item>
         <item name="android:insetBottom">0dp</item>
         <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.ActionButton</item>
         <item name="android:textColor">?attr/textColorScActionButton</item>
-        <item name="cornerRadius">12dp</item>
+        <item name="android:maxLines">3</item>
+        <item name="android:ellipsize">end</item>
+        <item name="cornerRadius">@dimen/sc_button_corner_radius</item>
         <item name="rippleColor">?android:colorControlHighlight</item>
     </style>
 
-    <style name="SafetyCenter.MaterialActionButton.Secondary"
+    <style name="SafetyCenterActionButton.Secondary"
            parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:theme">@style/Theme.MaterialComponents</item>
         <item name="android:height">56dp</item>
@@ -179,7 +318,7 @@
             @style/TextAppearance.SafetyCenter.ActionButton.Secondary
         </item>
         <item name="android:textColor">?attr/textColorScSecondaryActionButton</item>
-        <item name="cornerRadius">12dp</item>
+        <item name="cornerRadius">@dimen/sc_button_corner_radius</item>
         <item name="rippleColor">?android:colorControlHighlight</item>
     </style>
 
@@ -193,6 +332,7 @@
         <item name="android:layout_width">56dp</item>
         <item name="android:layout_height">56dp</item>
         <item name="app:layout_constraintTop_toTopOf">parent</item>
+        <item name="app:layout_constraintBottom_toBottomOf">@id/status_title_and_summary</item>
         <item name="app:layout_constraintStart_toStartOf">parent</item>
         <item name="android:scaleType">centerInside</item>
         <item name="android:gravity">center</item>
@@ -202,19 +342,12 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:layout_marginTop">4dp</item>
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginEnd">24dp</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_xxsmall</item>
+        <item name="android:layout_marginStart">@dimen/sc_spacing_large</item>
+        <item name="android:layout_marginEnd">@dimen/sc_spacing_xxxlarge</item>
         <item name="app:layout_constraintStart_toEndOf">@id/status_image</item>
         <item name="app:layout_constraintEnd_toEndOf">parent</item>
         <item name="app:layout_constraintTop_toTopOf">parent</item>
-    </style>
-
-    <style name="TextAppearance.SafetyStatusTitle"
-        parent="@android:style/TextAppearance.DeviceDefault.Headline">
-        <item name="android:textSize">22sp</item>
-        <item name="android:lineHeight">28sp</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
 
     <style name="SafetyCenterStatusTitle" parent="android:Widget.DeviceDefault">
@@ -230,14 +363,14 @@
         <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Body</item>
     </style>
 
-    <style name="SafetyCenterStatusButton" parent="SafetyCenter.MaterialActionButton" />
+    <style name="SafetyCenterStatusButton" parent="SafetyCenterActionButton" />
 
     <style name="SafetyCenterStatusButton.ReviewSettings">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="app:layout_constraintTop_toBottomOf">@id/status_title_and_summary</item>
         <item name="app:layout_constraintStart_toStartOf">parent</item>
-        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_xxxlarge</item>
         <item name="app:backgroundTint">@color/safety_center_button_info</item>
     </style>
 
@@ -246,7 +379,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="app:layout_constraintTop_toBottomOf">@id/review_settings_button</item>
         <item name="app:layout_constraintStart_toStartOf">parent</item>
-        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_xxxlarge</item>
         <item name="app:backgroundTint">@color/safety_center_button_info</item>
     </style>
 
@@ -255,7 +388,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="app:layout_constraintTop_toBottomOf">@id/review_settings_button</item>
         <item name="app:layout_constraintStart_toStartOf">parent</item>
-        <item name="android:layout_marginTop">@dimen/safety_center_action_button_list_margin</item>
+        <item name="android:layout_marginTop">@dimen/sc_action_button_list_margin</item>
         <item name="app:backgroundTint">@color/sc_surface_dark</item>
         <item name="app:strokeWidth">@dimen/mtrl_btn_stroke_size</item>
         <item name="app:strokeColor">@color/safety_center_button_info</item>
@@ -268,9 +401,9 @@
         <item name="app:layout_constraintTop_toBottomOf">@id/rescan_button</item>
         <item name="app:layout_constraintStart_toStartOf">parent</item>
         <item name="app:layout_constraintEnd_toEndOf">parent</item>
-        <item name="android:layout_marginTop">20dp</item>
-        <item name="android:layout_marginBottom">0dp</item>
         <item name="android:layout_gravity">center</item>
+        <item name="android:paddingTop">@dimen/sc_spacing_xxlarge</item>
+        <item name="android:paddingBottom">@dimen/sc_spacing_xxlarge</item>
     </style>
     <!-- END SAFETY STATUS CARD -->
 
@@ -293,7 +426,7 @@
         <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Headline.Issue</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginEnd">24dp</item>
+        <item name="android:layout_marginEnd">@dimen/sc_spacing_xxxlarge</item>
         <item name="app:layout_constraintHorizontal_bias">0</item>
         <item name="app:layout_goneMarginEnd">0dp</item>
         <item name="app:layout_constraintTop_toTopOf">parent</item>
@@ -303,23 +436,25 @@
 
     <style name="SafetyCenterIssueSubtitle">
         <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Body</item>
-        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_xxsmall</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
+        <item name="app:layout_constraintStart_toStartOf">@id/issue_card_title</item>
         <item name="app:layout_constraintTop_toBottomOf">@id/issue_card_title</item>
     </style>
 
     <style name="SafetyCenterIssueSummary">
         <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Body</item>
-        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_large</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
+        <item name="app:layout_constraintStart_toStartOf">@id/issue_card_title</item>
         <item name="app:layout_constraintTop_toBottomOf">@id/issue_card_subtitle</item>
     </style>
 
     <style name="SafetyCenterIssueActionButtonList"
         parent="android:Widget.DeviceDefault">
-        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_marginTop">@dimen/sc_spacing_xxlarge</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:orientation">vertical</item>
@@ -329,13 +464,14 @@
     </style>
 
     <style name="SafetyCenterIssueSafetyProtectionSection">
-        <item name="android:paddingTop">20dp</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="app:layout_constraintTop_toBottomOf">@id/issue_card_action_button_list</item>
         <item name="app:layout_constraintStart_toStartOf">parent</item>
         <item name="app:layout_constraintEnd_toEndOf">parent</item>
+        <item name="android:paddingTop">@dimen/sc_spacing_xxlarge</item>
+        <item name="android:paddingBottom">@dimen/sc_spacing_xxlarge</item>
     </style>
 
     <style name="SafetyCenterIssueCardResolvedImage" parent="android:Widget.DeviceDefault">
@@ -355,13 +491,12 @@
         <item name="app:layout_constraintVertical_chainStyle">packed</item>
     </style>
 
-    <style name="SafetyCenterIssueCardResolvedTitle"
-           parent="@android:style/TextAppearance.DeviceDefault.Medium">
-<!--     TODO extract this   -->
+    <style name="SafetyCenterIssueCardResolvedTitle">
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:textSize">16sp</item>
         <item name="android:lineHeight">24sp</item>
-        <item name="android:paddingTop">16dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Medium</item>
+        <item name="android:paddingTop">@dimen/sc_spacing_large</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -373,8 +508,8 @@
 
     <style name="SafetyCenterMoreIssues"
            parent="SafetyCenterCard.Issue">
-        <item name="android:paddingTop">14dp</item>
-        <item name="android:paddingBottom">14dp</item>
+        <item name="android:paddingTop">@dimen/sc_spacing_medium</item>
+        <item name="android:paddingBottom">@dimen/sc_spacing_medium</item>
         <item name="android:background">@drawable/safety_center_more_issues_card_background</item>
     </style>
 
@@ -382,9 +517,11 @@
         <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Body</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_marginStart">20dp</item>
-        <item name="android:maxLines">1</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_marginStart">@dimen/sc_spacing_xxlarge</item>
+        <item name="android:layout_marginEnd">@dimen/sc_spacing_xxlarge</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:ellipsize">end</item>
         <item name="app:layout_constraintTop_toTopOf">parent</item>
         <item name="app:layout_constraintBottom_toBottomOf">parent</item>
         <item name="app:layout_constraintStart_toEndOf">@id/status_icon</item>
@@ -406,7 +543,6 @@
            parent="android:Widget.DeviceDefault">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_marginStart">20dp</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:orientation">vertical</item>
         <item name="app:layout_constraintTop_toTopOf">parent</item>
@@ -418,10 +554,9 @@
            parent="android:Widget.DeviceDefault">
         <item name="android:layout_height">28dp</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_marginStart">20dp</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:paddingStart">8dp</item>
-        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingStart">@dimen/sc_spacing_xsmall</item>
+        <item name="android:paddingEnd">@dimen/sc_spacing_xsmall</item>
         <item name="android:background">@drawable/safety_center_card_widget_background</item>
     </style>
 
@@ -430,7 +565,7 @@
         <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_marginEnd">2dp</item>
+        <item name="android:layout_marginEnd">@dimen/sc_spacing_xxxsmall</item>
         <item name="android:maxLines">1</item>
         <item name="app:layout_constraintTop_toTopOf">parent</item>
         <item name="app:layout_constraintBottom_toBottomOf">parent</item>
@@ -454,11 +589,11 @@
            parent="android:Widget.DeviceDefault">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:paddingEnd">@dimen/safety_center_entry_padding_end</item>
-        <item name="android:paddingTop">20dp</item>
-        <item name="android:paddingBottom">20dp</item>
+        <item name="android:layout_marginStart">@dimen/sc_spacing_large</item>
+        <item name="android:layout_marginEnd">@dimen/sc_spacing_large</item>
+        <item name="android:paddingEnd">@dimen/sc_entry_padding_end</item>
+        <item name="android:paddingTop">@dimen/sc_spacing_large</item>
+        <item name="android:paddingBottom">@dimen/sc_spacing_large</item>
         <item name="android:baselineAligned">false</item>
         <item name="android:minHeight">?android:attr/listPreferredItemHeight</item>
         <item name="android:gravity">center_vertical</item>
@@ -482,8 +617,10 @@
 
     <style name="SafetyCenterEntryIconFrame"
            parent="android:Widget.DeviceDefault">
-        <item name="android:layout_width">68dp</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingStart">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:paddingEnd">@dimen/sc_spacing_xxlarge</item>
     </style>
 
     <style name="SafetyCenterEntryIcon"
@@ -495,7 +632,7 @@
 
     <style name="SafetyCenterEntryEmptySpace"
            parent="android:Widget.DeviceDefault">
-        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_width">@dimen/sc_spacing_xxxlarge</item>
         <item name="android:layout_height">match_parent</item>
     </style>
 
@@ -511,18 +648,17 @@
            parent="android:Widget.DeviceDefault">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:singleLine">true</item>
         <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Headline.Entry</item>
-        <item name="android:ellipsize">marquee</item>
-        <item name="android:fadingEdge">horizontal</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">4</item>
     </style>
 
     <style name="SafetyCenterEntrySummary"
            parent="android:Widget.DeviceDefault">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">4dp</item>
         <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Body</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:maxLines">4</item>
     </style>
 
@@ -531,34 +667,69 @@
         <item name="android:layout_width">68dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:paddingStart">20dp</item>
-        <item name="android:paddingEnd">@dimen/safety_center_entry_padding_end</item>
+        <item name="android:paddingStart">@dimen/sc_spacing_xxlarge</item>
+        <item name="android:paddingEnd">@dimen/sc_entry_padding_end</item>
         <item name="android:background">@drawable/safety_entry_icon_action_background</item>
     </style>
 
+    <style name="SafetyCenterGroup"
+        parent="android:Widget.DeviceDefault">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/sc_spacing_large</item>
+        <item name="android:layout_marginEnd">@dimen/sc_spacing_large</item>
+        <item name="android:baselineAligned">false</item>
+        <item name="android:minHeight">?android:attr/listPreferredItemHeight</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
     <style name="SafetyCenterGroupHeader"
-           parent="android:Widget.DeviceDefault">
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:paddingEnd">24dp</item>
-        <item name="android:paddingTop">24dp</item>
-        <item name="android:paddingStart">24dp</item>
-        <item name="android:paddingBottom">8dp</item>
+        parent="android:Widget.DeviceDefault">
+        <item name="android:paddingEnd">@dimen/sc_spacing_xxxlarge</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:baselineAligned">false</item>
-        <item name="android:gravity">center</item>
         <item name="android:orientation">horizontal</item>
     </style>
 
-    <style name="SafetyCenterGroupTitle"
-           parent="android:Widget.DeviceDefault">
+    <style name="SafetyCenterCollapsedGroupHeader"
+        parent="android:Widget.DeviceDefault">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:maxLines">4</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="SafetyCenterExpandedGroupHeader"
+        parent="android:Widget.DeviceDefault">
+        <item name="android:paddingStart">@dimen/sc_spacing_xxxlarge</item>
+        <item name="android:paddingTop">@dimen/sc_spacing_xxxsmall</item>
+        <item name="android:paddingBottom">@dimen/sc_spacing_medium</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="SafetyCenterExpandedGroupTitle"
+           parent="android:Widget.DeviceDefault">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:textAppearance">@style/TextAppearance.SafetyCenter.Body</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">4</item>
+    </style>
+
+    <style name="SafetyCenterGroupEntries"
+        parent="android:Widget.DeviceDefault">
+        <item name="android:paddingBottom">@dimen/sc_spacing_medium</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="SafetyCenterGroupWidgetFrame"
@@ -579,5 +750,18 @@
            parent="android:Widget.DeviceDefault">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">16dp</item>
+    </style>
+
+    <style name="SafetyCenterGroupEntry"
+        parent="android:Widget.DeviceDefault">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingEnd">@dimen/sc_entry_padding_end</item>
+        <item name="android:paddingTop">@dimen/sc_spacing_large</item>
+        <item name="android:paddingBottom">@dimen/sc_spacing_large</item>
+        <item name="android:baselineAligned">false</item>
+        <item name="android:minHeight">?android:attr/listPreferredItemHeight</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
     </style>
 </resources>

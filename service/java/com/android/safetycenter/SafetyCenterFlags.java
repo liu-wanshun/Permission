@@ -71,6 +71,9 @@ final class SafetyCenterFlags {
     private static final String PROPERTY_ISSUE_CATEGORY_ALLOWLISTS =
             "safety_center_issue_category_allowlists";
 
+    private static final String PROPERTY_ALLOW_STATSD_LOGGING_IN_TESTS =
+            "safety_center_allow_statsd_logging_in_tests";
+
     private static final Duration REFRESH_SOURCES_TIMEOUT_DEFAULT_DURATION = Duration.ofSeconds(15);
 
     private static final Duration RESOLVING_ACTION_TIMEOUT_DEFAULT_DURATION =
@@ -82,11 +85,7 @@ final class SafetyCenterFlags {
 
     private static final Duration RESURFACE_ISSUE_DEFAULT_DELAY = Duration.ofDays(180);
 
-    /**
-     * Dumps state for debugging purposes.
-     *
-     * @param fout {@link PrintWriter} to write to
-     */
+    /** Dumps state for debugging purposes. */
     static void dump(@NonNull PrintWriter fout) {
         fout.println("FLAGS");
         printFlag(fout, PROPERTY_SAFETY_CENTER_ENABLED, getSafetyCenterEnabled());
@@ -103,6 +102,8 @@ final class SafetyCenterFlags {
                 getBackgroundRefreshDeniedSourceIds());
         printFlag(
                 fout, PROPERTY_REFRESH_SOURCES_TIMEOUTS_MILLIS, getRefreshSourcesTimeoutsMillis());
+        printFlag(fout, PROPERTY_ISSUE_CATEGORY_ALLOWLISTS, getIssueCategoryAllowlists());
+        printFlag(fout, PROPERTY_ALLOW_STATSD_LOGGING_IN_TESTS, getAllowStatsdLoggingInTests());
         fout.println();
     }
 
@@ -276,6 +277,11 @@ final class SafetyCenterFlags {
     @NonNull
     private static String getIssueCategoryAllowlists() {
         return getString(PROPERTY_ISSUE_CATEGORY_ALLOWLISTS, "");
+    }
+
+    /** Returns whether we allow statsd logging in tests. */
+    static boolean getAllowStatsdLoggingInTests() {
+        return getBoolean(PROPERTY_ALLOW_STATSD_LOGGING_IN_TESTS, false);
     }
 
     @NonNull

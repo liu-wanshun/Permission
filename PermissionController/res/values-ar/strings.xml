@@ -23,6 +23,8 @@
     <string name="back" msgid="6249950659061523680">"رجوع"</string>
     <string name="available" msgid="6007778121920339498">"متاح"</string>
     <string name="blocked" msgid="9195547604866033708">"محظور"</string>
+    <string name="on" msgid="280241003226755921">"مفعَّلة"</string>
+    <string name="off" msgid="1438489226422866263">"إيقاف"</string>
     <string name="uninstall_or_disable" msgid="4496612999740858933">"إلغاء التثبيت أو الإيقاف"</string>
     <string name="app_not_found_dlg_title" msgid="6029482906093859756">"لم يتمّ العثور على التطبيق."</string>
     <string name="grant_dialog_button_deny" msgid="88262611492697192">"عدم السماح"</string>
@@ -130,6 +132,7 @@
     <string name="permission_group_usage_subtitle_7d" msgid="1465828402260324654">"المخطط الزمني لاستخدام <xliff:g id="PERMGROUP">%1$s</xliff:g> في آخر 7 أيام"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"وقت استخدام هذا التطبيق لإذن <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"مزيد من المعلومات"</string>
+    <string name="learn_more_content_description" msgid="8673699744544502539">"التعرُّف على مزيد من المعلومات عن \"<xliff:g id="PERMGROUP">%1$s</xliff:g>\""</string>
     <string name="manage_permission_summary" msgid="4117555482684114317">"التحكّم في إمكانية وصول التطبيقات إلى <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="auto_permission_usage_timeline_summary" msgid="2713135806453218703">"<xliff:g id="ACCESS_TIME">%1$s</xliff:g> • <xliff:g id="SUMMARY_TEXT">%2$s</xliff:g>"</string>
     <string name="history_preference_subtext_2" msgid="1521763591164293683">"<xliff:g id="APP_NAME">%1$s</xliff:g> • <xliff:g id="TRUNCATED_TIME">%2$s</xliff:g>"</string>
@@ -199,7 +202,7 @@
     <string name="unused_apps_category_title" msgid="2988455616845243901">"إعدادات التطبيقات غير المُستخدَمة"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"إزالة الأذونات في حال عدم استخدام التطبيق"</string>
     <string name="unused_apps_label" msgid="2595428768404901064">"إزالة الأذونات وإخلاء مساحة"</string>
-    <string name="unused_apps_label_v2" msgid="7058776770056517980">"إيقاف نشاط تطبيق مؤقتًا عند عدم استخدامه"</string>
+    <string name="unused_apps_label_v2" msgid="7058776770056517980">"إيقاف نشاط التطبيق مؤقتًا عند عدم استخدامه"</string>
     <string name="unused_apps_summary" msgid="8839466950318403115">"إزالة الأذونات وحذف الملفات المؤقتة وإيقاف الإشعارات"</string>
     <string name="auto_revoke_summary" msgid="5867548789805911683">"لحماية بياناتك، ستتم إزالة أذونات هذا التطبيق إذا لم يتم استخدامه لبضعة أشهر."</string>
     <string name="auto_revoke_summary_with_permissions" msgid="389712086597285013">"لحماية بياناتك، إذا لم يتم استخدام التطبيق لبضعة أشهر، ستتم إزالة الأذونات التالية: <xliff:g id="PERMS">%1$s</xliff:g>."</string>
@@ -211,7 +214,6 @@
     <string name="auto_revocable_permissions_two" msgid="4874067408752041716">"ستتم إزالة إذنَي <xliff:g id="PERM_0">%1$s</xliff:g> و<xliff:g id="PERM_1">%2$s</xliff:g>."</string>
     <string name="auto_revocable_permissions_many" msgid="1521807896206032992">"الأذونات التي ستتم إزالتها: <xliff:g id="PERMS">%1$s</xliff:g>."</string>
     <string name="auto_manage_title" msgid="7693181026874842935">"إدارة الأذونات تلقائيًا"</string>
-    <string name="off" msgid="1438489226422866263">"إيقاف"</string>
     <string name="auto_revoked_app_summary_one" msgid="7093213590301252970">"تمت إزالة إذن \"<xliff:g id="PERMISSION_NAME">%s</xliff:g>\"."</string>
     <string name="auto_revoked_app_summary_two" msgid="1910545340763709389">"تمت إزالة إذنَي \"<xliff:g id="PERMISSION_NAME_0">%1$s</xliff:g>\" و\"<xliff:g id="PERMISSION_NAME_1">%2$s</xliff:g>\"."</string>
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"تمت إزالة إذن \"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g>\" وعدد <xliff:g id="NUMBER">%2$s</xliff:g> من الأذونات الأخرى."</string>
@@ -263,7 +265,7 @@
     <string name="unused_apps_notification_title" msgid="4314832015894238019">"{count,plural, =1{تطبيق واحد غير مستخدَم}zero{# تطبيق غير مستخدَم}two{تطبيقان غير مستخدَمين}few{# تطبيقات غير مستخدَمة}many{# تطبيقًا غير مستخدَم}other{# تطبيق غير مستخدَم}}"</string>
     <string name="unused_apps_notification_content" msgid="9195026773244581246">"تمت إزالة الأذونات والملفات المؤقتة وتم إيقاف الإشعارات. انقر لمراجعة الإعدادات."</string>
     <string name="unused_apps_safety_center_card_title" msgid="5638409355530099149">"مراجعة التطبيقات التي تمت إزالة الأذونات منها"</string>
-    <string name="unused_apps_safety_center_card_content" msgid="1088557243627427820">"بالنسبة إلى التطبيقات غير المُستخدَمة لفترة محدّدة، تمت إزالة الأذونات والملفات المؤقّتة وإيقاف الإشعارات."</string>
+    <string name="unused_apps_safety_center_card_content" msgid="1088557243627427820">"بالنسبة إلى التطبيقات غير المُستخدَمة منذ فترة، تمت إزالة الأذونات والملفات المؤقّتة وإيقاف الإشعارات."</string>
     <string name="unused_apps_safety_center_action_title" msgid="8865914432518993194">"مراجعة التطبيقات"</string>
     <string name="post_drive_permission_decision_reminder_title" msgid="1290697371418139976">"التحقّق من الأذونات الحديثة"</string>
     <string name="post_drive_permission_decision_reminder_summary_1_app_1_permission" msgid="670521503734140711">"أثناء القيادة، منحت <xliff:g id="APP">%1$s</xliff:g> الإذن بالوصول إلى <xliff:g id="PERMISSION">%2$s</xliff:g>."</string>
@@ -280,17 +282,15 @@
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"وضع <xliff:g id="APP_NAME">%s</xliff:g> الموقع الجغرافي لك في الخلفية"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"يمكن لهذا التطبيق دائمًا الوصول إلى بيانات موقعك الجغرافي. انقر لتغيير ذلك."</string>
     <string name="notification_listener_reminder_notification_title" msgid="3747210460187479091">"مراجعة تطبيق لديه إذن الوصول إلى إشعاراتك"</string>
-    <!-- no translation found for notification_listener_reminder_notification_content (831476101108863427) -->
-    <skip />
-    <!-- no translation found for notification_listener_warning_card_content (7840973324284115893) -->
-    <skip />
+    <string name="notification_listener_reminder_notification_content" msgid="831476101108863427">"يمكن لتطبيق <xliff:g id="APP_NAME">%s</xliff:g> رفض المحتوى واتخاذ إجراءات بشأنه والوصول إليه داخل الإشعارات."</string>
+    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"يمكن لهذا التطبيق رفض المحتوى واتخاذ إجراءات بشأنه والوصول إليه داخل الإشعارات. تتطلب بعض التطبيقات الحصول على إذن الوصول هذا للعمل على النحو المطلوب."</string>
     <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"إزالة إمكانية الوصول"</string>
     <string name="notification_listener_review_app_button_label" msgid="3433073281029143924">"الاطّلاع على المزيد من الخيارات"</string>
     <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"تمت إزالة إمكانية الوصول."</string>
-    <string name="accessibility_access_reminder_notification_title" msgid="2971317234668807566">"مراجعة تطبيق لديه الإذن الوصول الكامل إلى الأجهزة"</string>
+    <string name="accessibility_access_reminder_notification_title" msgid="2971317234668807566">"مراجعة تطبيق لديه إذن وصول كامل إلى الجهاز"</string>
     <string name="accessibility_access_reminder_notification_content" msgid="7389454158175306720">"يمكن لتطبيق <xliff:g id="APP_NAME">%s</xliff:g> عرض شاشتك وتنفيذ إجراءات على جهازك. تتطلب التطبيقات المعنية بتسهيل الاستخدام هذا النوع من الوصول للعمل على النحو المطلوب."</string>
     <string name="accessibility_access_warning_card_content" msgid="4370327190293217358">"يمكن لهذا التطبيق عرض شاشتك وتنفيذ إجراءات على جهازك. تتطلب التطبيقات المعنية بتسهيل الاستخدام هذا النوع من الوصول للعمل على النحو المطلوب، ولكن عليك التحقّق من التطبيق والتأكَّد من أنه موضع ثقتك."</string>
-    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"إزالة إمكانية الوصول إلى أدوات تسهيل الاستخدام"</string>
+    <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"إزالة إمكانية الوصول"</string>
     <string name="accessibility_show_all_apps_button_label" msgid="960067249326392280">"عرض التطبيقات التي لديها إذن الوصول الكامل"</string>
     <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"تمت إزالة إمكانية الوصول إلى أدوات تسهيل الاستخدام."</string>
     <string name="safety_center_notification_app_label" msgid="2457720616141926534">"‏نظام Android"</string>

@@ -19,6 +19,7 @@ package android.safetycenter.cts.testing
 import android.Manifest.permission.READ_DEVICE_CONFIG
 import android.Manifest.permission.WRITE_DEVICE_CONFIG
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.provider.DeviceConfig
 import android.provider.DeviceConfig.NAMESPACE_PRIVACY
@@ -38,7 +39,7 @@ import kotlin.reflect.KProperty
 /** A class that facilitates working with Safety Center flags. */
 object SafetyCenterFlags {
 
-    /** Flag that determines whether SafetyCenter is enabled. */
+    /** Flag that determines whether Safety Center is enabled. */
     private val isEnabledFlag =
         Flag("safety_center_is_enabled", defaultValue = false, BooleanParser())
 
@@ -139,6 +140,27 @@ object SafetyCenterFlags {
             defaultValue = emptySet(),
             SetParser(StringParser()))
 
+    /**
+     * Flag that determines whether statsd logging is allowed in tests.
+     *
+     * This is useful to allow testing statsd logs in some specific tests, while keeping the other
+     * tests from polluting our statsd logs.
+     */
+    private val allowStatsdLoggingInTestsFlag =
+        Flag("safety_center_allow_statsd_logging_in_tests", defaultValue = false, BooleanParser())
+
+    /**
+     * The Package Manager flag used while toggling the QS tile component.
+     *
+     * This is to make sure that the SafetyCenter is not killed while toggling the QS tile component
+     * during the CTS tests, which causes flakiness in them.
+     */
+    private val qsTileComponentSettingFlag =
+        Flag(
+            "safety_center_qs_tile_component_setting_flags",
+            defaultValue = PackageManager.DONT_KILL_APP,
+            IntParser())
+
     /** Every Safety Center flag. */
     private val FLAGS: List<Flag<*>> =
         listOf(
@@ -152,7 +174,9 @@ object SafetyCenterFlags {
             resurfaceIssueMaxCountsFlag,
             resurfaceIssueDelaysFlag,
             issueCategoryAllowlistsFlag,
-            backgroundRefreshDeniedSourcesFlag)
+            backgroundRefreshDeniedSourcesFlag,
+            allowStatsdLoggingInTestsFlag,
+            qsTileComponentSettingFlag)
 
     /** Returns whether the device supports Safety Center. */
     fun Context.deviceSupportsSafetyCenter() =
@@ -192,6 +216,9 @@ object SafetyCenterFlags {
     /** A property that allows getting and setting the [backgroundRefreshDeniedSourcesFlag]. */
     var backgroundRefreshDeniedSources: Set<String> by backgroundRefreshDeniedSourcesFlag
 
+    /** A property that allows getting and setting the [allowStatsdLoggingInTestsFlag]. */
+    var allowStatsdLoggingInTests: Boolean by allowStatsdLoggingInTestsFlag
+
     /**
      * Returns a snapshot of all the Safety Center flags.
      *
@@ -219,15 +246,23 @@ object SafetyCenterFlags {
             .forEach { writeDeviceConfigProperty(it.name, it.defaultStringValue) }
     }
 
-    /** Resets the Safety Center flags based on the existing [snapshot] captured during [setup]. */
+    /**
+     * Resets the Safety Center flags based on the existing [snapshot] captured during [setup].
+     *
+     * This doesn't apply to [isEnabled] as it is handled separately by [SafetyCenterCtsHelper]:
+     * there is a listener that listens to changes to this flag in system server, and we need to
+     * ensure we wait for it to complete when modifying this flag.
+     */
     fun reset() {
         // Write flags one by one instead of using `DeviceConfig#setProperties` as the latter does
-        // not work when DeviceConfig sync is disabled.
-        snapshot.keyset.forEach {
-            val key = it
-            val value = snapshot.getString(key, /* defaultValue */ null)
-            writeDeviceConfigProperty(key, value)
-        }
+        // not work when DeviceConfig sync is disabled and does not take uninitialized values into
+        // account.
+        FLAGS.filter { it.name != isEnabledFlag.name }
+            .forEach {
+                val key = it.name
+                val value = snapshot.getString(key, /* defaultValue */ null)
+                writeDeviceConfigProperty(key, value)
+            }
     }
 
     /** Sets the [refreshTimeouts] for all refresh reasons to the given [refreshTimeout]. */

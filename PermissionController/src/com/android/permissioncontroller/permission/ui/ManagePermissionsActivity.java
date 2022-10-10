@@ -41,6 +41,7 @@ import android.os.UserHandle;
 import android.permission.PermissionManager;
 import android.safetycenter.SafetyCenterManager;
 import android.safetycenter.SafetyEvent;
+import android.safetycenter.SafetySourceData;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -74,6 +75,7 @@ import com.android.permissioncontroller.permission.ui.legacy.AppPermissionActivi
 import com.android.permissioncontroller.permission.ui.television.TvUnusedAppsFragment;
 import com.android.permissioncontroller.permission.ui.wear.AppPermissionsFragmentWear;
 import com.android.permissioncontroller.permission.utils.KotlinUtils;
+import com.android.permissioncontroller.permission.utils.PermissionMapping;
 import com.android.permissioncontroller.permission.utils.Utils;
 
 import java.util.Random;
@@ -338,7 +340,7 @@ public final class ManagePermissionsActivity extends SettingsActivity {
                     try {
                         PermissionInfo permInfo = getPackageManager().getPermissionInfo(
                                 permissionName, 0);
-                        permissionGroupName = Utils.getGroupOfPermission(permInfo);
+                        permissionGroupName = PermissionMapping.getGroupOfPermission(permInfo);
                     } catch (PackageManager.NameNotFoundException e) {
                         Log.i(LOG_TAG, "Permission " + permissionName + " does not exist");
                     }
@@ -384,16 +386,18 @@ public final class ManagePermissionsActivity extends SettingsActivity {
                 if (SdkLevel.isAtLeastT()) {
                     SafetyCenterManager safetyCenterManager =
                             getSystemService(SafetyCenterManager.class);
-                    if (safetyCenterManager.isSafetyCenterEnabled()
-                            && !safetyCenterManager.getSafetySourceData(
-                                    UNUSED_APPS_SAFETY_CENTER_SOURCE_ID).getIssues().isEmpty()) {
-                        // Clear source data as user has reviewed their unused apps
-                        HibernationPolicyKt.setUnusedAppsReviewNeeded(this, false);
-                        HibernationPolicyKt.rescanAndPushDataToSafetyCenter(this, sessionId,
-                                new SafetyEvent.Builder(
-                                        SafetyEvent.SAFETY_EVENT_TYPE_SOURCE_STATE_CHANGED)
-                                        .build());
-                        HibernationPolicyKt.cancelUnusedAppsNotification(this);
+                    if (safetyCenterManager.isSafetyCenterEnabled()) {
+                        SafetySourceData data = safetyCenterManager.getSafetySourceData(
+                                UNUSED_APPS_SAFETY_CENTER_SOURCE_ID);
+                        if (data != null && !data.getIssues().isEmpty()) {
+                            // Clear source data as user has reviewed their unused apps
+                            HibernationPolicyKt.setUnusedAppsReviewNeeded(this, false);
+                            HibernationPolicyKt.rescanAndPushDataToSafetyCenter(this, sessionId,
+                                    new SafetyEvent.Builder(
+                                            SafetyEvent.SAFETY_EVENT_TYPE_SOURCE_STATE_CHANGED)
+                                            .build());
+                            HibernationPolicyKt.cancelUnusedAppsNotification(this);
+                        }
                     }
                 }
 
@@ -450,7 +454,7 @@ public final class ManagePermissionsActivity extends SettingsActivity {
         try {
             PermissionInfo permInfo = getPackageManager().getPermissionInfo(
                     permissionName, 0);
-            return Utils.getGroupOfPermission(permInfo);
+            return PermissionMapping.getGroupOfPermission(permInfo);
         } catch (PackageManager.NameNotFoundException e) {
             Log.i(LOG_TAG, "Permission " + permissionName + " does not exist");
         }
