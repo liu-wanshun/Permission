@@ -59,8 +59,8 @@
     <string name="review_permission_decisions_view_all" msgid="90391040431566130">"Alle aktuellen Berechtigungsentscheidungen ansehen"</string>
     <string name="review_permission_decisions_empty" msgid="8120775336417279806">"Keine aktuellen Berechtigungsentscheidungen"</string>
     <string name="auto_permission_manager_summary" msgid="9157438376234301354">"Datenzugriff auf Kalender, Anrufliste und andere Inhalte verwalten"</string>
-    <string name="granted_permission_decision" msgid="7824827491551861365">"Du hast <xliff:g id="APP_NAME">%1$s</xliff:g> Zugriff auf <xliff:g id="PERMISSION_NAME">%2$s</xliff:g> gegeben"</string>
-    <string name="denied_permission_decision" msgid="5308961501779563781">"Du hast <xliff:g id="APP_NAME">%1$s</xliff:g> den Zugriff auf <xliff:g id="PERMISSION_NAME">%2$s</xliff:g> verweigert"</string>
+    <string name="granted_permission_decision" msgid="7824827491551861365">"Du hast <xliff:g id="APP_NAME">%1$s</xliff:g> Zugriff auf die Berechtigung „<xliff:g id="PERMISSION_NAME">%2$s</xliff:g>“ gegeben"</string>
+    <string name="denied_permission_decision" msgid="5308961501779563781">"Du hast <xliff:g id="APP_NAME">%1$s</xliff:g> den Zugriff auf die Berechtigung „<xliff:g id="PERMISSION_NAME">%2$s</xliff:g>“ verweigert"</string>
     <string name="days_ago" msgid="6650359081551335629">"{count,plural, =0{Heute}=1{Vor 1 Tag}other{Vor # Tagen}}"</string>
     <string name="app_disable_dlg_positive" msgid="7418444149981904940">"App deaktivieren"</string>
     <string name="app_disable_dlg_text" msgid="3126943217146120240">"Bei Deaktivierung dieser App funktionieren Android und andere Apps möglicherweise nicht mehr ordnungsgemäß. Beachte hierbei, dass du diese App nicht löschen kannst, weil sie auf deinem Gerät vorinstalliert war. Durch die Deaktivierung schaltest du diese App ab und blendest sie auf deinem Gerät aus."</string>
@@ -432,7 +432,7 @@
     <string name="assistant_record_audio_user_sensitive_title" msgid="5532123360322362378">"Auslösererkennung für Assistenten anzeigen"</string>
     <string name="assistant_record_audio_user_sensitive_summary" msgid="6482937591816401619">"Symbol in der Statusleiste anzeigen, wenn das Mikrofon verwendet wird, um den Sprachassistenten zu aktivieren"</string>
     <string name="permgrouprequest_storage_isolated" msgid="4892154224026852295">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; erlauben, auf Fotos und Medien auf deinem Gerät zuzugreifen?"</string>
-    <string name="permgrouprequest_contacts" msgid="8391550064551053695">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; erlauben, auf deine Kontakte zuzugreifen?"</string>
+    <string name="permgrouprequest_contacts" msgid="8391550064551053695">"„<xliff:g id="APP_NAME">%1$s</xliff:g>“ erlauben, auf deine Kontakte zuzugreifen?"</string>
     <string name="permgrouprequest_location" msgid="6990232580121067883">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; erlauben, den Gerätestandort abzurufen?"</string>
     <string name="permgrouprequestdetail_location" msgid="2635935335778429894">"Die App hat nur Zugriff auf den Gerätestandort, solange du sie verwendest"</string>
     <string name="permgroupbackgroundrequest_location" msgid="1085680897265734809">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; erlauben, den Gerätestandort abzurufen?"</string>
@@ -527,8 +527,8 @@
     <string name="media_confirm_dialog_title_a_to_p_visual_deny" msgid="5767849609024384226">"Der Zugriff auf andere Dateien ist ebenfalls nicht möglich"</string>
     <string name="media_confirm_dialog_title_q_to_s_aural_allow" msgid="3191904399336990537">"Der Zugriff auf Fotos und Videos ist ebenfalls möglich"</string>
     <string name="media_confirm_dialog_title_q_to_s_aural_deny" msgid="3128147568953297969">"Der Zugriff auf Fotos und Videos ist ebenfalls nicht möglich"</string>
-    <string name="media_confirm_dialog_title_q_to_s_visual_allow" msgid="6310682466493330434">"Der Zugriff auf Musik- und Audiodateien ist ebenfalls möglich"</string>
-    <string name="media_confirm_dialog_title_q_to_s_visual_deny" msgid="1123845663785900471">"Der Zugriff auf Musik- und Audiodateien ist ebenfalls nicht möglich"</string>
+    <string name="media_confirm_dialog_title_q_to_s_visual_allow" msgid="6310682466493330434">"Der Zugriff auf Musik- und Audiodateien ist möglich"</string>
+    <string name="media_confirm_dialog_title_q_to_s_visual_deny" msgid="1123845663785900471">"Der Zugriff auf Musik- und Audiodateien ist nicht möglich"</string>
     <string name="media_confirm_dialog_message_a_to_p_aural_allow" msgid="7865167246140107623">"Diese App unterstützt nicht die neueste Version von Android. Wenn diese App Zugriff auf Musik- und Audiodateien hat, kann sie auch auf Fotos, Videos und andere Dateien zugreifen."</string>
     <string name="media_confirm_dialog_message_a_to_p_aural_deny" msgid="287502523664804786">"Diese App unterstützt nicht die neueste Version von Android. Wenn diese App keinen Zugriff auf Musik- und Audiodateien hat, kann sie auch nicht auf Fotos, Videos und andere Dateien zugreifen."</string>
     <string name="media_confirm_dialog_message_a_to_p_visual_allow" msgid="4952410892939590487">"Diese App unterstützt nicht die neueste Version von Android. Wenn diese App Zugriff auf Fotos und Videos hat, kann sie auch auf Musik- und Audiodateien sowie andere Dateien zugreifen."</string>
