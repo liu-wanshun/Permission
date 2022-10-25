@@ -67,6 +67,8 @@ import android.content.pm.PermissionInfo;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.SensorPrivacyManager;
 import android.os.Build;
@@ -337,20 +339,23 @@ public final class Utils {
      * Creates and caches a PackageContext for the requested user, or returns the previously cached
      * value. The package of the PackageContext is the application's package.
      *
-     * @param app The currently running application
+     * @param context The context of the currently running application
      * @param user The desired user for the context
      *
      * @return The generated or cached Context for the requested user
      *
-     * @throws PackageManager.NameNotFoundException If the app has no package name attached
+     * @throws RuntimeException If the app has no package name attached, which should never happen
      */
-    public static @NonNull Context getUserContext(Application app, UserHandle user) throws
-            PackageManager.NameNotFoundException {
+    public static @NonNull Context getUserContext(Context context, UserHandle user) {
         if (!sUserContexts.containsKey(user)) {
-            sUserContexts.put(user, app.getApplicationContext()
-                    .createPackageContextAsUser(app.getPackageName(), 0, user));
+            try {
+                sUserContexts.put(user, context.getApplicationContext()
+                        .createPackageContextAsUser(context.getPackageName(), 0, user));
+            } catch (PackageManager.NameNotFoundException neverHappens) {
+                throw new RuntimeException(neverHappens);
+            }
         }
-        return sUserContexts.get(user);
+        return Preconditions.checkNotNull(sUserContexts.get(user));
     }
 
     /**
@@ -765,12 +770,7 @@ public final class Utils {
         }
         int targetSdkVersion = pkg.getTargetSdkVersion();
         PermissionControllerApplication app = PermissionControllerApplication.get();
-        Context context = null;
-        try {
-            context = Utils.getUserContext(app, UserHandle.getUserHandleForUid(pkg.getUid()));
-        } catch (NameNotFoundException e) {
-            return true;
-        }
+        Context context = Utils.getUserContext(app, UserHandle.getUserHandleForUid(pkg.getUid()));
         AppOpsManager appOpsManager = context.getSystemService(AppOpsManager.class);
         if (appOpsManager == null) {
             return true;
@@ -859,12 +859,9 @@ public final class Utils {
             @NonNull ApplicationInfo appInfo) {
         UserHandle user = UserHandle.getUserHandleForUid(appInfo.uid);
         try (IconFactory iconFactory = IconFactory.obtain(context)) {
-            return iconFactory.createBadgedIconBitmap(
-                    appInfo.loadUnbadgedIcon(context.getPackageManager()),
-                    new IconFactory.IconOptions()
-                            .setShrinkNonAdaptiveIcons(false)
-                            .setUser(user))
-                    .newIcon(context);
+            Bitmap iconBmp = iconFactory.createBadgedIconBitmap(
+                    appInfo.loadUnbadgedIcon(context.getPackageManager()), user, false).icon;
+            return new BitmapDrawable(context.getResources(), iconBmp);
         }
     }
 

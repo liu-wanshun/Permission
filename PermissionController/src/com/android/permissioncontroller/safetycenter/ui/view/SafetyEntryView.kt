@@ -34,7 +34,9 @@ import com.android.permissioncontroller.safetycenter.ui.PositionInCardList
 import com.android.permissioncontroller.safetycenter.ui.model.SafetyCenterViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-internal class SafetyEntryView @JvmOverloads constructor(
+internal class SafetyEntryView
+@JvmOverloads
+constructor(
     context: Context?,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -58,8 +60,7 @@ internal class SafetyEntryView @JvmOverloads constructor(
         entry: SafetyCenterEntry,
         position: PositionInCardList,
         launchTaskId: Int?,
-        viewModel: SafetyCenterViewModel,
-        isGroupEntry: Boolean
+        viewModel: SafetyCenterViewModel
     ) {
         setBackgroundResource(position.backgroundDrawableResId)
         val topMargin: Int = position.getTopMargin(context)
@@ -69,22 +70,17 @@ internal class SafetyEntryView @JvmOverloads constructor(
             params.topMargin = topMargin
             layoutParams = params
         }
-        val newPaddingBottom: Int = position.getBottomPadding(context)
-        setPaddingRelative(paddingStart, paddingTop, paddingEnd, newPaddingBottom)
 
         showEntryDetails(entry)
         setupEntryClickListener(entry, launchTaskId, viewModel)
         enableOrDisableEntry(entry)
         setupIconActionButton(entry, launchTaskId, viewModel)
-        setContentDescription(entry, isGroupEntry)
+        setContentDescription(entry, position == PositionInCardList.INSIDE_GROUP)
     }
 
     private fun showEntryDetails(entry: SafetyCenterEntry) {
         commonEntryView?.showDetails(
-                entry.title,
-                entry.summary,
-                entry.severityLevel,
-                entry.severityUnspecifiedIconType)
+            entry.title, entry.summary, entry.severityLevel, entry.severityUnspecifiedIconType)
     }
 
     private fun TextView.showText(text: CharSequence?) {
@@ -115,8 +111,6 @@ internal class SafetyEntryView @JvmOverloads constructor(
             // Ensure that views without listeners can still be focused by accessibility services
             // TODO b/243713158: Set the proper accessibility focus in style, rather than in code
             isFocusable = true
-            // Doing this to make sure that clicking disabled entry doesn't collapse the group.
-            setOnClickListener {}
         }
     }
 
@@ -127,38 +121,31 @@ internal class SafetyEntryView @JvmOverloads constructor(
     ) {
         val iconAction = entry.iconAction
         if (iconAction != null) {
-            val iconActionButton = widgetFrame?.findViewById(R.id.icon_action_button)
+            val iconActionButton =
+                widgetFrame?.findViewById(R.id.icon_action_button)
                     ?: kotlin.run {
-                        val widgetLayout = if (iconAction.type == ICON_ACTION_TYPE_GEAR) {
-                            R.layout.preference_entry_icon_action_gear_widget
-                        } else {
-                            R.layout.preference_entry_icon_action_info_widget
-                        }
+                        val widgetLayout =
+                            if (iconAction.type == ICON_ACTION_TYPE_GEAR) {
+                                R.layout.preference_entry_icon_action_gear_widget
+                            } else {
+                                R.layout.preference_entry_icon_action_info_widget
+                            }
                         inflate(context, widgetLayout, widgetFrame)
                         widgetFrame?.findViewById<ImageView>(R.id.icon_action_button)
                     }
             widgetFrame?.visibility = VISIBLE
-            iconActionButton
-                    ?.setOnClickListener {
-                        sendIconActionIntent(iconAction, launchTaskId, entry)
-                        viewModel
-                                .interactionLogger
-                                .recordForEntry(Action.ENTRY_ICON_ACTION_CLICKED, entry)
-                    }
-            setPaddingRelative(
-                    paddingStart,
-                    paddingTop,
-                    /* end = */ 0,
-                    paddingBottom)
+            iconActionButton?.setOnClickListener {
+                sendIconActionIntent(iconAction, launchTaskId, entry)
+                viewModel.interactionLogger.recordForEntry(Action.ENTRY_ICON_ACTION_CLICKED, entry)
+            }
+            setPaddingRelative(paddingStart, paddingTop, /* end = */ 0, paddingBottom)
         } else {
             widgetFrame?.visibility = GONE
             setPaddingRelative(
-                    paddingStart,
-                    paddingTop,
-                    context
-                            .resources
-                            .getDimensionPixelSize(R.dimen.sc_entry_padding_end),
-                    paddingBottom)
+                paddingStart,
+                paddingTop,
+                context.resources.getDimensionPixelSize(R.dimen.sc_entry_padding_end),
+                paddingBottom)
         }
     }
 
@@ -170,15 +157,15 @@ internal class SafetyEntryView @JvmOverloads constructor(
         try {
             PendingIntentSender.send(iconAction.pendingIntent, launchTaskId)
         } catch (ex: Exception) {
-            Log.e(
-                    TAG,
-                    "Failed to execute icon action intent for entry: $entry",
-                    ex)
+            Log.e(TAG, "Failed to execute icon action intent for entry: $entry", ex)
         }
     }
 
     /** We are doing this because we need some entries to look disabled but still be clickable. */
     private fun enableOrDisableEntry(entry: SafetyCenterEntry) {
+        // Making it clickable allows a disabled Entry View to consume its click which would
+        // otherwise be sent to the parent and cause the entry group to collapse.
+        isClickable = true
         isEnabled = entry.pendingIntent != null
         commonEntryView?.changeEnabledState(entry.isEnabled)
     }
@@ -186,11 +173,12 @@ internal class SafetyEntryView @JvmOverloads constructor(
     private fun setContentDescription(entry: SafetyCenterEntry, isGroupEntry: Boolean) {
         // Setting a customized description for entries that are part of an expandable group.
         // Whereas for non-expandable entries, the default description of title and summary is used.
-        val resourceId = if (isGroupEntry) {
-            R.string.safety_center_entry_group_item_content_description
-        } else {
-            R.string.safety_center_entry_content_description
-        }
+        val resourceId =
+            if (isGroupEntry) {
+                R.string.safety_center_entry_group_item_content_description
+            } else {
+                R.string.safety_center_entry_content_description
+            }
         contentDescription = context.getString(resourceId, entry.title, entry.summary)
     }
 }
