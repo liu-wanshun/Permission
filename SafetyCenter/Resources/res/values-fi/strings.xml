@@ -25,7 +25,7 @@
     <string name="lock_screen_search_terms" msgid="2678486357779794826">"Laitteen lukitus, näytön lukitus, lukitusnäyttö, salasana, PIN, kuvio"</string>
     <string name="biometrics_title" msgid="5859504610285212938">"Biometriikka"</string>
     <string name="biometrics_search_terms" msgid="6040319118762671981">"Sormenjälki, sormi, lisää sormenjälki, kasvojentunnistusavaus, kasvot"</string>
-    <string name="privacy_sources_title" msgid="4061110826457365957">"Tietosuoja"</string>
+    <string name="privacy_sources_title" msgid="4061110826457365957">"Yksityisyys"</string>
     <string name="privacy_sources_summary" msgid="4089719981155120864">"Hallintapaneeli, luvat ja asetukset"</string>
     <string name="permission_usage_title" msgid="3633779688945350407">"Yksityisyydenhallintapaneeli"</string>
     <string name="permission_usage_summary" msgid="5323079206029964468">"Näytä, mitkä sovellukset ovat käyttäneet lupia äskettäin"</string>
@@ -33,7 +33,7 @@
     <string name="permission_manager_title" msgid="5277347862821255015">"Lupien ylläpito"</string>
     <string name="permission_manager_summary" msgid="8099852107340970790">"Päätä sovelluksen pääsystä dataasi"</string>
     <string name="permission_manager_search_terms" msgid="2895147613099694722">"Luvat, lupien hallinta"</string>
-    <string name="privacy_controls_title" msgid="5322875777945432395">"Tietosuojahallinta"</string>
+    <string name="privacy_controls_title" msgid="5322875777945432395">"Yksityisyysasetukset"</string>
     <string name="privacy_controls_summary" msgid="2402066941190435424">"Hallinnoi laitteiden pääsyä mikrofoniin, kameraan ja muihin"</string>
     <string name="privacy_controls_search_terms" msgid="3774472175934304165">"Yksityisyys, yksityisyysasetukset"</string>
     <string name="advanced_title" msgid="8745436380690561172">"Lisää asetuksia"</string>

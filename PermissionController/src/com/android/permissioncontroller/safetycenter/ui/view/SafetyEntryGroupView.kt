@@ -24,6 +24,7 @@ import android.os.Build
 import android.safetycenter.SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_RECOMMENDATION
 import android.safetycenter.SafetyCenterEntryGroup
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -55,6 +56,8 @@ internal class SafetyEntryGroupView @JvmOverloads constructor(
     init {
         inflate(context, R.layout.safety_center_group, this)
     }
+
+    private val groupHeaderView: LinearLayout? by lazy { findViewById(R.id.group_header) }
 
     private val expandedHeaderView: ViewGroup? by lazy { findViewById(R.id.expanded_header) }
     private val expandedTitleView: TextView? by lazy {
@@ -125,6 +128,12 @@ internal class SafetyEntryGroupView @JvmOverloads constructor(
         expandedHeaderView?.visibility = if (shouldBeExpanded) View.VISIBLE else View.GONE
         entriesContainerView?.visibility = if (shouldBeExpanded) View.VISIBLE else View.GONE
 
+        if (shouldBeExpanded) {
+            groupHeaderView?.gravity = Gravity.TOP
+        } else {
+            groupHeaderView?.gravity = Gravity.CENTER_VERTICAL
+        }
+
         if (isExpanded == null) {
             chevronIconView?.setImageResource(
                     if (shouldBeExpanded) {
@@ -147,17 +156,17 @@ internal class SafetyEntryGroupView @JvmOverloads constructor(
         isExpanded = shouldBeExpanded
 
         val newPaddingTop = context.resources.getDimensionPixelSize(
-                when {
-                    shouldBeExpanded -> R.dimen.safety_center_group_header_expanded_padding_top
-                    else -> R.dimen.safety_center_group_header_collapsed_padding_top
-                }
-        )
+                if (shouldBeExpanded) {
+                    R.dimen.sc_entry_group_expanded_padding_top
+                } else {
+                    R.dimen.sc_entry_group_collapsed_padding_top
+                })
         val newPaddingBottom = context.resources.getDimensionPixelSize(
-                when {
-                    shouldBeExpanded -> R.dimen.safety_center_group_header_expanded_padding_bottom
-                    else -> R.dimen.safety_center_group_header_collapsed_padding_bottom
-                }
-        )
+                if (shouldBeExpanded) {
+                    R.dimen.sc_entry_group_expanded_padding_bottom
+                } else {
+                    R.dimen.sc_entry_group_collapsed_padding_bottom
+                })
         setPaddingRelative(paddingStart, newPaddingTop, paddingEnd, newPaddingBottom)
 
         // accessibility attributes depend on the expanded state
