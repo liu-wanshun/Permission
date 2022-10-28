@@ -31,7 +31,7 @@
     <string name="redirecting_error" msgid="8146983632878233202">"تعذَّر فتح الصفحة"</string>
     <string name="resolving_action_error" msgid="371968886143262375">"تعذَّر التعامل بشكل نهائي مع التنبيه"</string>
     <string name="refresh_timeout" msgid="251734999692581852">"تعذّر تحديث الإعدادات"</string>
-    <string name="refresh_error" msgid="255412333381376201">"تعذَّر التحقق من {count,plural, =1{إعداد واحد}zero{إعداد}two{إعدادين}few{إعدادات}many{إعدادًا}other{إعداد}}"</string>
+    <string name="refresh_error" msgid="656062128422446177">"{count,plural, =1{تعذّر التحقّق من الإعداد.}zero{تعذّر التحقّق من الإعدادات.}two{تعذّر التحقّق من الإعدادَين.}few{تعذّر التحقّق من الإعدادات.}many{تعذّر التحقّق من الإعدادات.}other{تعذّر التحقّق من الإعدادات.}}"</string>
     <string name="work_profile_paused" msgid="7037400224040869079">"تم إيقاف الملف الشخصي للعمل مؤقتًا"</string>
     <string name="group_unknown_summary" msgid="6951386960814105641">"ما مِن معلومات بعد."</string>
 </resources>
