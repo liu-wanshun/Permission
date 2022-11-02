@@ -19,7 +19,6 @@ package android.safetycenter.cts.testing
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.ACTION_SAFETY_CENTER
 import android.content.Intent.FLAG_RECEIVER_FOREGROUND
 import android.safetycenter.SafetyEvent
 import android.safetycenter.SafetySourceData
@@ -31,13 +30,14 @@ import android.safetycenter.SafetySourceIssue
 import android.safetycenter.SafetySourceIssue.Action
 import android.safetycenter.SafetySourceStatus
 import android.safetycenter.SafetySourceStatus.IconAction
-import android.safetycenter.SafetySourceStatus.IconAction.ICON_TYPE_GEAR
+import android.safetycenter.SafetySourceStatus.IconAction.ICON_TYPE_INFO
+import android.safetycenter.cts.testing.SafetyCenterCtsConfigs.ACTION_TEST_ACTIVITY
 import android.safetycenter.cts.testing.SafetyCenterCtsConfigs.SINGLE_SOURCE_ID
-import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.ACTION_HANDLE_DISMISSED_ISSUE
-import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.ACTION_HANDLE_INLINE_ACTION
-import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.EXTRA_SOURCE_ID
-import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.EXTRA_SOURCE_ISSUE_ACTION_ID
-import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.EXTRA_SOURCE_ISSUE_ID
+import android.safetycenter.cts.testing.SafetySourceIntentHandler.Companion.ACTION_DISMISS_ISSUE
+import android.safetycenter.cts.testing.SafetySourceIntentHandler.Companion.ACTION_RESOLVE_ACTION
+import android.safetycenter.cts.testing.SafetySourceIntentHandler.Companion.EXTRA_SOURCE_ID
+import android.safetycenter.cts.testing.SafetySourceIntentHandler.Companion.EXTRA_SOURCE_ISSUE_ACTION_ID
+import android.safetycenter.cts.testing.SafetySourceIntentHandler.Companion.EXTRA_SOURCE_ISSUE_ID
 import kotlin.math.max
 
 /**
@@ -46,8 +46,9 @@ import kotlin.math.max
  */
 class SafetySourceCtsData(private val context: Context) {
 
-    /** A [PendingIntent] that redirects to the SafetyCenter page. */
-    val redirectPendingIntent = createRedirectPendingIntent(context)
+    /** A [PendingIntent] that redirects to the [TestActivity] page. */
+    val testActivityRedirectPendingIntent =
+        createRedirectPendingIntent(context, Intent(ACTION_TEST_ACTIVITY))
 
     /** A [SafetySourceData] with a [SEVERITY_LEVEL_UNSPECIFIED] [SafetySourceStatus]. */
     val unspecified =
@@ -56,6 +57,22 @@ class SafetySourceCtsData(private val context: Context) {
                 SafetySourceStatus.Builder(
                         "Unspecified title", "Unspecified summary", SEVERITY_LEVEL_UNSPECIFIED)
                     .setEnabled(false)
+                    .build())
+            .build()
+
+    /**
+     * A disabled [SafetySourceData] with a [SEVERITY_LEVEL_UNSPECIFIED] [SafetySourceStatus], and a
+     * [PendingIntent] that redirects to [TestActivity].
+     */
+    val unspecifiedDisabledWithTestActivityRedirect =
+        SafetySourceData.Builder()
+            .setStatus(
+                SafetySourceStatus.Builder(
+                        "Clickable disabled title",
+                        "Clickable disabled summary",
+                        SEVERITY_LEVEL_UNSPECIFIED)
+                    .setEnabled(false)
+                    .setPendingIntent(testActivityRedirectPendingIntent)
                     .build())
             .build()
 
@@ -68,7 +85,8 @@ class SafetySourceCtsData(private val context: Context) {
                 SEVERITY_LEVEL_INFORMATION,
                 ISSUE_TYPE_ID)
             .addAction(
-                Action.Builder(INFORMATION_ISSUE_ACTION_ID, "Review", redirectPendingIntent)
+                Action.Builder(
+                        INFORMATION_ISSUE_ACTION_ID, "Review", testActivityRedirectPendingIntent)
                     .build())
             .build()
 
@@ -85,7 +103,8 @@ class SafetySourceCtsData(private val context: Context) {
                 ISSUE_TYPE_ID)
             .setSubtitle("Information issue subtitle")
             .addAction(
-                Action.Builder(INFORMATION_ISSUE_ACTION_ID, "Review", redirectPendingIntent)
+                Action.Builder(
+                        INFORMATION_ISSUE_ACTION_ID, "Review", testActivityRedirectPendingIntent)
                     .build())
             .build()
 
@@ -97,8 +116,8 @@ class SafetySourceCtsData(private val context: Context) {
         SafetySourceData.Builder()
             .setStatus(
                 SafetySourceStatus.Builder(
-                    "Unspecified title", "Unspecified summary", SEVERITY_LEVEL_UNSPECIFIED)
-                    .setPendingIntent(redirectPendingIntent)
+                        "Unspecified title", "Unspecified summary", SEVERITY_LEVEL_UNSPECIFIED)
+                    .setPendingIntent(testActivityRedirectPendingIntent)
                     .build())
             .addIssue(informationIssue)
             .build()
@@ -111,8 +130,10 @@ class SafetySourceCtsData(private val context: Context) {
         SafetySourceData.Builder()
             .setStatus(
                 SafetySourceStatus.Builder(
-                    "Unspecified title for Work", "Unspecified summary", SEVERITY_LEVEL_UNSPECIFIED)
-                    .setPendingIntent(redirectPendingIntent)
+                        "Unspecified title for Work",
+                        "Unspecified summary",
+                        SEVERITY_LEVEL_UNSPECIFIED)
+                    .setPendingIntent(testActivityRedirectPendingIntent)
                     .build())
             .addIssue(informationIssue)
             .build()
@@ -122,7 +143,7 @@ class SafetySourceCtsData(private val context: Context) {
         SafetySourceData.Builder()
             .setStatus(
                 SafetySourceStatus.Builder("Ok title", "Ok summary", SEVERITY_LEVEL_INFORMATION)
-                    .setPendingIntent(redirectPendingIntent)
+                    .setPendingIntent(testActivityRedirectPendingIntent)
                     .build())
             .build()
 
@@ -146,8 +167,8 @@ class SafetySourceCtsData(private val context: Context) {
         SafetySourceData.Builder()
             .setStatus(
                 SafetySourceStatus.Builder("Ok title", "Ok summary", SEVERITY_LEVEL_INFORMATION)
-                    .setPendingIntent(redirectPendingIntent)
-                    .setIconAction(IconAction(ICON_TYPE_GEAR, redirectPendingIntent))
+                    .setPendingIntent(testActivityRedirectPendingIntent)
+                    .setIconAction(IconAction(ICON_TYPE_INFO, testActivityRedirectPendingIntent))
                     .build())
             .build()
 
@@ -159,7 +180,7 @@ class SafetySourceCtsData(private val context: Context) {
         SafetySourceData.Builder()
             .setStatus(
                 SafetySourceStatus.Builder("Ok title", "Ok summary", SEVERITY_LEVEL_INFORMATION)
-                    .setPendingIntent(redirectPendingIntent)
+                    .setPendingIntent(testActivityRedirectPendingIntent)
                     .build())
             .addIssue(informationIssue)
             .build()
@@ -172,8 +193,8 @@ class SafetySourceCtsData(private val context: Context) {
         SafetySourceData.Builder()
             .setStatus(
                 SafetySourceStatus.Builder(
-                    "Ok title for Work", "Ok summary", SEVERITY_LEVEL_INFORMATION)
-                    .setPendingIntent(redirectPendingIntent)
+                        "Ok title for Work", "Ok summary", SEVERITY_LEVEL_INFORMATION)
+                    .setPendingIntent(testActivityRedirectPendingIntent)
                     .build())
             .addIssue(informationIssue)
             .build()
@@ -186,7 +207,7 @@ class SafetySourceCtsData(private val context: Context) {
         SafetySourceData.Builder()
             .setStatus(
                 SafetySourceStatus.Builder("Ok title", "Ok summary", SEVERITY_LEVEL_INFORMATION)
-                    .setPendingIntent(redirectPendingIntent)
+                    .setPendingIntent(testActivityRedirectPendingIntent)
                     .build())
             .addIssue(informationIssueWithSubtitle)
             .build()
@@ -203,7 +224,10 @@ class SafetySourceCtsData(private val context: Context) {
                 SEVERITY_LEVEL_RECOMMENDATION,
                 ISSUE_TYPE_ID)
             .addAction(
-                Action.Builder(RECOMMENDATION_ISSUE_ACTION_ID, "See issue", redirectPendingIntent)
+                Action.Builder(
+                        RECOMMENDATION_ISSUE_ACTION_ID,
+                        "See issue",
+                        testActivityRedirectPendingIntent)
                     .build())
 
     /**
@@ -232,7 +256,7 @@ class SafetySourceCtsData(private val context: Context) {
 
     private val dismissIssuePendingIntent =
         broadcastPendingIntent(
-            Intent(ACTION_HANDLE_DISMISSED_ISSUE).putExtra(EXTRA_SOURCE_ID, SINGLE_SOURCE_ID))
+            Intent(ACTION_DISMISS_ISSUE).putExtra(EXTRA_SOURCE_ID, SINGLE_SOURCE_ID))
 
     /**
      * A [SafetySourceIssue] with a [SEVERITY_LEVEL_RECOMMENDATION] and a dismiss [PendingIntent].
@@ -250,7 +274,7 @@ class SafetySourceCtsData(private val context: Context) {
                         "Recommendation title",
                         "Recommendation summary",
                         SEVERITY_LEVEL_RECOMMENDATION)
-                    .setPendingIntent(redirectPendingIntent)
+                    .setPendingIntent(testActivityRedirectPendingIntent)
                     .build())
 
     /**
@@ -286,7 +310,7 @@ class SafetySourceCtsData(private val context: Context) {
     /** A [PendingIntent] used by the resolving [Action] in [criticalResolvingGeneralIssue]. */
     val criticalIssueActionPendingIntent =
         broadcastPendingIntent(
-            Intent(ACTION_HANDLE_INLINE_ACTION)
+            Intent(ACTION_RESOLVE_ACTION)
                 .putExtra(EXTRA_SOURCE_ID, SINGLE_SOURCE_ID)
                 .putExtra(EXTRA_SOURCE_ISSUE_ID, CRITICAL_ISSUE_ID)
                 .putExtra(EXTRA_SOURCE_ISSUE_ACTION_ID, CRITICAL_ISSUE_ACTION_ID))
@@ -295,6 +319,11 @@ class SafetySourceCtsData(private val context: Context) {
     val criticalResolvingAction =
         Action.Builder(CRITICAL_ISSUE_ACTION_ID, "Solve issue", criticalIssueActionPendingIntent)
             .setWillResolve(true)
+            .build()
+
+    /** An action that redirects to [TestActivity] */
+    val testActivityRedirectAction =
+        Action.Builder(CRITICAL_ISSUE_ACTION_ID, "Redirect", testActivityRedirectPendingIntent)
             .build()
 
     /** A resolving Critical [Action] that declares a success message */
@@ -327,8 +356,21 @@ class SafetySourceCtsData(private val context: Context) {
                 SEVERITY_LEVEL_CRITICAL_WARNING,
                 ISSUE_TYPE_ID)
             .addAction(
-                Action.Builder(CRITICAL_ISSUE_ACTION_ID, "Go solve issue", redirectPendingIntent)
+                Action.Builder(
+                        CRITICAL_ISSUE_ACTION_ID,
+                        "Go solve issue",
+                        testActivityRedirectPendingIntent)
                     .build())
+            .build()
+
+    /**
+     * Another [SafetySourceIssue] with a [SEVERITY_LEVEL_CRITICAL_WARNING] an [Action] that
+     * redirects to [TestActivity].
+     */
+    private val criticalIssueWithTestActivityRedirectAction =
+        defaultCriticalResolvingIssueBuilder()
+            .clearActions()
+            .addAction(testActivityRedirectAction)
             .build()
 
     /**
@@ -374,7 +416,7 @@ class SafetySourceCtsData(private val context: Context) {
             .setStatus(
                 SafetySourceStatus.Builder(
                         "Critical title", "Critical summary", SEVERITY_LEVEL_CRITICAL_WARNING)
-                    .setPendingIntent(redirectPendingIntent)
+                    .setPendingIntent(testActivityRedirectPendingIntent)
                     .build())
 
     /**
@@ -383,6 +425,13 @@ class SafetySourceCtsData(private val context: Context) {
      */
     val criticalWithResolvingGeneralIssue =
         defaultCriticalDataBuilder().addIssue(criticalResolvingGeneralIssue).build()
+
+    /**
+     * A [SafetySourceData] with a [SEVERITY_LEVEL_CRITICAL_WARNING] with a [SafetySourceIssue] that
+     * redirects to the [TestActivity].
+     */
+    val criticalWithTestActivityRedirectIssue =
+        defaultCriticalDataBuilder().addIssue(criticalIssueWithTestActivityRedirectAction).build()
 
     /**
      * A [SafetySourceData] with a [SEVERITY_LEVEL_CRITICAL_WARNING] resolving account related
@@ -417,7 +466,7 @@ class SafetySourceCtsData(private val context: Context) {
             .setStatus(
                 SafetySourceStatus.Builder(
                         "Critical title", "Critical summary", SEVERITY_LEVEL_CRITICAL_WARNING)
-                    .setPendingIntent(redirectPendingIntent)
+                    .setPendingIntent(testActivityRedirectPendingIntent)
                     .build())
             .addIssue(criticalResolvingIssueWithSuccessMessage)
             .build()
@@ -438,7 +487,7 @@ class SafetySourceCtsData(private val context: Context) {
             .setStatus(
                 SafetySourceStatus.Builder(
                         "Critical title 2", "Critical summary 2", SEVERITY_LEVEL_CRITICAL_WARNING)
-                    .setPendingIntent(redirectPendingIntent)
+                    .setPendingIntent(testActivityRedirectPendingIntent)
                     .build())
             .addIssue(criticalRedirectingIssue)
             .build()
@@ -450,12 +499,13 @@ class SafetySourceCtsData(private val context: Context) {
     fun buildSafetySourceDataWithSummary(
         severityLevel: Int,
         entrySummary: String,
-        withIssue: Boolean = false
+        withIssue: Boolean = false,
+        entryTitle: String = "Entry title"
     ) =
         SafetySourceData.Builder()
             .setStatus(
-                SafetySourceStatus.Builder("Entry title", entrySummary, severityLevel)
-                    .setPendingIntent(redirectPendingIntent)
+                SafetySourceStatus.Builder(entryTitle, entrySummary, severityLevel)
+                    .setPendingIntent(testActivityRedirectPendingIntent)
                     .build())
             .apply {
                 if (withIssue) {
@@ -467,7 +517,8 @@ class SafetySourceCtsData(private val context: Context) {
                                 max(severityLevel, SEVERITY_LEVEL_INFORMATION),
                                 ISSUE_TYPE_ID)
                             .addAction(
-                                Action.Builder("action_id", "Action", redirectPendingIntent)
+                                Action.Builder(
+                                        "action_id", "Action", testActivityRedirectPendingIntent)
                                     .build())
                             .build())
                 }
@@ -514,12 +565,9 @@ class SafetySourceCtsData(private val context: Context) {
             return builder.build()
         }
 
-        /** Returns a [PendingIntent] that redirects to the given [intentAction]'s page. */
-        fun createRedirectPendingIntent(
-            context: Context,
-            intentAction: String = ACTION_SAFETY_CENTER
-        ): PendingIntent =
+        /** Returns a [PendingIntent] that redirects to [intent]. */
+        fun createRedirectPendingIntent(context: Context, intent: Intent): PendingIntent =
             PendingIntent.getActivity(
-                context, 0 /* requestCode */, Intent(intentAction), PendingIntent.FLAG_IMMUTABLE)
+                context, 0 /* requestCode */, intent, PendingIntent.FLAG_IMMUTABLE)
     }
 }
