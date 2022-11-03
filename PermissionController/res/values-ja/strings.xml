@@ -199,7 +199,7 @@
     <string name="app_permission_footer_app_permissions_link" msgid="4926890342636587393">"「<xliff:g id="APP">%1$s</xliff:g>」アプリの権限をすべて表示"</string>
     <string name="app_permission_footer_permission_apps_link" msgid="3941988129992794327">"この権限があるアプリをすべて表示"</string>
     <string name="assistant_mic_label" msgid="1011432357152323896">"アシスタントのマイクの使用を表示"</string>
-    <string name="unused_apps_category_title" msgid="2988455616845243901">"使用されていないアプリの設定"</string>
+    <string name="unused_apps_category_title" msgid="2988455616845243901">"使用していないアプリの設定"</string>
     <string name="auto_revoke_label" msgid="5068393642936571656">"アプリが使用されていない場合に権限を削除"</string>
     <string name="unused_apps_label" msgid="2595428768404901064">"権限を削除して空き容量を増やす"</string>
     <string name="unused_apps_label_v2" msgid="7058776770056517980">"使用していないアプリを一時停止する"</string>
@@ -283,7 +283,7 @@
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"このアプリは常に位置情報にアクセスできます。設定を変更するにはタップしてください。"</string>
     <string name="notification_listener_reminder_notification_title" msgid="3747210460187479091">"通知へのアクセス権があるアプリの確認"</string>
     <string name="notification_listener_reminder_notification_content" msgid="831476101108863427">"<xliff:g id="APP_NAME">%s</xliff:g> は、通知内のコンテンツの非表示、操作、アクセスを行えます。"</string>
-    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"このアプリは、通知内のコンテンツの非表示、操作、アクセスを行えます。一部のアプリは、正常に動作するにはこのタイプのアクセス権が必要です。"</string>
+    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"このアプリは、通知内のコンテンツの非表示、操作、アクセスを行えます。一部のアプリは、正常に動作するためにこのタイプのアクセス権が必要です。"</string>
     <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"アクセス権を削除"</string>
     <string name="notification_listener_review_app_button_label" msgid="3433073281029143924">"その他のオプションを表示"</string>
     <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"アクセス権が削除されました"</string>

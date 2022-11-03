@@ -47,15 +47,16 @@ import static com.android.permission.PermissionStatsLog.SAFETY_STATE__OVERALL_SE
 
 import android.annotation.IntDef;
 import android.annotation.NonNull;
+import android.annotation.Nullable;
 import android.annotation.UserIdInt;
 import android.content.Context;
 import android.safetycenter.SafetyCenterManager;
+import android.safetycenter.SafetyCenterManager.RefreshRequestType;
 import android.safetycenter.SafetyCenterStatus;
 import android.safetycenter.SafetySourceData;
 import android.util.Log;
 import android.util.StatsEvent;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.android.permission.PermissionStatsLog;
@@ -68,14 +69,19 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 /**
- * Marshalls and writes atoms to Westworld. Contains implementation details of how atom parameters
- * are encoded and provides a better-typed interface for other classes to call.
+ * Marshalls and writes statsd atoms. Contains implementation details of how atom parameters are
+ * encoded and provides a better-typed interface for other classes to call.
+ *
+ * <p>This class isn't thread safe. Thread safety must be handled by the caller.
  */
 @RequiresApi(TIRAMISU)
-final class WestworldLogger {
+@NotThreadSafe
+final class StatsdLogger {
 
-    private static final String TAG = "WestworldLogger";
+    private static final String TAG = "StatsdLogger";
     private static final long UNSET_SOURCE_ID = 0;
     private static final long UNSET_ISSUE_TYPE_ID = 0;
 
@@ -87,16 +93,23 @@ final class WestworldLogger {
                 SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__TIMEOUT
             })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface SystemEventResult {}
+    @interface SystemEventResult {}
 
     @NonNull private final Context mContext;
+    @NonNull private final SafetyCenterConfigReader mSafetyCenterConfigReader;
 
-    WestworldLogger(@NonNull Context context) {
+    StatsdLogger(
+            @NonNull Context context, @NonNull SafetyCenterConfigReader safetyCenterConfigReader) {
         mContext = context;
+        mSafetyCenterConfigReader = safetyCenterConfigReader;
     }
 
-    /** Constructs a new {@link PermissionStatsLog#SAFETY_STATE} {@link StatsEvent}. */
-    public static StatsEvent newSafetyStateEvent(
+    /**
+     * Creates a {@link PermissionStatsLog#SAFETY_STATE} {@link StatsEvent} with the given
+     * parameters.
+     */
+    @NonNull
+    StatsEvent createSafetyStateEvent(
             @SafetyCenterStatus.OverallSeverityLevel int severityLevel,
             long openIssueCount,
             long dismissedIssueCount) {
@@ -113,12 +126,15 @@ final class WestworldLogger {
      * @param sourceSeverityLevel is the {@link SafetySourceData.SeverityLevel} to log for this
      *     source, or {@code null} if none/unknown severity should be recorded.
      */
-    public void writeSafetySourceStateCollected(
+    void writeSafetySourceStateCollected(
             @NonNull String sourceId,
             boolean isManagedProfile,
             @Nullable @SafetySourceData.SeverityLevel Integer sourceSeverityLevel,
             long openIssuesCount,
             long dismissedIssuesCount) {
+        if (!mSafetyCenterConfigReader.allowsStatsdLogging()) {
+            return;
+        }
         int profileType =
                 isManagedProfile
                         ? SAFETY_SOURCE_STATE_COLLECTED__SAFETY_SOURCE_PROFILE_TYPE__PROFILE_TYPE_MANAGED
@@ -136,12 +152,15 @@ final class WestworldLogger {
      * Writes a {@link PermissionStatsLog#SAFETY_CENTER_SYSTEM_EVENT_REPORTED} atom of type {@code
      * SINGLE_SOURCE_RESCAN} or {@code SINGLE_SOURCE_GET_DATA}.
      */
-    public void writeSourceRefreshSystemEvent(
-            @SafetyCenterManager.RefreshRequestType int refreshType,
+    void writeSourceRefreshSystemEvent(
+            @RefreshRequestType int refreshType,
             @NonNull String sourceId,
             @UserIdInt int userId,
             @NonNull Duration duration,
             @SystemEventResult int result) {
+        if (!mSafetyCenterConfigReader.allowsStatsdLogging()) {
+            return;
+        }
         PermissionStatsLog.write(
                 SAFETY_CENTER_SYSTEM_EVENT_REPORTED,
                 toSourceRefreshEventType(refreshType),
@@ -156,10 +175,13 @@ final class WestworldLogger {
      * Writes a {@link PermissionStatsLog#SAFETY_CENTER_SYSTEM_EVENT_REPORTED} atom of type {@code
      * COMPLETE_RESCAN} or {@code COMPLETE_GET_DATA}.
      */
-    public void writeWholeRefreshSystemEvent(
-            @SafetyCenterManager.RefreshRequestType int refreshType,
+    void writeWholeRefreshSystemEvent(
+            @RefreshRequestType int refreshType,
             @NonNull Duration duration,
             @SystemEventResult int result) {
+        if (!mSafetyCenterConfigReader.allowsStatsdLogging()) {
+            return;
+        }
         PermissionStatsLog.write(
                 SAFETY_CENTER_SYSTEM_EVENT_REPORTED,
                 toWholeRefreshEventType(refreshType),
@@ -174,31 +196,37 @@ final class WestworldLogger {
      * Writes a {@link PermissionStatsLog#SAFETY_CENTER_SYSTEM_EVENT_REPORTED} atom of type {@code
      * INLINE_ACTION}.
      */
-    public void writeInlineActionSystemEvent(
+    void writeInlineActionSystemEvent(
             @NonNull String sourceId,
             @UserIdInt int userId,
-            @NonNull String issueTypeId,
+            @Nullable String issueTypeId,
             @NonNull Duration duration,
             @SystemEventResult int result) {
+        if (!mSafetyCenterConfigReader.allowsStatsdLogging()) {
+            return;
+        }
         PermissionStatsLog.write(
                 SAFETY_CENTER_SYSTEM_EVENT_REPORTED,
                 SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__INLINE_ACTION,
                 idStringToLong(sourceId),
                 toSystemEventProfileType(userId),
-                idStringToLong(issueTypeId),
+                issueTypeId == null ? UNSET_ISSUE_TYPE_ID : idStringToLong(issueTypeId),
                 duration.toMillis(),
                 result);
     }
 
+    /**
+     * Returns a {@link SystemEventResult} based on whether the given operation was {@code
+     * successful}.
+     */
     @SystemEventResult
-    public static int toSystemEventResult(boolean success) {
+    static int toSystemEventResult(boolean success) {
         return success
                 ? SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__SUCCESS
                 : SAFETY_CENTER_SYSTEM_EVENT_REPORTED__RESULT__ERROR;
     }
 
-    private static int toSourceRefreshEventType(
-            @SafetyCenterManager.RefreshRequestType int refreshType) {
+    private static int toSourceRefreshEventType(@RefreshRequestType int refreshType) {
         switch (refreshType) {
             case SafetyCenterManager.EXTRA_REFRESH_REQUEST_TYPE_GET_DATA:
                 return SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__SINGLE_SOURCE_GET_NEW_DATA;
@@ -209,8 +237,7 @@ final class WestworldLogger {
         return SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__EVENT_TYPE_UNKNOWN;
     }
 
-    private static int toWholeRefreshEventType(
-            @SafetyCenterManager.RefreshRequestType int refreshType) {
+    private static int toWholeRefreshEventType(@RefreshRequestType int refreshType) {
         switch (refreshType) {
             case SafetyCenterManager.EXTRA_REFRESH_REQUEST_TYPE_GET_DATA:
                 return SAFETY_CENTER_SYSTEM_EVENT_REPORTED__EVENT_TYPE__COMPLETE_GET_NEW_DATA;
@@ -229,7 +256,7 @@ final class WestworldLogger {
 
     /**
      * Converts a {@link String} ID (e.g. a Safety Source ID) to a {@code long} suitable for logging
-     * to Westworld.
+     * to statsd.
      */
     private static long idStringToLong(@NonNull String id) {
         MessageDigest messageDigest;

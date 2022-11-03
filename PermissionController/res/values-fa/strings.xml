@@ -176,7 +176,7 @@
     <string name="sort_by_app" msgid="4055799843051138087">"به‌ترتیب استفاده برنامه"</string>
     <string name="sort_by_time" msgid="5435045320002150456">"به‌ترتیب زمان"</string>
     <string name="item_separator" msgid="4030255389809224513">"، "</string>
-    <string name="permission_usage_refresh" msgid="2264056346561305420">"بازآوری کردن"</string>
+    <string name="permission_usage_refresh" msgid="2264056346561305420">"بازآوردن"</string>
     <string name="permission_history_title" msgid="8340081285133025225">"سابقه اجازه"</string>
     <string name="permission_history_category_today" msgid="7496389369158806620">"امروز"</string>
     <string name="permission_history_category_yesterday" msgid="7242517121222012521">"دیروز"</string>
@@ -283,12 +283,12 @@
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"این برنامه همیشه می‌تواند به مکانتان دسترسی داشته باشد. برای تغییر دادن، ضربه بزنید."</string>
     <string name="notification_listener_reminder_notification_title" msgid="3747210460187479091">"مرور برنامهٔ دارای دسترسی به اعلان‌ها"</string>
     <string name="notification_listener_reminder_notification_content" msgid="831476101108863427">"<xliff:g id="APP_NAME">%s</xliff:g> می‌تواند اعلان‌ها را رد کند، روی آن‌ها کنش انجام دهد، و به محتوای داخل آن‌ها دسترسی داشته باشد"</string>
-    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"این برنامه می‌تواند اعلان‌ها را رد کند، روی آن‌ها کنش انجام دهد، و به محتوای داخل آن‌ها دسترسی داشته باشد. برخی برنامه‌ها به این نوع دسترسی نیاز دارند تا طبق انتظار کار کنند."</string>
+    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"این برنامه می‌تواند اعلان‌ها را رد کند، روی آن‌ها کنش انجام دهد، و به محتوای داخل آن‌ها دسترسی داشته باشد. برخی برنامه‌ها به این نوع دسترسی نیاز دارند تا طبق برنامه کار کنند."</string>
     <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"برداشتن دسترسی"</string>
     <string name="notification_listener_review_app_button_label" msgid="3433073281029143924">"مشاهده گزینه‌های بیشتر"</string>
     <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"دسترسی برداشته شد"</string>
     <string name="accessibility_access_reminder_notification_title" msgid="2971317234668807566">"مرور برنامهٔ دارای دسترسی کامل به دستگاه"</string>
-    <string name="accessibility_access_reminder_notification_content" msgid="7389454158175306720">"<xliff:g id="APP_NAME">%s</xliff:g> می‌تواند صفحه‌نمایش شما را ببیند و کنش‌هایی در دستگاهتان انجام دهد. برنامه‌های دسترس‌پذیری به این نوع دسترسی نیاز دارند تا طبق انتظار کار کنند."</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="7389454158175306720">"‫<xliff:g id="APP_NAME">%s</xliff:g> می‌تواند صفحه‌نمایش شما را ببیند و کنش‌هایی در دستگاهتان انجام دهد. برنامه‌های دسترس‌پذیری به این نوع دسترسی نیاز دارند تا طبق انتظار کار کنند."</string>
     <string name="accessibility_access_warning_card_content" msgid="4370327190293217358">"این برنامه می‌تواند صفحه‌نمایش شما را ببیند و کنش‌هایی در دستگاهتان انجام دهد. برنامه‌های دسترس‌پذیری به این نوع دسترسی نیاز دارند تا طبق انتظار کار کنند اما برنامه را بررسی کنید و مطمئن شوید به آن اعتماد دارید."</string>
     <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"برداشتن دسترسی"</string>
     <string name="accessibility_show_all_apps_button_label" msgid="960067249326392280">"مشاهده برنامه‌های دارای دسترسی کامل"</string>

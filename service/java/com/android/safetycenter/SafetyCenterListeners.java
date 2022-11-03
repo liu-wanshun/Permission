@@ -34,6 +34,7 @@ import android.util.SparseArray;
 import androidx.annotation.RequiresApi;
 
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -50,14 +51,13 @@ final class SafetyCenterListeners {
 
     private static final String TAG = "SafetyCenterListeners";
 
-    @NonNull private final SafetyCenterDataTracker mSafetyCenterDataTracker;
+    @NonNull private final SafetyCenterDataFactory mSafetyCenterDataFactory;
 
     private final SparseArray<RemoteCallbackList<IOnSafetyCenterDataChangedListener>>
             mSafetyCenterDataChangedListeners = new SparseArray<>();
 
-    /** Creates a {@link SafetyCenterListeners} with the given {@link SafetyCenterDataTracker}. */
-    SafetyCenterListeners(@NonNull SafetyCenterDataTracker safetyCenterDataTracker) {
-        mSafetyCenterDataTracker = safetyCenterDataTracker;
+    SafetyCenterListeners(@NonNull SafetyCenterDataFactory safetyCenterDataFactory) {
+        mSafetyCenterDataFactory = safetyCenterDataFactory;
     }
 
     /**
@@ -81,6 +81,20 @@ final class SafetyCenterListeners {
             } catch (RemoteException e) {
                 Log.e(TAG, "Error delivering SafetyCenterErrorDetails to listener", e);
             }
+        }
+    }
+
+    /**
+     * Same as {@link #deliverUpdateForUserProfileGroup} but for all the given {@code
+     * userProfileGroups}.
+     */
+    void deliverUpdateForUserProfileGroups(
+            @NonNull List<UserProfileGroup> userProfileGroups,
+            boolean updateSafetyCenterData,
+            @Nullable SafetyCenterErrorDetails safetyCenterErrorDetails) {
+        for (int i = 0; i < userProfileGroups.size(); i++) {
+            deliverUpdateForUserProfileGroup(
+                    userProfileGroups.get(i), updateSafetyCenterData, safetyCenterErrorDetails);
         }
     }
 
@@ -128,10 +142,11 @@ final class SafetyCenterListeners {
      * Adds a {@link IOnSafetyCenterDataChangedListener} for the given {@code packageName} and
      * {@code userId}.
      *
-     * <p>Returns whether the callback was successfully registered. Returns {@code true} if the
-     * callback was already registered.
+     * <p>Returns the registered {@link IOnSafetyCenterDataChangedListener} if this operation was
+     * successful. Otherwise, returns {@code null}.
      */
-    boolean addListener(
+    @Nullable
+    IOnSafetyCenterDataChangedListener addListener(
             @NonNull IOnSafetyCenterDataChangedListener listener,
             @NonNull String packageName,
             @UserIdInt int userId) {
@@ -139,11 +154,15 @@ final class SafetyCenterListeners {
                 mSafetyCenterDataChangedListeners.get(userId);
         if (listeners == null) {
             listeners = new RemoteCallbackList<>();
-            mSafetyCenterDataChangedListeners.put(userId, listeners);
         }
         OnSafetyCenterDataChangedListenerWrapper listenerWrapper =
                 new OnSafetyCenterDataChangedListenerWrapper(listener, packageName);
-        return listeners.register(listenerWrapper);
+        boolean registered = listeners.register(listenerWrapper);
+        if (!registered) {
+            return null;
+        }
+        mSafetyCenterDataChangedListeners.put(userId, listeners);
+        return listenerWrapper;
     }
 
     /**
@@ -215,7 +234,7 @@ final class SafetyCenterListeners {
                     safetyCenterData = cachedSafetyCenterData;
                 } else {
                     safetyCenterData =
-                            mSafetyCenterDataTracker.getSafetyCenterData(
+                            mSafetyCenterDataFactory.getSafetyCenterData(
                                     packageName, userProfileGroup);
                     safetyCenterDataCache.put(packageName, safetyCenterData);
                 }
@@ -225,11 +244,7 @@ final class SafetyCenterListeners {
         listenersForUserId.finishBroadcast();
     }
 
-    /**
-     * Dumps state for debugging purposes.
-     *
-     * @param fout {@link PrintWriter} to write to
-     */
+    /** Dumps state for debugging purposes. */
     void dump(@NonNull PrintWriter fout) {
         int userIdCount = mSafetyCenterDataChangedListeners.size();
         fout.println("DATA CHANGED LISTENERS (" + userIdCount + " user IDs)");

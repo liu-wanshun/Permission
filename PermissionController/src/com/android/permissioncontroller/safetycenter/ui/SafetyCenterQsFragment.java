@@ -155,7 +155,6 @@ public class SafetyCenterQsFragment extends Fragment {
         mRootView = root;
         if (mPermGroupUsages.isEmpty()) {
             mRootView.setVisibility(View.VISIBLE);
-            setSensorToggleState(new ArrayMap<>(), mRootView);
         } else {
             mRootView.setVisibility(View.GONE);
         }
@@ -163,7 +162,7 @@ public class SafetyCenterQsFragment extends Fragment {
         View closeButton = root.findViewById(R.id.close_button);
         closeButton.setOnClickListener((v) -> requireActivity().finish());
         SafetyCenterTouchTarget.configureSize(
-                closeButton, R.dimen.safety_center_icon_button_touch_target_size);
+                closeButton, R.dimen.sc_icon_button_touch_target_size);
 
         mSafetyCenterViewModel =
                 new ViewModelProvider(
@@ -176,14 +175,21 @@ public class SafetyCenterQsFragment extends Fragment {
                 (v) ->
                         mSafetyCenterViewModel.navigateToSafetyCenter(
                                 this, NavigationSource.QUICK_SETTINGS_TILE));
-        ((TextView) securitySettings.findViewById(R.id.toggle_sensor_name))
-                .setText(R.string.security_settings_button_label_qs);
+        TextView securitySettingsText =
+                securitySettings.findViewById(R.id.toggle_sensor_name);
+        securitySettingsText.setText(R.string.settings);
+        securitySettingsText.setSelected(true);
         securitySettings.findViewById(R.id.toggle_sensor_status).setVisibility(View.GONE);
-        ((ImageView) securitySettings.findViewById(R.id.toggle_sensor_icon))
-                .setImageDrawable(mContext.getDrawable(R.drawable.settings_gear));
+        ImageView securitySettingsIcon =
+                securitySettings.findViewById(R.id.toggle_sensor_icon);
+        securitySettingsIcon.setImageDrawable(Utils.applyTint(mContext,
+                mContext.getDrawable(R.drawable.ic_safety_center_shield),
+                android.R.attr.textColorPrimaryInverse));
         securitySettings.findViewById(R.id.arrow_icon).setVisibility(View.VISIBLE);
         ((ImageView) securitySettings.findViewById(R.id.arrow_icon))
-                .setImageDrawable(mContext.getDrawable(R.drawable.forward_arrow));
+                .setImageDrawable(Utils.applyTint(mContext,
+                        mContext.getDrawable(R.drawable.ic_chevron_right),
+                        android.R.attr.textColorSecondaryInverse));
         ViewCompat.replaceAccessibilityAction(
                 securitySettings,
                 AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLICK,
@@ -203,7 +209,6 @@ public class SafetyCenterQsFragment extends Fragment {
     private void onPermissionGroupsLoaded(boolean initialized) {
         if (initialized) {
             mRootView.setVisibility(View.VISIBLE);
-            setSensorToggleState(new ArrayMap<>(), mRootView);
             addPermissionUsageInformation(mRootView);
         }
     }
@@ -213,11 +218,14 @@ public class SafetyCenterQsFragment extends Fragment {
             return;
         }
         View permissionSectionTitleView = rootView.findViewById(R.id.permission_section_title);
+        View statusSectionTitleView = rootView.findViewById(R.id.status_section_title);
         if (mPermGroupUsages == null || mPermGroupUsages.isEmpty()) {
             permissionSectionTitleView.setVisibility(View.GONE);
+            statusSectionTitleView.setVisibility(View.GONE);
             return;
         }
         permissionSectionTitleView.setVisibility(View.VISIBLE);
+        statusSectionTitleView.setVisibility(View.VISIBLE);
         LinearLayout usageLayout = rootView.findViewById(R.id.permission_usage);
         Collections.sort(
                 mPermGroupUsages,
@@ -318,6 +326,7 @@ public class SafetyCenterQsFragment extends Fragment {
             PermissionGroupUsage usage, ConstraintLayout expandedLayout) {
         MaterialButton seeUsageButton = expandedLayout.findViewById(R.id.secondary_button);
         seeUsageButton.setText(getSeeUsageText(usage.getPermissionGroupName()));
+
         seeUsageButton.setStrokeColorResource(
                 Utils.getColorResId(mContext, android.R.attr.colorAccent));
         seeUsageButton.setOnClickListener(
@@ -425,7 +434,7 @@ public class SafetyCenterQsFragment extends Fragment {
                 expandedLayout.setVisibility(View.GONE);
                 TransitionManager.beginDelayedTransition(indicatorCardViewGroup, transition);
                 expandView.setImageDrawable(
-                        constructExpandButton(mContext.getDrawable(R.drawable.ic_expand_more)));
+                        mContext.getDrawable(R.drawable.ic_safety_group_expand));
                 ViewCompat.replaceAccessibilityAction(
                         v,
                         AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLICK,
@@ -438,7 +447,7 @@ public class SafetyCenterQsFragment extends Fragment {
                 expandedLayout.setEnabled(false);
                 TransitionManager.beginDelayedTransition(indicatorCardViewGroup, transition);
                 expandView.setImageDrawable(
-                        constructExpandButton(mContext.getDrawable(R.drawable.ic_expand_less)));
+                        mContext.getDrawable(R.drawable.ic_safety_group_collapse));
                 ViewCompat.replaceAccessibilityAction(
                         v,
                         AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLICK,
@@ -538,21 +547,7 @@ public class SafetyCenterQsFragment extends Fragment {
         labelText.setContentDescription(usageText);
 
         ImageView expandView = indicatorParentLayout.findViewById(R.id.expand_view);
-        expandView.setImageDrawable(
-                constructExpandButton(mContext.getDrawable(R.drawable.ic_expand_more)));
-    }
-
-    private Drawable constructExpandButton(Drawable expandButtonIcon) {
-        Utils.applyTint(mContext, expandButtonIcon, android.R.attr.textColorPrimary);
-        Drawable expandButtonBackground =
-                mContext.getDrawable(R.drawable.indicator_background_circle).mutate();
-        expandButtonBackground.setTint(mContext.getColor(R.color.sc_surface_variant_dark));
-        int size =
-                (int)
-                        getResources()
-                                .getDimension(
-                                        R.dimen.safety_center_indicator_expand_button_background);
-        return constructIcon(expandButtonIcon, expandButtonBackground, size, size);
+        expandView.setImageDrawable(mContext.getDrawable(R.drawable.ic_safety_group_expand));
     }
 
     private Drawable constructIcon(Drawable icon, Drawable background, int bgSize, int iconSize) {
@@ -576,6 +571,10 @@ public class SafetyCenterQsFragment extends Fragment {
             }
         }
 
+        if (sensorState == null) {
+            sensorState = new ArrayMap<>();
+        }
+
         for (int i = 0; i < sToggleButtons.size(); i++) {
             View toggle = rootView.findViewById(sToggleButtons.valueAt(i));
             String groupName = sToggleButtons.keyAt(i);
@@ -593,7 +592,11 @@ public class SafetyCenterQsFragment extends Fragment {
 
             TextView groupLabel = toggle.findViewById(R.id.toggle_sensor_name);
             groupLabel.setText(getPermGroupLabel(groupName));
+            // Set the text as selected to get marquee to work
+            groupLabel.setSelected(true);
             TextView blockedStatus = toggle.findViewById(R.id.toggle_sensor_status);
+            // Set the text as selected to get marquee to work
+            blockedStatus.setSelected(true);
             ImageView iconView = toggle.findViewById(R.id.toggle_sensor_icon);
             boolean sensorEnabled =
                     !sensorState.containsKey(groupName) || sensorState.get(groupName);
@@ -602,10 +605,10 @@ public class SafetyCenterQsFragment extends Fragment {
             int colorPrimary = getTextColor(true, sensorEnabled);
             int colorSecondary = getTextColor(false, sensorEnabled);
             if (sensorEnabled) {
-                toggle.setBackgroundResource(R.drawable.safety_center_button_background);
+                toggle.setBackgroundResource(R.drawable.safety_center_sensor_toggle_enabled);
                 icon = KotlinUtils.INSTANCE.getPermGroupIcon(mContext, groupName, colorPrimary);
             } else {
-                toggle.setBackgroundResource(R.drawable.safety_center_button_background_dark);
+                toggle.setBackgroundResource(R.drawable.safety_center_sensor_toggle_disabled);
                 icon = mContext.getDrawable(getBlockedIconResId(groupName));
                 icon.setTint(colorPrimary);
             }

@@ -61,6 +61,7 @@
     <uses-permission android:name="android.permission.SEND_SAFETY_CENTER_UPDATE" />
     <!--SYSTEM_APPLICATION_OVERLAY will be granted on T+, as installer protection is added in T -->
     <uses-permission android:name="android.permission.SYSTEM_APPLICATION_OVERLAY"/>
+    <uses-permission android:name="android.permission.LAUNCH_MULTI_PANE_SETTINGS_DEEP_LINK" />
     <uses-permission android:name="android.permission.SET_UNRESTRICTED_KEEP_CLEAR_AREAS"/>
     <uses-permission android:name="android.permission.START_TASKS_FROM_RECENTS" />
 
@@ -93,11 +94,13 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.android.permissioncontroller.hibernation.HibernationOnBootReceiver"
+        <receiver android:name="com.android.permissioncontroller.hibernation.HibernationBroadcastReceiver"
                   android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="com.android.permissioncontroller.action.SET_UP_HIBERNATION" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
             </intent-filter>
         </receiver>
 
@@ -170,6 +173,23 @@
 
         <service android:name="com.android.permissioncontroller.permission.service.PermissionEventCleanupJobService"
                  android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name="com.android.permissioncontroller.safetycenter.service.SafetyCenterBackgroundRefreshJobService"
+            android:enabled="@bool/is_at_least_t"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.android.permissioncontroller.safetycenter.service.SafetyCenterBackgroundRefreshJobService$SetupSafetyCenterBackgroundRefreshReceiver"
+            android:enabled="@bool/is_at_least_t"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.safetycenter.action.SAFETY_CENTER_ENABLED_CHANGED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
 
         <receiver
             android:name="com.android.permissioncontroller.privacysources.AccessibilityOnBootReceiver"

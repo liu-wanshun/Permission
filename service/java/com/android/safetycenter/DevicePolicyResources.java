@@ -18,11 +18,14 @@ package com.android.safetycenter;
 
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 
+import static java.util.Objects.requireNonNull;
+
 import android.annotation.NonNull;
 import android.annotation.StringRes;
 import android.app.admin.DevicePolicyManager;
 import android.app.admin.DevicePolicyResourcesManager;
 import android.content.Context;
+import android.os.Binder;
 
 import androidx.annotation.RequiresApi;
 
@@ -37,12 +40,14 @@ final class DevicePolicyResources {
     private static final String SAFETY_CENTER_PREFIX = "SafetyCenter.";
     private static final String WORK_PROFILE_PAUSED_TITLE = "WORK_PROFILE_PAUSED";
 
+    private DevicePolicyResources() {}
+
     /**
      * Returns the updated string for the given {@code safetySourceId} by calling {@link
      * DevicePolicyResourcesManager#getString}.
      */
     @NonNull
-    public static String getSafetySourceWorkString(
+    static String getSafetySourceWorkString(
             @NonNull SafetyCenterResourcesContext safetyCenterResourcesContext,
             @NonNull String safetySourceId,
             @StringRes int workResId) {
@@ -57,7 +62,7 @@ final class DevicePolicyResources {
      * DevicePolicyResourcesManager#getString}.
      */
     @NonNull
-    public static String getWorkProfilePausedString(
+    static String getWorkProfilePausedString(
             @NonNull SafetyCenterResourcesContext safetyCenterResourcesContext) {
         return getEnterpriseString(
                 safetyCenterResourcesContext,
@@ -70,8 +75,17 @@ final class DevicePolicyResources {
             @NonNull Context context,
             @NonNull String devicePolicyIdentifier,
             @NonNull Supplier<String> defaultValueLoader) {
-        return context.getSystemService(DevicePolicyManager.class)
-                .getResources()
-                .getString(SAFETY_CENTER_PREFIX + devicePolicyIdentifier, defaultValueLoader);
+        // This call requires the caller’s identity to match the package name of the given context.
+        // However, the SafetyCenterResourcesContext’s has package name "android", which does not
+        // necessarily match the caller’s package when making Binder calls, so the calling identity
+        // has to be cleared.
+        final long callingId = Binder.clearCallingIdentity();
+        try {
+            return requireNonNull(context.getSystemService(DevicePolicyManager.class))
+                    .getResources()
+                    .getString(SAFETY_CENTER_PREFIX + devicePolicyIdentifier, defaultValueLoader);
+        } finally {
+            Binder.restoreCallingIdentity(callingId);
+        }
     }
 }
