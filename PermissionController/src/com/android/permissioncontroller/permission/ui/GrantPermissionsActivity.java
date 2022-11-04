@@ -29,8 +29,10 @@ import static com.android.permissioncontroller.permission.ui.GrantPermissionsVie
 import static com.android.permissioncontroller.permission.ui.GrantPermissionsViewHandler.LINKED_TO_SETTINGS;
 import static com.android.permissioncontroller.permission.utils.Utils.getRequestMessage;
 
+import android.Manifest;
 import android.app.KeyguardManager;
 import android.content.Intent;
+import android.content.pm.PackageItemInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Icon;
@@ -155,6 +157,7 @@ public class GrantPermissionsActivity extends SettingsActivity
     private int mCurrentRequestIdx = 0;
     private float mOriginalDimAmount;
     private View mRootView;
+    private int mStoragePermGroupIcon = R.drawable.ic_empty_icon;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -238,8 +241,7 @@ public class GrantPermissionsActivity extends SettingsActivity
                     .setResultListener(this);
         } else {
             mViewHandler = new com.android.permissioncontroller.permission.ui.handheld
-                    .GrantPermissionsViewHandlerImpl(this, mTargetPackage,
-                    Process.myUserHandle()).setResultListener(this);
+                    .GrantPermissionsViewHandlerImpl(this, this);
         }
 
         GrantPermissionsViewModelFactory factory = new GrantPermissionsViewModelFactory(
@@ -281,6 +283,12 @@ public class GrantPermissionsActivity extends SettingsActivity
         } else {
             // Do not show screen dim until data is loaded
             window.setDimAmount(0f);
+        }
+
+        PackageItemInfo storageGroupInfo =
+                Utils.getGroupInfo(Manifest.permission_group.STORAGE, this.getApplicationContext());
+        if (storageGroupInfo != null) {
+            mStoragePermGroupIcon = storageGroupInfo.icon;
         }
     }
 
@@ -396,11 +404,11 @@ public class GrantPermissionsActivity extends SettingsActivity
                 messageId = Utils.getUpgradeRequest(info.getGroupName());
                 break;
             case STORAGE_SUPERGROUP_MESSAGE_Q_TO_S:
-                icon = Icon.createWithResource(getPackageName(), R.drawable.perm_group_storage);
+                icon = Icon.createWithResource(getPackageName(), mStoragePermGroupIcon);
                 messageId = R.string.permgrouprequest_storage_q_to_s;
                 break;
             case STORAGE_SUPERGROUP_MESSAGE_PRE_Q:
-                icon = Icon.createWithResource(getPackageName(), R.drawable.perm_group_storage);
+                icon = Icon.createWithResource(getPackageName(), mStoragePermGroupIcon);
                 messageId = R.string.permgrouprequest_storage_pre_q;
                 break;
         }
@@ -497,6 +505,9 @@ public class GrantPermissionsActivity extends SettingsActivity
         final int x = (int) ev.getX();
         final int y = (int) ev.getY();
         if ((x < 0) || (y < 0) || (x > (rootView.getWidth())) || (y > (rootView.getHeight()))) {
+            if (MotionEvent.ACTION_DOWN == ev.getAction()) {
+                mViewHandler.onCancelled();
+            }
             finishAfterTransition();
         }
         return super.dispatchTouchEvent(ev);
