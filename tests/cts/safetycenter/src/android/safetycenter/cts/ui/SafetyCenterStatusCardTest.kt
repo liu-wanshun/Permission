@@ -15,18 +15,17 @@
  */
 package android.safetycenter.cts.ui
 
-import android.Manifest.permission.SEND_SAFETY_CENTER_UPDATE
 import android.content.Context
 import android.safetycenter.cts.testing.SafetyCenterActivityLauncher.launchSafetyCenterActivity
 import android.safetycenter.cts.testing.SafetyCenterCtsConfigs.SINGLE_SOURCE_CONFIG
 import android.safetycenter.cts.testing.SafetyCenterCtsConfigs.SINGLE_SOURCE_ID
+import android.safetycenter.cts.testing.SafetyCenterCtsData
 import android.safetycenter.cts.testing.SafetyCenterCtsHelper
 import android.safetycenter.cts.testing.SafetyCenterFlags.deviceSupportsSafetyCenter
 import android.safetycenter.cts.testing.SafetySourceCtsData
+import android.safetycenter.cts.testing.SafetySourceIntentHandler.Request
+import android.safetycenter.cts.testing.SafetySourceIntentHandler.Response
 import android.safetycenter.cts.testing.SafetySourceReceiver
-import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.SafetySourceDataKey
-import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.SafetySourceDataKey.Reason
-import android.safetycenter.cts.testing.ShellPermissions.callWithShellPermissionIdentity
 import android.safetycenter.cts.testing.UiTestHelper.RESCAN_BUTTON_LABEL
 import android.safetycenter.cts.testing.UiTestHelper.waitAllTextDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.waitButtonDisplayed
@@ -36,10 +35,13 @@ import android.safetycenter.cts.testing.UiTestHelper.waitNotDisplayed
 import android.support.test.uiautomator.By
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.android.compatibility.common.util.DisableAnimationRule
+import com.android.compatibility.common.util.FreezeRotationRule
 import com.android.safetycenter.resources.SafetyCenterResourcesContext
 import org.junit.After
 import org.junit.Assume.assumeTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -47,11 +49,17 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 // TODO(b/244582705): Add CTS tests for device & account titles, status when unspecified entries.
 class SafetyCenterStatusCardTest {
+
+    @get:Rule val disableAnimationRule = DisableAnimationRule()
+
+    @get:Rule val freezeRotationRule = FreezeRotationRule()
+
     private val context: Context = getApplicationContext()
 
     private val safetyCenterResourcesContext = SafetyCenterResourcesContext.forTests(context)
     private val safetyCenterCtsHelper = SafetyCenterCtsHelper(context)
     private val safetySourceCtsData = SafetySourceCtsData(context)
+    private val safetyCenterCtsData = SafetyCenterCtsData(context)
 
     // JUnit's Assume is not supported in @BeforeClass by the CTS tests runner, so this is used to
     // manually skip the setup and teardown methods.
@@ -105,160 +113,130 @@ class SafetyCenterStatusCardTest {
     @Test
     fun withUnknownStatusAndNoIssues_hasRescanButton() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
+        SafetySourceReceiver.setResponse(Request.Refresh(SINGLE_SOURCE_ID), Response.Error)
 
-        SafetySourceReceiver.safetySourceData[
-                SafetySourceDataKey(Reason.REFRESH_GET_DATA, SINGLE_SOURCE_ID)] = null
-        SafetySourceReceiver.shouldReportSafetySourceError = true
-
-        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
-            context.launchSafetyCenterActivity {
-                waitAllTextDisplayed(
-                    safetyCenterResourcesContext.getStringByName(
-                        "overall_severity_level_ok_review_title"),
-                    safetyCenterResourcesContext.getStringByName(
-                        "overall_severity_level_ok_review_summary"))
-                waitButtonDisplayed(RESCAN_BUTTON_LABEL)
-            }
+        context.launchSafetyCenterActivity(withReceiverPermission = true) {
+            waitAllTextDisplayed(
+                safetyCenterResourcesContext.getStringByName(
+                    "overall_severity_level_ok_review_title"),
+                safetyCenterResourcesContext.getStringByName(
+                    "overall_severity_level_ok_review_summary"))
+            waitButtonDisplayed(RESCAN_BUTTON_LABEL)
         }
     }
 
     @Test
     fun withInformationAndNoIssues_hasRescanButton() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        SafetySourceReceiver.safetySourceData[
-                SafetySourceDataKey(Reason.REFRESH_GET_DATA, SINGLE_SOURCE_ID)] =
-            safetySourceCtsData.information
+        SafetySourceReceiver.setResponse(
+            Request.Refresh(SINGLE_SOURCE_ID), Response.SetData(safetySourceCtsData.information))
 
-        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
-            context.launchSafetyCenterActivity {
-                waitAllTextDisplayed(
-                    safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"),
-                    safetyCenterResourcesContext.getStringByName(
-                        "overall_severity_level_ok_summary"))
-                waitButtonDisplayed(RESCAN_BUTTON_LABEL)
-            }
+        context.launchSafetyCenterActivity(withReceiverPermission = true) {
+            waitAllTextDisplayed(
+                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"),
+                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_summary"))
+            waitButtonDisplayed(RESCAN_BUTTON_LABEL)
         }
     }
 
     @Test
     fun withInformationAndNoIssues_hasContentDescriptions() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        SafetySourceReceiver.safetySourceData[
-                SafetySourceDataKey(Reason.REFRESH_GET_DATA, SINGLE_SOURCE_ID)] =
-            safetySourceCtsData.information
+        SafetySourceReceiver.setResponse(
+            Request.Refresh(SINGLE_SOURCE_ID), Response.SetData(safetySourceCtsData.information))
 
-        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
-            context.launchSafetyCenterActivity {
-                waitDisplayed(By.descContains("Security and privacy status"))
-                waitNotDisplayed(By.desc("Protected by Android"))
-            }
+        context.launchSafetyCenterActivity(withReceiverPermission = true) {
+            waitDisplayed(By.descContains("Security and privacy status"))
+            waitNotDisplayed(By.desc("Protected by Android"))
         }
     }
 
     @Test
     fun withInformationIssue_doesNotHaveRescanButton() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        SafetySourceReceiver.safetySourceData[
-                SafetySourceDataKey(Reason.REFRESH_GET_DATA, SINGLE_SOURCE_ID)] =
-            safetySourceCtsData.informationWithIssue
+        SafetySourceReceiver.setResponse(
+            Request.Refresh(SINGLE_SOURCE_ID),
+            Response.SetData(safetySourceCtsData.informationWithIssue))
 
-        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
-            context.launchSafetyCenterActivity {
-                waitAllTextDisplayed(
-                    safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"))
-                // TODO(b/244577363): Add test for N alerts string once we have a shared helper for
-                // it.
-                waitButtonNotDisplayed(RESCAN_BUTTON_LABEL)
-            }
+        context.launchSafetyCenterActivity(withReceiverPermission = true) {
+            waitAllTextDisplayed(
+                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"),
+                safetyCenterCtsData.getAlertString(1))
+            waitButtonNotDisplayed(RESCAN_BUTTON_LABEL)
         }
     }
 
     @Test
     fun withRecommendationIssue_doesNotHaveRescanButton() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        SafetySourceReceiver.safetySourceData[
-                SafetySourceDataKey(Reason.REFRESH_GET_DATA, SINGLE_SOURCE_ID)] =
-            safetySourceCtsData.recommendationWithGeneralIssue
+        SafetySourceReceiver.setResponse(
+            Request.Refresh(SINGLE_SOURCE_ID),
+            Response.SetData(safetySourceCtsData.recommendationWithGeneralIssue))
 
-        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
-            context.launchSafetyCenterActivity {
-                waitAllTextDisplayed(
-                    safetyCenterResourcesContext.getStringByName(
-                        "overall_severity_level_safety_recommendation_title"))
-                // TODO(b/244577363): Add test for N alerts string once we have a shared helper for
-                // it.
-                waitButtonNotDisplayed(RESCAN_BUTTON_LABEL)
-            }
+        context.launchSafetyCenterActivity(withReceiverPermission = true) {
+            waitAllTextDisplayed(
+                safetyCenterResourcesContext.getStringByName(
+                    "overall_severity_level_safety_recommendation_title"),
+                safetyCenterCtsData.getAlertString(1))
+            waitButtonNotDisplayed(RESCAN_BUTTON_LABEL)
         }
     }
 
     @Test
     fun withCriticalWarningIssue_doesNotHaveRescanButton() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        SafetySourceReceiver.safetySourceData[
-                SafetySourceDataKey(Reason.REFRESH_GET_DATA, SINGLE_SOURCE_ID)] =
-            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        SafetySourceReceiver.setResponse(
+            Request.Refresh(SINGLE_SOURCE_ID),
+            Response.SetData(safetySourceCtsData.criticalWithResolvingGeneralIssue))
 
-        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
-            context.launchSafetyCenterActivity {
-                waitAllTextDisplayed(
-                    safetyCenterResourcesContext.getStringByName(
-                        "overall_severity_level_critical_safety_warning_title"))
-                // TODO(b/244577363): Add test for N alerts string once we have a shared helper for
-                // it.
-                waitButtonNotDisplayed(RESCAN_BUTTON_LABEL)
-            }
+        context.launchSafetyCenterActivity(withReceiverPermission = true) {
+            waitAllTextDisplayed(
+                safetyCenterResourcesContext.getStringByName(
+                    "overall_severity_level_critical_safety_warning_title"),
+                safetyCenterCtsData.getAlertString(1))
+            waitButtonNotDisplayed(RESCAN_BUTTON_LABEL)
         }
     }
 
     @Test
     fun withKnownStatus_displaysScanningOnRescan() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        SafetySourceReceiver.safetySourceData[
-                SafetySourceDataKey(Reason.REFRESH_GET_DATA, SINGLE_SOURCE_ID)] =
-            safetySourceCtsData.information
+        SafetySourceReceiver.setResponse(
+            Request.Refresh(SINGLE_SOURCE_ID), Response.SetData(safetySourceCtsData.information))
 
-        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
-            context.launchSafetyCenterActivity {
-                waitAllTextDisplayed(
-                    safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"),
-                    safetyCenterResourcesContext.getStringByName(
-                        "overall_severity_level_ok_summary"))
+        context.launchSafetyCenterActivity(withReceiverPermission = true) {
+            waitAllTextDisplayed(
+                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"),
+                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_summary"))
 
-                waitButtonDisplayed(RESCAN_BUTTON_LABEL).click()
+            waitButtonDisplayed(RESCAN_BUTTON_LABEL) { it.click() }
 
-                waitAllTextDisplayed(
-                    safetyCenterResourcesContext.getStringByName("scanning_title"),
-                    safetyCenterResourcesContext.getStringByName("loading_summary"))
-            }
+            waitAllTextDisplayed(
+                safetyCenterResourcesContext.getStringByName("scanning_title"),
+                safetyCenterResourcesContext.getStringByName("loading_summary"))
         }
     }
 
     @Test
     fun rescan_updatesDataAfterScanCompletes() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
-        SafetySourceReceiver.safetySourceData[
-                SafetySourceDataKey(Reason.REFRESH_GET_DATA, SINGLE_SOURCE_ID)] =
-            safetySourceCtsData.information
-        SafetySourceReceiver.safetySourceData[
-                SafetySourceDataKey(Reason.REFRESH_FETCH_FRESH_DATA, SINGLE_SOURCE_ID)] =
-            safetySourceCtsData.recommendationWithGeneralIssue
+        SafetySourceReceiver.setResponse(
+            Request.Refresh(SINGLE_SOURCE_ID), Response.SetData(safetySourceCtsData.information))
+        SafetySourceReceiver.setResponse(
+            Request.Rescan(SINGLE_SOURCE_ID),
+            Response.SetData(safetySourceCtsData.recommendationWithGeneralIssue))
 
-        callWithShellPermissionIdentity(SEND_SAFETY_CENTER_UPDATE) {
-            context.launchSafetyCenterActivity {
-                waitAllTextDisplayed(
-                    safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"),
-                    safetyCenterResourcesContext.getStringByName(
-                        "overall_severity_level_ok_summary"))
+        context.launchSafetyCenterActivity(withReceiverPermission = true) {
+            waitAllTextDisplayed(
+                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"),
+                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_summary"))
 
-                waitButtonDisplayed(RESCAN_BUTTON_LABEL).click()
+            waitButtonDisplayed(RESCAN_BUTTON_LABEL) { it.click() }
 
-                waitAllTextDisplayed(
-                    safetyCenterResourcesContext.getStringByName(
-                        "overall_severity_level_safety_recommendation_title"))
-                // TODO(b/244577363): Add test for N alerts string once we have a shared helper for
-                // it.
-            }
+            waitAllTextDisplayed(
+                safetyCenterResourcesContext.getStringByName(
+                    "overall_severity_level_safety_recommendation_title"),
+                safetyCenterCtsData.getAlertString(1))
         }
     }
 }

@@ -89,17 +89,18 @@ class SafetyCenterCtsData(context: Context) {
     /**
      * Returns a [SafetyCenterEntry] builder with a grey icon (for unknown severity), the summary
      * generally used for sources of the [SafetyCenterCtsConfigs], and a pending intent that
-     * redirects to Safety Center for the given source, user id, and title.
+     * redirects to [TestActivity] for the given source, user id, and title.
      */
     fun safetyCenterEntryDefaultBuilder(
         sourceId: String,
         userId: Int = UserHandle.myUserId(),
-        title: CharSequence = "OK"
+        title: CharSequence = "OK",
+        pendingIntent: PendingIntent? = safetySourceCtsData.testActivityRedirectPendingIntent
     ) =
         SafetyCenterEntry.Builder(entryId(sourceId, userId), title)
             .setSeverityLevel(ENTRY_SEVERITY_LEVEL_UNKNOWN)
             .setSummary("OK")
-            .setPendingIntent(safetySourceCtsData.redirectPendingIntent)
+            .setPendingIntent(pendingIntent)
             .setSeverityUnspecifiedIconType(SEVERITY_UNSPECIFIED_ICON_TYPE_NO_RECOMMENDATION)
 
     /**
@@ -110,12 +111,13 @@ class SafetyCenterCtsData(context: Context) {
     fun safetyCenterEntryDefault(
         sourceId: String,
         userId: Int = UserHandle.myUserId(),
-        title: CharSequence = "OK"
-    ) = safetyCenterEntryDefaultBuilder(sourceId, userId, title).build()
+        title: CharSequence = "OK",
+        pendingIntent: PendingIntent? = safetySourceCtsData.testActivityRedirectPendingIntent
+    ) = safetyCenterEntryDefaultBuilder(sourceId, userId, title, pendingIntent).build()
 
     /**
      * Returns a [SafetyCenterEntry] builder with no icon, the summary generally used for sources of
-     * the [SafetyCenterCtsConfigs], and a pending intent that redirects to Safety Center for the
+     * the [SafetyCenterCtsConfigs], and a pending intent that redirects to [TestActivity] for the
      * given source, user id, and title.
      */
     fun safetyCenterEntryDefaultStaticBuilder(
@@ -126,12 +128,12 @@ class SafetyCenterCtsData(context: Context) {
         SafetyCenterEntry.Builder(entryId(sourceId, userId), title)
             .setSeverityLevel(ENTRY_SEVERITY_LEVEL_UNSPECIFIED)
             .setSummary("OK")
-            .setPendingIntent(safetySourceCtsData.redirectPendingIntent)
+            .setPendingIntent(safetySourceCtsData.testActivityRedirectPendingIntent)
             .setSeverityUnspecifiedIconType(SEVERITY_UNSPECIFIED_ICON_TYPE_NO_ICON)
 
     /**
      * Returns a [SafetyCenterEntry] with a grey icon (for unknown severity), a refresh error
-     * summary, and a pending intent that redirects to Safety Center for the given source, user id,
+     * summary, and a pending intent that redirects to [TestActivity] for the given source, user id,
      * and title.
      */
     fun safetyCenterEntryError(sourceId: String) =
@@ -143,7 +145,7 @@ class SafetyCenterCtsData(context: Context) {
      */
     fun safetyCenterEntryUnspecified(
         sourceId: String,
-        pendingIntent: PendingIntent? = safetySourceCtsData.redirectPendingIntent
+        pendingIntent: PendingIntent? = safetySourceCtsData.testActivityRedirectPendingIntent
     ) =
         SafetyCenterEntry.Builder(entryId(sourceId), "Unspecified title")
             .setSeverityLevel(ENTRY_SEVERITY_LEVEL_UNSPECIFIED)
@@ -155,7 +157,7 @@ class SafetyCenterCtsData(context: Context) {
 
     /**
      * Returns a [SafetyCenterEntry] builder with a green icon (for ok severity), a standard
-     * summary, and a pending intent that redirects to Safety Center for the given source, user id,
+     * summary, and a pending intent that redirects to [TestActivity] for the given source, user id,
      * and title.
      */
     fun safetyCenterEntryOkBuilder(
@@ -166,12 +168,12 @@ class SafetyCenterCtsData(context: Context) {
         SafetyCenterEntry.Builder(entryId(sourceId, userId), title)
             .setSeverityLevel(ENTRY_SEVERITY_LEVEL_OK)
             .setSummary("Ok summary")
-            .setPendingIntent(safetySourceCtsData.redirectPendingIntent)
+            .setPendingIntent(safetySourceCtsData.testActivityRedirectPendingIntent)
             .setSeverityUnspecifiedIconType(SEVERITY_UNSPECIFIED_ICON_TYPE_NO_RECOMMENDATION)
 
     /**
      * Returns a [SafetyCenterEntry] with a green icon (for ok severity), a standard summary, and a
-     * pending intent that redirects to Safety Center for the given source, user id, and title.
+     * pending intent that redirects to [TestActivity] for the given source, user id, and title.
      */
     fun safetyCenterEntryOk(
         sourceId: String,
@@ -181,7 +183,8 @@ class SafetyCenterCtsData(context: Context) {
 
     /**
      * Returns a [SafetyCenterEntry] with a yellow icon (for recommendation severity), a standard
-     * title, and a pending intent that redirects to Safety Center for the given source and summary.
+     * title, and a pending intent that redirects to [TestActivity] for the given source and
+     * summary.
      */
     fun safetyCenterEntryRecommendation(
         sourceId: String,
@@ -190,19 +193,19 @@ class SafetyCenterCtsData(context: Context) {
         SafetyCenterEntry.Builder(entryId(sourceId), "Recommendation title")
             .setSeverityLevel(ENTRY_SEVERITY_LEVEL_RECOMMENDATION)
             .setSummary(summary)
-            .setPendingIntent(safetySourceCtsData.redirectPendingIntent)
+            .setPendingIntent(safetySourceCtsData.testActivityRedirectPendingIntent)
             .setSeverityUnspecifiedIconType(SEVERITY_UNSPECIFIED_ICON_TYPE_NO_RECOMMENDATION)
             .build()
 
     /**
      * Returns a [SafetyCenterEntry] with a red icon (for critical severity), a standard title, a
-     * standard summary, and a pending intent that redirects to Safety Center for the given source.
+     * standard summary, and a pending intent that redirects to [TestActivity] for the given source.
      */
     fun safetyCenterEntryCritical(sourceId: String) =
         SafetyCenterEntry.Builder(entryId(sourceId), "Critical title")
             .setSeverityLevel(ENTRY_SEVERITY_LEVEL_CRITICAL_WARNING)
             .setSummary("Critical summary")
-            .setPendingIntent(safetySourceCtsData.redirectPendingIntent)
+            .setPendingIntent(safetySourceCtsData.testActivityRedirectPendingIntent)
             .setSeverityUnspecifiedIconType(SEVERITY_UNSPECIFIED_ICON_TYPE_NO_RECOMMENDATION)
             .build()
 
@@ -226,7 +229,7 @@ class SafetyCenterCtsData(context: Context) {
                                 INFORMATION_ISSUE_ACTION_ID,
                                 userId),
                             "Review",
-                            safetySourceCtsData.redirectPendingIntent)
+                            safetySourceCtsData.testActivityRedirectPendingIntent)
                         .build()))
             .build()
 
@@ -249,7 +252,7 @@ class SafetyCenterCtsData(context: Context) {
                                 RECOMMENDATION_ISSUE_ACTION_ID,
                                 userId),
                             "See issue",
-                            safetySourceCtsData.redirectPendingIntent)
+                            safetySourceCtsData.testActivityRedirectPendingIntent)
                         .build()))
             .build()
 
