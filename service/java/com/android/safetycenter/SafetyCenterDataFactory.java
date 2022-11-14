@@ -103,20 +103,6 @@ final class SafetyCenterDataFactory {
     }
 
     /**
-     * Returns the current {@link SafetyCenterData} for the given {@code packageName} and {@link
-     * UserProfileGroup}, aggregated from all the {@link SafetySourceData} set so far.
-     *
-     * <p>If a {@link SafetySourceData} was not set, the default value from the {@link
-     * SafetyCenterConfig} is used.
-     */
-    @NonNull
-    SafetyCenterData getSafetyCenterData(
-            @NonNull String packageName, @NonNull UserProfileGroup userProfileGroup) {
-        return getSafetyCenterData(
-                mSafetyCenterConfigReader.getSafetySourcesGroups(), packageName, userProfileGroup);
-    }
-
-    /**
      * Returns a default {@link SafetyCenterData} object to be returned when the API is disabled.
      */
     @NonNull
@@ -130,11 +116,32 @@ final class SafetyCenterDataFactory {
                 emptyList());
     }
 
+    /**
+     * Returns the current {@link SafetyCenterData} for the given {@code packageName} and {@link
+     * UserProfileGroup}, aggregated from all the {@link SafetySourceData} set so far.
+     *
+     * <p>If a {@link SafetySourceData} was not set, the default value from the {@link
+     * SafetyCenterConfig} is used.
+     */
     @NonNull
-    private SafetyCenterData getSafetyCenterData(
-            @NonNull List<SafetySourcesGroup> safetySourcesGroups,
+    SafetyCenterData assembleSafetyCenterData(
+            @NonNull String packageName, @NonNull UserProfileGroup userProfileGroup) {
+        return assembleSafetyCenterData(packageName, userProfileGroup, getAllGroups());
+    }
+
+    /**
+     * Returns the current {@link SafetyCenterData} for the given {@code packageName} and {@link
+     * UserProfileGroup}, aggregated from {@link SafetySourceData} set by the specified {@link
+     * SafetySourcesGroup}s.
+     *
+     * <p>If a {@link SafetySourceData} was not set, the default value from the {@link
+     * SafetyCenterConfig} is used.
+     */
+    @NonNull
+    SafetyCenterData assembleSafetyCenterData(
             @NonNull String packageName,
-            @NonNull UserProfileGroup userProfileGroup) {
+            @NonNull UserProfileGroup userProfileGroup,
+            @NonNull List<SafetySourcesGroup> safetySourcesGroups) {
         List<SafetyCenterIssueWithCategory> safetyCenterIssuesWithCategories = new ArrayList<>();
         List<SafetyCenterEntryOrGroup> safetyCenterEntryOrGroups = new ArrayList<>();
         List<SafetyCenterStaticEntryGroup> safetyCenterStaticEntryGroups = new ArrayList<>();
@@ -201,6 +208,11 @@ final class SafetyCenterDataFactory {
                 safetyCenterIssues,
                 safetyCenterEntryOrGroups,
                 safetyCenterStaticEntryGroups);
+    }
+
+    @NonNull
+    private List<SafetySourcesGroup> getAllGroups() {
+        return mSafetyCenterConfigReader.getSafetySourcesGroups();
     }
 
     private void addSafetyCenterIssues(
