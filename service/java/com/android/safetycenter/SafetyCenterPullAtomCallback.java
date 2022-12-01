@@ -117,11 +117,14 @@ final class SafetyCenterPullAtomCallback implements StatsPullAtomCallback {
             Log.i(TAG, "Pulling and writing atoms…");
             for (int i = 0; i < userProfileGroups.size(); i++) {
                 UserProfileGroup userProfileGroup = userProfileGroups.get(i);
-                statsEvents.add(createOverallSafetyStateAtomLocked(userProfileGroup));
+                List<SafetySourcesGroup> loggableGroups =
+                        mSafetyCenterConfigReader.getLoggableSafetySourcesGroups();
+                statsEvents.add(
+                        createOverallSafetyStateAtomLocked(userProfileGroup, loggableGroups));
                 // The SAFETY_SOURCE_STATE_COLLECTED atoms are written instead of being pulled,
                 // they do not support pull but we want to collect them at the same time as
                 // the above pulled atom.
-                writeSafetySourceStateCollectedAtomsLocked(userProfileGroup);
+                writeSafetySourceStateCollectedAtomsLocked(userProfileGroup, loggableGroups);
             }
         }
         return StatsManager.PULL_SUCCESS;
@@ -130,39 +133,40 @@ final class SafetyCenterPullAtomCallback implements StatsPullAtomCallback {
     @GuardedBy("mApiLock")
     @NonNull
     private StatsEvent createOverallSafetyStateAtomLocked(
-            @NonNull UserProfileGroup userProfileGroup) {
-        SafetyCenterData safetyCenterData =
-                mSafetyCenterDataFactory.getSafetyCenterData("android", userProfileGroup);
-        long openIssuesCount = safetyCenterData.getIssues().size();
+            @NonNull UserProfileGroup userProfileGroup,
+            @NonNull List<SafetySourcesGroup> loggableGroups) {
+        SafetyCenterData loggableData =
+                mSafetyCenterDataFactory.assembleSafetyCenterData(
+                        "android", userProfileGroup, loggableGroups);
+        long openIssuesCount = loggableData.getIssues().size();
         long dismissedIssuesCount =
-                mSafetyCenterIssueCache.countActiveIssues(userProfileGroup) - openIssuesCount;
+                mSafetyCenterIssueCache.countActiveLoggableIssues(userProfileGroup)
+                        - openIssuesCount;
 
         return mStatsdLogger.createSafetyStateEvent(
-                safetyCenterData.getStatus().getSeverityLevel(),
-                openIssuesCount,
-                dismissedIssuesCount);
+                loggableData.getStatus().getSeverityLevel(), openIssuesCount, dismissedIssuesCount);
     }
 
     @GuardedBy("mApiLock")
     private void writeSafetySourceStateCollectedAtomsLocked(
-            @NonNull UserProfileGroup userProfileGroup) {
-        List<SafetySourcesGroup> safetySourcesGroups =
-                mSafetyCenterConfigReader.getSafetySourcesGroups();
-        for (int i = 0; i < safetySourcesGroups.size(); i++) {
-            SafetySourcesGroup safetySourcesGroup = safetySourcesGroups.get(i);
-            List<SafetySource> safetySources = safetySourcesGroup.getSafetySources();
+            @NonNull UserProfileGroup userProfileGroup,
+            @NonNull List<SafetySourcesGroup> loggableGroups) {
+        for (int i = 0; i < loggableGroups.size(); i++) {
+            List<SafetySource> loggableSources = loggableGroups.get(i).getSafetySources();
 
-            for (int j = 0; j < safetySources.size(); j++) {
-                SafetySource safetySource = safetySources.get(j);
+            for (int j = 0; j < loggableSources.size(); j++) {
+                SafetySource loggableSource = loggableSources.get(j);
 
-                if (!SafetySources.isExternal(safetySource) || !safetySource.isLoggingAllowed()) {
+                if (!SafetySources.isExternal(loggableSource)) {
                     continue;
                 }
 
                 writeSafetySourceStateCollectedAtomLocked(
-                        safetySource.getId(), userProfileGroup.getProfileParentUserId(), false);
+                        loggableSource.getId(),
+                        userProfileGroup.getProfileParentUserId(),
+                        /* isUserManaged= */ false);
 
-                if (!SafetySources.supportsManagedProfiles(safetySource)) {
+                if (!SafetySources.supportsManagedProfiles(loggableSource)) {
                     continue;
                 }
 
@@ -170,7 +174,9 @@ final class SafetyCenterPullAtomCallback implements StatsPullAtomCallback {
                         userProfileGroup.getManagedRunningProfilesUserIds();
                 for (int k = 0; k < managedRunningProfilesUserIds.length; k++) {
                     writeSafetySourceStateCollectedAtomLocked(
-                            safetySource.getId(), managedRunningProfilesUserIds[k], true);
+                            loggableSource.getId(),
+                            managedRunningProfilesUserIds[k],
+                            /* isUserManaged= */ true);
                 }
             }
         }
