@@ -69,19 +69,46 @@ final class SafetyCenterIssueCache {
     }
 
     /**
-     * Counts the total number of issues in the issue cache, from currently-active sources, in the
-     * given {@link UserProfileGroup}.
+     * Counts the total number of issues in the issue cache, from currently-active, loggable
+     * sources, in the given {@link UserProfileGroup}.
      */
-    int countActiveIssues(@NonNull UserProfileGroup userProfileGroup) {
+    int countActiveLoggableIssues(@NonNull UserProfileGroup userProfileGroup) {
         int issueCount = 0;
         for (int i = 0; i < mIssues.size(); i++) {
             SafetyCenterIssueKey issueKey = mIssues.keyAt(i);
-            if (mSafetyCenterConfigReader.isExternalSafetySourceActive(issueKey.getSafetySourceId())
+            String safetySourceId = issueKey.getSafetySourceId();
+            SafetyCenterConfigReader.ExternalSafetySource externalSafetySource =
+                    mSafetyCenterConfigReader.getExternalSafetySource(safetySourceId);
+            if (mSafetyCenterConfigReader.isExternalSafetySourceActive(safetySourceId)
+                    && externalSafetySource != null
+                    && SafetySources.isLoggable(externalSafetySource.getSafetySource())
                     && userProfileGroup.contains(issueKey.getUserId())) {
                 issueCount++;
             }
         }
         return issueCount;
+    }
+
+    /**
+     * Gets all the issues in the issue cache for the given {@code userId}.
+     *
+     * <p>Only issues from "active" sources are included. Active sources are those for which {@link
+     * SafetyCenterConfigReader#isExternalSafetySourceActive(String)} returns {@code true}.
+     */
+    @NonNull
+    List<SafetyCenterIssueKey> getIssuesForUser(@UserIdInt int userId) {
+        ArrayList<SafetyCenterIssueKey> result = new ArrayList<>();
+        for (int i = 0; i < mIssues.size(); i++) {
+            SafetyCenterIssueKey issueKey = mIssues.keyAt(i);
+            if (issueKey.getUserId() != userId) {
+                continue;
+            }
+            String safetySourceId = issueKey.getSafetySourceId();
+            if (mSafetyCenterConfigReader.isExternalSafetySourceActive(safetySourceId)) {
+                result.add(issueKey);
+            }
+        }
+        return result;
     }
 
     /**
