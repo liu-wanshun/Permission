@@ -145,11 +145,19 @@ public final class SafetyCenterService extends SystemService {
 
     @GuardedBy("mApiLock")
     @NonNull
+    private final PendingIntentFactory mPendingIntentFactory;
+
+    @GuardedBy("mApiLock")
+    @NonNull
     private final SafetyCenterDataFactory mSafetyCenterDataFactory;
 
     @GuardedBy("mApiLock")
     @NonNull
     private final SafetyCenterListeners mSafetyCenterListeners;
+
+    @GuardedBy("mApiLock")
+    @NonNull
+    private final SafetyCenterNotificationSender mNotificationSender;
 
     @GuardedBy("mApiLock")
     private boolean mSafetyCenterIssueCacheWriteScheduled;
@@ -176,6 +184,7 @@ public final class SafetyCenterService extends SystemService {
         StatsdLogger statsdLogger = new StatsdLogger(context, mSafetyCenterConfigReader);
         mSafetyCenterRefreshTracker = new SafetyCenterRefreshTracker(statsdLogger);
         mSafetyCenterIssueCache = new SafetyCenterIssueCache(mSafetyCenterConfigReader);
+        mPendingIntentFactory = new PendingIntentFactory(context, mSafetyCenterResourcesContext);
         mSafetyCenterRepository =
                 new SafetyCenterRepository(
                         context,
@@ -188,10 +197,16 @@ public final class SafetyCenterService extends SystemService {
                         mSafetyCenterResourcesContext,
                         mSafetyCenterConfigReader,
                         mSafetyCenterRefreshTracker,
-                        new PendingIntentFactory(context, mSafetyCenterResourcesContext),
+                        mPendingIntentFactory,
                         mSafetyCenterIssueCache,
                         mSafetyCenterRepository);
         mSafetyCenterListeners = new SafetyCenterListeners(mSafetyCenterDataFactory);
+        mNotificationSender =
+                new SafetyCenterNotificationSender(
+                        context,
+                        new SafetyCenterNotificationFactory(context),
+                        mSafetyCenterIssueCache,
+                        mSafetyCenterRepository);
         mSafetyCenterBroadcastDispatcher =
                 new SafetyCenterBroadcastDispatcher(
                         context, mSafetyCenterConfigReader, mSafetyCenterRefreshTracker);
@@ -222,6 +237,8 @@ public final class SafetyCenterService extends SystemService {
                 if (mConfigAvailable) {
                     readSafetyCenterIssueCacheFileLocked();
                     new UserBroadcastReceiver().register(getContext());
+                    new SafetyCenterNotificationReceiver(mSafetyCenterIssueCache, mApiLock)
+                            .register(getContext());
                 }
             }
         }
@@ -287,6 +304,9 @@ public final class SafetyCenterService extends SystemService {
                                 safetySourceData, safetySourceId, safetyEvent, packageName, userId);
                 mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
                         userProfileGroup, hasUpdate, null);
+                if (hasUpdate) {
+                    mNotificationSender.updateNotifications(userId);
+                }
                 scheduleWriteSafetyCenterIssueCacheFileIfNeededLocked();
             }
         }
@@ -348,6 +368,9 @@ public final class SafetyCenterService extends SystemService {
                 }
                 mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
                         userProfileGroup, hasUpdate, safetyCenterErrorDetails);
+                if (hasUpdate) {
+                    mNotificationSender.updateNotifications(userId);
+                }
             }
         }
 
@@ -496,6 +519,7 @@ public final class SafetyCenterService extends SystemService {
                 }
                 mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
                         userProfileGroup, true, null);
+                mNotificationSender.updateNotifications(userId);
             }
         }
 
@@ -529,51 +553,10 @@ public final class SafetyCenterService extends SystemService {
                     "executeSafetyCenterIssueAction",
                     userProfileGroup,
                     safetyCenterIssueKey.getUserId());
-            synchronized (mApiLock) {
-                SafetySourceIssue.Action safetySourceIssueAction =
-                        mSafetyCenterRepository.getSafetySourceIssueAction(
-                                safetyCenterIssueActionId);
-                if (safetySourceIssueAction == null) {
-                    Log.w(
-                            TAG,
-                            "Attempt to execute an issue action that is not provided by the source,"
-                                    + " that was dismissed, or is already in flight");
-                    // Don't send the error to the UI here, since it could happen when clicking the
-                    // button multiple times in a row.
-                    return;
-                }
-
-                Integer taskId =
-                        safetyCenterIssueId.hasTaskId() ? safetyCenterIssueId.getTaskId() : null;
-                if (!dispatchPendingIntent(safetySourceIssueAction.getPendingIntent(), taskId)) {
-                    Log.w(
-                            TAG,
-                            "Error dispatching action: "
-                                    + toUserFriendlyString(safetyCenterIssueActionId));
-                    CharSequence errorMessage;
-                    if (safetySourceIssueAction.willResolve()) {
-                        errorMessage =
-                                mSafetyCenterResourcesContext.getStringByName(
-                                        "resolving_action_error");
-                    } else {
-                        errorMessage =
-                                mSafetyCenterResourcesContext.getStringByName("redirecting_error");
-                    }
-                    mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
-                            userProfileGroup, false, new SafetyCenterErrorDetails(errorMessage));
-                    return;
-                }
-                if (safetySourceIssueAction.willResolve()) {
-                    mSafetyCenterRepository.markSafetyCenterIssueActionInFlight(
-                            safetyCenterIssueActionId);
-                    ResolvingActionTimeout resolvingActionTimeout =
-                            new ResolvingActionTimeout(safetyCenterIssueActionId, userProfileGroup);
-                    mSafetyCenterTimeouts.add(
-                            resolvingActionTimeout, SafetyCenterFlags.getResolvingActionTimeout());
-                    mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
-                            userProfileGroup, true, null);
-                }
-            }
+            Integer taskId =
+                    safetyCenterIssueId.hasTaskId() ? safetyCenterIssueId.getTaskId() : null;
+            executeIssueActionInternal(
+                    safetyCenterIssueKey, safetyCenterIssueActionId, userProfileGroup, taskId);
         }
 
         @Override
@@ -696,26 +679,6 @@ public final class SafetyCenterService extends SystemService {
             }
         }
 
-        private boolean dispatchPendingIntent(
-                @NonNull PendingIntent pendingIntent, @Nullable Integer taskId) {
-            try {
-                if (taskId != null
-                        && pendingIntent.isActivity()
-                        && getContext().checkCallingOrSelfPermission(START_TASKS_FROM_RECENTS)
-                                == PERMISSION_GRANTED) {
-                    ActivityOptions options = ActivityOptions.makeBasic();
-                    options.setLaunchTaskId(taskId);
-                    pendingIntent.send(null, 0, null, null, null, null, options.toBundle());
-                } else {
-                    pendingIntent.send();
-                }
-                return true;
-            } catch (PendingIntent.CanceledException ex) {
-                Log.w(TAG, "Couldn't dispatch PendingIntent", ex);
-                return false;
-            }
-        }
-
         @Override
         public int handleShellCommand(
                 @NonNull ParcelFileDescriptor in,
@@ -747,6 +710,7 @@ public final class SafetyCenterService extends SystemService {
                 mSafetyCenterRefreshTracker.dump(fout);
                 mSafetyCenterTimeouts.dump(fout);
                 mSafetyCenterListeners.dump(fout);
+                mNotificationSender.dump(fout);
             }
         }
 
@@ -995,6 +959,7 @@ public final class SafetyCenterService extends SystemService {
             mSafetyCenterListeners.clearForUser(userId);
             mSafetyCenterRefreshTracker.clearRefreshForUser(userId);
             mSafetyCenterListeners.deliverUpdateForUserProfileGroup(userProfileGroup, true, null);
+            mNotificationSender.updateNotifications(userId);
             scheduleWriteSafetyCenterIssueCacheFileIfNeededLocked();
         }
     }
@@ -1018,6 +983,78 @@ public final class SafetyCenterService extends SystemService {
                     refreshTimeout, SafetyCenterFlags.getRefreshSourcesTimeout(refreshReason));
 
             mSafetyCenterListeners.deliverUpdateForUserProfileGroup(userProfileGroup, true, null);
+        }
+    }
+
+    private void executeIssueActionInternal(
+            @NonNull SafetyCenterIssueKey safetyCenterIssueKey,
+            @NonNull SafetyCenterIssueActionId safetyCenterIssueActionId,
+            @NonNull UserProfileGroup userProfileGroup,
+            @Nullable Integer taskId) {
+        synchronized (mApiLock) {
+            SafetySourceIssue.Action safetySourceIssueAction =
+                    mSafetyCenterRepository.getSafetySourceIssueAction(safetyCenterIssueActionId);
+            if (safetySourceIssueAction == null) {
+                Log.w(
+                        TAG,
+                        "Attempt to execute an issue action that is not provided by the source,"
+                                + " that was dismissed, or is already in flight");
+                // Don't send the error to the UI here, since it could happen when clicking the
+                // button multiple times in a row.
+                return;
+            }
+            PendingIntent issueActionPendingIntent =
+                    mPendingIntentFactory.maybeOverridePendingIntent(
+                            safetyCenterIssueKey.getSafetySourceId(),
+                            safetySourceIssueAction.getPendingIntent(),
+                            false);
+            if (!dispatchPendingIntent(issueActionPendingIntent, taskId)) {
+                Log.w(
+                        TAG,
+                        "Error dispatching action: "
+                                + toUserFriendlyString(safetyCenterIssueActionId));
+                CharSequence errorMessage;
+                if (safetySourceIssueAction.willResolve()) {
+                    errorMessage =
+                            mSafetyCenterResourcesContext.getStringByName("resolving_action_error");
+                } else {
+                    errorMessage =
+                            mSafetyCenterResourcesContext.getStringByName("redirecting_error");
+                }
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
+                        userProfileGroup, false, new SafetyCenterErrorDetails(errorMessage));
+                return;
+            }
+            if (safetySourceIssueAction.willResolve()) {
+                mSafetyCenterRepository.markSafetyCenterIssueActionInFlight(
+                        safetyCenterIssueActionId);
+                ResolvingActionTimeout resolvingActionTimeout =
+                        new ResolvingActionTimeout(safetyCenterIssueActionId, userProfileGroup);
+                mSafetyCenterTimeouts.add(
+                        resolvingActionTimeout, SafetyCenterFlags.getResolvingActionTimeout());
+                mSafetyCenterListeners.deliverUpdateForUserProfileGroup(
+                        userProfileGroup, true, null);
+            }
+        }
+    }
+
+    private boolean dispatchPendingIntent(
+            @NonNull PendingIntent pendingIntent, @Nullable Integer taskId) {
+        try {
+            if (taskId != null
+                    && pendingIntent.isActivity()
+                    && getContext().checkCallingOrSelfPermission(START_TASKS_FROM_RECENTS)
+                            == PERMISSION_GRANTED) {
+                ActivityOptions options = ActivityOptions.makeBasic();
+                options.setLaunchTaskId(taskId);
+                pendingIntent.send(null, 0, null, null, null, null, options.toBundle());
+            } else {
+                pendingIntent.send();
+            }
+            return true;
+        } catch (PendingIntent.CanceledException ex) {
+            Log.w(TAG, "Couldn't dispatch PendingIntent", ex);
+            return false;
         }
     }
 
@@ -1080,6 +1117,7 @@ public final class SafetyCenterService extends SystemService {
         mSafetyCenterIssueCache.clear();
         mSafetyCenterTimeouts.clear();
         mSafetyCenterRefreshTracker.clearRefresh();
+        mNotificationSender.cancelAllNotifications();
         scheduleWriteSafetyCenterIssueCacheFileIfNeededLocked();
     }
 
