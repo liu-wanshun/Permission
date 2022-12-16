@@ -296,8 +296,12 @@ object SafetyCenterCtsConfigs {
                     .build())
             .addSafetySourcesGroup(
                 safetySourcesGroupBuilder(MULTIPLE_SOURCES_GROUP_ID_2)
+                    .setTitleResId(android.R.string.copy)
+                    .setSummaryResId(android.R.string.cancel)
                     .addSafetySource(
                         dynamicSafetySourceBuilder(SOURCE_ID_3)
+                            .setTitleResId(android.R.string.copy)
+                            .setSummaryResId(android.R.string.cancel)
                             .setRefreshOnPageOpenAllowed(false)
                             .build())
                     .build())
@@ -625,6 +629,28 @@ object SafetyCenterCtsConfigs {
                         staticAllProfileSafetySourceBuilder(STATIC_IN_RIGID_ID).build())
                     .addSafetySource(
                         issueOnlyAllProfileSafetySourceBuilder(ISSUE_ONLY_IN_RIGID_ID).build())
+                    .build())
+            .build()
+
+    /**
+     * A [SafetyCenterConfig] containing only hidden sources.
+     */
+    val HIDDEN_ONLY_CONFIG =
+        SafetyCenterConfig.Builder()
+            .addSafetySourcesGroup(
+                safetySourcesGroupBuilder("some_collapsible_group")
+                    .addSafetySource(
+                        dynamicSafetySourceBuilder("some_hidden_source")
+                            .setInitialDisplayState(SafetySource.INITIAL_DISPLAY_STATE_HIDDEN)
+                            .build())
+                    .build())
+            .addSafetySourcesGroup(
+                safetySourcesGroupBuilder("some_rigid_group")
+                    .setSummaryResId(Resources.ID_NULL)
+                    .addSafetySource(
+                        dynamicSafetySourceBuilder("another_hidden_source")
+                            .setInitialDisplayState(SafetySource.INITIAL_DISPLAY_STATE_HIDDEN)
+                            .build())
                     .build())
             .build()
 

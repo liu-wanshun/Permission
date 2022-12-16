@@ -69,19 +69,46 @@ final class SafetyCenterIssueCache {
     }
 
     /**
-     * Counts the total number of issues in the issue cache, from currently-active sources, in the
-     * given {@link UserProfileGroup}.
+     * Counts the total number of issues in the issue cache, from currently-active, loggable
+     * sources, in the given {@link UserProfileGroup}.
      */
-    int countActiveIssues(@NonNull UserProfileGroup userProfileGroup) {
+    int countActiveLoggableIssues(@NonNull UserProfileGroup userProfileGroup) {
         int issueCount = 0;
         for (int i = 0; i < mIssues.size(); i++) {
             SafetyCenterIssueKey issueKey = mIssues.keyAt(i);
-            if (mSafetyCenterConfigReader.isExternalSafetySourceActive(issueKey.getSafetySourceId())
+            String safetySourceId = issueKey.getSafetySourceId();
+            SafetyCenterConfigReader.ExternalSafetySource externalSafetySource =
+                    mSafetyCenterConfigReader.getExternalSafetySource(safetySourceId);
+            if (mSafetyCenterConfigReader.isExternalSafetySourceActive(safetySourceId)
+                    && externalSafetySource != null
+                    && SafetySources.isLoggable(externalSafetySource.getSafetySource())
                     && userProfileGroup.contains(issueKey.getUserId())) {
                 issueCount++;
             }
         }
         return issueCount;
+    }
+
+    /**
+     * Gets all the issues in the issue cache for the given {@code userId}.
+     *
+     * <p>Only issues from "active" sources are included. Active sources are those for which {@link
+     * SafetyCenterConfigReader#isExternalSafetySourceActive(String)} returns {@code true}.
+     */
+    @NonNull
+    List<SafetyCenterIssueKey> getIssuesForUser(@UserIdInt int userId) {
+        ArrayList<SafetyCenterIssueKey> result = new ArrayList<>();
+        for (int i = 0; i < mIssues.size(); i++) {
+            SafetyCenterIssueKey issueKey = mIssues.keyAt(i);
+            if (issueKey.getUserId() != userId) {
+                continue;
+            }
+            String safetySourceId = issueKey.getSafetySourceId();
+            if (mSafetyCenterConfigReader.isExternalSafetySourceActive(safetySourceId)) {
+                result.add(issueKey);
+            }
+        }
+        return result;
     }
 
     /**
@@ -126,7 +153,9 @@ final class SafetyCenterIssueCache {
     }
 
     /**
-     * Dismisses the issue with the given key.
+     * Marks the issue with the given key as dismissed.
+     *
+     * <p>That issue's notification (if any) is also marked as dismissed.
      *
      * <p>This method may change the value reported by {@link #isDirty} to {@code true}.
      */
@@ -135,9 +164,55 @@ final class SafetyCenterIssueCache {
         if (issueData == null) {
             return;
         }
-        issueData.setDismissedAt(Instant.now());
+        Instant now = Instant.now();
+        issueData.setDismissedAt(now);
         issueData.setDismissCount(issueData.getDismissCount() + 1);
+        issueData.setNotificationDismissedAt(now);
         mIsDirty = true;
+    }
+
+    /**
+     * Marks the notification (if any) of the issue with the given key as dismissed.
+     *
+     * <p>The issue itself is <strong>not</strong> marked as dismissed and its warning card can
+     * still appear in the Safety Center UI.
+     *
+     * <p>This method may change the value reported by {@link #isDirty} to {@code true}.
+     */
+    void dismissNotification(@NonNull SafetyCenterIssueKey safetyCenterIssueKey) {
+        IssueData issueData = getOrWarn(safetyCenterIssueKey, "dismissing notification");
+        if (issueData == null) {
+            return;
+        }
+        issueData.setNotificationDismissedAt(Instant.now());
+        mIsDirty = true;
+    }
+
+    /**
+     * Returns the {@link Instant} when the issue with the given key was first reported to Safety
+     * Center.
+     */
+    @Nullable
+    Instant getIssueFirstSeenAt(@NonNull SafetyCenterIssueKey safetyCenterIssueKey) {
+        IssueData issueData = getOrWarn(safetyCenterIssueKey, "getting first seen");
+        if (issueData == null) {
+            return null;
+        }
+        return issueData.getFirstSeenAt();
+    }
+
+    /**
+     * Returns the {@link Instant} when the notification for the issue with the given key was last
+     * dismissed.
+     */
+    // TODO(b/261429824): Handle mNotificationDismissedAt w.r.t. issue deduplication
+    @Nullable
+    Instant getNotificationDismissedAt(@NonNull SafetyCenterIssueKey safetyCenterIssueKey) {
+        IssueData issueData = getOrWarn(safetyCenterIssueKey, "getting notification dismissed");
+        if (issueData == null) {
+            return null;
+        }
+        return issueData.getNotificationDismissedAt();
     }
 
     /**
@@ -295,6 +370,7 @@ final class SafetyCenterIssueCache {
             IssueData issueData = new IssueData(persistedIssue.getFirstSeenAt());
             issueData.setDismissedAt(persistedIssue.getDismissedAt());
             issueData.setDismissCount(persistedIssue.getDismissCount());
+            // TODO(b/259083534): Persist notification dismissal state across reboots
             return issueData;
         }
 
@@ -302,6 +378,8 @@ final class SafetyCenterIssueCache {
 
         @Nullable private Instant mDismissedAt;
         private int mDismissCount;
+
+        @Nullable private Instant mNotificationDismissedAt;
 
         private IssueData(@NonNull Instant firstSeenAt) {
             mFirstSeenAt = firstSeenAt;
@@ -329,12 +407,22 @@ final class SafetyCenterIssueCache {
             mDismissCount = dismissCount;
         }
 
+        @Nullable
+        private Instant getNotificationDismissedAt() {
+            return mNotificationDismissedAt;
+        }
+
+        private void setNotificationDismissedAt(@Nullable Instant notificationDismissedAt) {
+            mNotificationDismissedAt = notificationDismissedAt;
+        }
+
         @NonNull
         private PersistedSafetyCenterIssue.Builder toPersistedIssueBuilder() {
             return new PersistedSafetyCenterIssue.Builder()
                     .setFirstSeenAt(mFirstSeenAt)
                     .setDismissedAt(mDismissedAt)
                     .setDismissCount(mDismissCount);
+            // TODO(b/259083534): Persist notification dismissal state across reboots
         }
 
         @Override
@@ -346,6 +434,8 @@ final class SafetyCenterIssueCache {
                     + mDismissedAt
                     + ", mDismissCount="
                     + mDismissCount
+                    + ", mNotificationDismissedAt="
+                    + mNotificationDismissedAt
                     + '}';
         }
     }
