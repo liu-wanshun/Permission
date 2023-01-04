@@ -261,14 +261,43 @@ final class PendingIntentFactory {
                 packageContext, requestCode, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
-    @NonNull
-    private static PendingIntent getActivityPendingIntent(
+    /**
+     * Creates a {@link PendingIntent} to start an Activity from the given {@code packageContext}.
+     *
+     * <p>This function can only return {@code null} if the {@link PendingIntent#FLAG_NO_CREATE}
+     * flag is passed in.
+     */
+    @Nullable
+    static PendingIntent getActivityPendingIntent(
             @NonNull Context packageContext, int requestCode, @NonNull Intent intent, int flags) {
         // This call requires Binder identity to be cleared for getIntentSender() to be allowed to
         // send as another package.
         final long callingId = Binder.clearCallingIdentity();
         try {
             return PendingIntent.getActivity(packageContext, requestCode, intent, flags);
+        } finally {
+            Binder.restoreCallingIdentity(callingId);
+        }
+    }
+
+    /**
+     * Creates a non-protected broadcast {@link PendingIntent} which can only be received by the
+     * system. Use this method to create PendingIntents to be received by Context-registered
+     * receivers, for example for notification-related callbacks.
+     *
+     * <p>{@code flags} must include {@link PendingIntent#FLAG_IMMUTABLE}
+     */
+    @Nullable
+    static PendingIntent getNonProtectedSystemOnlyBroadcastPendingIntent(
+            @NonNull Context context, int requestCode, @NonNull Intent intent, int flags) {
+        if ((flags & PendingIntent.FLAG_IMMUTABLE) == 0) {
+            throw new IllegalArgumentException("flags must include FLAG_IMMUTABLE");
+        }
+        intent.setPackage("android");
+        // This call is needed to be allowed to send the broadcast as the "android" package.
+        final long callingId = Binder.clearCallingIdentity();
+        try {
+            return PendingIntent.getBroadcast(context, requestCode, intent, flags);
         } finally {
             Binder.restoreCallingIdentity(callingId);
         }
