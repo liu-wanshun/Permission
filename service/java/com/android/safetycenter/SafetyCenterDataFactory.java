@@ -19,6 +19,7 @@ package com.android.safetycenter;
 import static android.os.Build.VERSION_CODES.TIRAMISU;
 
 import static java.util.Collections.emptyList;
+import static java.util.Objects.requireNonNull;
 
 import android.annotation.NonNull;
 import android.annotation.Nullable;
@@ -47,7 +48,6 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.android.safetycenter.internaldata.SafetyCenterEntryGroupId;
 import com.android.safetycenter.internaldata.SafetyCenterEntryId;
 import com.android.safetycenter.internaldata.SafetyCenterIds;
 import com.android.safetycenter.internaldata.SafetyCenterIssueActionId;
@@ -103,20 +103,6 @@ final class SafetyCenterDataFactory {
     }
 
     /**
-     * Returns the current {@link SafetyCenterData} for the given {@code packageName} and {@link
-     * UserProfileGroup}, aggregated from all the {@link SafetySourceData} set so far.
-     *
-     * <p>If a {@link SafetySourceData} was not set, the default value from the {@link
-     * SafetyCenterConfig} is used.
-     */
-    @NonNull
-    SafetyCenterData getSafetyCenterData(
-            @NonNull String packageName, @NonNull UserProfileGroup userProfileGroup) {
-        return getSafetyCenterData(
-                mSafetyCenterConfigReader.getSafetySourcesGroups(), packageName, userProfileGroup);
-    }
-
-    /**
      * Returns a default {@link SafetyCenterData} object to be returned when the API is disabled.
      */
     @NonNull
@@ -130,11 +116,32 @@ final class SafetyCenterDataFactory {
                 emptyList());
     }
 
+    /**
+     * Returns the current {@link SafetyCenterData} for the given {@code packageName} and {@link
+     * UserProfileGroup}, aggregated from all the {@link SafetySourceData} set so far.
+     *
+     * <p>If a {@link SafetySourceData} was not set, the default value from the {@link
+     * SafetyCenterConfig} is used.
+     */
     @NonNull
-    private SafetyCenterData getSafetyCenterData(
-            @NonNull List<SafetySourcesGroup> safetySourcesGroups,
+    SafetyCenterData assembleSafetyCenterData(
+            @NonNull String packageName, @NonNull UserProfileGroup userProfileGroup) {
+        return assembleSafetyCenterData(packageName, userProfileGroup, getAllGroups());
+    }
+
+    /**
+     * Returns the current {@link SafetyCenterData} for the given {@code packageName} and {@link
+     * UserProfileGroup}, aggregated from {@link SafetySourceData} set by the specified {@link
+     * SafetySourcesGroup}s.
+     *
+     * <p>If a {@link SafetySourceData} was not set, the default value from the {@link
+     * SafetyCenterConfig} is used.
+     */
+    @NonNull
+    SafetyCenterData assembleSafetyCenterData(
             @NonNull String packageName,
-            @NonNull UserProfileGroup userProfileGroup) {
+            @NonNull UserProfileGroup userProfileGroup,
+            @NonNull List<SafetySourcesGroup> safetySourcesGroups) {
         List<SafetyCenterIssueWithCategory> safetyCenterIssuesWithCategories = new ArrayList<>();
         List<SafetyCenterEntryOrGroup> safetyCenterEntryOrGroups = new ArrayList<>();
         List<SafetyCenterStaticEntryGroup> safetyCenterStaticEntryGroups = new ArrayList<>();
@@ -201,6 +208,11 @@ final class SafetyCenterDataFactory {
                 safetyCenterIssues,
                 safetyCenterEntryOrGroups,
                 safetyCenterStaticEntryGroups);
+    }
+
+    @NonNull
+    private List<SafetySourcesGroup> getAllGroups() {
+        return mSafetyCenterConfigReader.getSafetySourcesGroups();
     }
 
     private void addSafetyCenterIssues(
@@ -327,10 +339,15 @@ final class SafetyCenterDataFactory {
                         .setSafetyCenterIssueKey(safetyCenterIssueKey)
                         .setSafetySourceIssueActionId(safetySourceIssueAction.getId())
                         .build();
+        PendingIntent issueActionPendingIntent =
+                mPendingIntentFactory.maybeOverridePendingIntent(
+                        safetyCenterIssueKey.getSafetySourceId(),
+                        safetySourceIssueAction.getPendingIntent(),
+                        false);
         return new SafetyCenterIssue.Action.Builder(
                         SafetyCenterIds.encodeToString(safetyCenterIssueActionId),
                         safetySourceIssueAction.getLabel(),
-                        safetySourceIssueAction.getPendingIntent())
+                        requireNonNull(issueActionPendingIntent))
                 .setSuccessMessage(safetySourceIssueAction.getSuccessMessage())
                 .setIsInFlight(mSafetyCenterRepository.actionIsInFlight(safetyCenterIssueActionId))
                 .setWillResolve(safetySourceIssueAction.willResolve())
@@ -395,17 +412,13 @@ final class SafetyCenterDataFactory {
             return;
         }
 
-        SafetyCenterEntryGroupId safetyCenterEntryGroupId =
-                SafetyCenterEntryGroupId.newBuilder()
-                        .setSafetySourcesGroupId(safetySourcesGroup.getId())
-                        .build();
         CharSequence groupSummary =
                 getSafetyCenterEntryGroupSummary(
                         safetySourcesGroup, groupSafetyCenterEntryLevel, entries);
         safetyCenterEntryOrGroups.add(
                 new SafetyCenterEntryOrGroup(
                         new SafetyCenterEntryGroup.Builder(
-                                        SafetyCenterIds.encodeToString(safetyCenterEntryGroupId),
+                                        safetySourcesGroup.getId(),
                                         mSafetyCenterResourcesContext.getString(
                                                 safetySourcesGroup.getTitleResId()))
                                 .setSeverityLevel(groupSafetyCenterEntryLevel)
@@ -561,61 +574,63 @@ final class SafetyCenterDataFactory {
                 SafetySourceStatus safetySourceStatus =
                         getSafetySourceStatus(mSafetyCenterRepository.getSafetySourceData(key));
                 boolean defaultEntryDueToQuietMode = isUserManaged && !isManagedUserRunning;
-                if (safetySourceStatus != null && !defaultEntryDueToQuietMode) {
-                    PendingIntent pendingIntent = safetySourceStatus.getPendingIntent();
-                    boolean enabled = safetySourceStatus.isEnabled();
-                    if (pendingIntent == null) {
-                        pendingIntent =
-                                mPendingIntentFactory.getPendingIntent(
-                                        safetySource.getId(),
-                                        safetySource.getIntentAction(),
-                                        safetySource.getPackageName(),
-                                        userId,
-                                        false);
-                        enabled = enabled && pendingIntent != null;
-                    }
-                    SafetyCenterEntryId safetyCenterEntryId =
-                            SafetyCenterEntryId.newBuilder()
-                                    .setSafetySourceId(safetySource.getId())
-                                    .setUserId(userId)
-                                    .build();
-                    int severityUnspecifiedIconType =
-                            SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_RECOMMENDATION;
-                    int severityLevel =
-                            enabled
-                                    ? toSafetyCenterEntrySeverityLevel(
-                                            safetySourceStatus.getSeverityLevel())
-                                    : SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNSPECIFIED;
-                    SafetyCenterEntry.Builder builder =
-                            new SafetyCenterEntry.Builder(
-                                            SafetyCenterIds.encodeToString(safetyCenterEntryId),
-                                            safetySourceStatus.getTitle())
-                                    .setSeverityLevel(severityLevel)
-                                    .setSummary(safetySourceStatus.getSummary())
-                                    .setEnabled(enabled)
-                                    .setSeverityUnspecifiedIconType(severityUnspecifiedIconType)
-                                    .setPendingIntent(pendingIntent);
-                    SafetySourceStatus.IconAction iconAction = safetySourceStatus.getIconAction();
-                    if (iconAction == null) {
-                        return builder.build();
-                    }
-                    PendingIntent iconActionPendingIntent =
-                            mPendingIntentFactory.getIconActionPendingIntent(
-                                    safetySource.getId(), iconAction.getPendingIntent());
-                    builder.setIconAction(
-                            new SafetyCenterEntry.IconAction(
-                                    toSafetyCenterEntryIconActionType(iconAction.getIconType()),
-                                    iconActionPendingIntent));
+                if (safetySourceStatus == null || defaultEntryDueToQuietMode) {
+                    return toDefaultSafetyCenterEntry(
+                            safetySource,
+                            safetySource.getPackageName(),
+                            SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNKNOWN,
+                            SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_RECOMMENDATION,
+                            userId,
+                            isUserManaged,
+                            isManagedUserRunning);
+                }
+                PendingIntent entryPendingIntent = safetySourceStatus.getPendingIntent();
+                boolean enabled = safetySourceStatus.isEnabled();
+                if (entryPendingIntent == null) {
+                    entryPendingIntent =
+                            mPendingIntentFactory.getPendingIntent(
+                                    safetySource.getId(),
+                                    safetySource.getIntentAction(),
+                                    safetySource.getPackageName(),
+                                    userId,
+                                    false);
+                    enabled = enabled && entryPendingIntent != null;
+                }
+                SafetyCenterEntryId safetyCenterEntryId =
+                        SafetyCenterEntryId.newBuilder()
+                                .setSafetySourceId(safetySource.getId())
+                                .setUserId(userId)
+                                .build();
+                int severityUnspecifiedIconType =
+                        SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_RECOMMENDATION;
+                int severityLevel =
+                        enabled
+                                ? toSafetyCenterEntrySeverityLevel(
+                                        safetySourceStatus.getSeverityLevel())
+                                : SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNSPECIFIED;
+                SafetyCenterEntry.Builder builder =
+                        new SafetyCenterEntry.Builder(
+                                        SafetyCenterIds.encodeToString(safetyCenterEntryId),
+                                        safetySourceStatus.getTitle())
+                                .setSeverityLevel(severityLevel)
+                                .setSummary(safetySourceStatus.getSummary())
+                                .setEnabled(enabled)
+                                .setSeverityUnspecifiedIconType(severityUnspecifiedIconType)
+                                .setPendingIntent(
+                                        mPendingIntentFactory.maybeOverridePendingIntent(
+                                                safetySource.getId(), entryPendingIntent, false));
+                SafetySourceStatus.IconAction iconAction = safetySourceStatus.getIconAction();
+                if (iconAction == null) {
                     return builder.build();
                 }
-                return toDefaultSafetyCenterEntry(
-                        safetySource,
-                        safetySource.getPackageName(),
-                        SafetyCenterEntry.ENTRY_SEVERITY_LEVEL_UNKNOWN,
-                        SafetyCenterEntry.SEVERITY_UNSPECIFIED_ICON_TYPE_NO_RECOMMENDATION,
-                        userId,
-                        isUserManaged,
-                        isManagedUserRunning);
+                PendingIntent iconActionPendingIntent =
+                        mPendingIntentFactory.maybeOverridePendingIntent(
+                                safetySource.getId(), iconAction.getPendingIntent(), true);
+                return builder.setIconAction(
+                                new SafetyCenterEntry.IconAction(
+                                        toSafetyCenterEntryIconActionType(iconAction.getIconType()),
+                                        requireNonNull(iconActionPendingIntent)))
+                        .build();
             case SafetySource.SAFETY_SOURCE_TYPE_STATIC:
                 return toDefaultSafetyCenterEntry(
                         safetySource,
@@ -727,6 +742,10 @@ final class SafetyCenterDataFactory {
                         true,
                         isManagedUserRunning);
             }
+        }
+
+        if (staticEntries.isEmpty()) {
+            return;
         }
 
         safetyCenterStaticEntryGroups.add(

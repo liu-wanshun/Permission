@@ -281,9 +281,9 @@
     <string name="auto_revoke_preference_summary" msgid="5517958331781391481">"आपकी निजता की सुरक्षा के लिए अनुमतियां हटाई गई हैं"</string>
     <string name="background_location_access_reminder_notification_title" msgid="1140797924301941262">"<xliff:g id="APP_NAME">%s</xliff:g> अब बैकग्राउंड में आपकी जगह की जानकारी ऐक्सेस कर सकता है"</string>
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"यह ऐप्लिकेशन हमेशा आपकी जगह की जानकारी ऐक्सेस कर सकता है. बदलने के लिए टैप करें."</string>
-    <string name="notification_listener_reminder_notification_title" msgid="3747210460187479091">"ऐसे ऐप्लिकेशन देखें जिनके पास सूचनाओं का ऐक्सेस है"</string>
-    <string name="notification_listener_reminder_notification_content" msgid="831476101108863427">"<xliff:g id="APP_NAME">%s</xliff:g> आपकी सूचनाओं में मौजूद कॉन्टेंट को खारिज कर सकता है. साथ ही, उस पर कार्रवाई कर सकता है और उसे ऐक्सेस भी कर सकता है"</string>
-    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"यह ऐप्लिकेशन आपकी सूचनाओं में मौजूद कॉन्टेंट को खारिज कर सकता है. साथ ही, उस पर कार्रवाई कर सकता है और उसे ऐक्सेस भी कर सकता है. कुछ ऐप्लिकेशन को सही तरीके से काम करने के लिए, इस तरह के ऐक्सेस की ज़रूरत होती है."</string>
+    <string name="notification_listener_reminder_notification_title" msgid="3747210460187479091">"ऐसे ऐप्लिकेशन देखें जिनके पास आपकी सूचनाओं का ऐक्सेस है"</string>
+    <string name="notification_listener_reminder_notification_content" msgid="831476101108863427">"<xliff:g id="APP_NAME">%s</xliff:g> आपकी सूचनाओं में मौजूद कॉन्टेंट को ऐक्सेस कर सकता है. साथ ही, उस पर कार्रवाई कर सकता है और उसे खारिज कर सकता है."</string>
+    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"यह ऐप्लिकेशन आपकी सूचनाओं में मौजूद कॉन्टेंट को ऐक्सेस कर सकता है, उस पर कार्रवाई कर सकता है, और उसे खारिज कर सकता है. कुछ ऐप्लिकेशन को सही तरीके से काम करने के लिए, इस तरह के ऐक्सेस की ज़रूरत होती है."</string>
     <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"ऐक्सेस हटाएं"</string>
     <string name="notification_listener_review_app_button_label" msgid="3433073281029143924">"ज़्यादा विकल्प देखें"</string>
     <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"ऐक्सेस हटाया गया"</string>
@@ -449,7 +449,7 @@
     <string name="adjust_user_sensitive_per_app_header" msgid="4543506440989005648">"आगे दी गई चीज़ों का इस्तेमाल हाइलाइट करें"</string>
     <string name="assistant_record_audio_user_sensitive_title" msgid="5532123360322362378">"असिस्टेंट ऐप्लिकेशन का माइक्रोफ़ोन चालू है या बंद, इसकी सूचना दिखाएं"</string>
     <string name="assistant_record_audio_user_sensitive_summary" msgid="6482937591816401619">"आवाज़ से डिवाइस का इस्तेमाल करने के लिए, माइक्रोफ़ोन का इस्तेमाल करते समय स्थिति बार में आइकॉन दिखाएं"</string>
-    <string name="permgrouprequest_storage_isolated" msgid="4892154224026852295">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; को अपने डिवाइस में मौजूद फ़ोटो और मीडिया ऐक्सेस करने की अनुमति देना चाहते हैं?"</string>
+    <string name="permgrouprequest_storage_isolated" msgid="4892154224026852295">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; को अपने डिवाइस में मौजूद फ़ोटो और मीडिया ऐक्सेस करने की अनुमति देनी है?"</string>
     <string name="permgrouprequest_contacts" msgid="8391550064551053695">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; को अपने संपर्क देखने की अनुमति देनी है?"</string>
     <string name="permgrouprequest_location" msgid="6990232580121067883">"&lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; को इस डिवाइस की जगह की जानकारी ऐक्सेस करने की अनुमति देनी है?"</string>
     <string name="permgrouprequestdetail_location" msgid="2635935335778429894">"ऐप्लिकेशन, डिवाइस की जगह की जानकारी सिर्फ़ तभी देख पाएगा जब आप इसका इस्तेमाल कर रहे हों"</string>

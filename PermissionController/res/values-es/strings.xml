@@ -246,7 +246,7 @@
     <string name="app_permission_never_accessed_denied_summary" msgid="6596000497490905146">"Denegado / Último acceso: Nunca"</string>
     <string name="allowed_header" msgid="7769277978004790414">"Permitido"</string>
     <string name="allowed_always_header" msgid="6455903312589013545">"Permitido siempre"</string>
-    <string name="allowed_foreground_header" msgid="6845655788447833353">"Permitido solo mientras se usa"</string>
+    <string name="allowed_foreground_header" msgid="6845655788447833353">"Permitidas solo mientras se usan"</string>
     <string name="allowed_storage_scoped" msgid="5383645873719086975">"Pueden acceder solo al contenido multimedia"</string>
     <string name="allowed_storage_full" msgid="5356699280625693530">"Pueden gestionar todos los archivos"</string>
     <string name="ask_header" msgid="2633816846459944376">"Preguntar siempre"</string>
@@ -283,7 +283,7 @@
     <string name="background_location_access_reminder_notification_content" msgid="7787084707336546245">"Esta aplicación puede acceder siempre a tu ubicación. Toca para cambiarlo."</string>
     <string name="notification_listener_reminder_notification_title" msgid="3747210460187479091">"Revisa la aplicación con acceso a tus notificaciones"</string>
     <string name="notification_listener_reminder_notification_content" msgid="831476101108863427">"<xliff:g id="APP_NAME">%s</xliff:g> puede descartar, acceder o interactuar con el contenido de tus notificaciones"</string>
-    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"Esta aplicación puede descartar, actuar o acceder al contenido de tus notificaciones. Algunas aplicaciones requieren este acceso para funcionar según lo previsto."</string>
+    <string name="notification_listener_warning_card_content" msgid="7840973324284115893">"Esta aplicación puede descartar, actuar de acuerdo a o acceder al contenido de tus notificaciones. Algunas aplicaciones requieren este acceso para funcionar según lo previsto."</string>
     <string name="notification_listener_remove_access_button_label" msgid="7101898782417817097">"Quitar acceso"</string>
     <string name="notification_listener_review_app_button_label" msgid="3433073281029143924">"Ver más opciones"</string>
     <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Acceso retirado"</string>

@@ -56,6 +56,7 @@ import android.safetycenter.cts.testing.SafetySourceReceiver
 import android.safetycenter.cts.testing.SettingsPackage.getSettingsPackageName
 import android.safetycenter.cts.testing.UiTestHelper.RESCAN_BUTTON_LABEL
 import android.safetycenter.cts.testing.UiTestHelper.expandMoreIssuesCard
+import android.safetycenter.cts.testing.UiTestHelper.setAnimationsEnabled
 import android.safetycenter.cts.testing.UiTestHelper.waitAllTextDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.waitAllTextNotDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.waitButtonDisplayed
@@ -68,17 +69,25 @@ import android.support.test.uiautomator.By
 import android.support.test.uiautomator.UiDevice
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.android.compatibility.common.util.DisableAnimationRule
+import com.android.compatibility.common.util.FreezeRotationRule
 import com.android.compatibility.common.util.UiAutomatorUtils.getUiDevice
 import java.time.Duration
 import org.junit.After
 import org.junit.Assume.assumeTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 /** CTS tests for the Safety Center Activity. */
 @RunWith(AndroidJUnit4::class)
 class SafetyCenterActivityTest {
+
+    @get:Rule val disableAnimationRule = DisableAnimationRule()
+
+    @get:Rule val freezeRotationRule = FreezeRotationRule()
+
     private val context: Context = getApplicationContext()
 
     private val safetyCenterCtsHelper = SafetyCenterCtsHelper(context)
@@ -137,7 +146,8 @@ class SafetyCenterActivityTest {
                 context.getString(SafetyCenterCtsConfigs.STATIC_SOURCE_1.summaryResId),
                 context.getString(SafetyCenterCtsConfigs.STATIC_SOURCE_GROUP_2.titleResId),
                 context.getString(SafetyCenterCtsConfigs.STATIC_SOURCE_2.titleResId),
-                context.getString(SafetyCenterCtsConfigs.STATIC_SOURCE_2.summaryResId))
+                context.getString(SafetyCenterCtsConfigs.STATIC_SOURCE_2.summaryResId)
+            )
         }
     }
 
@@ -160,35 +170,45 @@ class SafetyCenterActivityTest {
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_1_TITLE,
                     entrySummary = SAFETY_SOURCE_1_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_2,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_2_TITLE,
                     entrySummary = SAFETY_SOURCE_2_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_3,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_3_TITLE,
                     entrySummary = SAFETY_SOURCE_3_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_4,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_4_TITLE,
                     entrySummary = SAFETY_SOURCE_4_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_5,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_5_TITLE,
                     entrySummary = SAFETY_SOURCE_5_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
         }
 
         context.launchSafetyCenterActivity {
@@ -196,7 +216,8 @@ class SafetyCenterActivityTest {
                 context.getString(DYNAMIC_SOURCE_GROUP_1.titleResId),
                 context.getString(DYNAMIC_SOURCE_GROUP_1.summaryResId),
                 context.getString(DYNAMIC_SOURCE_GROUP_3.titleResId),
-                context.getString(DYNAMIC_SOURCE_GROUP_3.summaryResId))
+                context.getString(DYNAMIC_SOURCE_GROUP_3.summaryResId)
+            )
             waitAllTextNotDisplayed(
                 SAFETY_SOURCE_1_TITLE,
                 SAFETY_SOURCE_1_SUMMARY,
@@ -205,7 +226,8 @@ class SafetyCenterActivityTest {
                 SAFETY_SOURCE_4_TITLE,
                 SAFETY_SOURCE_4_SUMMARY,
                 SAFETY_SOURCE_5_TITLE,
-                SAFETY_SOURCE_5_SUMMARY)
+                SAFETY_SOURCE_5_SUMMARY
+            )
         }
     }
 
@@ -219,35 +241,45 @@ class SafetyCenterActivityTest {
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_1_TITLE,
                     entrySummary = SAFETY_SOURCE_1_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_2,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_RECOMMENDATION,
                     entryTitle = SAFETY_SOURCE_2_TITLE,
                     entrySummary = SAFETY_SOURCE_2_SUMMARY,
-                    withIssue = true))
+                    withIssue = true
+                )
+            )
             setData(
                 SOURCE_ID_3,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_3_TITLE,
                     entrySummary = SAFETY_SOURCE_3_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_4,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_RECOMMENDATION,
                     entryTitle = SAFETY_SOURCE_4_TITLE,
                     entrySummary = SAFETY_SOURCE_4_SUMMARY,
-                    withIssue = true))
+                    withIssue = true
+                )
+            )
             setData(
                 SOURCE_ID_5,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_CRITICAL_WARNING,
                     entryTitle = SAFETY_SOURCE_5_TITLE,
                     entrySummary = SAFETY_SOURCE_5_SUMMARY,
-                    withIssue = true))
+                    withIssue = true
+                )
+            )
         }
 
         context.launchSafetyCenterActivity {
@@ -255,14 +287,16 @@ class SafetyCenterActivityTest {
                 context.getString(DYNAMIC_SOURCE_GROUP_1.titleResId),
                 SAFETY_SOURCE_2_SUMMARY,
                 context.getString(DYNAMIC_SOURCE_GROUP_3.titleResId),
-                SAFETY_SOURCE_5_SUMMARY)
+                SAFETY_SOURCE_5_SUMMARY
+            )
             waitAllTextNotDisplayed(
                 SAFETY_SOURCE_1_TITLE,
                 SAFETY_SOURCE_2_TITLE,
                 SAFETY_SOURCE_1_SUMMARY,
                 SAFETY_SOURCE_4_TITLE,
                 SAFETY_SOURCE_5_TITLE,
-                SAFETY_SOURCE_4_SUMMARY)
+                SAFETY_SOURCE_4_SUMMARY
+            )
         }
     }
 
@@ -349,7 +383,9 @@ class SafetyCenterActivityTest {
     fun entryListWithEntryGroup_recommendationState_hasActionsNeededContentDescription() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_1, safetySourceCtsData.recommendationWithGeneralIssue)
+            SOURCE_ID_1,
+            safetySourceCtsData.recommendationWithGeneralIssue
+        )
         safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.information)
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.information)
 
@@ -397,7 +433,9 @@ class SafetyCenterActivityTest {
     fun entryListWithEntryGroup_clickingAClickableDisabledEntry_redirectsToDifferentScreen() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_1, safetySourceCtsData.unspecifiedDisabledWithTestActivityRedirect)
+            SOURCE_ID_1,
+            safetySourceCtsData.unspecifiedDisabledWithTestActivityRedirect
+        )
 
         context.launchSafetyCenterActivity {
             waitDisplayed(By.text("OK")) { it.click() }
@@ -410,14 +448,17 @@ class SafetyCenterActivityTest {
     fun entryListWithEntryGroup_clickableDisabledEntry_hasContentDescription() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_1, safetySourceCtsData.unspecifiedDisabledWithTestActivityRedirect)
+            SOURCE_ID_1,
+            safetySourceCtsData.unspecifiedDisabledWithTestActivityRedirect
+        )
 
         context.launchSafetyCenterActivity {
             waitDisplayed(By.desc("List. OK. No info yet")) { it.click() }
             // Make sure that the content description is correctly set for the clickable disabled
             // entry so that the talkback to works properly.
             waitDisplayed(
-                By.desc("List item. Clickable disabled title. Clickable disabled summary"))
+                By.desc("List item. Clickable disabled title. Clickable disabled summary")
+            )
         }
     }
 
@@ -448,7 +489,9 @@ class SafetyCenterActivityTest {
     fun entryListWithSingleSource_clickingTheIconActionButton_redirectsToDifferentScreen() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(
-            SINGLE_SOURCE_ID, safetySourceCtsData.informationWithIconAction)
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.informationWithIconAction
+        )
 
         context.launchSafetyCenterActivity {
             waitDisplayed(By.desc("Information")) { it.click() }
@@ -463,12 +506,12 @@ class SafetyCenterActivityTest {
 
         context.launchSafetyCenterActivity {
             waitDisplayed(
-                By.text(context.getString(SafetyCenterCtsConfigs.STATIC_SOURCE_1.titleResId))) {
-                    it.click()
-                }
+                By.text(context.getString(SafetyCenterCtsConfigs.STATIC_SOURCE_1.titleResId))
+            ) { it.click() }
             waitButtonDisplayed("Exit test activity") { it.click() }
             waitAllTextDisplayed(
-                context.getString(SafetyCenterCtsConfigs.STATIC_SOURCE_1.titleResId))
+                context.getString(SafetyCenterCtsConfigs.STATIC_SOURCE_1.titleResId)
+            )
         }
     }
 
@@ -476,7 +519,9 @@ class SafetyCenterActivityTest {
     fun issueCard_criticalIssue_hasContentDescriptions() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(
-            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
 
         context.launchSafetyCenterActivity {
             waitDisplayed(By.desc("Alert. Critical issue title. Critical issue summary"))
@@ -529,7 +574,9 @@ class SafetyCenterActivityTest {
     fun issueCard_confirmsDismissal_dismisses() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(
-            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
 
         context.launchSafetyCenterActivity {
             waitDisplayed(By.desc("Dismiss")) { it.click() }
@@ -545,13 +592,16 @@ class SafetyCenterActivityTest {
     fun issueCard_confirmsDismissal_afterRotation_dismisses() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(
-            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
 
         context.launchSafetyCenterActivity {
             waitDisplayed(By.desc("Dismiss")) { it.click() }
             waitAllTextDisplayed(
                 "Dismiss this alert?",
-                "Review your security and privacy settings any time to add more protection")
+                "Review your security and privacy settings any time to add more protection"
+            )
 
             getUiDevice().rotate()
             getUiDevice()
@@ -559,7 +609,8 @@ class SafetyCenterActivityTest {
 
             waitAllTextDisplayed(
                 "Dismiss this alert?",
-                "Review your security and privacy settings any time to add more protection")
+                "Review your security and privacy settings any time to add more protection"
+            )
             waitButtonDisplayed("Dismiss") { it.click() }
 
             waitSourceIssueNotDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
@@ -571,7 +622,9 @@ class SafetyCenterActivityTest {
     fun issueCard_confirmsDismissal_cancels() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(
-            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
 
         context.launchSafetyCenterActivity {
             waitDisplayed(By.desc("Dismiss")) { it.click() }
@@ -586,7 +639,9 @@ class SafetyCenterActivityTest {
     fun issueCard_confirmsDismissal_afterRotation_cancels() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(
-            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
 
         context.launchSafetyCenterActivity {
             waitDisplayed(By.desc("Dismiss")) { it.click() }
@@ -610,15 +665,23 @@ class SafetyCenterActivityTest {
 
         // Set the initial data for the source
         safetyCenterCtsHelper.setData(
-            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingIssueWithSuccessMessage)
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingIssueWithSuccessMessage
+        )
 
         // Clear the data when action is triggered to simulate resolution.
         SafetySourceReceiver.setResponse(
-            Request.ResolveAction(SINGLE_SOURCE_ID), Response.ClearData)
+            Request.ResolveAction(SINGLE_SOURCE_ID),
+            Response.ClearData
+        )
 
         context.launchSafetyCenterActivity(withReceiverPermission = true) {
             val action = safetySourceCtsData.criticalResolvingActionWithSuccessMessage
-            waitButtonDisplayed(action.label) { it.click() }
+            waitButtonDisplayed(action.label) {
+                // Re-enable animations for this test as this is needed to show the success message.
+                setAnimationsEnabled(true)
+                it.click()
+            }
 
             // Success message should show up if issue marked as resolved
             val successMessage = action.successMessage
@@ -632,11 +695,15 @@ class SafetyCenterActivityTest {
 
         // Set the initial data for the source
         safetyCenterCtsHelper.setData(
-            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingIssueWithSuccessMessage)
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingIssueWithSuccessMessage
+        )
 
         // Clear the data when action is triggered to simulate resolution.
         SafetySourceReceiver.setResponse(
-            Request.ResolveAction(SINGLE_SOURCE_ID), Response.ClearData)
+            Request.ResolveAction(SINGLE_SOURCE_ID),
+            Response.ClearData
+        )
 
         context.launchSafetyCenterActivity(withReceiverPermission = true) {
             val action = safetySourceCtsData.criticalResolvingActionWithSuccessMessage
@@ -646,7 +713,8 @@ class SafetyCenterActivityTest {
             val successMessage = action.successMessage
             waitAllTextNotDisplayed(successMessage)
             waitSourceIssueNotDisplayed(
-                safetySourceCtsData.criticalResolvingIssueWithSuccessMessage)
+                safetySourceCtsData.criticalResolvingIssueWithSuccessMessage
+            )
         }
     }
 
@@ -657,15 +725,23 @@ class SafetyCenterActivityTest {
 
         // Set the initial data for the source
         safetyCenterCtsHelper.setData(
-            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
 
         // Clear the data when action is triggered to simulate resolution.
         SafetySourceReceiver.setResponse(
-            Request.ResolveAction(SINGLE_SOURCE_ID), Response.ClearData)
+            Request.ResolveAction(SINGLE_SOURCE_ID),
+            Response.ClearData
+        )
 
         context.launchSafetyCenterActivity(withReceiverPermission = true) {
             val action = safetySourceCtsData.criticalResolvingAction
-            waitButtonDisplayed(action.label) { it.click() }
+            waitButtonDisplayed(action.label) {
+                // Re-enable animations for this test as this is needed to show the success message.
+                setAnimationsEnabled(true)
+                it.click()
+            }
 
             waitSourceIssueNotDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
         }
@@ -728,9 +804,13 @@ class SafetyCenterActivityTest {
     fun launchActivity_fromQuickSettings_issuesExpanded() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SOURCE_ID_1,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_2, safetySourceCtsData.recommendationWithGeneralIssue)
+            SOURCE_ID_2,
+            safetySourceCtsData.recommendationWithGeneralIssue
+        )
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
         val bundle = Bundle()
@@ -748,9 +828,13 @@ class SafetyCenterActivityTest {
     fun launchActivity_fromNotification_targetIssueAlreadyFirstIssue() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SOURCE_ID_1,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_2, safetySourceCtsData.recommendationWithGeneralIssue)
+            SOURCE_ID_2,
+            safetySourceCtsData.recommendationWithGeneralIssue
+        )
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
         val bundle = Bundle()
@@ -768,7 +852,9 @@ class SafetyCenterActivityTest {
     fun launchActivity_fromNotification_targetIssueSamePriorityAsFirstIssue_reorderedFirstIssue() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SOURCE_ID_1,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
         safetyCenterCtsHelper.setData(SOURCE_ID_2, safetySourceCtsData.criticalWithRedirectingIssue)
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
@@ -787,9 +873,13 @@ class SafetyCenterActivityTest {
     fun launchActivity_fromNotification_targetLowerPriorityAsFirstIssue_reorderedSecondIssue() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SOURCE_ID_1,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_2, safetySourceCtsData.recommendationWithGeneralIssue)
+            SOURCE_ID_2,
+            safetySourceCtsData.recommendationWithGeneralIssue
+        )
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
         val bundle = Bundle()
@@ -807,9 +897,13 @@ class SafetyCenterActivityTest {
     fun launchActivity_fromNotification_targetIssueNotFound() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SOURCE_ID_1,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_2, safetySourceCtsData.recommendationWithGeneralIssue)
+            SOURCE_ID_2,
+            safetySourceCtsData.recommendationWithGeneralIssue
+        )
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
         val bundle = Bundle()
@@ -827,7 +921,9 @@ class SafetyCenterActivityTest {
     fun moreIssuesCard_underMaxShownIssues_noMoreIssuesCard() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(
-            SINGLE_SOURCE_ID, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
 
         context.launchSafetyCenterActivity {
             waitSourceIssueDisplayed(safetySourceCtsData.criticalResolvingGeneralIssue)
@@ -839,9 +935,13 @@ class SafetyCenterActivityTest {
     fun moreIssuesCard_moreIssuesCardShown_additionalIssueCardsCollapsed() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SOURCE_ID_1,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_2, safetySourceCtsData.recommendationWithGeneralIssue)
+            SOURCE_ID_2,
+            safetySourceCtsData.recommendationWithGeneralIssue
+        )
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
         context.launchSafetyCenterActivity {
@@ -856,9 +956,13 @@ class SafetyCenterActivityTest {
     fun moreIssuesCard_expandAdditionalIssueCards() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SOURCE_ID_1,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_2, safetySourceCtsData.recommendationWithGeneralIssue)
+            SOURCE_ID_2,
+            safetySourceCtsData.recommendationWithGeneralIssue
+        )
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
         context.launchSafetyCenterActivity {
@@ -878,9 +982,13 @@ class SafetyCenterActivityTest {
     fun moreIssuesCard_rotation_cardsStillExpanded() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SOURCE_ID_1,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_2, safetySourceCtsData.recommendationWithGeneralIssue)
+            SOURCE_ID_2,
+            safetySourceCtsData.recommendationWithGeneralIssue
+        )
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
         context.launchSafetyCenterActivity {
@@ -910,9 +1018,13 @@ class SafetyCenterActivityTest {
     fun moreIssuesCard_twoIssuesAlreadyShown_expandAdditionalIssueCards() {
         safetyCenterCtsHelper.setConfig(MULTIPLE_SOURCES_CONFIG)
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_1, safetySourceCtsData.criticalWithResolvingGeneralIssue)
+            SOURCE_ID_1,
+            safetySourceCtsData.criticalWithResolvingGeneralIssue
+        )
         safetyCenterCtsHelper.setData(
-            SOURCE_ID_2, safetySourceCtsData.recommendationWithGeneralIssue)
+            SOURCE_ID_2,
+            safetySourceCtsData.recommendationWithGeneralIssue
+        )
         safetyCenterCtsHelper.setData(SOURCE_ID_3, safetySourceCtsData.informationWithIssue)
 
         val bundle = Bundle()
@@ -945,35 +1057,45 @@ class SafetyCenterActivityTest {
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_1_TITLE,
                     entrySummary = SAFETY_SOURCE_1_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_2,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_2_TITLE,
                     entrySummary = SAFETY_SOURCE_2_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_3,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_3_TITLE,
                     entrySummary = SAFETY_SOURCE_3_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_4,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_4_TITLE,
                     entrySummary = SAFETY_SOURCE_4_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_5,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_5_TITLE,
                     entrySummary = SAFETY_SOURCE_5_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
         }
 
         context.launchSafetyCenterActivity {
@@ -986,7 +1108,8 @@ class SafetyCenterActivityTest {
                 SAFETY_SOURCE_1_TITLE,
                 SAFETY_SOURCE_1_SUMMARY,
                 SAFETY_SOURCE_2_TITLE,
-                SAFETY_SOURCE_2_SUMMARY)
+                SAFETY_SOURCE_2_SUMMARY
+            )
         }
     }
 
@@ -1000,35 +1123,45 @@ class SafetyCenterActivityTest {
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_1_TITLE,
                     entrySummary = SAFETY_SOURCE_1_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_2,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_2_TITLE,
                     entrySummary = SAFETY_SOURCE_2_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_3,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_3_TITLE,
                     entrySummary = SAFETY_SOURCE_3_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_4,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_4_TITLE,
                     entrySummary = SAFETY_SOURCE_4_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_5,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_5_TITLE,
                     entrySummary = SAFETY_SOURCE_5_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
         }
 
         context.launchSafetyCenterActivity {
@@ -1059,7 +1192,8 @@ class SafetyCenterActivityTest {
             waitAllTextNotDisplayed(context.getString(DYNAMIC_SOURCE_GROUP_1.summaryResId))
             waitAllTextDisplayed(
                 context.getString(DYNAMIC_SOURCE_1.titleResId),
-                context.getString(DYNAMIC_SOURCE_2.titleResId))
+                context.getString(DYNAMIC_SOURCE_2.titleResId)
+            )
         }
     }
 
@@ -1074,35 +1208,45 @@ class SafetyCenterActivityTest {
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_1_TITLE,
                     entrySummary = SAFETY_SOURCE_1_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_2,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_2_TITLE,
                     entrySummary = SAFETY_SOURCE_2_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_3,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_3_TITLE,
                     entrySummary = SAFETY_SOURCE_3_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_4,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_4_TITLE,
                     entrySummary = SAFETY_SOURCE_4_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
             setData(
                 SOURCE_ID_5,
                 safetySourceCtsData.buildSafetySourceDataWithSummary(
                     severityLevel = SEVERITY_LEVEL_INFORMATION,
                     entryTitle = SAFETY_SOURCE_5_TITLE,
                     entrySummary = SAFETY_SOURCE_5_SUMMARY,
-                    withIssue = false))
+                    withIssue = false
+                )
+            )
         }
 
         context.launchSafetyCenterActivity {
@@ -1133,20 +1277,23 @@ class SafetyCenterActivityTest {
         private const val SAFETY_SOURCE_5_SUMMARY = "Safety Source 5 Summary"
 
         private fun UiDevice.rotate() {
+            unfreezeRotation()
             if (isNaturalOrientation) {
                 setOrientationLeft()
             } else {
                 setOrientationNatural()
             }
+            freezeRotation()
             waitForIdle()
         }
 
         private fun UiDevice.resetRotation() {
             if (!isNaturalOrientation) {
+                unfreezeRotation()
                 setOrientationNatural()
+                freezeRotation()
+                waitForIdle()
             }
-            unfreezeRotation()
-            waitForIdle()
         }
     }
 }
