@@ -20,6 +20,9 @@ import android.content.ComponentName
 import android.os.ConditionVariable
 import android.safetycenter.cts.testing.Coroutines.TIMEOUT_LONG
 import android.safetycenter.cts.testing.Coroutines.TIMEOUT_SHORT
+import android.safetycenter.cts.testing.Coroutines.runBlockingWithTimeout
+import android.safetycenter.cts.testing.Coroutines.runBlockingWithTimeoutOrNull
+import android.safetycenter.cts.testing.Coroutines.waitForWithTimeout
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
@@ -27,14 +30,8 @@ import com.android.compatibility.common.util.SystemUtil
 import com.google.common.truth.Truth.assertThat
 import java.time.Duration
 import java.util.concurrent.TimeoutException
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.channels.Channel
 
 /** Used in CTS tests to check whether expected notifications are present in the status bar. */
 class CtsNotificationListener : NotificationListenerService() {
@@ -53,14 +50,20 @@ class CtsNotificationListener : NotificationListenerService() {
 
     override fun onNotificationPosted(statusBarNotification: StatusBarNotification) {
         super.onNotificationPosted(statusBarNotification)
-        if (isSafetyCenterNotification(statusBarNotification)) {
-            eventFlow.tryEmit(NotificationPosted(statusBarNotification))
+        if (statusBarNotification.isSafetyCenterNotification()) {
+            runBlockingWithTimeout {
+                safetyCenterNotificationEvents.send(NotificationPosted(statusBarNotification))
+            }
         }
     }
 
     override fun onNotificationRemoved(statusBarNotification: StatusBarNotification) {
         super.onNotificationRemoved(statusBarNotification)
-        eventFlow.tryEmit(NotificationRemoved(statusBarNotification))
+        if (statusBarNotification.isSafetyCenterNotification()) {
+            runBlockingWithTimeout {
+                safetyCenterNotificationEvents.send(NotificationRemoved(statusBarNotification))
+            }
+        }
     }
 
     override fun onListenerConnected() {
@@ -88,134 +91,169 @@ class CtsNotificationListener : NotificationListenerService() {
         private val connected = ConditionVariable(false)
         private var instance: CtsNotificationListener? = null
 
-        private val eventFlow =
-            MutableSharedFlow<NotificationEvent>(
-                replay = 0, extraBufferCapacity = 99, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+        @Volatile
+        private var safetyCenterNotificationEvents =
+            Channel<NotificationEvent>(capacity = Channel.UNLIMITED)
 
         /**
-         * Invokes the given [block] and asserts that no notifications are posted within [duration].
+         * Blocks until there are zero Safety Center notifications, or throw an [AssertionError] if
+         * that doesn't happen within [timeout].
          */
-        fun assertNoNotificationsPosted(duration: Duration = TIMEOUT_SHORT, block: () -> Any?) {
-            assertThat(getNextNotificationPostedOrNull(duration, block)).isNull()
+        fun waitForZeroNotifications(timeout: Duration = TIMEOUT_LONG) {
+            waitForNotificationCount(0, timeout)
         }
 
         /**
-         * Invokes the given [block] and asserts that a notification is posted within [duration].
+         * Blocks until there is exactly one Safety Center notification and then return it, or throw
+         * an [AssertionError] if that doesn't happen within [timeout].
          */
-        fun assertAnyNotificationPosted(duration: Duration = TIMEOUT_LONG, block: () -> Any?) {
-            assertThat(getNextNotificationPostedOrNull(duration, block)).isNotNull()
+        fun waitForSingleNotification(timeout: Duration = TIMEOUT_LONG): StatusBarNotification {
+            return waitForNotificationCount(1, timeout).first()
         }
 
         /**
-         * Invokes the given [block] and then waits until the next notification is posted and
-         * returns it, or returns `null` if no notification is posted within [timeout].
+         * Blocks until there are exactly [count] Safety Center notifications and then return them,
+         * or throw an [AssertionError] if that doesn't happen within [timeout].
          */
-        fun getNextNotificationPostedOrNull(
-            timeout: Duration = TIMEOUT_LONG,
-            block: () -> Any?
-        ): StatusBarNotification? {
-            return getNotificationsPosted(limit = 1, duration = timeout, block).firstOrNull()
-        }
-
-        /**
-         * Invoked the given [block] and then returns a possibly-empty list of all the
-         * [StatusBarNotification] instances that were posted within [duration].
-         */
-        fun getAllNotificationsPosted(
-            duration: Duration = TIMEOUT_SHORT,
-            block: () -> Any?
+        private fun waitForNotificationCount(
+            count: Int,
+            timeout: Duration = TIMEOUT_LONG
         ): List<StatusBarNotification> {
-            return getNotificationsPosted(limit = 0, duration, block)
-        }
-
-        /**
-         * Invokes the given [block] and then waits until either [limit] notifications have been
-         * posted, or [duration] has elapsed and then returns a possibly-empty list containing those
-         * [StatusBarNotification] instances.
-         *
-         * [limit] only applies if it's a positive integer, otherwise all notifications posted
-         * within the given [duration] are returned.
-         */
-        private fun getNotificationsPosted(
-            limit: Int,
-            duration: Duration,
-            block: () -> Any?
-        ): List<StatusBarNotification> {
-            return getNotificationEvents<NotificationPosted>(limit, duration, block).map {
-                it.statusBarNotification
+            return waitForNotificationsToSatisfy(timeout, description = "$count notifications") {
+                it.size == count
             }
         }
 
         /**
-         * Invokes the given [block] while observing all [NotificationEvent] of type [T] and returns
-         * those events.
-         *
-         * This method blocks until either [limit] events of type [T] have occurred, or [duration]
-         * has elapsed and then returns a possibly-empty list containing those events.
-         *
-         * [limit] only applies if it's a positive integer, otherwise all events that occur within
-         * the given [duration] are returned.
+         * Blocks until there is a single Safety Center notification matching the given
+         * [characteristics] and then return it, or throw an [AssertionError] if that doesn't happen
+         * within [timeout].
          */
-        private inline fun <reified T : NotificationEvent> getNotificationEvents(
-            limit: Int,
-            duration: Duration,
-            block: () -> Any?
-        ): List<T> {
-            // We keep this list of events so far because when `toList` gets timed out it returns
-            // nothing and not just everything it collected so far i.e. `take(3).toList()` returns
-            // either a list of exactly 3 elements or nothing.
-            val eventsSoFar = mutableListOf<T>()
-            val filteredEventFlow =
-                eventFlow.filterIsInstance<T>().onEach {
-                    Log.d(TAG, "Event: $it")
-                    eventsSoFar.add(it)
+        fun waitForSingleNotificationMatching(
+            characteristics: NotificationCharacteristics,
+            timeout: Duration = TIMEOUT_LONG
+        ): StatusBarNotification {
+            return waitForNotificationsMatching(characteristics, timeout = timeout).first()
+        }
+
+        /**
+         * Blocks until the set of Safety Center notifications matches the given [characteristics]
+         * and then return them, or throw an [AssertionError] if that doesn't happen within
+         * [timeout].
+         */
+        private fun waitForNotificationsMatching(
+            vararg characteristics: NotificationCharacteristics,
+            timeout: Duration = TIMEOUT_LONG
+        ): List<StatusBarNotification> {
+            val charsList = characteristics.toList()
+            return waitForNotificationsToSatisfy(
+                timeout,
+                description = "notification(s) matching characteristics $charsList"
+            ) { NotificationCharacteristics.areMatching(it, charsList) }
+        }
+
+        /**
+         * Blocks until [forAtLeast] has elapsed, or throw an [AssertionError] if any notification
+         * is posted or removed before then.
+         */
+        fun waitForZeroNotificationEvents(forAtLeast: Duration = TIMEOUT_SHORT) {
+            val event =
+                runBlockingWithTimeoutOrNull(forAtLeast) {
+                    safetyCenterNotificationEvents.receive()
                 }
-            block()
-            return runBlocking {
-                withTimeoutOrNull(duration.toMillis()) {
-                    if (limit > 0) {
-                        filteredEventFlow.take(limit).toList()
-                    } else {
-                        filteredEventFlow.toList()
+            assertThat(event).isNull()
+        }
+
+        private fun waitForNotificationsToSatisfy(
+            timeout: Duration = TIMEOUT_LONG,
+            forAtLeast: Duration = TIMEOUT_SHORT,
+            description: String,
+            predicate: (List<StatusBarNotification>) -> Boolean
+        ): List<StatusBarNotification> {
+            fun formatError(notifs: List<StatusBarNotification>): String {
+                return "Expected: $description, but the actual notifications were: $notifs"
+            }
+
+            // First we wait at most timeout for the active notifications to satisfy the given
+            // predicate or otherwise we throw:
+            val satisfyingNotifications =
+                try {
+                    runBlockingWithTimeout(timeout) {
+                        waitForNotificationsToSatisfyAsync(predicate)
                     }
+                } catch (e: TimeoutCancellationException) {
+                    throw AssertionError(formatError(getSafetyCenterNotifications()), e)
                 }
+
+            // Assuming the predicate was satisfied, now we ensure it is not violated for the
+            // forAtLeast duration as well:
+            val nonSatisfyingNotifications =
+                runBlockingWithTimeoutOrNull(forAtLeast) {
+                    waitForNotificationsToSatisfyAsync { !predicate(it) }
+                }
+            if (nonSatisfyingNotifications != null) {
+                // In this case the negated-predicate was satisfied before forAtLeast had elapsed
+                throw AssertionError(formatError(nonSatisfyingNotifications))
             }
-                ?: eventsSoFar
+
+            return satisfyingNotifications
         }
 
-        /**
-         * Invokes the given [block] and asserts that a notification is removed within [duration].
-         */
-        fun assertAnyNotificationRemoved(duration: Duration = TIMEOUT_LONG, block: () -> Any?) {
-            assertThat(getNextNotificationRemovedOrNull(duration, block)).isNotNull()
+        private suspend fun waitForNotificationsToSatisfyAsync(
+            predicate: (List<StatusBarNotification>) -> Boolean
+        ): List<StatusBarNotification> {
+            var currentNotifications = getSafetyCenterNotifications()
+            while (!predicate(currentNotifications)) {
+                val event = safetyCenterNotificationEvents.receive()
+                Log.d(TAG, "Received notification event: $event")
+                currentNotifications = getSafetyCenterNotifications()
+            }
+            return currentNotifications
         }
 
-        /**
-         * Invokes the given [block] and then waits until the next notification is removed and
-         * returns it, or returns `null` if no notification is removed within [timeout].
-         */
-        fun getNextNotificationRemovedOrNull(
-            timeout: Duration = TIMEOUT_LONG,
-            block: () -> Any?
-        ): StatusBarNotification? {
-            return getNotificationEvents<NotificationRemoved>(limit = 1, duration = timeout, block)
-                .map { it.statusBarNotification }
-                .firstOrNull()
-        }
+        private fun getSafetyCenterNotifications(): List<StatusBarNotification> =
+            instance!!.activeNotifications.filter { it.isSafetyCenterNotification() }
 
         /**
          * Cancels a specific notification and then waits for it to be removed by the notification
-         * manager, or throws if it has not been removed within [timeout].
+         * manager and marked as dismissed in Safety Center, or throws if it has not been removed
+         * within [timeout].
          */
         fun cancelAndWait(key: String, timeout: Duration = TIMEOUT_LONG) {
-            val cancelled =
-                getNextNotificationRemovedOrNull(timeout) { instance?.cancelNotification(key) }
-            assertThat(cancelled).isNotNull()
-            assertThat(cancelled!!.key).isEqualTo(key)
+            instance!!.cancelNotification(key)
+            waitForNotificationsToSatisfy(
+                timeout,
+                description = "no notification with the key $key"
+            ) { notifications -> notifications.none { it.key == key } }
+
+            waitForIssueCacheToContainAnyDismissedNotification()
+        }
+
+        private fun waitForIssueCacheToContainAnyDismissedNotification() {
+            // Here we wait for an issue to be recorded as dismissed according to the dumpsys
+            // output. The cancelAndWait helper above first "waits" for the notification to
+            // be dismissed, but this additional wait is needed to ensure the notification's delete
+            // PendingIntent is handled. Without this wait there is a race condition between
+            // SafetyCenterNotificationReceiver#onReceive and subsequent calls that set source data
+            // and that race makes tests flaky because the dismissal status of the previous
+            // notification is not well defined.
+            fun dumpIssueCacheState(): String =
+                SystemUtil.runShellCommand("dumpsys safety_center issues")
+            try {
+                waitForWithTimeout {
+                    dumpIssueCacheState().contains(Regex("""mNotificationDismissedAt=\d+"""))
+                }
+            } catch (e: TimeoutCancellationException) {
+                throw IllegalStateException(
+                    "Notification dismissal was not recorded in the issue cache: " +
+                        dumpIssueCacheState(),
+                    e
+                )
+            }
         }
 
         /** Runs a shell command to allow or disallow the listener. Use before and after test. */
-        fun toggleListenerAccess(allowed: Boolean) {
+        private fun toggleListenerAccess(allowed: Boolean) {
             // TODO(b/260335646): Try to do this using the AndroidTest.xml instead of in code
             val verb = if (allowed) "allow" else "disallow"
             SystemUtil.runShellCommand("cmd notification ${verb}_listener $id")
@@ -227,10 +265,24 @@ class CtsNotificationListener : NotificationListenerService() {
             }
         }
 
-        private fun isSafetyCenterNotification(
-            statusBarNotification: StatusBarNotification
-        ): Boolean =
-            statusBarNotification.packageName == "android" &&
-                statusBarNotification.notification.channelId == "safety_center"
+        /** Prepare the [CtsNotificationListener] for a notification test */
+        fun setup() {
+            toggleListenerAccess(true)
+        }
+
+        /** Clean up the [CtsNotificationListener] after executing a notification test. */
+        fun reset() {
+            waitForNotificationsToSatisfy(
+                forAtLeast = Duration.ZERO,
+                description = "all Safety Center notifications removed in tear down"
+            ) { it.isEmpty() }
+            toggleListenerAccess(false)
+            safetyCenterNotificationEvents.cancel()
+            safetyCenterNotificationEvents = Channel(capacity = Channel.UNLIMITED)
+        }
+
+        // TODO(b/264369469): Tests should account for multiple SC notification channels
+        private fun StatusBarNotification.isSafetyCenterNotification(): Boolean =
+            packageName == "android" && notification.channelId == "safety_center"
     }
 }

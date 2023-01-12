@@ -685,7 +685,8 @@ public final class SafetyCenterService extends SystemService {
                 @NonNull ParcelFileDescriptor out,
                 @NonNull ParcelFileDescriptor err,
                 @NonNull String[] args) {
-            return new SafetyCenterShellCommandHandler(this)
+            return new SafetyCenterShellCommandHandler(
+                            getContext(), this, mDeviceSupportsSafetyCenter)
                     .exec(
                             this,
                             in.getFileDescriptor(),
@@ -701,16 +702,19 @@ public final class SafetyCenterService extends SystemService {
             if (!checkDumpPermission(fout)) {
                 return;
             }
+            List<String> subjects = Arrays.asList(args);
+            boolean all = subjects.isEmpty();
             synchronized (mApiLock) {
-                SafetyCenterService.this.dumpLocked(fd, fout);
-                SafetyCenterFlags.dump(fout);
-                mSafetyCenterConfigReader.dump(fout);
-                mSafetyCenterRepository.dump(fout);
-                mSafetyCenterIssueCache.dump(fout);
-                mSafetyCenterRefreshTracker.dump(fout);
-                mSafetyCenterTimeouts.dump(fout);
-                mSafetyCenterListeners.dump(fout);
-                mNotificationSender.dump(fout);
+                if (all || subjects.contains("service"))
+                    SafetyCenterService.this.dumpLocked(fd, fout);
+                if (all || subjects.contains("flags")) SafetyCenterFlags.dump(fout);
+                if (all || subjects.contains("config")) mSafetyCenterConfigReader.dump(fout);
+                if (all || subjects.contains("repository")) mSafetyCenterRepository.dump(fout);
+                if (all || subjects.contains("issues")) mSafetyCenterIssueCache.dump(fout);
+                if (all || subjects.contains("refresh")) mSafetyCenterRefreshTracker.dump(fout);
+                if (all || subjects.contains("timeouts")) mSafetyCenterTimeouts.dump(fout);
+                if (all || subjects.contains("listeners")) mSafetyCenterListeners.dump(fout);
+                if (all || subjects.contains("notifications")) mNotificationSender.dump(fout);
             }
         }
 
