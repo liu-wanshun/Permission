@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package android.safetycenter.cts.testing
+package com.android.safetycenter.testing
 
 import android.app.UiAutomation
 import android.app.UiAutomation.ALL_PERMISSIONS
 import androidx.annotation.GuardedBy
-import androidx.test.InstrumentationRegistry.getInstrumentation
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.android.compatibility.common.util.SystemUtil
 import com.google.common.collect.HashMultiset
 import com.google.common.collect.Multiset
