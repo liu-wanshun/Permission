@@ -41,15 +41,18 @@ android_test {
     ],
 
     static_libs: [
-        "androidx.test.espresso.core",
-        "androidx.test.espresso.contrib-nodeps",
         "androidx.test.rules",
         "androidx.test.ext.truth",
         "androidx.test.ext.junit",
-        "androidx.test.uiautomator",
+        "androidx.test.uiautomator_uiautomator",
         "compatibility-device-util-axt",
         "permission-test-util-lib",
     ],
+
+    data: [
+        ":AppThatUsesCameraPermission",
+    ],
+    per_testcase_directory: true,
 
     certificate: "platform",
 
@@ -59,6 +62,4 @@ android_test {
         "device-tests",
         "mts-permission",
     ],
-
-    required: ["CtsAppThatRequestsLocationPermission29"]
 }
