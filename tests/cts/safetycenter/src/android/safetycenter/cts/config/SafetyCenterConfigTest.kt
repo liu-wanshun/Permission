@@ -19,7 +19,7 @@ package android.safetycenter.cts.config
 import android.safetycenter.config.SafetyCenterConfig
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.os.ParcelableSubject.assertThat
-import com.android.permission.testing.EqualsHashCodeToStringTester
+import com.android.safetycenter.testing.EqualsHashCodeToStringTester
 import com.google.common.truth.Truth.assertThat
 import kotlin.test.assertFailsWith
 import org.junit.Test
@@ -54,7 +54,8 @@ class SafetyCenterConfigTest {
         val sourceGroups = safetyCenterConfigBuilder.build().safetySourcesGroups
 
         safetyCenterConfigBuilder.addSafetySourcesGroup(
-            SafetySourcesGroupTest.COLLAPSIBLE_WITH_SUMMARY)
+            SafetySourcesGroupTest.COLLAPSIBLE_WITH_SUMMARY
+        )
 
         assertThat(sourceGroups)
             .containsExactly(SafetySourcesGroupTest.RIGID, SafetySourcesGroupTest.HIDDEN)
@@ -79,12 +80,14 @@ class SafetyCenterConfigTest {
                 SafetyCenterConfig.Builder()
                     .addSafetySourcesGroup(SafetySourcesGroupTest.RIGID)
                     .addSafetySourcesGroup(SafetySourcesGroupTest.HIDDEN)
-                    .build())
+                    .build()
+            )
             .addEqualityGroup(
                 SafetyCenterConfig.Builder()
                     .addSafetySourcesGroup(SafetySourcesGroupTest.HIDDEN)
                     .addSafetySourcesGroup(SafetySourcesGroupTest.RIGID)
-                    .build())
+                    .build()
+            )
             .test()
     }
 

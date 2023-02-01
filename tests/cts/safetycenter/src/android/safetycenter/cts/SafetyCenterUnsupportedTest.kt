@@ -22,7 +22,6 @@ import android.safetycenter.SafetyCenterManager.REFRESH_REASON_PAGE_OPEN
 import android.safetycenter.SafetyCenterManager.REFRESH_REASON_RESCAN_BUTTON_CLICK
 import android.safetycenter.SafetySourceErrorDetails
 import android.safetycenter.cts.testing.Coroutines.TIMEOUT_SHORT
-import android.safetycenter.cts.testing.SafetyCenterActivityLauncher.launchSafetyCenterActivity
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.addOnSafetyCenterDataChangedListenerWithPermission
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.clearAllSafetySourceDataForTestsWithPermission
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.clearSafetyCenterConfigForTestsWithPermission
@@ -51,11 +50,12 @@ import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.executeSa
 import android.safetycenter.cts.testing.SafetySourceReceiver.Companion.refreshSafetySourcesWithReceiverPermissionAndWait
 import android.safetycenter.cts.testing.SettingsPackage.getSettingsPackageName
 import android.safetycenter.cts.testing.UiTestHelper.waitDisplayed
-import android.support.test.uiautomator.By
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.uiautomator.By
 import com.android.compatibility.common.util.DisableAnimationRule
 import com.android.compatibility.common.util.FreezeRotationRule
+import com.android.safetycenter.testing.SafetyCenterActivityLauncher.launchSafetyCenterActivity
 import com.google.common.truth.Truth.assertThat
 import com.google.common.util.concurrent.MoreExecutors.directExecutor
 import kotlin.test.assertFailsWith
@@ -138,7 +138,8 @@ class SafetyCenterUnsupportedTest {
         safetyCenterManager.setSafetySourceDataWithPermission(
             SINGLE_SOURCE_ID,
             safetySourceCtsData.criticalWithResolvingGeneralIssue,
-            EVENT_SOURCE_STATE_CHANGED)
+            EVENT_SOURCE_STATE_CHANGED
+        )
 
         val apiSafetySourceData =
             safetyCenterManager.getSafetySourceDataWithPermission(SINGLE_SOURCE_ID)
@@ -150,7 +151,10 @@ class SafetyCenterUnsupportedTest {
     fun setSafetySourceData_withoutPermission_throwsSecurityException() {
         assertFailsWith(SecurityException::class) {
             safetyCenterManager.setSafetySourceData(
-                SINGLE_SOURCE_ID, safetySourceCtsData.unspecified, EVENT_SOURCE_STATE_CHANGED)
+                SINGLE_SOURCE_ID,
+                safetySourceCtsData.unspecified,
+                EVENT_SOURCE_STATE_CHANGED
+            )
         }
     }
 
@@ -166,10 +170,14 @@ class SafetyCenterUnsupportedTest {
         safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
         val listener = SafetyCenterCtsListener()
         safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
-            directExecutor(), listener)
+            directExecutor(),
+            listener
+        )
 
         safetyCenterManager.reportSafetySourceErrorWithPermission(
-            SINGLE_SOURCE_ID, SafetySourceErrorDetails(EVENT_SOURCE_STATE_CHANGED))
+            SINGLE_SOURCE_ID,
+            SafetySourceErrorDetails(EVENT_SOURCE_STATE_CHANGED)
+        )
 
         assertFailsWith(TimeoutCancellationException::class) {
             listener.receiveSafetyCenterData(TIMEOUT_SHORT)
@@ -180,7 +188,9 @@ class SafetyCenterUnsupportedTest {
     fun reportSafetySourceError_withoutPermission_throwsSecurityException() {
         assertFailsWith(SecurityException::class) {
             safetyCenterManager.reportSafetySourceError(
-                SINGLE_SOURCE_ID, SafetySourceErrorDetails(EVENT_SOURCE_STATE_CHANGED))
+                SINGLE_SOURCE_ID,
+                SafetySourceErrorDetails(EVENT_SOURCE_STATE_CHANGED)
+            )
         }
     }
 
@@ -190,7 +200,9 @@ class SafetyCenterUnsupportedTest {
 
         assertFailsWith(TimeoutCancellationException::class) {
             enabledChangedReceiver.setSafetyCenterEnabledWithReceiverPermissionAndWait(
-                false, TIMEOUT_SHORT)
+                false,
+                TIMEOUT_SHORT
+            )
         }
         enabledChangedReceiver.unregister()
     }
@@ -201,7 +213,9 @@ class SafetyCenterUnsupportedTest {
 
         assertFailsWith(TimeoutCancellationException::class) {
             SafetySourceReceiver.setSafetyCenterEnabledWithReceiverPermissionAndWait(
-                false, TIMEOUT_SHORT)
+                false,
+                TIMEOUT_SHORT
+            )
         }
     }
 
@@ -211,7 +225,9 @@ class SafetyCenterUnsupportedTest {
 
         assertFailsWith(TimeoutCancellationException::class) {
             safetyCenterManager.refreshSafetySourcesWithReceiverPermissionAndWait(
-                REFRESH_REASON_PAGE_OPEN, TIMEOUT_SHORT)
+                REFRESH_REASON_PAGE_OPEN,
+                TIMEOUT_SHORT
+            )
         }
     }
 
@@ -252,7 +268,9 @@ class SafetyCenterUnsupportedTest {
         val listener = SafetyCenterCtsListener()
 
         safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
-            directExecutor(), listener)
+            directExecutor(),
+            listener
+        )
 
         assertFailsWith(TimeoutCancellationException::class) {
             listener.receiveSafetyCenterData(TIMEOUT_SHORT)
@@ -273,7 +291,9 @@ class SafetyCenterUnsupportedTest {
         safetyCenterManager.setSafetyCenterConfigForTestsWithPermission(SINGLE_SOURCE_CONFIG)
         val listener = SafetyCenterCtsListener()
         safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
-            directExecutor(), listener)
+            directExecutor(),
+            listener
+        )
 
         safetyCenterManager.removeOnSafetyCenterDataChangedListenerWithPermission(listener)
 
@@ -286,7 +306,9 @@ class SafetyCenterUnsupportedTest {
     fun removeOnSafetyCenterDataChangedListener_withoutPermission_throwsSecurityException() {
         val listener = SafetyCenterCtsListener()
         safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
-            directExecutor(), listener)
+            directExecutor(),
+            listener
+        )
 
         assertFailsWith(SecurityException::class) {
             safetyCenterManager.removeOnSafetyCenterDataChangedListener(listener)
@@ -299,13 +321,17 @@ class SafetyCenterUnsupportedTest {
         safetyCenterManager.setSafetySourceDataWithPermission(
             SINGLE_SOURCE_ID,
             safetySourceCtsData.criticalWithResolvingGeneralIssue,
-            EVENT_SOURCE_STATE_CHANGED)
+            EVENT_SOURCE_STATE_CHANGED
+        )
         val listener = SafetyCenterCtsListener()
         safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
-            directExecutor(), listener)
+            directExecutor(),
+            listener
+        )
 
         safetyCenterManager.dismissSafetyCenterIssueWithPermission(
-            SafetyCenterCtsData.issueId(SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID))
+            SafetyCenterCtsData.issueId(SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID)
+        )
 
         assertFailsWith(TimeoutCancellationException::class) {
             listener.receiveSafetyCenterData(TIMEOUT_SHORT)
@@ -325,17 +351,24 @@ class SafetyCenterUnsupportedTest {
         safetyCenterManager.setSafetySourceDataWithPermission(
             SINGLE_SOURCE_ID,
             safetySourceCtsData.criticalWithResolvingGeneralIssue,
-            EVENT_SOURCE_STATE_CHANGED)
+            EVENT_SOURCE_STATE_CHANGED
+        )
         val listener = SafetyCenterCtsListener()
         safetyCenterManager.addOnSafetyCenterDataChangedListenerWithPermission(
-            directExecutor(), listener)
+            directExecutor(),
+            listener
+        )
 
         assertFailsWith(TimeoutCancellationException::class) {
             safetyCenterManager.executeSafetyCenterIssueActionWithPermissionAndWait(
                 SafetyCenterCtsData.issueId(SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID),
                 SafetyCenterCtsData.issueActionId(
-                    SINGLE_SOURCE_ID, CRITICAL_ISSUE_ID, CRITICAL_ISSUE_ACTION_ID),
-                TIMEOUT_SHORT)
+                    SINGLE_SOURCE_ID,
+                    CRITICAL_ISSUE_ID,
+                    CRITICAL_ISSUE_ACTION_ID
+                ),
+                TIMEOUT_SHORT
+            )
         }
         assertFailsWith(TimeoutCancellationException::class) {
             listener.receiveSafetyCenterData(TIMEOUT_SHORT)
@@ -355,7 +388,8 @@ class SafetyCenterUnsupportedTest {
         safetyCenterManager.setSafetySourceDataWithPermission(
             SINGLE_SOURCE_ID,
             safetySourceCtsData.criticalWithResolvingGeneralIssue,
-            EVENT_SOURCE_STATE_CHANGED)
+            EVENT_SOURCE_STATE_CHANGED
+        )
         val apiSafetySourceDataBeforeClearing =
             safetyCenterManager.getSafetySourceDataWithPermission(SINGLE_SOURCE_ID)
 
