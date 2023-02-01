@@ -16,7 +16,6 @@
 package android.safetycenter.cts.ui
 
 import android.content.Context
-import android.safetycenter.cts.testing.SafetyCenterActivityLauncher.launchSafetyCenterActivity
 import android.safetycenter.cts.testing.SafetyCenterCtsConfigs.SINGLE_SOURCE_CONFIG
 import android.safetycenter.cts.testing.SafetyCenterCtsConfigs.SINGLE_SOURCE_ID
 import android.safetycenter.cts.testing.SafetyCenterCtsData
@@ -32,12 +31,13 @@ import android.safetycenter.cts.testing.UiTestHelper.waitButtonDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.waitButtonNotDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.waitDisplayed
 import android.safetycenter.cts.testing.UiTestHelper.waitNotDisplayed
-import android.support.test.uiautomator.By
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.uiautomator.By
 import com.android.compatibility.common.util.DisableAnimationRule
 import com.android.compatibility.common.util.FreezeRotationRule
 import com.android.safetycenter.resources.SafetyCenterResourcesContext
+import com.android.safetycenter.testing.SafetyCenterActivityLauncher.launchSafetyCenterActivity
 import org.junit.After
 import org.junit.Assume.assumeTrue
 import org.junit.Before
@@ -93,7 +93,8 @@ class SafetyCenterStatusCardTest {
         context.launchSafetyCenterActivity {
             waitAllTextDisplayed(
                 safetyCenterResourcesContext.getStringByName("scanning_title"),
-                safetyCenterResourcesContext.getStringByName("loading_summary"))
+                safetyCenterResourcesContext.getStringByName("loading_summary")
+            )
         }
     }
 
@@ -101,12 +102,15 @@ class SafetyCenterStatusCardTest {
     fun withKnownStatus_displaysStatusOnLoad() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         safetyCenterCtsHelper.setData(
-            SINGLE_SOURCE_ID, safetySourceCtsData.informationWithIconAction)
+            SINGLE_SOURCE_ID,
+            safetySourceCtsData.informationWithIconAction
+        )
 
         context.launchSafetyCenterActivity {
             waitAllTextDisplayed(
                 safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"),
-                safetyCenterResourcesContext.getStringByName("loading_summary"))
+                safetyCenterResourcesContext.getStringByName("loading_summary")
+            )
         }
     }
 
@@ -118,9 +122,12 @@ class SafetyCenterStatusCardTest {
         context.launchSafetyCenterActivity(withReceiverPermission = true) {
             waitAllTextDisplayed(
                 safetyCenterResourcesContext.getStringByName(
-                    "overall_severity_level_ok_review_title"),
+                    "overall_severity_level_ok_review_title"
+                ),
                 safetyCenterResourcesContext.getStringByName(
-                    "overall_severity_level_ok_review_summary"))
+                    "overall_severity_level_ok_review_summary"
+                )
+            )
             waitButtonDisplayed(RESCAN_BUTTON_LABEL)
         }
     }
@@ -129,12 +136,15 @@ class SafetyCenterStatusCardTest {
     fun withInformationAndNoIssues_hasRescanButton() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         SafetySourceReceiver.setResponse(
-            Request.Refresh(SINGLE_SOURCE_ID), Response.SetData(safetySourceCtsData.information))
+            Request.Refresh(SINGLE_SOURCE_ID),
+            Response.SetData(safetySourceCtsData.information)
+        )
 
         context.launchSafetyCenterActivity(withReceiverPermission = true) {
             waitAllTextDisplayed(
                 safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"),
-                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_summary"))
+                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_summary")
+            )
             waitButtonDisplayed(RESCAN_BUTTON_LABEL)
         }
     }
@@ -143,7 +153,9 @@ class SafetyCenterStatusCardTest {
     fun withInformationAndNoIssues_hasContentDescriptions() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         SafetySourceReceiver.setResponse(
-            Request.Refresh(SINGLE_SOURCE_ID), Response.SetData(safetySourceCtsData.information))
+            Request.Refresh(SINGLE_SOURCE_ID),
+            Response.SetData(safetySourceCtsData.information)
+        )
 
         context.launchSafetyCenterActivity(withReceiverPermission = true) {
             waitDisplayed(By.descContains("Security and privacy status"))
@@ -156,12 +168,14 @@ class SafetyCenterStatusCardTest {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         SafetySourceReceiver.setResponse(
             Request.Refresh(SINGLE_SOURCE_ID),
-            Response.SetData(safetySourceCtsData.informationWithIssue))
+            Response.SetData(safetySourceCtsData.informationWithIssue)
+        )
 
         context.launchSafetyCenterActivity(withReceiverPermission = true) {
             waitAllTextDisplayed(
                 safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"),
-                safetyCenterCtsData.getAlertString(1))
+                safetyCenterCtsData.getAlertString(1)
+            )
             waitButtonNotDisplayed(RESCAN_BUTTON_LABEL)
         }
     }
@@ -171,13 +185,16 @@ class SafetyCenterStatusCardTest {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         SafetySourceReceiver.setResponse(
             Request.Refresh(SINGLE_SOURCE_ID),
-            Response.SetData(safetySourceCtsData.recommendationWithGeneralIssue))
+            Response.SetData(safetySourceCtsData.recommendationWithGeneralIssue)
+        )
 
         context.launchSafetyCenterActivity(withReceiverPermission = true) {
             waitAllTextDisplayed(
                 safetyCenterResourcesContext.getStringByName(
-                    "overall_severity_level_safety_recommendation_title"),
-                safetyCenterCtsData.getAlertString(1))
+                    "overall_severity_level_safety_recommendation_title"
+                ),
+                safetyCenterCtsData.getAlertString(1)
+            )
             waitButtonNotDisplayed(RESCAN_BUTTON_LABEL)
         }
     }
@@ -187,13 +204,16 @@ class SafetyCenterStatusCardTest {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         SafetySourceReceiver.setResponse(
             Request.Refresh(SINGLE_SOURCE_ID),
-            Response.SetData(safetySourceCtsData.criticalWithResolvingGeneralIssue))
+            Response.SetData(safetySourceCtsData.criticalWithResolvingGeneralIssue)
+        )
 
         context.launchSafetyCenterActivity(withReceiverPermission = true) {
             waitAllTextDisplayed(
                 safetyCenterResourcesContext.getStringByName(
-                    "overall_severity_level_critical_safety_warning_title"),
-                safetyCenterCtsData.getAlertString(1))
+                    "overall_severity_level_critical_safety_warning_title"
+                ),
+                safetyCenterCtsData.getAlertString(1)
+            )
             waitButtonNotDisplayed(RESCAN_BUTTON_LABEL)
         }
     }
@@ -202,18 +222,22 @@ class SafetyCenterStatusCardTest {
     fun withKnownStatus_displaysScanningOnRescan() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         SafetySourceReceiver.setResponse(
-            Request.Refresh(SINGLE_SOURCE_ID), Response.SetData(safetySourceCtsData.information))
+            Request.Refresh(SINGLE_SOURCE_ID),
+            Response.SetData(safetySourceCtsData.information)
+        )
 
         context.launchSafetyCenterActivity(withReceiverPermission = true) {
             waitAllTextDisplayed(
                 safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"),
-                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_summary"))
+                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_summary")
+            )
 
             waitButtonDisplayed(RESCAN_BUTTON_LABEL) { it.click() }
 
             waitAllTextDisplayed(
                 safetyCenterResourcesContext.getStringByName("scanning_title"),
-                safetyCenterResourcesContext.getStringByName("loading_summary"))
+                safetyCenterResourcesContext.getStringByName("loading_summary")
+            )
         }
     }
 
@@ -221,22 +245,28 @@ class SafetyCenterStatusCardTest {
     fun rescan_updatesDataAfterScanCompletes() {
         safetyCenterCtsHelper.setConfig(SINGLE_SOURCE_CONFIG)
         SafetySourceReceiver.setResponse(
-            Request.Refresh(SINGLE_SOURCE_ID), Response.SetData(safetySourceCtsData.information))
+            Request.Refresh(SINGLE_SOURCE_ID),
+            Response.SetData(safetySourceCtsData.information)
+        )
         SafetySourceReceiver.setResponse(
             Request.Rescan(SINGLE_SOURCE_ID),
-            Response.SetData(safetySourceCtsData.recommendationWithGeneralIssue))
+            Response.SetData(safetySourceCtsData.recommendationWithGeneralIssue)
+        )
 
         context.launchSafetyCenterActivity(withReceiverPermission = true) {
             waitAllTextDisplayed(
                 safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_title"),
-                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_summary"))
+                safetyCenterResourcesContext.getStringByName("overall_severity_level_ok_summary")
+            )
 
             waitButtonDisplayed(RESCAN_BUTTON_LABEL) { it.click() }
 
             waitAllTextDisplayed(
                 safetyCenterResourcesContext.getStringByName(
-                    "overall_severity_level_safety_recommendation_title"),
-                safetyCenterCtsData.getAlertString(1))
+                    "overall_severity_level_safety_recommendation_title"
+                ),
+                safetyCenterCtsData.getAlertString(1)
+            )
         }
     }
 }
