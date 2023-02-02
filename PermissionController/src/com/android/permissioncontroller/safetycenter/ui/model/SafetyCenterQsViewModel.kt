@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.permissioncontroller.permission.ui.model.v33
+package com.android.permissioncontroller.safetycenter.ui.model
 
 import android.Manifest.permission_group.CAMERA
 import android.Manifest.permission_group.LOCATION
@@ -27,22 +27,28 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.hardware.SensorPrivacyManager
 import android.hardware.SensorPrivacyManager.Sensors
+import android.hardware.SensorPrivacyManager.TOGGLE_TYPE_SOFTWARE
 import android.location.LocationManager
 import android.os.Build
 import android.os.Process
 import android.os.UserHandle
+import android.os.UserManager
 import android.permission.PermissionGroupUsage
+import android.provider.DeviceConfig
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.android.permissioncontroller.R
 import com.android.permissioncontroller.permission.data.LightAppPermGroupLiveData
 import com.android.permissioncontroller.permission.data.SmartUpdateMediatorLiveData
 import com.android.permissioncontroller.permission.model.livedatatypes.LightAppPermGroup
 import com.android.permissioncontroller.permission.utils.KotlinUtils
 import com.android.permissioncontroller.permission.utils.LocationUtils
+import com.android.settingslib.RestrictedLockUtils
+import com.android.settingslib.RestrictedLockUtils.EnforcedAdmin
 import kotlin.collections.set
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -51,11 +57,14 @@ class SafetyCenterQsViewModel(
     private val sessionId: Long,
     private val permGroupUsages: List<PermissionGroupUsage>
 ) : AndroidViewModel(app) {
+    private val configMicToggleEnabled = app.getString(R.string.mic_toggle_enable_config)
+    private val configCameraToggleEnabled = app.getString(R.string.camera_toggle_enable_config)
 
     private val sensorPrivacyManager: SensorPrivacyManager =
         app.getSystemService(SensorPrivacyManager::class.java)!!
     private val locationManager: LocationManager =
         app.getSystemService(LocationManager::class.java)!!
+    private val userManager: UserManager = app.getSystemService(UserManager::class.java)!!
 
     val lightAppPermMap = mutableMapOf<LightAppPermissionGroupUsageKey, LightAppPermGroup?>()
     val revokedUsages = mutableSetOf<PermissionGroupUsage>()
@@ -95,10 +104,13 @@ class SafetyCenterQsViewModel(
         }
 
     fun shouldAllowRevoke(usage: PermissionGroupUsage): Boolean {
-        val group = lightAppPermMap[LightAppPermissionGroupUsageKey(
-                usage.packageName,
-                usage.permissionGroupName,
-                UserHandle.getUserHandleForUid(usage.uid))] ?: return false
+        val group =
+            lightAppPermMap[
+                LightAppPermissionGroupUsageKey(
+                    usage.packageName,
+                    usage.permissionGroupName,
+                    UserHandle.getUserHandleForUid(usage.uid))]
+                ?: return false
         return group.supportsRuntimePerms &&
             !group.hasInstallToRuntimeSplit &&
             !group.isBackgroundFixed &&
@@ -108,7 +120,8 @@ class SafetyCenterQsViewModel(
 
     fun revokePermission(usage: PermissionGroupUsage) {
         val group =
-            lightAppPermMap[LightAppPermissionGroupUsageKey(
+            lightAppPermMap[
+                LightAppPermissionGroupUsageKey(
                     usage.packageName,
                     usage.permissionGroupName,
                     UserHandle.getUserHandleForUid(usage.uid))]
@@ -145,21 +158,32 @@ class SafetyCenterQsViewModel(
         fragment.startActivity(Intent(Settings.ACTION_SECURITY_SETTINGS))
     }
 
-    val sensorPrivacyLiveData: SmartUpdateMediatorLiveData<Map<String, Boolean>> =
+    data class SensorState(val visible: Boolean, val enabled: Boolean, val admin: EnforcedAdmin?)
+
+    val sensorPrivacyLiveData: SmartUpdateMediatorLiveData<Map<String, SensorState>> =
         object :
-            SmartUpdateMediatorLiveData<Map<String, Boolean>>(),
+            SmartUpdateMediatorLiveData<Map<String, SensorState>>(),
             SensorPrivacyManager.OnSensorPrivacyChangedListener,
             LocationUtils.LocationListener {
             override fun onUpdate() {
-                val cameraEnabled = !sensorPrivacyManager.isSensorPrivacyEnabled(Sensors.CAMERA)
-                val micEnabled = !sensorPrivacyManager.isSensorPrivacyEnabled(Sensors.MICROPHONE)
                 val locationEnabled =
                     locationManager.isLocationEnabledForUser(Process.myUserHandle())
+                val locationEnforcedAdmin =
+                    getEnforcedAdmin(UserManager.DISALLOW_SHARE_LOCATION)
+                        ?: getEnforcedAdmin(UserManager.DISALLOW_CONFIG_LOCATION)
                 value =
                     mapOf(
-                        CAMERA to cameraEnabled,
-                        MICROPHONE to micEnabled,
-                        LOCATION to locationEnabled)
+                        CAMERA to
+                            getSensorState(
+                                Sensors.CAMERA,
+                                UserManager.DISALLOW_CAMERA_TOGGLE,
+                                configCameraToggleEnabled),
+                        MICROPHONE to
+                            getSensorState(
+                                Sensors.MICROPHONE,
+                                UserManager.DISALLOW_MICROPHONE_TOGGLE,
+                                configMicToggleEnabled),
+                        LOCATION to SensorState(true, locationEnabled, locationEnforcedAdmin))
             }
 
             override fun onSensorPrivacyChanged(sensor: Int, enabled: Boolean) {
@@ -184,6 +208,28 @@ class SafetyCenterQsViewModel(
                 sensorPrivacyManager.removeSensorPrivacyListener(Sensors.MICROPHONE, this)
                 LocationUtils.removeLocationListener(this)
             }
+        }
+
+    private fun getSensorState(
+        sensor: Int,
+        restriction: String,
+        enableConfig: String
+    ): SensorState {
+        val sensorConfigEnabled =
+            DeviceConfig.getBoolean(DeviceConfig.NAMESPACE_PRIVACY, enableConfig, true)
+        return SensorState(
+            sensorConfigEnabled && sensorPrivacyManager.supportsSensorToggle(sensor),
+            !sensorPrivacyManager.isSensorPrivacyEnabled(TOGGLE_TYPE_SOFTWARE, sensor),
+            getEnforcedAdmin(restriction))
+    }
+
+    private fun getEnforcedAdmin(restriction: String) =
+        if (userManager
+            .getUserRestrictionSources(restriction, Process.myUserHandle())
+            .isNotEmpty()) {
+            RestrictedLockUtils.getProfileOrDeviceOwner(app, Process.myUserHandle())
+        } else {
+            null
         }
 
     fun navigateToManageService(fragment: Fragment, navigationIntent: Intent) {
