@@ -4,8 +4,8 @@
   xmlns:tools="http://schemas.android.com/tools"
   package="com.android.permissioncontroller"
   coreApp="true"
-  android:versionCode="331411000"
-  android:versionName="aml_per_331411000"
+  android:versionCode="331411010"
+  android:versionName="aml_per_331411010"
 >
 
     <original-package android:name="com.android.permissioncontroller" />
