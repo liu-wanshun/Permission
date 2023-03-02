@@ -1,4 +1,5 @@
-<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
   ~ Copyright (C) 2021 The Android Open Source Project
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +13,9 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  -->
+   -->
 
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <PreferenceCategory
-        android:key="info_msg_category"/>
-
-</PreferenceScreen>
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="unused_apps_page_summary" msgid="7505839764289846511">"如果您连续几个月未使用某个应用，系统将对该应用采取以下措施：\n\n• 撤消授予该应用的权限以保护您的数据\n• 移除临时文件以释放空间"</string>
+</resources>
