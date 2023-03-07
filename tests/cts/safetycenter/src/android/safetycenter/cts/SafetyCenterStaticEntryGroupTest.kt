@@ -24,7 +24,7 @@ import android.safetycenter.SafetyCenterStaticEntryGroup
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.os.ParcelableSubject.assertThat
-import com.android.permission.testing.EqualsHashCodeToStringTester
+import com.android.safetycenter.testing.EqualsHashCodeToStringTester
 import com.google.common.truth.Truth.assertThat
 import kotlin.test.assertFailsWith
 import org.junit.Test
@@ -73,7 +73,8 @@ class SafetyCenterStaticEntryGroupTest {
         assertThat(SafetyCenterStaticEntryGroup("", listOf(staticEntry1)).staticEntries)
             .containsExactly(staticEntry1)
         assertThat(
-                SafetyCenterStaticEntryGroup("", listOf(staticEntry1, staticEntry2)).staticEntries)
+                SafetyCenterStaticEntryGroup("", listOf(staticEntry1, staticEntry2)).staticEntries
+            )
             .containsExactly(staticEntry1, staticEntry2)
             .inOrder()
         assertThat(SafetyCenterStaticEntryGroup("", listOf()).staticEntries).isEmpty()
@@ -101,12 +102,15 @@ class SafetyCenterStaticEntryGroupTest {
         EqualsHashCodeToStringTester()
             .addEqualityGroup(
                 staticEntryGroup,
-                SafetyCenterStaticEntryGroup("a title", listOf(staticEntry1, staticEntry2)))
+                SafetyCenterStaticEntryGroup("a title", listOf(staticEntry1, staticEntry2))
+            )
             .addEqualityGroup(
                 SafetyCenterStaticEntryGroup("a title", listOf(staticEntry1)),
-                SafetyCenterStaticEntryGroup("a title", listOf(staticEntry1)))
+                SafetyCenterStaticEntryGroup("a title", listOf(staticEntry1))
+            )
             .addEqualityGroup(
-                SafetyCenterStaticEntryGroup("a different title", listOf(staticEntry1)))
+                SafetyCenterStaticEntryGroup("a different title", listOf(staticEntry1))
+            )
             .addEqualityGroup(SafetyCenterStaticEntryGroup("a title", listOf(staticEntry2)))
             .test()
     }

@@ -20,7 +20,7 @@ import android.safetycenter.SafetyEvent
 import android.safetycenter.SafetySourceErrorDetails
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.ext.truth.os.ParcelableSubject.assertThat
-import com.android.permission.testing.EqualsHashCodeToStringTester
+import com.android.safetycenter.testing.EqualsHashCodeToStringTester
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,11 +48,14 @@ class SafetySourceErrorDetailsTest {
             .addEqualityGroup(
                 SafetySourceErrorDetails(SAFETY_EVENT),
                 SafetySourceErrorDetails(
-                    SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_SOURCE_STATE_CHANGED)
-                        .build()))
+                    SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_SOURCE_STATE_CHANGED).build()
+                )
+            )
             .addEqualityGroup(
                 SafetySourceErrorDetails(
-                    SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_DEVICE_REBOOTED).build()))
+                    SafetyEvent.Builder(SafetyEvent.SAFETY_EVENT_TYPE_DEVICE_REBOOTED).build()
+                )
+            )
             .test()
     }
 

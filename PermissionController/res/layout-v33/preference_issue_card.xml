@@ -30,24 +30,24 @@
     <TextView
         android:id="@+id/issue_card_title"
         android:text="@string/summary_placeholder"
-        android:importantForAccessibility="no"
+        android:screenReaderFocusable="false"
         style="@style/SafetyCenterIssueTitle" />
 
     <TextView
         android:id="@+id/issue_card_subtitle"
         android:text="@string/summary_placeholder"
-        android:importantForAccessibility="no"
+        android:screenReaderFocusable="false"
         style="@style/SafetyCenterIssueSubtitle" />
 
     <TextView
         android:id="@+id/issue_card_summary"
         android:text="@string/summary_placeholder"
-        android:importantForAccessibility="no"
+        android:screenReaderFocusable="false"
         style="@style/SafetyCenterIssueSummary" />
 
-    <LinearLayout
-        android:id="@+id/issue_card_action_button_list"
-        style="@style/SafetyCenterIssueActionButtonList" />
+    <include
+      android:id="@+id/issue_card_action_button_list"
+      layout="@layout/action_button_list"/>
 
     <com.android.permissioncontroller.permission.ui.widget.SafetyProtectionSectionView
         android:id="@+id/issue_card_protected_by_android"
