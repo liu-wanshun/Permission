@@ -27,7 +27,7 @@
     <string name="off" msgid="1438489226422866263">"Off"</string>
     <string name="uninstall_or_disable" msgid="4496612999740858933">"Uninstall or disable"</string>
     <string name="app_not_found_dlg_title" msgid="6029482906093859756">"App not found"</string>
-    <string name="grant_dialog_button_deny" msgid="88262611492697192">"Don’t allow"</string>
+    <string name="grant_dialog_button_deny" msgid="88262611492697192">"Don\'t allow"</string>
     <string name="grant_dialog_button_deny_and_dont_ask_again" msgid="1748925431574312595">"Don’t allow &amp; don’t ask again"</string>
     <string name="grant_dialog_button_no_upgrade" msgid="8344732743633736625">"Keep “While the app is in use”"</string>
     <string name="grant_dialog_button_no_upgrade_one_time" msgid="5125892775684968694">"Keep “Only this time”"</string>
@@ -104,7 +104,7 @@
     <!-- no translation found for background_access_chooser_dialog_choices:2 (4305536986042401191) -->
     <string name="permission_access_always" msgid="1474641821883823446">"Allow all the time"</string>
     <string name="permission_access_only_foreground" msgid="7801170728159326195">"Allow only while using the app"</string>
-    <string name="permission_access_never" msgid="4647014230217936900">"Don’t allow"</string>
+    <string name="permission_access_never" msgid="4647014230217936900">"Don\'t allow"</string>
     <string name="loading" msgid="4789365003890741082">"Loading…"</string>
     <string name="all_permissions" msgid="6911125611996872522">"All permissions"</string>
     <string name="other_permissions" msgid="2901186127193849594">"Other app capabilities"</string>
@@ -189,7 +189,7 @@
     <string name="app_permission_button_allow_always" msgid="4573292371734011171">"Allow all the time"</string>
     <string name="app_permission_button_allow_foreground" msgid="1991570451498943207">"Allow only while using the app"</string>
     <string name="app_permission_button_ask" msgid="3342950658789427">"Ask every time"</string>
-    <string name="app_permission_button_deny" msgid="6016454069832050300">"Don’t allow"</string>
+    <string name="app_permission_button_deny" msgid="6016454069832050300">"Don\'t allow"</string>
     <string name="precise_image_description" msgid="6349638632303619872">"Precise location"</string>
     <string name="approximate_image_description" msgid="938803699637069884">"Approximate location"</string>
     <string name="app_permission_location_accuracy" msgid="7166912915040018669">"Use precise location"</string>
@@ -219,8 +219,8 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> and <xliff:g id="NUMBER">%2$s</xliff:g> other permissions removed"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Unused apps"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"If an app is unused for a few months:\n\n• Permissions are removed to protect your data\n• Notifications are stopped to save battery\n• Temporary files are removed to free up space\n\nTo allow permissions and notifications again, open the app."</string>
-    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"If an app is unused for a few months:\n\n• Permissions are removed to protect your data\n• Temporary files are removed to free up space\n\nTo allow permissions again, open the app."</string>
-    <string name="last_opened_category_title" msgid="7871347400611202595">"Last opened more than <xliff:g id="NUMBER">%s</xliff:g> months ago"</string>
+    <string name="unused_apps_page_tv_summary" msgid="2624911608663778308">"If an app is unused for a month:\n\n• Permissions are removed to protect your data\n• Temporary files are removed to free up space\n\nTo allow permissions again, open the app."</string>
+    <string name="last_opened_category_title" msgid="8796557894614236128">"{count,plural, =1{Last opened more than # month ago}other{Last opened more than # months ago}}"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"App last opened on <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Last opened <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"If you allow management of all files, this app can access, modify, and delete any files in common storage on this device or connected storage devices. The app may access files without asking you."</string>
