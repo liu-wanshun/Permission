@@ -24,7 +24,7 @@
     <string name="available" msgid="6007778121920339498">"Mavjud"</string>
     <string name="blocked" msgid="9195547604866033708">"Bloklangan"</string>
     <string name="on" msgid="280241003226755921">"Yoniq"</string>
-    <string name="off" msgid="1438489226422866263">"Yoqilmagan"</string>
+    <string name="off" msgid="1438489226422866263">"Oʻchiq"</string>
     <string name="uninstall_or_disable" msgid="4496612999740858933">"Oʻchirish yoki faolsizlantirish"</string>
     <string name="app_not_found_dlg_title" msgid="6029482906093859756">"Ilova topilmadi"</string>
     <string name="grant_dialog_button_deny" msgid="88262611492697192">"Rad etish"</string>
@@ -219,8 +219,8 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> va yana <xliff:g id="NUMBER">%2$s</xliff:g> ta ruxsat olib tashlandi"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Ishlatilmagan ilovalar"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"Ilova bir necha oy ishlatilmasa:\n\n• Maxfiyligingizni himoyalash uchun ruxsatlar bekor qilinadi\n• Batareyani tejash uchun bildirishnomalar toʻxtatiladi\n• Boʻsh joy ochish uchun vaqtinchalik fayllar tozalab tashlanadi\n\nRuxsat va bildirishnomalarga yana ruxsat berish uchun ilovani oching."</string>
-    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"Ilova bir necha oy ishlatilmasa:\n\n• Maxfiyligingizni himoyalash uchun ruxsatlar bekor qilinadi\n• Boʻsh joy ochish uchun vaqtinchalik fayllar tozalab tashlanadi\n\nRuxsatlarni qayta berish uchun ilovani oching."</string>
-    <string name="last_opened_category_title" msgid="7871347400611202595">"Oxirgi marta <xliff:g id="NUMBER">%s</xliff:g> oy oldin ochilgan"</string>
+    <string name="unused_apps_page_tv_summary" msgid="2624911608663778308">"Ilova bir oy ishlatilmasa:\n\n• Maxfiyligingizni himoyalash uchun ruxsatlar bekor qilinadi\n• Boʻsh joy ochish uchun vaqtinchalik fayllar tozalab tashlanadi\n\nRuxsatlarni qayta berish uchun ilovani oching."</string>
+    <string name="last_opened_category_title" msgid="8796557894614236128">"{count,plural, =1{Oxirgi marta # oy oldinroq ochilgan}other{Oxirgi marta # oy oldinroq ochilgan}}"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Ilova oxirgi marta ochilgan: <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Oxirgi marta ochilgan: <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Barcha fayllarni boshqarishga ruxsat berilsa, ilova bu qurilmadagi yoki ulangan xotira omborlaridagi barcha fayllarni ochishi, tahrirlashi yoki oʻchirib tashlashi mumkin. Ilova fayllar bilan sizga xabar qilmay ishlay oladi."</string>
@@ -288,8 +288,8 @@
     <string name="notification_listener_review_app_button_label" msgid="3433073281029143924">"Boshqa variantlarni tanlash"</string>
     <string name="notification_listener_remove_access_success_label" msgid="2477611529875633107">"Ruxsat olib tashlandi"</string>
     <string name="accessibility_access_reminder_notification_title" msgid="2971317234668807566">"Toʻliq kirish imkoniyati bilan ilovani tekshiring"</string>
-    <string name="accessibility_access_reminder_notification_content" msgid="7389454158175306720">"<xliff:g id="APP_NAME">%s</xliff:g> ekraningizni koʻra oladi va qurilmangizda amallarni bajara oladi. Maxsus imkoniyatlar ilovalari kutilganidek ishlashi uchun bunday ruxsatni talab qiladi."</string>
-    <string name="accessibility_access_warning_card_content" msgid="4370327190293217358">"Bu ilova ekraningizni koʻra oladi va qurilmangizda amallarni bajara oladi. Maxsus imkoniyatlar ilovalari kutilganidek ishlashi uchun bunday ruxsatni talab qiladi, lekin ilovaning ishonchli ekanini tekshiring."</string>
+    <string name="accessibility_access_reminder_notification_content" msgid="7389454158175306720">"<xliff:g id="APP_NAME">%s</xliff:g> ekraningizni koʻra oladi va qurilmangizda amallarni bajara oladi. Qulayliklar ilovalari kutilganidek ishlashi uchun bunday ruxsatni talab qiladi."</string>
+    <string name="accessibility_access_warning_card_content" msgid="4370327190293217358">"Bu ilova ekraningizni koʻra oladi va qurilmangizda amallarni bajara oladi. Qulayliklar ilovalari kutilganidek ishlashi uchun bunday ruxsatni talab qiladi, lekin ilovaning ishonchli ekanini tekshiring."</string>
     <string name="accessibility_remove_access_button_label" msgid="44145801526711640">"Ruxsatni olib tashlash"</string>
     <string name="accessibility_show_all_apps_button_label" msgid="960067249326392280">"Toʻliq ruxsatga ega ilovalarni koʻrsatish"</string>
     <string name="accessibility_remove_access_success_label" msgid="4380995302917014670">"Ruxsat olib tashlandi"</string>
