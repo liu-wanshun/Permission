@@ -4,8 +4,8 @@
   xmlns:tools="http://schemas.android.com/tools"
   package="com.android.permissioncontroller"
   coreApp="true"
-  android:versionCode="331812000"
-  android:versionName="aml_per_331812000"
+  android:versionCode="331812010"
+  android:versionName="aml_per_331812010"
 >
 
     <original-package android:name="com.android.permissioncontroller" />
@@ -335,7 +335,7 @@
                   android:excludeFromRecents="true"
                   android:exported="true"
                   android:theme="@style/PermissionDialog.FilterTouches"
-                  android:permission="android.permission.GRANT_RUNTIME_PERMISSIONS" >
+                  android:permission="android.permission.REVIEW_ACCESSIBILITY_SERVICES" >
             <intent-filter android:priority="1">
                 <action android:name="android.intent.action.REVIEW_ACCESSIBILITY_SERVICES" />
                 <category android:name="android.intent.category.DEFAULT" />
