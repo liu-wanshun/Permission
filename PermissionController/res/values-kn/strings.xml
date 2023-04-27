@@ -466,10 +466,10 @@
     <string name="permgrouprequest_calendar" msgid="1493150855673603806">"ನಿಮ್ಮ ಕ್ಯಾಲೆಂಡರ್ ಪ್ರವೇಶಿಸಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸಬೇಕೇ?"</string>
     <string name="permgrouprequest_sms" msgid="5672063688745420991">"ಎಸ್‌ಎಂಎಸ್‌ ಸಂದೇಶಗಳನ್ನು ಕಳುಹಿಸಲು ಮತ್ತು ವೀಕ್ಷಿಸಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸಬೇಕೇ?"</string>
     <string name="permgrouprequest_storage" msgid="8717773092518621602">"ಸಾಧನದಲ್ಲಿ ಫೋಟೋಗಳು, ಮಾಧ್ಯಮ, ಫೈಲ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt;ಗೆ ಅನುಮತಿಸಬೇಕೇ?"</string>
-    <string name="permgrouprequest_storage_q_to_s" msgid="8213701872983685505">"ಈ ಸಾಧನದಲ್ಲಿರುವ &lt;b&gt;ಫೋಟೋಗಳು, ವೀಡಿಯೊಗಳು, ಸಂಗೀತ, ಆಡಿಯೊವನ್ನು&lt;/b&gt; ಪ್ರವೇಶಿಸಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸಬೇಕೆ?"</string>
+    <string name="permgrouprequest_storage_q_to_s" msgid="8213701872983685505">"ಈ ಸಾಧನದಲ್ಲಿರುವ &lt;b&gt;ಫೋಟೋಗಳು, ವೀಡಿಯೊಗಳು, ಸಂಗೀತ, ಆಡಿಯೊವನ್ನು&lt;/b&gt; ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸಬೇಕೆ?"</string>
     <string name="permgrouprequest_storage_pre_q" msgid="168130651144569428">"ಈ ಸಾಧನದಲ್ಲಿರುವ &lt;b&gt;ಫೋಟೋಗಳು, ವೀಡಿಯೊಗಳು, ಸಂಗೀತ, ಆಡಿಯೋ, ಇತರ ಫೈಲ್‌ಗಳನ್ನು&lt;/b&gt; ಪ್ರವೇಶಿಸಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸಬೇಕೆ?"</string>
     <string name="permgrouprequest_read_media_aural" msgid="2593365397347577812">"ಈ ಸಾಧನದಲ್ಲಿರುವ ಸಂಗೀತ ಮತ್ತು ಆಡಿಯೊವನ್ನು ಪ್ರವೇಶಿಸಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸಬೇಕೆ?"</string>
-    <string name="permgrouprequest_read_media_visual" msgid="5548780620779729975">"ಈ ಸಾಧನದಲ್ಲಿರುವ ಫೋಟೋಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳನ್ನು ಪ್ರವೇಶಿಸಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸಬೇಕೆ?"</string>
+    <string name="permgrouprequest_read_media_visual" msgid="5548780620779729975">"ಈ ಸಾಧನದಲ್ಲಿರುವ ಫೋಟೋಗಳು ಮತ್ತು ವೀಡಿಯೊಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸಬೇಕೆ?"</string>
     <string name="permgrouprequest_microphone" msgid="2825208549114811299">"ಆಡಿಯೋ ರೆಕಾರ್ಡ್‌ ಮಾಡಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸಬೇಕೇ?"</string>
     <string name="permgrouprequestdetail_microphone" msgid="8510456971528228861">"ನೀವು ಆ್ಯಪ್ ಬಳಸುತ್ತಿರುವಾಗ ಮಾತ್ರ ಆ್ಯಪ್‌ಗೆ ಆಡಿಯೋ ರೆಕಾರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ"</string>
     <string name="permgroupbackgroundrequest_microphone" msgid="8874462606796368183">"ಆಡಿಯೋ ರೆಕಾರ್ಡ್‌ ಮಾಡಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಆ್ಯಪ್‌ಗೆ ಅನುಮತಿಸಬೇಕೇ?"</string>
@@ -490,7 +490,7 @@
     <string name="permgroupbackgroundrequest_sensors" msgid="5661924322018503886">"ನಿಮ್ಮ ಜೀವನಾಧಾರವಾಗಿರುವ ಲಕ್ಷಣಗಳ ಕುರಿತ ಸೆನ್ಸರ್ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸಬೇಕೇ?"</string>
     <string name="permgroupbackgroundrequestdetail_sensors" msgid="7726767635834043501">"ನೀವು ಆ್ಯಪ್ ಅನ್ನು ಬಳಸದಿರುವಾಗಲೂ ಸಹ, ಎಲ್ಲಾ ಸಮಯದಲ್ಲೂ ದೇಹದ ಸೆನ್ಸರ್‌ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸಲು ಈ ಆ್ಯಪ್ ಅನ್ನು ಅನುಮತಿಸಲು, "<annotation id="link">"ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ."</annotation></string>
     <string name="permgroupupgraderequest_sensors" msgid="7576527638411370468">"ಆ್ಯಪ್ ಬಳಕೆಯಲ್ಲಿರುವಾಗ ದೇಹದ ಸೆನ್ಸರ್‌ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸುತ್ತಿರಬೇಕೇ?"</string>
-    <string name="permgrouprequest_notifications" msgid="6396739062335106181">"ನಿಮಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸಬೇಕೇ?"</string>
+    <string name="permgrouprequest_notifications" msgid="6396739062335106181">"ನಿಮಗೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; ಗೆ ಅನುಮತಿಸಬೇಕೇ?"</string>
     <string name="auto_granted_permissions" msgid="6009452264824455892">"ನಿಯಂತ್ರಿತ ಅನುಮತಿಗಳು"</string>
     <string name="auto_granted_location_permission_notification_title" msgid="1438871159268985993">"ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸಬಹುದು"</string>
     <string name="auto_granted_permission_notification_body" msgid="6919835973190443695">"ನಿಮ್ಮ IT ನಿರ್ವಾಹಕರು <xliff:g id="APP_NAME">%s</xliff:g> ಗೆ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸಲು ಅನುಮತಿಸುತ್ತಿದ್ದಾರೆ"</string>
@@ -529,7 +529,7 @@
     <string name="safety_privacy_qs_tile_subtitle" msgid="3621544532041936749">"ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಿ"</string>
     <string name="privacy_controls_qs" msgid="5780144882040591169">"ನಿಮ್ಮ ಗೌಪ್ಯತೆ ನಿಯಂತ್ರಣಗಳು"</string>
     <string name="security_settings_button_label_qs" msgid="8280343822465962330">"ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು"</string>
-    <string name="camera_toggle_label_qs" msgid="3880261453066157285">"ಕ್ಯಾಮರಾ ಪ್ರವೇಶದ ಅನುಮತಿ"</string>
+    <string name="camera_toggle_label_qs" msgid="3880261453066157285">"ಕ್ಯಾಮರಾ ಪ್ರವೇಶ"</string>
     <string name="microphone_toggle_label_qs" msgid="8132912469813396552">"ಮೈಕ್ ಆ್ಯಕ್ಸೆಸ್"</string>
     <string name="permissions_removed_qs" msgid="8957319130625294572">"ಅನುಮತಿಯನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ"</string>
     <string name="camera_usage_qs" msgid="4394233566086665994">"ಇತ್ತೀಚಿನ ಕ್ಯಾಮರಾ ಬಳಕೆಯನ್ನು ನೋಡಿ"</string>
