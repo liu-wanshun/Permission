@@ -4,8 +4,8 @@
   xmlns:tools="http://schemas.android.com/tools"
   package="com.android.permissioncontroller"
   coreApp="true"
-  android:versionCode="331812010"
-  android:versionName="aml_per_331812010"
+  android:versionCode="331812020"
+  android:versionName="aml_per_331812020"
 >
 
     <original-package android:name="com.android.permissioncontroller" />
@@ -173,6 +173,8 @@
 
         <service android:name="com.android.permissioncontroller.permission.service.PermissionEventCleanupJobService"
                  android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name="com.android.permissioncontroller.permission.service.v33.CorrectSensorPrivacyJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service
             android:name="com.android.permissioncontroller.safetycenter.service.SafetyCenterBackgroundRefreshJobService"
