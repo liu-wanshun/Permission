@@ -78,6 +78,7 @@ public class Constants {
      */
     public static final int SAFETY_CENTER_BACKGROUND_REFRESH_JOB_ID = 7;
 
+    public static final int FIX_SENSOR_PRIVACY_STATE_PERIODIC_JOB_ID = 10;
 
     /**
      * Name of file to containing the packages we already showed a notification for.
@@ -294,4 +295,19 @@ public class Constants {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     public static final String OPSTR_RECEIVE_AMBIENT_TRIGGER_AUDIO =
             "android:receive_ambient_trigger_audio";
+
+    /**
+     * Extra used by Settings to indicate an Intent should be treated as if opened directly by
+     * Settings app itself.
+     */
+    public static final String EXTRA_FROM_SETTINGS = "is_from_settings_homepage";
+
+    /**
+     * Extra used by Settings to indicate an Intent should be treated as if opened by a slice
+     * within Settings.
+     *
+     * <p>Slices are opened within settings by firing a PendingIntent, so we can use this extra to
+     * allow the same UX path to be taken as for slices.
+     */
+    public static final String EXTRA_IS_FROM_SLICE = "is_from_slice";
 }
