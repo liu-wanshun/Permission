@@ -36,9 +36,9 @@ import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.exe
 import android.safetycenter.cts.testing.SafetyCenterApisWithShellPermissions.refreshSafetySourcesWithPermission
 import android.safetycenter.cts.testing.SafetySourceIntentHandler.Request
 import android.safetycenter.cts.testing.SafetySourceIntentHandler.Response
-import android.safetycenter.cts.testing.ShellPermissions.callWithShellPermissionIdentity
 import android.safetycenter.cts.testing.WaitForBroadcastIdle.waitForBroadcastIdle
 import androidx.test.core.app.ApplicationProvider
+import com.android.safetycenter.testing.ShellPermissions.callWithShellPermissionIdentity
 import java.time.Duration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -84,16 +84,22 @@ class SafetySourceReceiver : BroadcastReceiver() {
             val notificationManager = getSystemService(NotificationManager::class.java)!!
             notificationManager.createNotificationChannel(
                 NotificationChannel(
-                    NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID, IMPORTANCE_DEFAULT))
+                    NOTIFICATION_CHANNEL_ID,
+                    NOTIFICATION_CHANNEL_ID,
+                    IMPORTANCE_DEFAULT
+                )
+            )
             startForeground(
                 NOTIFICATION_ID,
                 Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
                     .setContentTitle("SafetySourceReceiver")
                     .setContentText(
                         "SafetySourceReceiver is processing an incoming intent in its " +
-                            "ForegroundService")
+                            "ForegroundService"
+                    )
                     .setSmallIcon(android.R.drawable.ic_info)
-                    .build())
+                    .build()
+            )
             serviceScope.launch {
                 try {
                     safetySourceIntentHandler.handle(this@ForegroundService, intent!!)

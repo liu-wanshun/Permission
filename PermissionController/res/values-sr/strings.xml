@@ -219,8 +219,8 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Уклоњено: <xliff:g id="PERMISSION_NAME">%1$s</xliff:g> и још <xliff:g id="NUMBER">%2$s</xliff:g> дозволе"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Апликације које се не користе"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"Ако не користите апликацију неколико месеци:\n\n• дозволе се уклањају да би се заштитили подаци\n• обавештења се заустављају да би се штедела батерија\n• привремени фајлови се уклањају да би се ослободио простор\n\nДа бисте поново омогућили дозволе и обавештења, отворите апликацију."</string>
-    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"Ако не користите апликацију неколико месеци:\n\n• дозволе се уклањају да би се заштитили подаци\n• привремени фајлови се уклањају да би се ослободио простор\n\nДа бисте поново омогућили дозволе, отворите апликацију."</string>
-    <string name="last_opened_category_title" msgid="7871347400611202595">"Последњи пут отворено пре више од <xliff:g id="NUMBER">%s</xliff:g> мес."</string>
+    <string name="unused_apps_page_tv_summary" msgid="2624911608663778308">"Ако не користите апликацију месец дана:\n\n• дозволе се уклањају да би се заштитили подаци\n• привремени фајлови се уклањају да би се ослободио простор\n\nДа бисте поново омогућили дозволе, отворите апликацију."</string>
+    <string name="last_opened_category_title" msgid="8796557894614236128">"{count,plural, =1{Последњи пут отворено пре више од # месеца}one{Последњи пут отворено пре више од # месеца}few{Последњи пут отворено пре више од # месеца}other{Последњи пут отворено пре више од # месеци}}"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Апликација је последњи пут отворена: <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Последњи пут отворено: <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Ако омогућите управљање свим датотекама, ова апликација може да приступа свим датотекама у заједничком меморијском простору на овом уређају или повезаним уређајима за складиштење и да мења и брише те датотеке. Апликација може да приступа датотекама без питања."</string>
@@ -317,23 +317,23 @@
     <string name="app_perms_24h_access" msgid="99069906850627181">"Последњи приступ: <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_perms_24h_access_yest" msgid="5411926024794555022">"Последњи приступ јуче у <xliff:g id="TIME_DATE">%1$s</xliff:g>"</string>
     <string name="app_perms_7d_access" msgid="4945055548894683751">"Последњи приступ: <xliff:g id="TIME_DATE_0">%1$s</xliff:g> у <xliff:g id="TIME_DATE_1">%2$s</xliff:g>"</string>
-    <string name="app_perms_content_provider_24h" msgid="1055526027667508972">"Приступ у последња 24 сата"</string>
-    <string name="app_perms_content_provider_7d" msgid="3215454898257814868">"Приступ у последњих 7 дана"</string>
+    <string name="app_perms_content_provider_24h" msgid="1055526027667508972">"Приступљено у последња 24 сата"</string>
+    <string name="app_perms_content_provider_7d" msgid="3215454898257814868">"Приступљено у последњих 7 дана"</string>
     <string name="app_perms_24h_access_background" msgid="3413674718969576843">"Последњи приступ: <xliff:g id="TIME_DATE">%1$s</xliff:g> • Дозвољено увек"</string>
     <string name="app_perms_24h_access_yest_background" msgid="9174750810998076725">"Последњи приступ јуче у <xliff:g id="TIME_DATE">%1$s</xliff:g> • Дозвољено увек"</string>
     <string name="app_perms_7d_access_background" msgid="408099213372185627">"Последњи приступ: <xliff:g id="TIME_DATE_0">%1$s</xliff:g> у <xliff:g id="TIME_DATE_1">%2$s</xliff:g> • Дозвољено увек"</string>
-    <string name="app_perms_content_provider_24h_background" msgid="3825902995186961496">"Приступ у последња 24 сата • Дозвољено увек"</string>
-    <string name="app_perms_content_provider_7d_background" msgid="4818839672116463542">"Приступ у последњих 7 дана • Дозвољено увек"</string>
+    <string name="app_perms_content_provider_24h_background" msgid="3825902995186961496">"Приступљено у последња 24 сата • Дозвољено увек"</string>
+    <string name="app_perms_content_provider_7d_background" msgid="4818839672116463542">"Приступљено у последњих 7 дана • Дозвољено увек"</string>
     <string name="app_perms_24h_access_media_only" msgid="6651699644199132054">"Последњи приступ: <xliff:g id="TIME_DATE">%1$s</xliff:g> • Медији"</string>
     <string name="app_perms_24h_access_yest_media_only" msgid="7213187706424998792">"Последњи приступ јуче у <xliff:g id="TIME_DATE">%1$s</xliff:g> • Медији"</string>
     <string name="app_perms_7d_access_media_only" msgid="1031096653668235200">"Последњи приступ: <xliff:g id="TIME_DATE_0">%1$s</xliff:g> у <xliff:g id="TIME_DATE_1">%2$s</xliff:g> • Медији"</string>
-    <string name="app_perms_content_provider_24h_media_only" msgid="7797963000596179491">"Приступ у последња 24 сата • Медији"</string>
-    <string name="app_perms_content_provider_7d_media_only" msgid="8446239884570262243">"Приступ у последњих 7 дана • Медији"</string>
+    <string name="app_perms_content_provider_24h_media_only" msgid="7797963000596179491">"Приступљено у последња 24 сата • Медији"</string>
+    <string name="app_perms_content_provider_7d_media_only" msgid="8446239884570262243">"Приступљено у последњих 7 дана • Медији"</string>
     <string name="app_perms_24h_access_all_files" msgid="8902360456978159091">"Последњи приступ: <xliff:g id="TIME_DATE">%1$s</xliff:g> • Сви фајлови"</string>
     <string name="app_perms_24h_access_yest_all_files" msgid="5708424073126844909">"Последњи приступ јуче у <xliff:g id="TIME_DATE">%1$s</xliff:g> • Сви фајлови"</string>
     <string name="app_perms_7d_access_all_files" msgid="8246193786397635824">"Последњи приступ: <xliff:g id="TIME_DATE_0">%1$s</xliff:g> у <xliff:g id="TIME_DATE_1">%2$s</xliff:g> • Сви фајлови"</string>
-    <string name="app_perms_content_provider_24h_all_files" msgid="573104317727770850">"Приступ у последња 24 сата • Сви фајлови"</string>
-    <string name="app_perms_content_provider_7d_all_files" msgid="7962416229708835558">"Приступ у последњих 7 дана• Сви фајлови"</string>
+    <string name="app_perms_content_provider_24h_all_files" msgid="573104317727770850">"Приступљено у последња 24 сата • Сви фајлови"</string>
+    <string name="app_perms_content_provider_7d_all_files" msgid="7962416229708835558">"Приступљено у последњих 7 дана• Сви фајлови"</string>
     <string name="no_permissions_allowed" msgid="6081976856354669209">"Дозволе нису одобрене"</string>
     <string name="no_permissions_denied" msgid="8159923922804043282">"Ниједна дозвола није одбијена"</string>
     <string name="no_apps_allowed" msgid="7718822655254468631">"Ниједна апликација нема дозволу"</string>

@@ -17,7 +17,6 @@
 package com.android.permissioncontroller.privacysources
 
 import android.accessibilityservice.AccessibilityServiceInfo
-import android.accessibilityservice.AccessibilityServiceInfo.FEEDBACK_ALL_MASK
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -417,6 +416,11 @@ class AccessibilitySourceService(
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         intent.putExtra(Constants.EXTRA_SESSION_ID, sessionId)
         intent.putExtra(Intent.EXTRA_UID, uid)
+
+        // Start this Settings activity using the same UX that settings slices uses. This allows
+        // settings to correctly support 2-pane layout with as-best-as-possible transition
+        // animation.
+        intent.putExtra(Constants.EXTRA_IS_FROM_SLICE, true)
         return PendingIntent.getActivity(
             context,
             0,
@@ -501,10 +505,19 @@ class AccessibilitySourceService(
      * @return enabled 3rd party accessibility services.
      */
     fun getEnabledAccessibilityServices(): List<AccessibilityServiceInfo> {
-        return accessibilityManager.getEnabledAccessibilityServiceList(
-            FEEDBACK_ALL_MASK
-        ).filter { !it.isAccessibilityTool }
-            .filter { ComponentName.unflattenFromString(it.id) != null }
+        val installedServices = accessibilityManager.getInstalledAccessibilityServiceList()
+            .associateBy { ComponentName.unflattenFromString(it.id) }
+        val enabledServices = AccessibilitySettingsUtil.getEnabledServicesFromSettings(context)
+            .map {
+                if (installedServices[it] == null) {
+                    Log.e(LOG_TAG, "enabled accessibility service ($it) not found in installed" +
+                        "services: ${installedServices.keys}")
+                }
+                installedServices[it]
+            }
+
+        return enabledServices.filterNotNull()
+            .filter { !it.isAccessibilityTool }
     }
 
     /**

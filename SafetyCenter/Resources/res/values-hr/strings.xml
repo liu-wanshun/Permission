@@ -28,10 +28,10 @@
     <string name="privacy_sources_title" msgid="4061110826457365957">"Privatnost"</string>
     <string name="privacy_sources_summary" msgid="4089719981155120864">"Nadzorna ploča, dopuštenja, kontrole"</string>
     <string name="permission_usage_title" msgid="3633779688945350407">"Nadzorna ploča za privatnost"</string>
-    <string name="permission_usage_summary" msgid="5323079206029964468">"Prikaži aplikacije koje su nedavno upotrebljavale dopuštenja"</string>
+    <string name="permission_usage_summary" msgid="5323079206029964468">"Pregledajte aplikacije koje su nedavno upotrebljavale dopuštenja"</string>
     <string name="permission_usage_search_terms" msgid="3852343592870257104">"Privatnost, nadzorna ploča za privatnost"</string>
     <string name="permission_manager_title" msgid="5277347862821255015">"Upravitelj dopuštenja"</string>
-    <string name="permission_manager_summary" msgid="8099852107340970790">"Upravljajte pristupom aplikacija svojim podacima"</string>
+    <string name="permission_manager_summary" msgid="8099852107340970790">"Upravljajte kojim podacima mogu pristupati vaše aplikacije"</string>
     <string name="permission_manager_search_terms" msgid="2895147613099694722">"Dopuštenja, upravitelj dopuštenja"</string>
     <string name="privacy_controls_title" msgid="5322875777945432395">"Kontrole privatnosti"</string>
     <string name="privacy_controls_summary" msgid="2402066941190435424">"Kontroliranje pristupanja uređaja mikrofonu, kameri i ostalome"</string>
@@ -43,6 +43,4 @@
     <string name="advanced_privacy_title" msgid="1117725225706176643">"Više postavki privatnosti"</string>
     <string name="advanced_privacy_summary" msgid="2281203390575069543">"Automatsko popunjavanje, kontrole aktivnosti i ostalo"</string>
     <string name="advanced_privacy_search_terms" msgid="5044404599789175222"></string>
-    <string name="overall_severity_level_account_recommendation_title" msgid="6524855037045765671">"Račun je možda ugrožen"</string>
-    <string name="overall_severity_level_critical_account_warning_title" msgid="3294187096461368277">"Račun je ugrožen"</string>
 </resources>

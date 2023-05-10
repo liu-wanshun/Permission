@@ -76,7 +76,7 @@
     <string name="storage_supergroup_warning_allow" msgid="103093462784523190">"Esta app se diseñó para una versión anterior de Android. Si otorgas este permiso, se podrá acceder a todo el almacenamiento, lo que incluye fotos, videos, música, audios y otros archivos."</string>
     <string name="storage_supergroup_warning_deny" msgid="6420765672683284347">"Esta app se diseñó para una versión anterior de Android. Si rechazas este permiso, no se podrá acceder a todo el almacenamiento, lo que incluye fotos, videos, música, audios y otros archivos."</string>
     <string name="default_permission_description" msgid="4624464917726285203">"realizar una acción desconocida"</string>
-    <string name="app_permissions_group_summary" msgid="8788419008958284002">"Se otorgó el permiso a <xliff:g id="COUNT_0">%1$d</xliff:g> de <xliff:g id="COUNT_1">%2$d</xliff:g> apps"</string>
+    <string name="app_permissions_group_summary" msgid="8788419008958284002">"Permiso otorgado a <xliff:g id="COUNT_0">%1$d</xliff:g> de <xliff:g id="COUNT_1">%2$d</xliff:g> apps"</string>
     <string name="app_permissions_group_summary2" msgid="4329922444840521150">"<xliff:g id="COUNT_0">%1$d</xliff:g>/<xliff:g id="COUNT_1">%2$d</xliff:g> apps permitidas"</string>
     <string name="menu_show_system" msgid="4254021607027872504">"Mostrar sistema"</string>
     <string name="menu_hide_system" msgid="3855390843744028465">"Ocultar sistema"</string>
@@ -128,8 +128,8 @@
     <string name="perm_usage_adv_info_title" msgid="3357831829538873708">"Ver otros permisos"</string>
     <string name="perm_usage_adv_info_summary_2_items" msgid="3702175198750127822">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g>"</string>
     <string name="perm_usage_adv_info_summary_more_items" msgid="949055326299562218">"<xliff:g id="PERMGROUP_0">%1$s</xliff:g>, <xliff:g id="PERMGROUP_1">%2$s</xliff:g> y <xliff:g id="NUM">%3$s</xliff:g> más"</string>
-    <string name="permission_group_usage_subtitle_24h" msgid="5120155996322114181">"Cronograma de cuándo las apps usaron tu <xliff:g id="PERMGROUP">%1$s</xliff:g> durante las últimas 24 horas"</string>
-    <string name="permission_group_usage_subtitle_7d" msgid="1465828402260324654">"Cronograma de cuándo las apps usaron tu <xliff:g id="PERMGROUP">%1$s</xliff:g> durante los últimos 7 días"</string>
+    <string name="permission_group_usage_subtitle_24h" msgid="5120155996322114181">"Cronología de cuándo las apps usaron tu <xliff:g id="PERMGROUP">%1$s</xliff:g> durante las últimas 24 horas"</string>
+    <string name="permission_group_usage_subtitle_7d" msgid="1465828402260324654">"Cronología de cuándo las apps usaron tu <xliff:g id="PERMGROUP">%1$s</xliff:g> durante los últimos 7 días"</string>
     <string name="permission_usage_access_dialog_subtitle" msgid="4171772805196955753">"Cuándo esta app usó tu permiso de <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
     <string name="permission_usage_access_dialog_learn_more" msgid="7121468469493184613">"Más información"</string>
     <string name="learn_more_content_description" msgid="8673699744544502539">"Más información sobre <xliff:g id="PERMGROUP">%1$s</xliff:g>"</string>
@@ -219,8 +219,8 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"Se quitaron <xliff:g id="PERMISSION_NAME">%1$s</xliff:g> y <xliff:g id="NUMBER">%2$s</xliff:g> otros permisos"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Apps que no usas"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"Si una app permanece en desuso algunos meses, ocurre lo siguiente:\n\n• Se quitan los permisos para proteger tus datos.\n• Se detienen las notificaciones para ahorrar batería.\n• Se quitan los archivos temporales para liberar espacio.\n\nPara volver a habilitar los permisos y las notificaciones, abre la app."</string>
-    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"Si no usas una app durante algunos meses, ocurre lo siguiente:\n\n• Se quitan los permisos para proteger tus datos.\n• Se quitan los archivos temporales para liberar espacio.\n\nPara volver a habilitar los permisos, abre la app."</string>
-    <string name="last_opened_category_title" msgid="7871347400611202595">"Se abrió por última vez hace más de <xliff:g id="NUMBER">%s</xliff:g> meses"</string>
+    <string name="unused_apps_page_tv_summary" msgid="2624911608663778308">"Si no usas una app durante un mes, ocurre lo siguiente:\n\n• Se quitan los permisos para proteger tus datos.\n• Se quitan los archivos temporales para liberar espacio.\n\nPara volver a habilitar los permisos, abre la app."</string>
+    <string name="last_opened_category_title" msgid="8796557894614236128">"{count,plural, =1{Se abrió por última vez hace más de # mes}many{Se abrió por última vez hace más de # de meses}other{Se abrió por última vez hace más de # meses}}"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"App abierta por última vez el <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Abierta por última vez el <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Si permites que se administren todos los archivos, esta app podrá consultar, modificar y borrar los archivos que haya en el almacenamiento común de este dispositivo o en los dispositivos de almacenamiento conectados. Podrá acceder a los archivos sin consultarte."</string>
@@ -384,7 +384,7 @@
     <string name="role_call_redirection_request_title" msgid="2816244455003562925">"¿Quieres establecer <xliff:g id="APP_NAME">%1$s</xliff:g> como tu app de redireccionamiento de llamadas predeterminada?"</string>
     <string name="role_call_redirection_request_description" msgid="3118895714178527164">"No se requieren permisos"</string>
     <string name="role_call_screening_label" msgid="883935222060878724">"App de ID de llamada y spam predeterminada"</string>
-    <string name="role_call_screening_short_label" msgid="2048465565063130834">"App de ID de llamada y spam"</string>
+    <string name="role_call_screening_short_label" msgid="2048465565063130834">"App de identificación de llamadas y filtro de spam"</string>
     <string name="role_call_screening_description" msgid="2349431420497468981">"Apps que te permiten identificar llamadas y bloquear spam, llamadas automáticas y números no deseados"</string>
     <string name="role_call_screening_request_title" msgid="7358309224566977290">"¿Quieres establecer <xliff:g id="APP_NAME">%1$s</xliff:g> como tu app de identificador de llamada y spam predeterminada?"</string>
     <string name="role_call_screening_request_description" msgid="7338511921032446006">"No se requieren permisos"</string>
@@ -515,10 +515,10 @@
     <string name="blocked_mic_summary" msgid="8960466941528458347">"Es posible que se sigan compartiendo los datos del micrófono cuando llames a un número de emergencia."</string>
     <string name="blocked_sensor_button_label" msgid="6742092634984289658">"Cambiar"</string>
     <string name="safety_center_dashboard_page_title" msgid="2810774008694315854">"Seguridad y privacidad"</string>
-    <string name="safety_center_rescan_button" msgid="4517514567809409596">"Escanear dispositivo"</string>
+    <string name="safety_center_rescan_button" msgid="4517514567809409596">"Analizar dispositivo"</string>
     <string name="safety_center_issue_card_dismiss_button" msgid="5113965506144222402">"Descartar"</string>
     <string name="safety_center_issue_card_dismiss_confirmation_title" msgid="2734809473425036382">"¿Quieres descartar esta alerta?"</string>
-    <string name="safety_center_issue_card_dismiss_confirmation_message" msgid="3775418736671093563">"Revisa la configuración de seguridad y privacidad en cualquier momento para tomar medidas adicionales de protección"</string>
+    <string name="safety_center_issue_card_dismiss_confirmation_message" msgid="3775418736671093563">"Revisa la configuración de seguridad y privacidad en cualquier momento para tomar medidas adicionales de protección."</string>
     <string name="safety_center_issue_card_confirm_dismiss_button" msgid="5884137843083634556">"Descartar"</string>
     <string name="safety_center_issue_card_cancel_dismiss_button" msgid="2874578798877712346">"Cancelar"</string>
     <string name="safety_center_entries_category_title" msgid="34356964062813115">"Configuración"</string>

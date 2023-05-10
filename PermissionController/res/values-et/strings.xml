@@ -27,7 +27,7 @@
     <string name="off" msgid="1438489226422866263">"Väljas"</string>
     <string name="uninstall_or_disable" msgid="4496612999740858933">"Desinstalli või keela"</string>
     <string name="app_not_found_dlg_title" msgid="6029482906093859756">"Rakendust ei leitud"</string>
-    <string name="grant_dialog_button_deny" msgid="88262611492697192">"Ära luba"</string>
+    <string name="grant_dialog_button_deny" msgid="88262611492697192">"Ära anna"</string>
     <string name="grant_dialog_button_deny_and_dont_ask_again" msgid="1748925431574312595">"Ära luba ja ära enam küsi"</string>
     <string name="grant_dialog_button_no_upgrade" msgid="8344732743633736625">"Säilita valik „Rakenduse kasutamise ajal”"</string>
     <string name="grant_dialog_button_no_upgrade_one_time" msgid="5125892775684968694">"Säilita ainult sel korral"</string>
@@ -219,8 +219,8 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> ja veel <xliff:g id="NUMBER">%2$s</xliff:g> luba eemaldati"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"Kasutamata rakendused"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"Kui rakendust mõne kuu vältel ei kasutata, toimub järgmine.\n\n• Load eemaldatakse, et teie andmeid kaitsta.\n• Märguanded peatatakse, et akut säästa.\n• Ajutised failid eemaldatakse, et ruumi vabastada.\n\nKui soovite uuesti lubasid anda ja märguandeid lubada, avage rakendus."</string>
-    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"Kui rakendust mõne kuu vältel ei kasutata, toimub järgmine.\n\n• Load eemaldatakse, et teie andmeid kaitsta.\n• Ajutised failid eemaldatakse, et ruumi vabastada.\n\nKui soovite uuesti lubasid anda, avage rakendus."</string>
-    <string name="last_opened_category_title" msgid="7871347400611202595">"Viimati avatud rohkem kui <xliff:g id="NUMBER">%s</xliff:g> kuud tagasi"</string>
+    <string name="unused_apps_page_tv_summary" msgid="2624911608663778308">"Kui rakendust kuu vältel ei kasutata, toimub järgmine.\n\n• Load eemaldatakse, et teie andmeid kaitsta.\n• Ajutised failid eemaldatakse, et ruumi vabastada.\n\nKui soovite uuesti lubasid anda, avage rakendus."</string>
+    <string name="last_opened_category_title" msgid="8796557894614236128">"{count,plural, =1{Viimati avatud rohkem kui # kuu tagasi}other{Viimati avatud rohkem kui # kuud tagasi}}"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"Rakendus avati viimati <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"Viimati avatud <xliff:g id="DATE">%s</xliff:g>"</string>
     <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"Kui lubate kõikide failide haldamise, pääseb see rakendus selle seadme või ühendatud salvestusseadme ühises salvestusruumis juurde mis tahes failidele ning saab neid muuta ja kustutada. Rakendus võib failidele juurde pääseda teilt luba küsimata."</string>
@@ -457,7 +457,7 @@
     <string name="permgroupbackgroundrequestdetail_location" msgid="8021219324989662957">"See rakendus võib soovida pidevat juurdepääsu teie asukohale (ka siis, kui te rakendust ei kasuta). "<annotation id="link">"Lubage see seadetes"</annotation>"."</string>
     <string name="permgroupupgraderequest_location" msgid="8328408946822691636">"Kas muuta rakenduse &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; puhul juurdepääsu asukohale?"</string>
     <string name="permgroupupgraderequestdetail_location" msgid="1550899076845189165">"See rakendus soovib pidevat juurdepääsu teie asukohale (ka siis, kui te rakendust ei kasuta). "<annotation id="link">"Lubage see seadetes"</annotation>"."</string>
-    <string name="permgrouprequest_nearby_devices" msgid="2272829282660436700">"Kas lubada rak. &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; leida lähedalasuvaid seadmeid, nendega ühendada ja nende suhteline asukoht määrata?"</string>
+    <string name="permgrouprequest_nearby_devices" msgid="2272829282660436700">"Kas lubada rakendusel &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; leida lähedalasuvaid seadmeid, nendega ühendada ja nende suhteline asukoht määrata?"</string>
     <string name="permgroupupgraderequestdetail_nearby_devices" msgid="6877531270654738614">"Kas lubada rakendusel &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; leida lähedalasuvaid seadmeid, nendega ühendada ja nende suhteline asukoht määrata? "<annotation id="link">"Lubage menüüs Seaded."</annotation></string>
     <string name="permgrouprequest_fineupgrade" msgid="2334242928821697672">"Kas muuta rakenduse <xliff:g id="APP_NAME">&lt;b&gt;%1$s&lt;/b&gt;</xliff:g> asukohale juurdepääsemise tase ligikaudsest täpseks?"</string>
     <string name="permgrouprequest_coarselocation" msgid="7244605063736425232">"Kas lubada rakendusele &lt;b&gt;<xliff:g id="APP_NAME">%1$s</xliff:g>&lt;/b&gt; juurdepääs selle seadme ligikaudsele asukohale?"</string>

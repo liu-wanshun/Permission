@@ -30,6 +30,7 @@ import android.safetycenter.SafetyCenterStatus
 import androidx.annotation.RequiresApi
 import com.android.permissioncontroller.Constants
 import com.android.permissioncontroller.PermissionControllerStatsLog
+import com.android.permissioncontroller.PermissionControllerStatsLog.SAFETY_CENTER_INTERACTION_REPORTED__ISSUE_STATE__ISSUE_STATE_UNKNOWN
 import com.android.permissioncontroller.permission.utils.Utils
 import com.android.permissioncontroller.safetycenter.SafetyCenterConstants
 import com.android.safetycenter.internaldata.SafetyCenterIds
@@ -44,8 +45,35 @@ class InteractionLogger(
     var navigationSource: NavigationSource = NavigationSource.UNKNOWN,
     var navigationSensor: Sensor = Sensor.UNKNOWN
 ) {
-    @JvmOverloads
-    fun record(
+    fun record(action: Action) {
+        writeAtom(action)
+    }
+
+    fun recordForIssue(action: Action, issue: SafetyCenterIssue) {
+        val decodedId = SafetyCenterIds.issueIdFromString(issue.id)
+        writeAtom(
+            action,
+            LogSeverityLevel.fromIssueSeverityLevel(issue.severityLevel),
+            sourceId = decodedId.safetyCenterIssueKey.safetySourceId,
+            sourceProfileType =
+                SafetySourceProfileType.fromUserId(decodedId.safetyCenterIssueKey.userId),
+            issueTypeId = decodedId.issueTypeId)
+    }
+
+    fun recordForEntry(action: Action, entry: SafetyCenterEntry) {
+        val decodedId = SafetyCenterIds.entryIdFromString(entry.id)
+        writeAtom(
+            action,
+            LogSeverityLevel.fromEntrySeverityLevel(entry.severityLevel),
+            sourceId = decodedId.safetySourceId,
+            sourceProfileType = SafetySourceProfileType.fromUserId(decodedId.userId))
+    }
+
+    fun recordForSensor(action: Action, sensor: Sensor) {
+        writeAtom(action = action, sensor = sensor)
+    }
+
+    private fun writeAtom(
         action: Action,
         severityLevel: LogSeverityLevel = LogSeverityLevel.UNKNOWN,
         sourceId: String? = null,
@@ -57,6 +85,11 @@ class InteractionLogger(
             return
         }
 
+        // WARNING: Be careful when logging severity levels. If the severity level being recorded
+        // is at all influenced by a logging-disallowed source, we should not record it. At the
+        // moment, we do not record overall severity levels in this atom, but leaving this note for
+        // future implementors.
+
         PermissionControllerStatsLog.write(
             PermissionControllerStatsLog.SAFETY_CENTER_INTERACTION_REPORTED,
             sessionId,
@@ -67,31 +100,12 @@ class InteractionLogger(
             encodeStringId(sourceId),
             sourceProfileType.statsLogValue,
             encodeStringId(issueTypeId),
-            (if (sensor != Sensor.UNKNOWN) sensor else navigationSensor).statsLogValue)
-    }
-
-    fun recordForIssue(action: Action, issue: SafetyCenterIssue) {
-        val decodedId = SafetyCenterIds.issueIdFromString(issue.id)
-        record(
-            action,
-            LogSeverityLevel.fromIssueSeverityLevel(issue.severityLevel),
-            sourceId = decodedId.safetyCenterIssueKey.safetySourceId,
-            sourceProfileType =
-                SafetySourceProfileType.fromUserId(decodedId.safetyCenterIssueKey.userId),
-            issueTypeId = decodedId.issueTypeId)
-    }
-
-    fun recordForEntry(action: Action, entry: SafetyCenterEntry) {
-        val decodedId = SafetyCenterIds.entryIdFromString(entry.id)
-        record(
-            action,
-            LogSeverityLevel.fromEntrySeverityLevel(entry.severityLevel),
-            sourceId = decodedId.safetySourceId,
-            sourceProfileType = SafetySourceProfileType.fromUserId(decodedId.userId))
-    }
-
-    fun recordForSensor(action: Action, sensor: Sensor) {
-        record(action = action, sensor = sensor)
+            (if (sensor != Sensor.UNKNOWN) sensor else navigationSensor).statsLogValue,
+            // TODO(b/268309208): Log group ID and subpage viewType for subpages
+            /* encodedSafetySourcesGroupId= */ 0,
+            // TODO(b/268309491): Log issue state for dismissed and un-dismissed issues.
+            SAFETY_CENTER_INTERACTION_REPORTED__ISSUE_STATE__ISSUE_STATE_UNKNOWN
+        )
     }
 
     private companion object {

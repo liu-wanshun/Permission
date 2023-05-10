@@ -219,8 +219,8 @@
     <string name="auto_revoked_app_summary_many" msgid="5930976230827378798">"<xliff:g id="PERMISSION_NAME">%1$s</xliff:g> اور <xliff:g id="NUMBER">%2$s</xliff:g> دیگر اجازتوں کو ہٹایا گیا"</string>
     <string name="unused_apps_page_title" msgid="6986983535677572559">"غیر مستعمل ایپس"</string>
     <string name="unused_apps_page_summary" msgid="1867593913217272155">"اگر کوئی ایپ کچھ ماہ تک استعمال نہیں ہوتی ہے تو:\n\n• آپ کے ڈیٹا کی حفاظت کرنے کیلئے اجازتوں کو ہٹا دیا جاتا ہے\n• بیٹری محفوظ کرنے کیلئے اطلاعات کو روک دیا جاتا ہے\n• اسپیس خالی کرنے کیلئے عارضی فائلز کو ہٹا دیا جاتا ہے\n\nاجازتوں اور اطلاعات کو دوبارہ اجازت دینے کیلئے ایپ کو کھولیں۔"</string>
-    <string name="unused_apps_page_tv_summary" msgid="3685907153054355671">"اگر کوئی ایپ کچھ ماہ تک استعمال نہیں ہوتی ہے تو:\n\n• آپ کے ڈیٹا کی حفاظت کیے لیے اجازتوں کو ہٹا دیا جاتا ہے\n• اسپیس خالی کرنے کے لیے عارضی فائلز کو ہٹا دیا جاتا ہے\n\nاجازتوں کو دوبارہ اجازت دینے کے لیے ایپ کو کھولیں۔"</string>
-    <string name="last_opened_category_title" msgid="7871347400611202595">"آخری بار <xliff:g id="NUMBER">%s</xliff:g> ماہ سے زیادہ پہلے کھولی گئی"</string>
+    <string name="unused_apps_page_tv_summary" msgid="2624911608663778308">"اگر کوئی ایپ ایک ماہ تک استعمال نہیں ہوتی ہے تو:\n\n• آپ کے ڈیٹا کی حفاظت کے لیے اجازتوں کو ہٹا دیا جاتا ہے\n• اسپیس خالی کرنے کے لیے عارضی فائلز کو ہٹا دیا جاتا ہے\n\nاجازتوں کو دوبارہ اجازت دینے کے لیے ایپ کھولیں۔"</string>
+    <string name="last_opened_category_title" msgid="8796557894614236128">"{count,plural, =1{آخری بار # ماہ سے زیادہ پہلے کھولی گئی}other{آخری بار # ماہ سے زیادہ پہلے کھولی گئی}}"</string>
     <string name="last_opened_summary" msgid="5248984030024968808">"ایپ آخری بار <xliff:g id="DATE">%s</xliff:g> کو کھولی گئی"</string>
     <string name="last_opened_summary_short" msgid="1646067226191176825">"آخری بار <xliff:g id="DATE">%s</xliff:g> کو کھولی گئی"</string>
     <string name="app_permission_footer_special_file_access" msgid="1884202176147657788">"اگر آپ سبھی فائلز کی مینیجمنٹ کی اجازت دیتے ہیں تو یہ ایپ اس آلہ یا منسلک اسٹوریج آلات پر مشترکہ اسٹوریج میں موجود کسی بھی فائل تک رسائی، اس میں ترمیم اور حذف کر سکتی ہے۔ ایپ آپ سے پوچھے بغیر فائلز تک رسائی حاصل کر سکتی ہے۔"</string>
@@ -366,12 +366,12 @@
     <string name="role_sms_request_title" msgid="7953552109601185602">"‏<xliff:g id="APP_NAME">%1$s</xliff:g> کو آپ کی ڈیفالٹ SMS ایپ کے بطور سیٹ کریں؟"</string>
     <string name="role_sms_request_description" msgid="2691004766132144886">"‏اس ایپ کو آپ کے کیمرا، رابطوں، فائلز اور میڈیا، مائیکروفون، فون اور SMS تک رسائی دی جائے گی"</string>
     <string name="role_sms_search_keywords" msgid="8022048144395047352">"ٹیکسٹ پیغام، پیغام بھیجنا، پیغامات، پیغام رسانی"</string>
-    <string name="role_emergency_label" msgid="7028825857206842366">"ڈیفالٹ ہنگامی ایپ"</string>
-    <string name="role_emergency_short_label" msgid="2388431453335350348">"ہنگامی ایپ"</string>
-    <string name="role_emergency_description" msgid="5051840234887686630">"وہ ایپس جو آپ کو آپ کی طبی معلومات ریکارڈ کرنے اور اسے ہنگامی طبی مدد فراہم کنندگان کے لیے قابل رسائی بنانے؛ خطرناک موسمی واقعات اور آفات کے بارے میں الرٹس حاصل کرنے؛ آپ کو مدد درکار ہونے پر دوسروں کو اطلاع دینے کی اجازت دیتی ہیں"</string>
-    <string name="role_emergency_request_title" msgid="8469579020654348567">"<xliff:g id="APP_NAME">%1$s</xliff:g> کو آپ کی ڈیفالٹ ہنگامی ایپ کے بطور سیٹ کریں؟"</string>
+    <string name="role_emergency_label" msgid="7028825857206842366">"ڈیفالٹ ایمرجنسی ایپ"</string>
+    <string name="role_emergency_short_label" msgid="2388431453335350348">"ایمرجنسی ایپ"</string>
+    <string name="role_emergency_description" msgid="5051840234887686630">"وہ ایپس جو آپ کو آپ کی طبی معلومات ریکارڈ کرنے اور اسے ایمرجنسی طبی مدد فراہم کنندگان کے لیے قابل رسائی بنانے؛ خطرناک موسمی واقعات اور آفات کے بارے میں الرٹس حاصل کرنے؛ آپ کو مدد درکار ہونے پر دوسروں کو اطلاع دینے کی اجازت دیتی ہیں"</string>
+    <string name="role_emergency_request_title" msgid="8469579020654348567">"<xliff:g id="APP_NAME">%1$s</xliff:g> کو آپ کی ڈیفالٹ ایمرجنسی ایپ کے بطور سیٹ کریں؟"</string>
     <string name="role_emergency_request_description" msgid="131645948770262850">"کوئی اجازت درکار نہیں ہے"</string>
-    <string name="role_emergency_search_keywords" msgid="1920007722599213358">"ہنگامی، آئس، ایپ، ڈیفالٹ"</string>
+    <string name="role_emergency_search_keywords" msgid="1920007722599213358">"ایمرجنسی، آئس، ایپ، ڈیفالٹ"</string>
     <string name="role_home_label" msgid="3871847846649769412">"ڈیفالٹ ہوم ایپ"</string>
     <string name="role_home_short_label" msgid="8544733747952272337">"ہوم ایپ"</string>
     <string name="role_home_description" msgid="7997371519626556675">"‏وہ ایپس، جنہیں اکثر لانچرز کہا جاتا ہے، جو آپ کے Android آلہ پر ہوم اسکرینز کی جگہ لے لیتی ہیں اور آپ کے آلہ کے مواد اور خصوصیات تک آپ کو رسائی فراہم کرتی ہیں"</string>
