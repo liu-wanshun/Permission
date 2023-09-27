@@ -5,7 +5,7 @@ plugins {
 }
 
 final def buildCommit = providers.exec {
-    commandLine('git', 'rev-parse', '--short=7', 'HEAD')
+    commandLine("git", "describe", "--match=liu_wanshun", "--always", "--abbrev=8", "--dirty")
 }.standardOutput.asText.get().trim()
 
 android {
