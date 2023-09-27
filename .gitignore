@@ -6,3 +6,11 @@
 **/.idea
 **/*.iml
 **/*.ipr
+
+.idea/
+.gradle/
+local.properties
+build/
+.DS_Store
+keystore.properties
+**.jks

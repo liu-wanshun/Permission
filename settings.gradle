@@ -1,0 +1,25 @@
+pluginManagement {
+    repositories {
+        google()
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+        maven { url "https://maven.aliyun.com/repository/public" }
+    }
+}
+rootProject.name = "Permission"
+include ':PermissionController'
+include ':iconloaderlib'
+file("SettingsLib").listFiles().each {
+    if (new File(it, "build.gradle").exists()) {
+        println("${it.name}")
+        include ":SettingsLib:${it.name}"
+    }
+}

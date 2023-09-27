@@ -1,0 +1,70 @@
+import com.android.build.gradle.LibraryPlugin
+import com.android.build.gradle.api.AndroidBasePlugin
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    id "com.android.application" version '8.0.1' apply false
+    id "com.android.library" version '8.0.1' apply false
+    id "org.jetbrains.kotlin.android" version "1.8.20" apply false
+    id "com.google.protobuf" version "0.9.1" apply false
+}
+
+allprojects {
+    plugins.withType(AndroidBasePlugin).configureEach {
+        project.android {
+            compileSdk 34
+            defaultConfig {
+                minSdk 30
+                targetSdk 30
+                vectorDrawables.useSupportLibrary = true
+            }
+            compileOptions {
+                sourceCompatibility JavaVersion.VERSION_1_8
+                targetCompatibility JavaVersion.VERSION_1_8
+            }
+            lint {
+                abortOnError true
+                checkReleaseBuilds false
+            }
+        }
+        project.dependencies {
+            implementation 'androidx.core:core-ktx:1.7.0'
+        }
+    }
+    plugins.withType(LibraryPlugin).configureEach {
+        project.android {
+            publishing {
+                singleVariant("release") {
+                    withSourcesJar()
+                    withJavadocJar()
+                }
+            }
+        }
+    }
+
+    tasks.withType(KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = "1.8"
+            freeCompilerArgs += [
+                    "-opt-in=kotlinx.coroutines.DelicateCoroutinesApi",
+                    "-Xjvm-default=all"
+            ]
+        }
+    }
+
+    ext.addFrameworkJar = { String path ->
+        def frameworkJar = new File(rootProject.projectDir, 'prebuilt/' + path)
+        if (!frameworkJar.exists()) {
+            throw new IllegalArgumentException("Framework jar path doesn't exist")
+        }
+        gradle.projectsEvaluated {
+            tasks.withType(JavaCompile).configureEach {
+                options.bootstrapClasspath = files(frameworkJar, options.bootstrapClasspath)
+            }
+            tasks.withType(KotlinCompile).configureEach {
+                libraries.setFrom(files(frameworkJar, libraries))
+            }
+        }
+    }
+}
+
