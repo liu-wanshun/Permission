@@ -1,0 +1,120 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "com.google.protobuf"
+}
+
+final def buildCommit = providers.exec {
+    commandLine('git', 'rev-parse', '--short=7', 'HEAD')
+}.standardOutput.asText.get().trim()
+
+android {
+    namespace "com.android.permissioncontroller"
+    defaultConfig {
+        versionCode 319999900
+        //语义化版本:https://semver.org/lang/zh-CN/
+        versionName "12.1.0-alpha.1"
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    android.applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach {
+            outputFileName = "${rootProject.name}_${variant.versionName}+${buildCommit}.apk"
+        }
+    }
+
+    final def keystorePropertiesFile = rootProject.file("keystore.properties")
+    def releaseSigning = signingConfigs.debug
+    if (keystorePropertiesFile.exists()) {
+        final def keystoreProperties = new Properties()
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+        releaseSigning = signingConfigs.create("release") {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile rootProject.file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
+    buildTypes {
+        configureEach {
+            signingConfig releaseSigning
+        }
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "PermissionController/proguard.flags")
+        }
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            res.srcDirs = ['res']
+            java.srcDirs = ['src', "modules-utils-build"]
+            proto.srcDirs = ['src']
+        }
+    }
+
+}
+
+//来源：AOSP中单独编译模块,out/soong/.intermediates/frameworks/base/framework/android_common/turbine-combined/framework.jar
+addFrameworkJar('framework-12.jar')
+
+dependencies {
+    implementation libs.androidx.lifecycle.viewmodel
+    implementation libs.androidx.recyclerview.recyclerview
+    implementation libs.androidx.preference
+    implementation libs.androidx.lifecycle.livedata
+    implementation libs.androidx.lifecycle.runtime
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation("com.github.ChickenHook:RestrictionBypass:2.2")
+    implementation libs.google.protobuf.javalite
+    implementation libs.google.material
+    implementation "com.android.car.ui:car-ui-lib:2.5.1"
+    implementation project(path: ':iconloaderlib')
+    implementation project(path: ':SettingsLib:SettingsTransition')
+    implementation project(path: ':SettingsLib:BarChartPreference')
+    implementation project(path: ':SettingsLib:HelpUtils')
+    implementation project(path: ':SettingsLib:TwoTargetPreference')
+    implementation project(path: ':SettingsLib:SettingsTheme')
+    implementation project(path: ':SettingsLib:ActionBarShadow')
+    implementation project(path: ':SettingsLib:SearchWidget')
+    implementation project(path: ':SettingsLib:AppPreference')
+    implementation project(path: ':SettingsLib:RestrictedLockUtils')
+    implementation project(path: ':SettingsLib:Utils')
+    implementation project(path: ':SettingsLib:LayoutPreference')
+    implementation project(path: ':SettingsLib:CollapsingToolbarBaseActivity')
+    implementation project(path: ':SettingsLib:ProgressBar')
+    implementation project(path: ':SettingsLib:RadioButtonPreference')
+    implementation project(path: ':SettingsLib:FooterPreference')
+    def leanback_version = "1.2.0-alpha03"
+    implementation "androidx.leanback:leanback:$leanback_version"
+    // leanback-preference is an add-on that provides a settings UI for TV apps.
+    implementation "androidx.leanback:leanback-preference:$leanback_version"
+    def nav_version = "2.3.5"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+}
+
+protobuf {
+    // Configure the protoc executable
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.21.12"
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                remove java
+                java {
+                    option "lite"
+                }
+            }
+        }
+    }
+}
