@@ -1,0 +1,35 @@
+plugins {
+    id "com.android.library"
+    id "org.jetbrains.kotlin.android"
+
+}
+android {
+    namespace "com.android.settingslib.widget"
+
+    buildTypes {
+
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "PermissionController/proguard.flags")
+        }
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            res.srcDirs = ['res']
+            java.srcDirs = ['src']
+
+        }
+    }
+    //来源：AOSP中单独编译模块,out/soong/.intermediates/frameworks/base/framework/android_common/turbine-combined/framework.jar
+    addFrameworkJar('framework-12.jar')
+}
+
+
+
+
+
